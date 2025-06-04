@@ -1,3 +1,4 @@
 Draft/*
 .vscode/
 .env
+cut_audio.py
