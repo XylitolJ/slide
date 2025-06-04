@@ -1,0 +1,83 @@
+{
+  "quy_che_thi": {
+    "ten_hoi_thi": "Hội thi ATVSV giỏi cấp Công ty công nghiệp Hóa chất mỏ Thái Nguyên năm 2025",
+    "so_quyet_dinh": "665/QĐ-HCMTHN",
+    "ngay_ban_hanh": "19/05/2025",
+    "don_vi_to_chuc": "Công ty Công nghiệp Hóa chất mỏ Thái Nguyên",
+    "thoi_ GIAN_du_kien": "25/06/2025",
+    "dia_diem": "Hội trường tầng 5 - Văn phòng Công ty. Số 9A, Đường Phan Đình Phùng, Phường Đồng Quang, Thành phố Thái Nguyên",
+    "nganh_nghe_du_thi": [
+      "Bảo quản, bốc xếp, vận chuyển VLNCN",
+      "khai thác mỏ",
+      "công tác bảo vệ"
+    ],
+    "cac_vong_thi": [
+      {
+        "vong": 1,
+        "ten_vong": "Thi hiểu biết kiến thức về chính sách pháp luật, PCCC và Y tế",
+        "hinh_thuc": "Trắc nghiệm",
+        "so_cau_hoi": 10,
+        "thoi_gian_tra_loi": "30 giây/câu",
+        "thang_diem": 10,
+        "ghi_chu": "Cả đội thống nhất đáp án để trả lời và viết ra bảng giơ lên cho BKG chấm."
+      },
+      {
+        "vong": 2,
+        "ten_vong": "Thi hiểu biết về ngành nghề",
+        "hinh_thuc": "Trắc nghiệm",
+        "so_cau_hoi": 9,
+        "cau_hoi_phan_bo": "Bảo quản, bốc xếp, vận chuyển VLNCN (03 câu); khai thác mỏ (03 câu); công tác bảo vệ (03 câu)",
+        "thoi_gian_tra_loi": "01 phút/câu",
+        "thang_diem": 10,
+        "ghi_chu": "Câu hỏi thuộc ngành nghề nào thì thí sinh đăng ký tại lĩnh vực ngành nghề đó của đội chịu trách nhiệm chính và có tham khảo với thí sinh cùng đội. Cả đội thống nhất đáp án để trả lời và viết ra bảng giơ lên cho BKG chấm. Kết quả vòng này tính điểm đồng đội và làm cơ sở tính điểm cá nhân."
+      },
+      {
+        "vong": 3,
+        "ten_vong": "Thi thực hành về PCCC và Y tế",
+        "hinh_thuc": "Thực hành",
+        "so_cau_hoi": 2,
+        "cau_hoi_phan_bo": "01 câu về PCCC, 01 câu Y tế",
+        "thoi_gian_chuan_bi": "05 phút/câu",
+        "thang_diem": 10,
+        "ghi_chu": "Đội thi phân công nhau tham gia thi thực hành theo từng lĩnh vực để cho BKG chấm điểm."
+      }
+    ],
+    "thang_diem_chi_tiet": {
+      "vong_1": {
+        "loai_cau_hoi": "Trắc nghiệm",
+        "diem_tren_cau": 10,
+        "ghi_chu": "Câu trả lời đúng theo đáp án thì đạt thang điểm 10; thiếu, sai thì không được tính điểm."
+      },
+      "vong_2": {
+        "loai_cau_hoi": "Trắc nghiệm",
+        "diem_tren_cau": 10,
+        "ghi_chu": "Câu trả lời đúng theo đáp án thì đạt thang điểm 10; ghi thiếu ý đúng thì chấm theo thang điểm của từng ý; ghi ý sai thì mỗi ý sai sẽ bị trừ điểm tương đương 1 ý đúng. (Không có điểm âm, tối thiểu 0 điểm)."
+      },
+      "vong_3": {
+        "loai_cau_hoi": "Thực hành",
+        "diem_tren_cau": 10,
+        "ghi_chu": "Căn cứ vào kết quả thi của từng đội so sánh với đáp án của đề thi của Tổng công ty đã ban hành. Ban giám khảo chấm điểm. Mỗi câu chấm theo thang điểm 10."
+      }
+    },
+    "quy_dinh_cham_diem": "Các đội khi đã thống nhất đáp án và giơ bảng cho Ban giám khảo thì không được sửa đổi kết quả. Nếu đội nào trong quá trình đã giơ bảng mà sửa lại kết quả thì coi như phạm quy và không được tính điểm tại câu hỏi đó.",
+    "cach_cong_bo_diem": "Nếu Giám khảo có điểm chấm cách biệt quá 01 điểm so với điểm bình quân của các thành viên Ban Giám khảo, thì Ban Giám khảo phải tiến hành thảo luận để điều chỉnh kết quả của Giám khảo đó ngay sau khi kết thúc buổi thi, nếu Giám khảo đó vẫn bảo lưu kết quả thì không tính điểm đó vào điểm bình quân; Trong trường hợp sau 3 vòng thi có các đội bằng điểm nhau, thì điểm ở vòng 2 của đội nào cao hơn thì được tính là đội đứng trên, nếu tiếp tục bằng nhau thì các đội đồng giải thưởng. Kết quả sẽ được công bố vào bế mạc Hội thi.",
+    "giai_thuong": {
+      "tap_the": [
+        { "giai": "Nhất", "tien_thuong": "5.000.000 đồng" },
+        { "giai": "Nhì", "tien_thuong": "3.000.000 đồng" },
+        { "giai": "Ba", "tien_thuong": "2.000.000 đồng" },
+        { "giai": "Khuyến khích", "tien_thuong": "1.000.000 đồng" }
+      ],
+      "ca_nhan": [
+        { "danh_hieu": "ATVSV xuất sắc", "tieu_chuan": "đạt từ 27 điểm trở lên thuộc lĩnh vực thí sinh đăng ký tại vòng 2 của đội đạt tổng điểm 96 điểm trở lên của vòng 1 và vòng 3 cộng lại. Không vi phạm Quy chế thi.", "tien_thuong": "2.000.000 đồng" },
+        { "danh_hieu": "ATVSV giỏi", "tieu_chuan": "đạt từ 24 điểm trở lên thuộc lĩnh vực thí sinh đăng ký tại vòng 2 của đội đạt tổng điểm từ 84 điểm trở lên của vòng 1 và vòng 3 cộng lại. Không vi phạm Quy chế thi.", "tien_thuong": "1.500.000 đồng" },
+        { "danh_hieu": "Không đạt danh hiệu", "tien_thuong": "500.000 đồng/người" }
+      ]
+    },
+    "kinh_phi": {
+      "don_vi_tham_gia": "Tự lo kinh phí luyện tập và phát sinh khác của đơn vị mình.",
+      "ban_to_chuc": "Lo ăn nghỉ của Thí sinh trong thời gian diễn ra Hội thi cấp Công ty. Xây dựng kế hoạch chi phí giải thưởng, khánh tiết, trình Giám đốc Công ty phê duyệt."
+    },
+    "to_chuc_thuc_hien": "Công đoàn cơ sở thành viên, Công đoàn bộ phận và Thủ trưởng các đơn vị căn cứ quy chế này triển khai, phổ biến đến CBCNV thu xếp thời gian đi cổ vũ, động viên khích lệ cho các thí sinh tham dự Hội thi đạt kết quả tốt. Các đơn vị báo cáo kết quả hội thi và đăng ký danh sách trích ngang ATVSV dự thi về Phòng ATBV Công ty sau khi kết thúc Hội thi của đơn vị. Ban tổ chức, Ban giám khảo, Tổ thư ký và các đơn vị có thí sinh tham gia dự thi tổ chức triển khai, đảm bảo đúng thời gian quy định. Trong quá trình tổ chức thực hiện có gì vướng mắc phản ánh về Phòng ATBV và Công đoàn Công ty để xin ý kiến Ban chỉ đạo Hội thi ATVSV giỏi Công ty năm 2025."
+  }
+}
