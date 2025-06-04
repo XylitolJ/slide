@@ -761,16 +761,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     document.addEventListener('keydown', (e) => {
         if (e.key === 'ArrowRight') {
-            if (DEBUG_MODE) {
+            if (!sequenceInProgress) {
                 nextQuestion();
-            } else if (answerShown || (currentQuestionData.type_question === "Thực hành" && timeLeft <= 0)) {
-                 nextQuestion();
-            } else if (!sequenceInProgress && !answerShown && timeLeft <=0 && currentQuestionData.type_question !== "Thực hành") {
-                displayAnswer();
             }
         } else if (e.key === 'ArrowLeft') {
-            previousQuestion();
-        } else if (e.key === ' ' || e.key === 'Spacebar') { 
+            if (!sequenceInProgress) {
+                previousQuestion();
+            }
+        } else if (e.key === ' ' || e.key === 'Spacebar') {
             e.preventDefault(); 
             if (!startSequenceBtn.disabled) {
                 startQuestionSequence();
