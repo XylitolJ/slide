@@ -29,8 +29,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const timesUpPopupEl = document.getElementById('timeUpOverlay'); // Updated ID for new overlay
 
     // --- Configuration ---
-    const DEBUG_MODE = false; // Set to true to enable debug mode
-    const USE_SPEECH = true; // Set to false to disable all speech synthesis & audio file playback
+    const DEBUG_MODE = true; // Set to true to enable debug mode
+    const USE_SPEECH = false; // Set to false to disable all speech synthesis & audio file playback
     const SHOW_IMAGE_PLACEHOLDER_ON_ERROR = true; // If true, shows a placeholder if an image fails to load
     const IMAGE_PLACEHOLDER_SVG = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23cbd5e1'%3E%3Cpath d='M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z'/%3E%3C/svg%3E"; // Simple image icon
     const DELAY_NO_SPEECH_QUESTION = 1000; // ms to wait after showing question if no speech
@@ -60,6 +60,18 @@ document.addEventListener('DOMContentLoaded', () => {
         'bg-image-2-stripes',
         'bg-image-3-gradient',
         'bg-image-3-stripes',
+        'bg-image-4-gradient',
+        'bg-image-4-stripes',
+        'bg-image-5-gradient',
+        'bg-image-5-stripes',
+        'bg-image-6-gradient',
+        'bg-image-6-stripes',
+        'bg-image-7-gradient',
+        'bg-image-7-stripes',
+        'bg-image-8-gradient',
+        'bg-image-8-stripes',
+        'bg-image-9-gradient',
+        'bg-image-9-stripes',
         'bg-abstract',
         'bg-wave',
         'bg-svg-pattern-1',
@@ -195,16 +207,38 @@ document.addEventListener('DOMContentLoaded', () => {
         answerShown = false;
         sequenceInProgress = false;
 
+        // Define the background style sequence
+        const backgroundSequence = [
+            'bg-default', // Default gradient
+            'bg-image-1-gradient', 'bg-image-2-gradient', 'bg-image-3-gradient', 'bg-image-4-gradient', 'bg-image-5-gradient', 'bg-image-6-gradient', 'bg-image-7-gradient', 'bg-image-8-gradient', 'bg-image-9-gradient', // Image + gradient
+            'bg-image-1-stripes', 'bg-image-2-stripes', 'bg-image-3-stripes', 'bg-image-4-stripes', 'bg-image-5-stripes', 'bg-image-6-stripes', 'bg-image-7-stripes', 'bg-image-8-stripes', 'bg-image-9-stripes', // Image + stripes
+            'bg-svg-pattern-1', 'bg-svg-pattern-2', 'bg-svg-pattern-3', 'bg-abstract', 'bg-wave' // SVG patterns
+        ];
+
         // Cycle through background styles
-        if (slideContainer && backgroundStyles.length > 0) {
+        if (slideContainer) {
             // Remove all possible background style classes first
             backgroundStyles.forEach(bgClass => slideContainer.classList.remove(bgClass));
-            
+
+            // Get the background style based on the current question index
+            const backgroundIndex = currentQuestionIndex % backgroundSequence.length;
+            let backgroundStyle = backgroundSequence[backgroundIndex];
+
+            // Ensure that the same image is not used in consecutive slides
+            if (currentQuestionIndex > 0) {
+                const previousBackgroundIndex = (currentQuestionIndex - 1) % backgroundSequence.length;
+                let previousBackgroundStyle = backgroundSequence[previousBackgroundIndex];
+
+                // If the current background style is an image and is the same as the previous one, skip it
+                if (backgroundStyle.startsWith('bg-image') && backgroundStyle === previousBackgroundStyle) {
+                    // Move to the next background style
+                    const nextBackgroundIndex = (currentQuestionIndex + 1) % backgroundSequence.length;
+                    backgroundStyle = backgroundSequence[nextBackgroundIndex];
+                }
+            }
+
             // Add the new background style
-            slideContainer.classList.add(backgroundStyles[currentBackgroundIndex]);
-            
-            // Update index for next slide
-            currentBackgroundIndex = (currentBackgroundIndex + 1) % backgroundStyles.length;
+            slideContainer.classList.add(backgroundStyle);
         }
  
         const imageWrapperEl = document.getElementById('imageWrapper');
