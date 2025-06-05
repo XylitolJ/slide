@@ -703,10 +703,8 @@ document.addEventListener('DOMContentLoaded', () => {
             startSequenceBtn.disabled = true;
             showAnswerBtn.style.display = 'none';
         }
-    }
-
-    function previousQuestion() {
-         if (currentAudio && currentAudio.source) {
+    }    function previousQuestion() {
+        if (currentAudio && currentAudio.source) {
             currentAudio.source.stop();
             currentAudio.source.disconnect();
             currentAudio = null;
@@ -716,6 +714,9 @@ document.addEventListener('DOMContentLoaded', () => {
         if (currentQuestionIndex > 0) {
             currentQuestionIndex--;
             renderSlide(allQuestions[currentQuestionIndex]);
+        } else {
+            // If we're at the first question, navigate back to page3.html
+            window.location.href = 'page3.html';
         }
     }
 
