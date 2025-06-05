@@ -1,4 +1,4 @@
-// npx http-server -o
+// npx http-server -o --no-cache
 document.addEventListener('DOMContentLoaded', () => {
     // DOM Elements
     const slideContainer = document.getElementById('slideContainer');
@@ -684,9 +684,7 @@ document.addEventListener('DOMContentLoaded', () => {
             currentQuestionIndex++;
             renderSlide(allQuestions[currentQuestionIndex]);
         } else {
-            progressTextEl.innerHTML = '<span class="font-bold text-yellow-300">Đã hết câu hỏi. Cảm ơn đã tham gia!</span>';
-            startSequenceBtn.disabled = true;
-            showAnswerBtn.style.display = 'none';
+            window.location.href = 'page3.html';
         }
     }    function previousQuestion() {
         if (currentAudio && currentAudio.source) {

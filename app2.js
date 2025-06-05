@@ -684,11 +684,11 @@ document.addEventListener('DOMContentLoaded', () => {
             currentQuestionIndex++;
             renderSlide(allQuestions[currentQuestionIndex]);
         } else {
-            progressTextEl.innerHTML = '<span class="font-bold text-yellow-300">Đã hết câu hỏi. Cảm ơn đã tham gia!</span>';
-            startSequenceBtn.disabled = true;
-            showAnswerBtn.style.display = 'none';
+            window.location.href = 'page3.html';
         }
-    }    function previousQuestion() {
+    }
+
+    function previousQuestion() {
         if (currentAudio && currentAudio.source) {
             currentAudio.source.stop();
             currentAudio.source.disconnect();
