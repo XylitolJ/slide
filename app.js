@@ -671,8 +671,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Enable navigation to next question
     }
 
-    // --- Navigation ---
-    function nextQuestion() {
+    // --- Navigation ---    function nextQuestion() {
         if (currentAudio && currentAudio.source) { // Stop any ongoing audio
             currentAudio.source.stop();
             currentAudio.source.disconnect();
@@ -684,11 +683,11 @@ document.addEventListener('DOMContentLoaded', () => {
             currentQuestionIndex++;
             renderSlide(allQuestions[currentQuestionIndex]);
         } else {
-            progressTextEl.innerHTML = '<span class="font-bold text-yellow-300">Đã hết câu hỏi. Cảm ơn đã tham gia!</span>';
-            startSequenceBtn.disabled = true;
-            showAnswerBtn.style.display = 'none';
-        }
-    }    function previousQuestion() {
+            // If we're at the last question, navigate back to page3.html
+            window.location.href = 'page3.html';        }
+    }
+
+    function previousQuestion() {
         if (currentAudio && currentAudio.source) {
             currentAudio.source.stop();
             currentAudio.source.disconnect();
@@ -777,17 +776,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Event Listeners ---
     startSequenceBtn.addEventListener('click', startQuestionSequence);
-    showAnswerBtn.addEventListener('click', displayAnswer);
-
-    document.addEventListener('keydown', (e) => {
+    showAnswerBtn.addEventListener('click', displayAnswer);    document.addEventListener('keydown', (e) => {
         if (e.key === 'ArrowRight') {
-            if (!sequenceInProgress) {
-                nextQuestion();
-            }
+            // Phím mũi tên phải: next câu hỏi hoặc về page3.html nếu ở câu cuối
+            e.preventDefault();
+            nextQuestion();
         } else if (e.key === 'ArrowLeft') {
-            if (!sequenceInProgress) {
-                previousQuestion();
-            }
+            // Phím mũi tên trái: previous câu hỏi hoặc về page3.html nếu ở câu đầu
+            e.preventDefault();
+            previousQuestion();
         } else if (e.key === ' ' || e.key === 'Spacebar') {
             e.preventDefault(); 
             if (!startSequenceBtn.disabled) {
