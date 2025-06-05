@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chọn Câu Hỏi</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100">
+    <div class="container mx-auto py-8">
+        <h1 class="text-2xl font-bold mb-4">Chọn Vòng Thi</h1>
+        <div id="roundSelection" class="flex flex-col gap-4">
+            </div>
+        <div id="questionContainer" class="mt-8">
+            </div>
+    </div>
+    <script>
+        async function loadRounds() {
+            const roundSelection = document.getElementById('roundSelection');
+            roundSelection.innerHTML = ''; // Clear existing buttons
+
+            const response = await fetch('quyche.json');
+            const data = await response.json();
+            const rounds = data.quy_che_thi.cac_vong_thi;
+
+
+            rounds.forEach(round => {
+                const button = document.createElement('button');
+                button.textContent = round.ten_vong;
+                button.className = 'bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded';
+                button.addEventListener('click', () => loadQuestions(round.vong));
+                roundSelection.appendChild(button);
+            });
+        }
+
+        async function loadQuestions(roundNumber) {
+            const questionContainer = document.getElementById('questionContainer');
+            questionContainer.innerHTML = ''; // Clear existing questions
+            let file;
+
+            switch (roundNumber) {
+                case 1:
+                    file = 'vong1.json';
+                    break;
+                case 2:
+                    file = 'vong2.json';
+                    break;
+                case 3:
+                    file = 'vong3.json';
+                    break;
+                default:
+                    questionContainer.textContent = "Invalid round number.";
+                    return;
+            }
+
+
+            const response = await fetch(file);
+            const data = await response.json();
+
+            // Hiển thị danh sách câu hỏi dựa trên dữ liệu từ file JSON
+            // Ví dụ:
+            let questions;
+            if (roundNumber === 1) {
+                questions = data.vong_1.chinh_sach_phap_luat_va_y_te.trac_nghiem;
+            } else if (roundNumber === 2) {
+                questions = data.vong_2.ky_thuat_an_toan.trac_nghiem;
+            } else if (roundNumber === 3) {
+                if (data.vong_3.y_te && data.vong_3.y_te.so_cap_cuu && data.vong_3.y_te.so_cap_cuu.thuc_hanh) {
+                    questions = data.vong_3.y_te.so_cap_cuu.thuc_hanh;
+                } else if (data.vong_3.phong_chay_chua_chay && data.vong_3.phong_chay_chua_chay.ly_thuyet_thuc_hanh) {
+                     questions = data.vong_3.phong_chay_chua_chay.ly_thuyet_thuc_hanh;
+                }
+            }
+
+            if (questions && questions.length > 0) {
+                questions.forEach(question => {
+                    const questionElement = document.createElement('div');
+                    questionElement.textContent = question.cau_hoi;
+                    questionContainer.appendChild(questionElement);
+                });
+            } else {
+                questionContainer.textContent = "No questions found for this round.";
+            }
+        }
+
+        loadRounds();
+    </script>
+</body>
+</html>

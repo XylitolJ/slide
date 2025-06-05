@@ -3,6 +3,7 @@
     "chinh_sach_phap_luat_va_y_te": {
       "trac_nghiem": [
         {
+          "cau_hoi_so": 1,
           "id": "CSPL_TN_1",
           "category": "Chính sách pháp luật và Y tế",
           "subcategory": "Chính sách pháp luật về ATVSLĐ",
@@ -27,6 +28,7 @@
           "speech_id_answer": "CSPL_TN_1_ans.wav"
         },
         {
+          "cau_hoi_so": 2,
           "id": "CSPL_TN_2",
           "category": "Chính sách pháp luật và Y tế",
           "subcategory": "Chính sách pháp luật về ATVSLĐ",
@@ -50,6 +52,7 @@
           "speech_id_answer": "CSPL_TN_2_ans.wav"
         },
         {
+          "cau_hoi_so": 3,
           "id": "CSPL_TN_3",
           "category": "Chính sách pháp luật và Y tế",
           "subcategory": "Chính sách pháp luật về ATVSLĐ",
@@ -74,6 +77,7 @@
           "speech_id_answer": "CSPL_TN_3_ans.wav"
         },
         {
+          "cau_hoi_so": 4,
           "id": "CSPL_TN_4",
           "category": "Chính sách pháp luật và Y tế",
           "subcategory": "Chính sách pháp luật về ATVSLĐ",
@@ -100,6 +104,7 @@
           "speech_id_answer": "CSPL_TN_4_ans.wav"
         },
         {
+          "cau_hoi_so": 5,
           "id": "CSPL_TN_5",
           "category": "Chính sách pháp luật và Y tế",
           "subcategory": "Chính sách pháp luật về ATVSLĐ",
@@ -124,6 +129,7 @@
           "speech_id_answer": "CSPL_TN_5_ans.wav"
         },
         {
+          "cau_hoi_so": 6,
           "id": "YT_SC_TN_1",
           "category": "Chính sách pháp luật và Y tế",
           "subcategory": "Y tế - Sơ cấp cứu",
@@ -152,6 +158,7 @@
           "speech_id_answer": "YT_SC_TN_1_ans.wav"
         },
         {
+          "cau_hoi_so": 7,
           "id": "YT_SC_TN_2",
           "category": "Chính sách pháp luật và Y tế",
           "subcategory": "Y tế - Sơ cấp cứu",
@@ -176,6 +183,7 @@
           "speech_id_answer": "YT_SC_TN_2_ans.wav"
         },
         {
+          "cau_hoi_so": 8,
           "id": "YT_SC_TN_3",
           "category": "Chính sách pháp luật và Y tế",
           "subcategory": "Y tế - Sơ cấp cứu",
@@ -203,6 +211,7 @@
     "phong_chay_chua_chay": {
       "trac_nghiem": [
         {
+          "cau_hoi_so": 1,
           "id": "PCCC_TN_1",
           "category": "Phòng cháy chữa cháy",
           "subcategory": "Lĩnh vực PCCC",
@@ -227,6 +236,7 @@
           "speech_id_answer": "PCCC_TN_1_ans.wav"
         },
         {
+          "cau_hoi_so": 2,
           "id": "PCCC_TN_2",
           "category": "Phòng cháy chữa cháy",
           "subcategory": "Lĩnh vực PCCC",
@@ -250,6 +260,7 @@
           "speech_id_answer": "PCCC_TN_2_ans.wav"
         },
         {
+          "cau_hoi_so": 3,
           "id": "PCCC_TN_3",
           "category": "Phòng cháy chữa cháy",
           "subcategory": "Lĩnh vực PCCC",
@@ -273,6 +284,7 @@
           "speech_id_answer": "PCCC_TN_3_ans.wav"
         },
         {
+          "cau_hoi_so": 4,
           "id": "PCCC_TN_4",
           "category": "Phòng cháy chữa cháy",
           "subcategory": "Lĩnh vực PCCC",
@@ -297,6 +309,7 @@
           "speech_id_answer": "PCCC_TN_4_ans.wav"
         },
         {
+          "cau_hoi_so": 5,
           "id": "PCCC_TN_5",
           "category": "Phòng cháy chữa cháy",
           "subcategory": "Lĩnh vực PCCC",
@@ -319,6 +332,7 @@
           "speech_id_answer": "PCCC_TN_5_ans.wav"
         },
         {
+          "cau_hoi_so": 6,
           "id": "PCCC_TN_6",
           "category": "Phòng cháy chữa cháy",
           "subcategory": "Lĩnh vực PCCC",
@@ -343,6 +357,7 @@
           "speech_id_answer": "PCCC_TN_6_ans.wav"
         },
         {
+          "cau_hoi_so": 7,
           "id": "PCCC_TN_7",
           "category": "Phòng cháy chữa cháy",
           "subcategory": "Lĩnh vực PCCC",
