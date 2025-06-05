@@ -322,14 +322,13 @@
                             </h4>
                             <p class="text-gray-800 leading-relaxed text-lg">${question.cau_hoi}</p>
                         </div>
-                        
-                        ${question.speech_id_question ? `
+                          ${question.speech_id_question ? `
                             <div class="bg-blue-50 rounded-lg p-4 border border-blue-200">
                                 <h4 class="font-semibold text-blue-800 mb-3 flex items-center">
                                     <i class="fas fa-volume-up mr-2"></i>
                                     Nghe câu hỏi:
                                 </h4>
-                                <audio controls class="w-full">
+                                <audio controls class="w-full" id="questionAudio" preload="auto">
                                     <source src="speech/${question.speech_id_question}" type="audio/wav">
                                     <p class="text-red-600 text-sm mt-2">Trình duyệt của bạn không hỗ trợ phát audio.</p>
                                 </audio>
@@ -340,6 +339,28 @@
             `;
             
             document.body.appendChild(modal);
+            
+            // Auto-play audio if available
+            if (question.speech_id_question) {
+                // Wait a moment for the modal to be fully rendered
+                setTimeout(() => {
+                    const audioElement = modal.querySelector('#questionAudio');
+                    if (audioElement) {
+                        // Try to play audio with error handling
+                        audioElement.play().catch(error => {
+                            console.log('Auto-play blocked by browser:', error);
+                            // Show a message to user if autoplay is blocked
+                            const audioContainer = audioElement.closest('.bg-blue-50');
+                            if (audioContainer) {
+                                const autoplayNotice = document.createElement('div');
+                                autoplayNotice.className = 'mt-2 text-sm text-orange-600 bg-orange-50 p-2 rounded border border-orange-200';
+                                autoplayNotice.innerHTML = '<i class="fas fa-info-circle mr-1"></i>Nhấn nút phát để nghe câu hỏi (trình duyệt chặn tự động phát)';
+                                audioContainer.appendChild(autoplayNotice);
+                            }
+                        });
+                    }
+                }, 300);
+            }
             
             // Close modal when clicking outside
             modal.addEventListener('click', (e) => {
