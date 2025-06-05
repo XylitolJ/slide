@@ -1,7 +1,7 @@
 {
   "vong_2": {
     "ky_thuat_an_toan": {
-      "trắc nghiệm": [
+      "trac_nghiem": [
         {
           "cau_hoi_so": 1,
           "id": "V2_TN_11",
@@ -153,10 +153,9 @@
           "speech_id_options_F": "V2_TN_7_F.wav",
           "speech_id_answer": "V2_TN_7_ans.wav"
         }
-      ]
-    },
+      ]    },
     "chinh_sach_phap_luat_an_toan": {
-      "    trắc nghiệm": [
+      "trac_nghiem": [
         {
           "cau_hoi_so": 1,
           "id": "V2_TN_2",
