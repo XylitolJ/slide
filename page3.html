@@ -561,24 +561,25 @@
         document.getElementById('backToRounds').addEventListener('click', () => {
             document.getElementById('questionContainer').style.display = 'none';
             document.getElementById('roundSelection').style.display = 'grid';
-        });
-
-        // Keyboard navigation
+        });        // Keyboard navigation
         document.addEventListener('keydown', (e) => {
             if (e.key === 'ArrowLeft') {
                 // Navigate to page2.html
                 window.location.href = 'page2.html';
-            } else if (e.key === 'ArrowRight') {
-                // Navigate to vong1.html
-                window.location.href = 'vong1.html';
-            } else if (e.key === 'Escape') {
+            } 
+            // Right arrow key disabled to prevent accidental navigation to vong1.html
+            // else if (e.key === 'ArrowRight') {
+            //     // Navigate to vong1.html
+            //     window.location.href = 'vong1.html';
+            // } 
+            else if (e.key === 'Escape') {
                 // Back to rounds if viewing questions
                 const questionContainer = document.getElementById('questionContainer');
                 if (questionContainer.style.display !== 'none') {
                     document.getElementById('backToRounds').click();
                 }
             }
-        });        // Initialize on page load
+        });// Initialize on page load
         document.addEventListener('DOMContentLoaded', loadRounds);
     </script>
 </body>
