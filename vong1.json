@@ -25,7 +25,8 @@
           "speech_id_options_B": "CSPL_TN_1_B.wav",
           "speech_id_options_C": "CSPL_TN_1_C.wav",
           "speech_id_options_D": "CSPL_TN_1_D.wav",
-          "speech_id_answer": "CSPL_TN_1_ans.wav"
+          "speech_id_answer": "CSPL_TN_1_ans.wav",
+          "bg_image": "images\\bg\\bg1.jpg"
         },
         {
           "cau_hoi_so": 2,
@@ -49,7 +50,8 @@
           "speech_id_options_B": "CSPL_TN_2_B.wav",
           "speech_id_options_C": "CSPL_TN_2_C.wav",
           "speech_id_options_D": null,
-          "speech_id_answer": "CSPL_TN_2_ans.wav"
+          "speech_id_answer": "CSPL_TN_2_ans.wav",
+          "bg_image": "images\\bg\\bg2.jpg"
         },
         {
           "cau_hoi_so": 3,
@@ -74,7 +76,8 @@
           "speech_id_options_B": "CSPL_TN_3_B.wav",
           "speech_id_options_C": "CSPL_TN_3_C.wav",
           "speech_id_options_D": "CSPL_TN_3_D.wav",
-          "speech_id_answer": "CSPL_TN_3_ans.wav"
+          "speech_id_answer": "CSPL_TN_3_ans.wav",
+          "bg_image": "images\\bg\\bg3.jpg"
         },
         {
           "cau_hoi_so": 4,
@@ -101,7 +104,8 @@
           "speech_id_options_C": "CSPL_TN_4_C.wav",
           "speech_id_options_D": "CSPL_TN_4_D.wav",
           "speech_id_options_E": "CSPL_TN_4_E.wav",
-          "speech_id_answer": "CSPL_TN_4_ans.wav"
+          "speech_id_answer": "CSPL_TN_4_ans.wav",
+          "bg_image": "images\\bg\\bg4.jpg"
         },
         {
           "cau_hoi_so": 5,
@@ -126,7 +130,8 @@
           "speech_id_options_B": "CSPL_TN_5_B.wav",
           "speech_id_options_C": "CSPL_TN_5_C.wav",
           "speech_id_options_D": "CSPL_TN_5_D.wav",
-          "speech_id_answer": "CSPL_TN_5_ans.wav"
+          "speech_id_answer": "CSPL_TN_5_ans.wav",
+          "bg_image": "images\\bg\\bg5.png"
         },
         {
           "cau_hoi_so": 6,
@@ -155,7 +160,8 @@
           "speech_id_options_D": "YT_SC_TN_1_D.wav",
           "speech_id_options_E": "YT_SC_TN_1_E.wav",
           "speech_id_options_G": "YT_SC_TN_1_G.wav",
-          "speech_id_answer": "YT_SC_TN_1_ans.wav"
+          "speech_id_answer": "YT_SC_TN_1_ans.wav",
+          "bg_image": "images\\bg\\bg6.png"
         },
         {
           "cau_hoi_so": 7,
@@ -180,7 +186,8 @@
           "speech_id_options_B": "YT_SC_TN_2_B.wav",
           "speech_id_options_C": "YT_SC_TN_2_C.wav",
           "speech_id_options_D": "YT_SC_TN_2_D.wav",
-          "speech_id_answer": "YT_SC_TN_2_ans.wav"
+          "speech_id_answer": "YT_SC_TN_2_ans.wav",
+          "bg_image": "images\\bg\\bg1.jpg"
         },
         {
           "cau_hoi_so": 8,
@@ -204,7 +211,8 @@
           "speech_id_options_B": "YT_SC_TN_3_B.wav",
           "speech_id_options_C": "YT_SC_TN_3_C.wav",
           "speech_id_options_D": null,
-          "speech_id_answer": "YT_SC_TN_3_ans.wav"
+          "speech_id_answer": "YT_SC_TN_3_ans.wav",
+          "bg_image": "images\\bg\\bg1.jpg"
         }
       ]
     },
@@ -233,7 +241,8 @@
           "speech_id_options_B": "PCCC_TN_1_B.wav",
           "speech_id_options_C": "PCCC_TN_1_C.wav",
           "speech_id_options_D": "PCCC_TN_1_D.wav",
-          "speech_id_answer": "PCCC_TN_1_ans.wav"
+          "speech_id_answer": "PCCC_TN_1_ans.wav",
+          "bg_image": "images\\bg\\bg1.jpg"
         },
         {
           "cau_hoi_so": 2,
@@ -257,7 +266,8 @@
           "speech_id_options_B": "PCCC_TN_2_B.wav",
           "speech_id_options_C": "PCCC_TN_2_C.wav",
           "speech_id_options_D": null,
-          "speech_id_answer": "PCCC_TN_2_ans.wav"
+          "speech_id_answer": "PCCC_TN_2_ans.wav",
+          "bg_image": "images\\bg\\bg1.jpg"
         },
         {
           "cau_hoi_so": 3,
@@ -281,7 +291,8 @@
           "speech_id_options_B": "PCCC_TN_3_B.wav",
           "speech_id_options_C": "PCCC_TN_3_C.wav",
           "speech_id_options_D": null,
-          "speech_id_answer": "PCCC_TN_3_ans.wav"
+          "speech_id_answer": "PCCC_TN_3_ans.wav",
+          "bg_image": "images\\bg\\bg1.jpg"
         },
         {
           "cau_hoi_so": 4,
@@ -306,7 +317,8 @@
           "speech_id_options_B": "PCCC_TN_4_B.wav",
           "speech_id_options_C": "PCCC_TN_4_C.wav",
           "speech_id_options_D": "PCCC_TN_4_D.wav",
-          "speech_id_answer": "PCCC_TN_4_ans.wav"
+          "speech_id_answer": "PCCC_TN_4_ans.wav",
+          "bg_image": "images\\bg\\bg1.jpg"
         },
         {
           "cau_hoi_so": 5,
@@ -329,7 +341,8 @@
           "speech_id_options_B": "PCCC_TN_5_B.wav",
           "speech_id_options_C": null,
           "speech_id_options_D": null,
-          "speech_id_answer": "PCCC_TN_5_ans.wav"
+          "speech_id_answer": "PCCC_TN_5_ans.wav",
+          "bg_image": "images\\bg\\bg1.jpg"
         },
         {
           "cau_hoi_so": 6,
@@ -354,7 +367,8 @@
           "speech_id_options_B": "PCCC_TN_6_B.wav",
           "speech_id_options_C": "PCCC_TN_6_C.wav",
           "speech_id_options_D": "PCCC_TN_6_D.wav",
-          "speech_id_answer": "PCCC_TN_6_ans.wav"
+          "speech_id_answer": "PCCC_TN_6_ans.wav",
+          "bg_image": "images\\bg\\bg1.jpg"
         },
         {
           "cau_hoi_so": 7,
@@ -379,7 +393,8 @@
           "speech_id_options_B": "PCCC_TN_7_B.wav",
           "speech_id_options_C": "PCCC_TN_7_C.wav",
           "speech_id_options_D": "PCCC_TN_7_D.wav",
-          "speech_id_answer": "PCCC_TN_7_ans.wav"
+          "speech_id_answer": "PCCC_TN_7_ans.wav",
+          "bg_image": "images\\bg\\bg1.jpg"
         }
       ]
     }

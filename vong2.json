@@ -29,7 +29,8 @@
           "speech_id_options_D": "V2_TN_11_D.wav",
           "speech_id_options_E": "V2_TN_11_E.wav",
           "speech_id_options_F": "V2_TN_11_F.wav",
-          "speech_id_answer": "V2_TN_11_ans.wav"
+          "speech_id_answer": "V2_TN_11_ans.wav",
+          "bg_image": "images\\bg\\bg9.jpg"
         },
         {
           "cau_hoi_so": 2,
@@ -60,7 +61,8 @@
           "speech_id_options_E": "V2_TN_14_E.wav",
           "speech_id_options_F": "V2_TN_14_F.wav",
           "speech_id_options_G": "V2_TN_14_G.wav",
-          "speech_id_answer": "V2_TN_14_ans.wav"
+          "speech_id_answer": "V2_TN_14_ans.wav",
+          "bg_image": "images\\bg\\bg2.jpg"
         },
         {
           "cau_hoi_so": 3,
@@ -91,7 +93,8 @@
           "speech_id_options_E": "V2_TN_HA4_E.wav",
           "speech_id_options_F": "V2_TN_HA4_F.wav",
           "speech_id_options_G": "V2_TN_HA4_G.wav",
-          "speech_id_answer": "V2_TN_HA4_ans.wav"
+          "speech_id_answer": "V2_TN_HA4_ans.wav",
+          "bg_image": "images\\bg\\bg3.jpg"
         },
         {
           "cau_hoi_so": 4,
@@ -122,7 +125,8 @@
           "speech_id_options_E": "V2_TN_HA10_E.wav",
           "speech_id_options_F": "V2_TN_HA10_F.wav",
           "speech_id_options_G": "V2_TN_HA10_G.wav",
-          "speech_id_answer": "V2_TN_HA10_ans.wav"
+          "speech_id_answer": "V2_TN_HA10_ans.wav",
+          "bg_image": "images\\bg\\bg4.jpg"
         },
         {
           "cau_hoi_so": 5,
@@ -151,7 +155,8 @@
           "speech_id_options_D": "V2_TN_7_D.wav",
           "speech_id_options_E": "V2_TN_7_E.wav",
           "speech_id_options_F": "V2_TN_7_F.wav",
-          "speech_id_answer": "V2_TN_7_ans.wav"
+          "speech_id_answer": "V2_TN_7_ans.wav",
+          "bg_image": "images\\bg\\bg1.jpg"
         }
       ]    },
     "chinh_sach_phap_luat_an_toan": {
@@ -191,7 +196,8 @@
           "speech_id_options_H": "V2_TN_2_H.wav",
           "speech_id_options_I": "V2_TN_2_I.wav",
           "speech_id_options_J": "V2_TN_2_J.wav",
-          "speech_id_answer": "V2_TN_2_ans.wav"
+          "speech_id_answer": "V2_TN_2_ans.wav",
+          "bg_image": "images\\bg\\bg2.jpg"
         }
       ]
     }

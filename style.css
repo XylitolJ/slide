@@ -675,73 +675,9 @@ body, html {
 
 /* --- New Background Styles --- */
 
-/* Image Backgrounds with Overlay */
-/* Gradient Overlay (#f59e0b to white) */
-.bg-image-1-gradient {
-    background-image: linear-gradient(to bottom right, rgba(245, 158, 11, 0.7), rgba(255, 255, 255, 0.7)), url('images/bg1.jpg');
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-}
+/* --- New Background Styles --- */
 
-.bg-image-2-gradient {
-    background-image: linear-gradient(to bottom right, rgba(245, 158, 11, 0.7), rgba(255, 255, 255, 0.7)), url('images/bg2.jpg');
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-}
-
-.bg-image-3-gradient {
-    background-image: linear-gradient(to bottom right, rgba(245, 158, 11, 0.7), rgba(255, 255, 255, 0.7)), url('images/bg3.jpg');
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-}
-
-/* Diagonal Stripe Overlay (Amber - White - Amber bands) */
-.bg-image-1-stripes {
-    background-image: linear-gradient(45deg,
-                        rgba(245, 158, 11, 0.7) 0%,
-                        rgba(245, 158, 11, 0.7) 33.33%,
-                        rgba(255, 255, 255, 0.7) 33.33%,
-                        rgba(255, 255, 255, 0.7) 66.66%,
-                        rgba(245, 158, 11, 0.7) 66.66%,
-                        rgba(245, 158, 11, 0.7) 100%),
-                      url('images/bg1.jpg');
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-}
-
-.bg-image-2-stripes {
-    background-image: linear-gradient(45deg,
-                        rgba(245, 158, 11, 0.7) 0%,
-                        rgba(245, 158, 11, 0.7) 33.33%,
-                        rgba(255, 255, 255, 0.7) 33.33%,
-                        rgba(255, 255, 255, 0.7) 66.66%,
-                        rgba(245, 158, 11, 0.7) 66.66%,
-                        rgba(245, 158, 11, 0.7) 100%),
-                      url('images/bg2.jpg');
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-}
-
-.bg-image-3-stripes {
-    background-image: linear-gradient(45deg,
-                        rgba(245, 158, 11, 0.7) 0%,
-                        rgba(245, 158, 11, 0.7) 33.33%,
-                        rgba(255, 255, 255, 0.7) 33.33%,
-                        rgba(255, 255, 255, 0.7) 66.66%,
-                        rgba(245, 158, 11, 0.7) 66.66%,
-                        rgba(245, 158, 11, 0.7) 100%),
-                      url('images/bg3.jpg');
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-}
-
-/* SVG Backgrounds */
+/* Abstract and Wave Backgrounds */
 .bg-abstract {
     background: 
         url('data:image/svg+xml,<svg viewBox="0 0 1200 800" xmlns="http://www.w3.org/2000/svg"><defs><filter id="noiseFilter"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="4" stitchTiles="stitch"/><feColorMatrix type="saturate" values="0"/></filter></defs><rect width="100%" height="100%" fill="%23667eea"/><rect width="100%" height="100%" filter="url(%23noiseFilter)" opacity="0.4"/><circle cx="200" cy="150" r="80" fill="%23f093fb" opacity="0.8"/><circle cx="800" cy="200" r="120" fill="%23f5576c" opacity="0.6"/><circle cx="400" cy="400" r="100" fill="%234facfe" opacity="0.7"/><circle cx="900" cy="500" r="90" fill="%23ffecd2" opacity="0.8"/><circle cx="100" cy="600" r="70" fill="%2343e97b" opacity="0.6"/></svg>') center/cover,
@@ -783,145 +719,17 @@ body, html {
         transform: scale(1);
         box-shadow: 0 4px 15px rgba(245, 158, 11, 0.5);
     }
-    
-    /* --- New Background Styles --- */
-    
-    /* Image Backgrounds with Overlay */
-    /* Gradient Overlay (#f59e0b to white) */
-    .bg-image-4-gradient {
-        background-image: linear-gradient(to bottom right, rgba(245, 158, 11, 0.7), rgba(255, 255, 255, 0.7)), url('images/bg4.jpg');
-        background-size: cover;
-        background-position: center;
-        background-repeat: no-repeat;
-    }
-    
-    .bg-image-5-gradient {
-        background-image: linear-gradient(to bottom right, rgba(245, 158, 11, 0.7), rgba(255, 255, 255, 0.7)), url('images/bg5.png');
-        background-size: cover;
-        background-position: center;
-        background-repeat: no-repeat;
-    }
-    
-    .bg-image-6-gradient {
-        background-image: linear-gradient(to bottom right, rgba(245, 158, 11, 0.7), rgba(255, 255, 255, 0.7)), url('images/bg6.png');
-        background-size: cover;
-        background-position: center;
-        background-repeat: no-repeat;
-    }
-    
-    .bg-image-7-gradient {
-        background-image: linear-gradient(to bottom right, rgba(245, 158, 11, 0.7), rgba(255, 255, 255, 0.7)), url('images/bg7.jpg');
-        background-size: cover;
-        background-position: center;
-        background-repeat: no-repeat;
-    }
-    
-    .bg-image-8-gradient {
-        background-image: linear-gradient(to bottom right, rgba(245, 158, 11, 0.7), rgba(255, 255, 255, 0.7)), url('images/bg8.jpg');
-        background-size: cover;
-        background-position: center;
-        background-repeat: no-repeat;
-    }
-    
-    .bg-image-9-gradient {
-        background-image: linear-gradient(to bottom right, rgba(245, 158, 11, 0.7), rgba(255, 255, 255, 0.7)), url('images/bg9.jpg');
-        background-size: cover;
-        background-position: center;
-        background-repeat: no-repeat;
-    }
-    
-    /* Diagonal Stripe Overlay (Amber - White - Amber bands) */
-    .bg-image-4-stripes {
-        background-image: linear-gradient(45deg,
-                            rgba(245, 158, 11, 0.7) 0%,
-                            rgba(245, 158, 11, 0.7) 33.33%,
-                            rgba(255, 255, 255, 0.7) 33.33%,
-                            rgba(255, 255, 255, 0.7) 66.66%,
-                            rgba(245, 158, 11, 0.7) 66.66%,
-                            rgba(245, 158, 11, 0.7) 100%),
-                          url('images/bg4.jpg');
-        background-size: cover;
-        background-position: center;
-        background-repeat: no-repeat;
-    }
-    
-    .bg-image-5-stripes {
-        background-image: linear-gradient(45deg,
-                            rgba(245, 158, 11, 0.7) 0%,
-                            rgba(245, 158, 11, 0.7) 33.33%,
-                            rgba(255, 255, 255, 0.7) 33.33%,
-                            rgba(255, 255, 255, 0.7) 66.66%,
-                            rgba(245, 158, 11, 0.7) 66.66%,
-                            rgba(245, 158, 11, 0.7) 100%),
-                          url('images/bg5.png');
-        background-size: cover;
-        background-position: center;
-        background-repeat: no-repeat;
-    }
-    
-    .bg-image-6-stripes {
-        background-image: linear-gradient(45deg,
-                            rgba(245, 158, 11, 0.7) 0%,
-                            rgba(245, 158, 11, 0.7) 33.33%,
-                            rgba(255, 255, 255, 0.7) 33.33%,
-                            rgba(255, 255, 255, 0.7) 66.66%,
-                            rgba(245, 158, 11, 0.7) 66.66%,
-                            rgba(245, 158, 11, 0.7) 100%),
-                          url('images/bg6.png');
-        background-size: cover;
-        background-position: center;
-        background-repeat: no-repeat;
-    }
-    
-    .bg-image-7-stripes {
-        background-image: linear-gradient(45deg,
-                            rgba(245, 158, 11, 0.7) 0%,
-                            rgba(245, 158, 11, 0.7) 33.33%,
-                            rgba(255, 255, 255, 0.7) 33.33%,
-                            rgba(255, 255, 255, 0.7) 66.66%,
-                            rgba(245, 158, 11, 0.7) 66.66%,
-                            rgba(245, 158, 11, 0.7) 100%),
-                          url('images/bg7.jpg');
-        background-size: cover;
-        background-position: center;
-        background-repeat: no-repeat;
-    }
-    
-    .bg-image-8-stripes {
-        background-image: linear-gradient(45deg,
-                            rgba(245, 158, 11, 0.7) 0%,
-                            rgba(245, 158, 11, 0.7) 33.33%,
-                            rgba(255, 255, 255, 0.7) 33.33%,
-                            rgba(255, 255, 255, 0.7) 66.66%,
-                            rgba(245, 158, 11, 0.7) 66.66%,
-                            rgba(245, 158, 11, 0.7) 100%),
-                          url('images/bg8.jpg');
-        background-size: cover;
-        background-position: center;
-        background-repeat: no-repeat;
-    }
-    
-    .bg-image-9-stripes {
-        background-image: linear-gradient(45deg,
-                            rgba(245, 158, 11, 0.7) 0%,
-                            rgba(245, 158, 11, 0.7) 33.33%,
-                            rgba(255, 255, 255, 0.7) 33.33%,
-                            rgba(255, 255, 255, 0.7) 66.66%,
-                            rgba(245, 158, 11, 0.7) 66.66%,
-                            rgba(245, 158, 11, 0.7) 100%),
-                          url('images/bg9.jpg');
-        background-size: cover;
-        background-position: center;
-        background-repeat: no-repeat;
-    }
-*/
-
-/* --- External SVG Backgrounds --- */
+  /* --- External SVG Backgrounds --- */
 .bg-svg-pattern-1 {
     background-image: url('images/svg (1).svg');
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
+}
+
+.bg-stripes {
+    background-image: linear-gradient(45deg, rgba(255, 255, 255, 0.1) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.1) 50%, rgba(255, 255, 255, 0.1) 75%, transparent 75%, transparent);
+    background-size: 20px 20px;
 }
 
 .bg-svg-pattern-2 {
