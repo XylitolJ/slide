@@ -72,7 +72,31 @@ document.addEventListener('DOMContentLoaded', () => {    // URL Parameter handli
                 console.error("Web Audio API is not supported in this browser.", e);
                 progressTextEl.textContent = "Lỗi: Trình duyệt không hỗ trợ âm thanh.";
             }
+        }    }
+
+    // --- Emergency Exit Function ---
+    function emergencyExitToPage3() {
+        console.log('Emergency exit function called');
+        // Stop all audio
+        if (currentAudio && currentAudio.source) {
+            currentAudio.source.stop();
+            currentAudio.source.disconnect();
+            currentAudio = null;
         }
+        
+        // Clear all timers
+        if (timerInterval) {
+            clearInterval(timerInterval);
+            timerInterval = null;
+        }
+        
+        // Reset all flags
+        sequenceInProgress = false;
+        answerShown = false;
+        
+        // Navigate to page3.html
+        console.log('Navigating to page3.html');
+        window.location.href = 'page3.html';
     }
 
     // --- Audio Playback ---
@@ -502,32 +526,8 @@ document.addEventListener('DOMContentLoaded', () => {    // URL Parameter handli
         }
     } catch (error) {
         console.error("Could not load questions:", error);
-        progressTextEl.textContent = "Lỗi tải dữ liệu câu hỏi. Vui lòng kiểm tra file vong3.json và console.";
-    }
+        progressTextEl.textContent = "Lỗi tải dữ liệu câu hỏi. Vui lòng kiểm tra file vong3.json và console.";    }
     
-    // --- Emergency Exit Function ---
-    function emergencyExitToPage3() {
-        // Stop all audio
-        if (currentAudio && currentAudio.source) {
-            currentAudio.source.stop();
-            currentAudio.source.disconnect();
-            currentAudio = null;
-        }
-        
-        // Clear all timers
-        if (timerInterval) {
-            clearInterval(timerInterval);
-            timerInterval = null;
-        }
-        
-        // Reset all flags
-        sequenceInProgress = false;
-        answerShown = false;
-        
-        // Navigate to page3.html
-        window.location.href = 'page3.html';
-    }
-
     startSequenceBtn.addEventListener('click', startQuestionSequence);
     nextQuestionBtn.addEventListener('click', nextQuestion);
     
@@ -535,9 +535,8 @@ document.addEventListener('DOMContentLoaded', () => {    // URL Parameter handli
         backToThuchanhBtn.addEventListener('click', () => {
             window.location.href = 'thuchanh.html';
         });
-    }
-
-    document.addEventListener('keydown', (e) => {
+    }    document.addEventListener('keydown', (e) => {
+        console.log('Key pressed:', e.key); // Debug log
         if (e.key === 'ArrowRight') {
             // Phím mũi tên phải: next câu hỏi hoặc về page3.html nếu ở câu cuối
             e.preventDefault();
@@ -557,9 +556,9 @@ document.addEventListener('DOMContentLoaded', () => {    // URL Parameter handli
             }
         } else if (e.key.toLowerCase() === 'd' && e.ctrlKey) { // Ctrl+D to toggle debug
             e.preventDefault();
-            console.log("Debug mode toggle attempted. Reload page if DEBUG_MODE constant was changed.");
-        } else if (e.key.toLowerCase() === 'q') { // Q key for emergency exit
+            console.log("Debug mode toggle attempted. Reload page if DEBUG_MODE constant was changed.");        } else if (e.key.toLowerCase() === 'q') { // Q key for emergency exit
             e.preventDefault();
+            console.log('Q key pressed - Emergency exit activated');
             emergencyExitToPage3();
         }
     });
