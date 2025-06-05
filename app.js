@@ -716,28 +716,60 @@ document.addEventListener('DOMContentLoaded', () => {
             renderSlide(allQuestions[currentQuestionIndex]);
         } else {
             // If we're at the first question, navigate back to page3.html
-            window.location.href = 'page3.html';
+            window.location.href = 'page3.html';        }
+    }
+
+    // --- Update Round Info Display ---
+    function updateRoundInfoDisplay() {
+        if (roundInfoDisplayEl && contestRoundsData.length > 0) {
+            // Find Round 1 information
+            const round1Info = contestRoundsData.find(round => round.vong === 1);
+            if (round1Info) {
+                roundInfoDisplayEl.innerHTML = `
+                    <h3><i class="fas fa-trophy mr-2"></i>Vòng ${round1Info.vong}: ${round1Info.ten_vong}</h3>
+                    <p>Thời gian trả lời: ${round1Info.thoi_gian_tra_loi} | Thang điểm: ${round1Info.thang_diem} điểm</p>
+                `;
+            } else {
+                // Fallback if round info not found
+                roundInfoDisplayEl.innerHTML = `
+                    <h3><i class="fas fa-trophy mr-2"></i>Vòng 1: Chính sách pháp luật, PCCC và Y tế</h3>
+                    <p>Thời gian trả lời: 30 giây/câu | Thang điểm: 10 điểm</p>
+                `;
+            }
         }
     }
 
     // --- Load Data ---
     async function loadQuestions() {
         try {
-            const response = await fetch('ngan_hang_cau_hoi.json');
+            // Load Round 1 questions from vong1.json
+            const response = await fetch('vong1.json');
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
             const data = await response.json();
 
-            // Store contest rounds data
-            if (data.quy_che_thi && Array.isArray(data.quy_che_thi.cac_vong_thi)) {
-                contestRoundsData = data.quy_che_thi.cac_vong_thi;
+            // Load contest rules data for round information
+            let contestRulesData = null;
+            try {
+                const rulesResponse = await fetch('quyche.json');
+                if (rulesResponse.ok) {
+                    const rulesData = await rulesResponse.json();
+                    contestRulesData = rulesData.quy_che_thi;
+                    if (contestRulesData && Array.isArray(contestRulesData.cac_vong_thi)) {
+                        contestRoundsData = contestRulesData.cac_vong_thi;
+                    }
+                }
+            } catch (rulesError) {
+                console.warn("Could not load contest rules:", rulesError);
             }
             
-            // Flatten questions from all categories and types
-            const questionBank = data.ngan_hang_cau_hoi;
-            for (const categoryKey in questionBank) {
-                const category = questionBank[categoryKey];
+            // Extract questions from vong1.json structure
+            const vong1Data = data.vong_1;
+            allQuestions = [];
+            
+            for (const categoryKey in vong1Data) {
+                const category = vong1Data[categoryKey];
                 for (const typeKey in category) {
                     if (Array.isArray(category[typeKey])) {
                         allQuestions = allQuestions.concat(category[typeKey]);
@@ -746,13 +778,15 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             if (allQuestions.length > 0) {
+                // Update round info display
+                updateRoundInfoDisplay();
                 renderSlide(allQuestions[currentQuestionIndex]);
             } else {
-                progressTextEl.textContent = "Không tìm thấy câu hỏi nào trong file JSON.";
+                progressTextEl.textContent = "Không tìm thấy câu hỏi nào trong file vong1.json.";
             }
         } catch (error) {
             console.error("Could not load questions:", error);
-            progressTextEl.textContent = "Lỗi tải dữ liệu câu hỏi. Vui lòng kiểm tra file JSON và console.";
+            progressTextEl.textContent = "Lỗi tải dữ liệu câu hỏi. Vui lòng kiểm tra file vong1.json và console.";
         }
     }
 
