@@ -284,53 +284,50 @@
         }        function showQuestionDetails(question) {
             // Create modal to show question details
             const modal = document.createElement('div');
-            modal.className = 'fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-6';
-            
-            modal.innerHTML = `
-                <div class="bg-white rounded-xl max-w-3xl w-full max-h-[85vh] overflow-hidden shadow-2xl">
-                    <div class="bg-gradient-to-r from-blue-600 to-blue-700 text-white p-6">
+            modal.className = 'fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-6';              modal.innerHTML = `
+                <div class="bg-white rounded-2xl w-[95vw] h-[95vh] overflow-hidden shadow-2xl" style="max-width: 95vw; max-height: 95vh;">
+                    <div class="bg-gradient-to-r from-blue-600 to-blue-700 text-white p-10 h-auto">
                         <div class="flex justify-between items-start">
-                            <div>
-                                <h3 class="text-2xl font-bold mb-2">Câu ${question.cau_hoi_so}</h3>
-                                <div class="flex items-center space-x-4 text-blue-100">
-                                    <span class="flex items-center">
-                                        <i class="fas fa-tag mr-2"></i>
+                            <div class="flex-1">
+                                <h3 class="text-6xl font-bold mb-4">Câu ${question.cau_hoi_so}</h3>
+                                <div class="flex items-center space-x-8 text-blue-100 text-2xl flex-wrap">
+                                    <span class="flex items-center mb-2">
+                                        <i class="fas fa-tag mr-3 text-2xl"></i>
                                         ${question.category}
                                     </span>
-                                    <span class="flex items-center">
-                                        <i class="fas fa-bookmark mr-2"></i>
+                                    <span class="flex items-center mb-2">
+                                        <i class="fas fa-bookmark mr-3 text-2xl"></i>
                                         ${question.subcategory}
                                     </span>
-                                    <span class="flex items-center">
-                                        <i class="fas fa-clipboard-list mr-2"></i>
+                                    <span class="flex items-center mb-2">
+                                        <i class="fas fa-clipboard-list mr-3 text-2xl"></i>
                                         ${question.type_question}
                                     </span>
                                 </div>
                             </div>
                             <button onclick="this.closest('.fixed').remove()" 
-                                    class="text-blue-100 hover:text-white text-2xl p-2 rounded-full hover:bg-blue-800 transition-colors">
+                                    class="text-blue-100 hover:text-white text-4xl p-4 rounded-full hover:bg-blue-800 transition-colors ml-4">
                                 <i class="fas fa-times"></i>
                             </button>
                         </div>
                     </div>
                     
-                    <div class="p-6 overflow-y-auto" style="max-height: calc(85vh - 140px);">
-                        <div class="bg-gray-50 rounded-lg p-4 mb-4">
-                            <h4 class="font-semibold text-gray-800 mb-2 flex items-center">
-                                <i class="fas fa-question-circle mr-2 text-blue-600"></i>
+                    <div class="p-10 overflow-y-auto" style="height: calc(95vh - 220px);">
+                        <div class="bg-gray-50 rounded-xl p-8 mb-8 border-l-8 border-blue-500">
+                            <h4 class="font-bold text-gray-800 mb-6 flex items-center text-3xl">
+                                <i class="fas fa-question-circle mr-4 text-blue-600 text-4xl"></i>
                                 Nội dung câu hỏi:
                             </h4>
-                            <p class="text-gray-800 leading-relaxed text-lg">${question.cau_hoi}</p>
-                        </div>
-                          ${question.speech_id_question ? `
-                            <div class="bg-blue-50 rounded-lg p-4 border border-blue-200">
-                                <h4 class="font-semibold text-blue-800 mb-3 flex items-center">
-                                    <i class="fas fa-volume-up mr-2"></i>
+                            <p class="text-gray-800 leading-relaxed text-4xl font-semibold" style="line-height: 1.6;">${question.cau_hoi}</p>
+                        </div>                          ${question.speech_id_question ? `
+                            <div class="bg-blue-50 rounded-xl p-8 border-2 border-blue-200 border-l-8 border-l-blue-500">
+                                <h4 class="font-bold text-blue-800 mb-6 flex items-center text-3xl">
+                                    <i class="fas fa-volume-up mr-4 text-3xl"></i>
                                     Nghe câu hỏi:
                                 </h4>
-                                <audio controls class="w-full" id="questionAudio" preload="auto">
+                                <audio controls class="w-full h-16 text-lg" id="questionAudio" preload="auto" style="height: 4rem;">
                                     <source src="speech/${question.speech_id_question}" type="audio/wav">
-                                    <p class="text-red-600 text-sm mt-2">Trình duyệt của bạn không hỗ trợ phát audio.</p>
+                                    <p class="text-red-600 text-xl mt-4">Trình duyệt của bạn không hỗ trợ phát audio.</p>
                                 </audio>
                             </div>
                         ` : ''}
@@ -352,9 +349,8 @@
                             // Show a message to user if autoplay is blocked
                             const audioContainer = audioElement.closest('.bg-blue-50');
                             if (audioContainer) {
-                                const autoplayNotice = document.createElement('div');
-                                autoplayNotice.className = 'mt-2 text-sm text-orange-600 bg-orange-50 p-2 rounded border border-orange-200';
-                                autoplayNotice.innerHTML = '<i class="fas fa-info-circle mr-1"></i>Nhấn nút phát để nghe câu hỏi (trình duyệt chặn tự động phát)';
+                                const autoplayNotice = document.createElement('div');                                autoplayNotice.className = 'mt-4 text-xl text-orange-600 bg-orange-50 p-4 rounded-lg border-2 border-orange-200';
+                                autoplayNotice.innerHTML = '<i class="fas fa-info-circle mr-2 text-xl"></i>Nhấn nút phát để nghe câu hỏi (trình duyệt chặn tự động phát)';
                                 audioContainer.appendChild(autoplayNotice);
                             }
                         });
