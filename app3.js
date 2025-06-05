@@ -1,5 +1,4 @@
-document.addEventListener('DOMContentLoaded', () => {
-    // URL Parameter handling for direct question access
+document.addEventListener('DOMContentLoaded', () => {    // URL Parameter handling for direct question access
     function getUrlParameters() {
         const urlParams = new URLSearchParams(window.location.search);
         return {
@@ -8,16 +7,17 @@ document.addEventListener('DOMContentLoaded', () => {
             subcategory: urlParams.get('subcategory'),
             autoStart: urlParams.get('autoStart') === 'true'
         };
-    }
-
-    // Function to find question by ID and category
-    function findQuestionById(questionId, category) {
+    }// Function to find question by ID and category
+    function findQuestionById(questionId, category, subcategory) {
         if (!allQuestions || !questionId) return null;
         
-        return allQuestions.find(q => 
-            q.cau_hoi_so.toString() === questionId.toString() && 
-            (category ? q.category.toLowerCase().includes(category.toLowerCase()) : true)
-        );
+        return allQuestions.find(q => {
+            const matchesId = q.cau_hoi_so.toString() === questionId.toString();
+            const matchesCategory = category ? q.category.toLowerCase().includes(category.toLowerCase()) : true;
+            const matchesSubcategory = subcategory ? q.subcategory.toLowerCase().includes(subcategory.toLowerCase()) : true;
+            
+            return matchesId && matchesCategory && matchesSubcategory;
+        });
     }
 
     // DOM Elements
@@ -459,13 +459,16 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (backToThuchanhBtn) {
                         backToThuchanhBtn.style.display = 'block';
                     }
-                    
-                    const specificQuestion = findQuestionById(urlParams.questionId, urlParams.category);
+                      const specificQuestion = findQuestionById(urlParams.questionId, urlParams.category, urlParams.subcategory);
                     if (specificQuestion) {
-                        // Find the index of the specific question
-                        currentQuestionIndex = allQuestions.findIndex(q => 
-                            q.cau_hoi_so.toString() === urlParams.questionId.toString()
-                        );
+                        // Find the index of the specific question using both ID and category/subcategory
+                        currentQuestionIndex = allQuestions.findIndex(q => {
+                            const matchesId = q.cau_hoi_so.toString() === urlParams.questionId.toString();
+                            const matchesCategory = urlParams.category ? q.category.toLowerCase().includes(urlParams.category.toLowerCase()) : true;
+                            const matchesSubcategory = urlParams.subcategory ? q.subcategory.toLowerCase().includes(urlParams.subcategory.toLowerCase()) : true;
+                            
+                            return matchesId && matchesCategory && matchesSubcategory;
+                        });
                         if (currentQuestionIndex === -1) {
                             currentQuestionIndex = 0;
                         }

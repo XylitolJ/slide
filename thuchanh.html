@@ -209,7 +209,7 @@
                 </div>
             </div>            <!-- Back Button -->
             <div class="fixed bottom-6 left-6">
-                <button onclick="window.history.back()" 
+                <button onclick="window.location.href='page3.html'" 
                         class="bg-white/95 backdrop-blur-sm text-blue-700 px-6 py-3 rounded-full font-semibold shadow-lg hover:bg-white hover:shadow-xl transition-all duration-300 border border-blue-200">
                     <i class="fas fa-arrow-left mr-2"></i>
                     Quay lại
@@ -226,13 +226,12 @@
         </div>
     </div>
 
-    <script>
-        // Global state variables
+    <script>        // Global state variables
         let questionsData = null;
         let currentAudio = null;
         
         // Display mode control - true for modal popup, false for slide presentation
-        let displayMode = true; // Default to modal mode
+        let displayMode = localStorage.getItem('thuchanh-display-mode') === 'false' ? false : true; // Load from localStorage or default to modal
         
         // DOM Elements
         const modalModeBtn = document.getElementById('modalModeBtn');
@@ -243,10 +242,12 @@
             modalModeBtn.addEventListener('click', () => setDisplayMode(true));
             slideModeBtn.addEventListener('click', () => setDisplayMode(false));
         }
-        
-        // Set display mode and update UI
+          // Set display mode and update UI
         function setDisplayMode(isModalMode) {
             displayMode = isModalMode;
+            
+            // Save to localStorage
+            localStorage.setItem('thuchanh-display-mode', isModalMode.toString());
             
             // Update button styles
             if (isModalMode) {
@@ -264,11 +265,12 @@
                     : '<i class="fas fa-desktop mr-2"></i>Nhấn câu hỏi để mở slide presentation';
             }
         }
-        
-        // Initialize when DOM is loaded
+          // Initialize when DOM is loaded
         document.addEventListener('DOMContentLoaded', () => {
             initializeModeToggle();
-        });        // Load and display questions
+            // Set initial UI state based on saved mode
+            setDisplayMode(displayMode);
+        });// Load and display questions
         fetch('vong3.json')
             .then(response => response.json())
             .then(data => {
