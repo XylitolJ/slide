@@ -454,11 +454,15 @@
                 3: 'from-purple-500 to-purple-600'
             };
             return gradients[roundNumber] || 'from-blue-500 to-blue-600';
-        }
-
-        // Load and display questions for selected round
+        }        // Load and display questions for selected round
         async function loadQuestions(roundNumber) {
             try {
+                // Special handling for round 3 - redirect to thuchanh.html
+                if (roundNumber === 3) {
+                    window.location.href = 'thuchanh.html';
+                    return;
+                }
+                
                 const questionContainer = document.getElementById('questionContainer');
                 const roundSelection = document.getElementById('roundSelection');
                 
