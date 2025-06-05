@@ -358,15 +358,12 @@ document.addEventListener('DOMContentLoaded', () => {
             currentAudio.source.disconnect();
             currentAudio = null;
         }
-        if (timerInterval) clearInterval(timerInterval);
-
-        if (currentQuestionIndex < allQuestions.length - 1) {
+        if (timerInterval) clearInterval(timerInterval);        if (currentQuestionIndex < allQuestions.length - 1) {
             currentQuestionIndex++;
             renderSlide(allQuestions[currentQuestionIndex]);
         } else {
-            progressTextEl.innerHTML = '<span class="font-bold text-yellow-300">Đã hết câu hỏi. Cảm ơn đã tham gia!</span>';
-            startSequenceBtn.disabled = true;
-            nextQuestionBtn.style.display = 'none';
+            // If we're at the last question, navigate back to page3.html
+            window.location.href = 'page3.html';
         }
     }
 
@@ -454,17 +451,15 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     startSequenceBtn.addEventListener('click', startQuestionSequence);
-    nextQuestionBtn.addEventListener('click', nextQuestion);
-
-    document.addEventListener('keydown', (e) => {
+    nextQuestionBtn.addEventListener('click', nextQuestion);    document.addEventListener('keydown', (e) => {
         if (e.key === 'ArrowRight') {
-            if (!nextQuestionBtn.disabled && nextQuestionBtn.style.display !== 'none') {
-                nextQuestion();
-            }
+            // Phím mũi tên phải: next câu hỏi hoặc về page3.html nếu ở câu cuối
+            e.preventDefault();
+            nextQuestion();
         } else if (e.key === 'ArrowLeft') {
-            if (!sequenceInProgress) {
-                previousQuestion();
-            }
+            // Phím mũi tên trái: previous câu hỏi hoặc về page3.html nếu ở câu đầu
+            e.preventDefault();
+            previousQuestion();
         } else if (e.key === ' ' || e.key === 'Spacebar') {
             e.preventDefault();
             if (!startSequenceBtn.disabled) {
@@ -479,6 +474,6 @@ document.addEventListener('DOMContentLoaded', () => {
             e.preventDefault();
             console.log("Debug mode toggle attempted. Reload page if DEBUG_MODE constant was changed.");
         }
-    });    // --- Initialization ---
+    });// --- Initialization ---
     loadQuestions();
 });
