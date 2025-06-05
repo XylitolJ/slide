@@ -1,7 +1,6 @@
 {
   "vong_3": {
     "y_te": {
-      "so_cap_cuu": {
         "thuc_hanh": [
           {
             "cau_hoi_so": 1,
@@ -344,7 +343,6 @@
             "speech_id_question": "V3_YT_SC_LT_15.wav"
           }
         ]
-      }
     },
     "phong_chay_chua_chay": {
       "ly_thuyet_thuc_hanh": [
