@@ -578,6 +578,9 @@
                 if (questionContainer.style.display !== 'none') {
                     document.getElementById('backToRounds').click();
                 }
+            } else if (e.key.toLowerCase() === 'q') {
+                // Stay on page3.html (already here)
+                console.log('Already on page3.html');
             }
         });// Initialize on page load
         document.addEventListener('DOMContentLoaded', loadRounds);

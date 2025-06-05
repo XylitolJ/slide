@@ -773,6 +773,29 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    // --- Emergency Exit Function ---
+    function emergencyExitToPage3() {
+        // Stop all audio
+        if (currentAudio && currentAudio.source) {
+            currentAudio.source.stop();
+            currentAudio.source.disconnect();
+            currentAudio = null;
+        }
+        
+        // Clear all timers
+        if (timerInterval) {
+            clearInterval(timerInterval);
+            timerInterval = null;
+        }
+        
+        // Reset all flags
+        sequenceInProgress = false;
+        answerShown = false;
+        
+        // Navigate to page3.html
+        window.location.href = 'page3.html';
+    }
+
     // --- Event Listeners ---
     startSequenceBtn.addEventListener('click', startQuestionSequence);
     showAnswerBtn.addEventListener('click', displayAnswer);
@@ -795,13 +818,15 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!showAnswerBtn.disabled && showAnswerBtn.style.display !== 'none') {
                 e.preventDefault();
                 displayAnswer();
-            }
-        } else if (e.key.toLowerCase() === 'd' && e.ctrlKey) { // Ctrl+D to toggle debug
+            }        } else if (e.key.toLowerCase() === 'd' && e.ctrlKey) { // Ctrl+D to toggle debug
             e.preventDefault();
             // This is a simple way to toggle, for a real app, you might want a UI element
             // For now, this requires manual change of DEBUG_MODE constant and reload.
             // Or, we can make DEBUG_MODE a let and toggle it here, then re-render.
             console.log("Debug mode toggle attempted. Reload page if DEBUG_MODE constant was changed.");
+        } else if (e.key.toLowerCase() === 'q') { // Q key for emergency exit
+            e.preventDefault();
+            emergencyExitToPage3();
         }
     });
 

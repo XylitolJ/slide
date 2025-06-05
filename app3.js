@@ -497,27 +497,51 @@ document.addEventListener('DOMContentLoaded', () => {    // URL Parameter handli
                     questionSectionEl.style.display = 'block';
                     questionSectionEl.style.opacity = '1';
                     questionSectionEl.style.visibility = 'visible';
-                }
-            } else {
-                progressTextEl.textContent = "Không tìm thấy câu hỏi nào trong file vong3.json.";
-            }} catch (error) {
-            console.error("Could not load questions:", error);
-            progressTextEl.textContent = "Lỗi tải dữ liệu câu hỏi. Vui lòng kiểm tra file vong3.json và console.";
+                }        } else {
+            progressTextEl.textContent = "Không tìm thấy câu hỏi nào trong file vong3.json.";
         }
-    }    startSequenceBtn.addEventListener('click', startQuestionSequence);
+    } catch (error) {
+        console.error("Could not load questions:", error);
+        progressTextEl.textContent = "Lỗi tải dữ liệu câu hỏi. Vui lòng kiểm tra file vong3.json và console.";
+    }
+    
+    // --- Emergency Exit Function ---
+    function emergencyExitToPage3() {
+        // Stop all audio
+        if (currentAudio && currentAudio.source) {
+            currentAudio.source.stop();
+            currentAudio.source.disconnect();
+            currentAudio = null;
+        }
+        
+        // Clear all timers
+        if (timerInterval) {
+            clearInterval(timerInterval);
+            timerInterval = null;
+        }
+        
+        // Reset all flags
+        sequenceInProgress = false;
+        answerShown = false;
+        
+        // Navigate to page3.html
+        window.location.href = 'page3.html';
+    }
+
+    startSequenceBtn.addEventListener('click', startQuestionSequence);
     nextQuestionBtn.addEventListener('click', nextQuestion);
     
-    // Back to thuchanh.html button functionality
-    if (backToThuchanhBtn) {
+    // Back to thuchanh.html button functionality    if (backToThuchanhBtn) {
         backToThuchanhBtn.addEventListener('click', () => {
             window.location.href = 'thuchanh.html';
         });
-    }document.addEventListener('keydown', (e) => {
+    }
+
+    document.addEventListener('keydown', (e) => {
         if (e.key === 'ArrowRight') {
             // Phím mũi tên phải: next câu hỏi hoặc về page3.html nếu ở câu cuối
             e.preventDefault();
-            nextQuestion();
-        } else if (e.key === 'ArrowLeft') {
+            nextQuestion();        } else if (e.key === 'ArrowLeft') {
             // Phím mũi tên trái: previous câu hỏi hoặc về page3.html nếu ở câu đầu
             e.preventDefault();
             previousQuestion();
@@ -534,7 +558,12 @@ document.addEventListener('DOMContentLoaded', () => {    // URL Parameter handli
         } else if (e.key.toLowerCase() === 'd' && e.ctrlKey) { // Ctrl+D to toggle debug
             e.preventDefault();
             console.log("Debug mode toggle attempted. Reload page if DEBUG_MODE constant was changed.");
+        } else if (e.key.toLowerCase() === 'q') { // Q key for emergency exit
+            e.preventDefault();
+            emergencyExitToPage3();
         }
-    });// --- Initialization ---
+    });
+
+    // --- Initialization ---
     loadQuestions();
 });

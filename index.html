@@ -139,11 +139,13 @@
 
         <!-- Bottom decoration -->
         <div class="absolute bottom-0 left-0 right-0 h-2 bg-gradient-to-r from-red-600 via-yellow-500 to-blue-600"></div>
-    </div>
-    <script>
+    </div>    <script>
         document.addEventListener('keydown', function(event) {
             if (event.key === 'ArrowRight') {
                 window.location.href = 'page2.html';
+            } else if (event.key.toLowerCase() === 'q') {
+                // Emergency exit to page3.html
+                window.location.href = 'page3.html';
             }
         });
     </script>

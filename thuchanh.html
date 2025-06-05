@@ -443,15 +443,16 @@
             modal.querySelector('.bg-white').addEventListener('click', (e) => {
                 e.stopPropagation();
             });
-        }
-
-        // Add keyboard navigation
+        }        // Add keyboard navigation
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
                 const modal = document.querySelector('.fixed.inset-0');
                 if (modal) {
                     modal.remove();
                 }
+            } else if (e.key.toLowerCase() === 'q') {
+                // Emergency exit to page3.html
+                window.location.href = 'page3.html';
             }
         });
     </script>
