@@ -1,8 +1,30 @@
 document.addEventListener('DOMContentLoaded', () => {
+    // URL Parameter handling for direct question access
+    function getUrlParameters() {
+        const urlParams = new URLSearchParams(window.location.search);
+        return {
+            questionId: urlParams.get('questionId'),
+            category: urlParams.get('category'),
+            subcategory: urlParams.get('subcategory'),
+            autoStart: urlParams.get('autoStart') === 'true'
+        };
+    }
+
+    // Function to find question by ID and category
+    function findQuestionById(questionId, category) {
+        if (!allQuestions || !questionId) return null;
+        
+        return allQuestions.find(q => 
+            q.cau_hoi_so.toString() === questionId.toString() && 
+            (category ? q.category.toLowerCase().includes(category.toLowerCase()) : true)
+        );
+    }
+
     // DOM Elements
     const slideContainer = document.getElementById('slideContainer');
     // Header elements
-    const headerEl = document.querySelector('.header');    const questionNumberEl = document.getElementById('newQuestionNumber');
+    const headerEl = document.querySelector('.header');    
+    const questionNumberEl = document.getElementById('newQuestionNumber');
     const questionCategoryEl = document.getElementById('newQuestionCategory');
     const timerCircleEl = document.getElementById('timerProgress');
     const timerTextEl = document.getElementById('timer');
@@ -15,6 +37,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const progressTextEl = document.getElementById('progressText');
     const startSequenceBtn = document.getElementById('startSequenceBtn');
     const nextQuestionBtn = document.getElementById('nextQuestionBtn');
+    const backToThuchanhBtn = document.getElementById('backToThuchanhBtn');
     const footerProgressBarEl = document.getElementById('footerProgressBar');
     const roundInfoDisplayEl = document.getElementById('roundInfoDisplay');
     const DELAY_NO_SPEECH_ANSWER = 1000; // ms to wait after showing answer if no speech
@@ -429,9 +452,40 @@ document.addEventListener('DOMContentLoaded', () => {
                         allQuestions = allQuestions.concat(category[typeKey]);
                     }
                 }
-            }
-
-            if (allQuestions.length > 0) {
+            }            if (allQuestions.length > 0) {                // Check if we need to load a specific question from URL parameters
+                const urlParams = getUrlParameters();
+                if (urlParams.questionId) {
+                    // Show back button when coming from thuchanh.html
+                    if (backToThuchanhBtn) {
+                        backToThuchanhBtn.style.display = 'block';
+                    }
+                    
+                    const specificQuestion = findQuestionById(urlParams.questionId, urlParams.category);
+                    if (specificQuestion) {
+                        // Find the index of the specific question
+                        currentQuestionIndex = allQuestions.findIndex(q => 
+                            q.cau_hoi_so.toString() === urlParams.questionId.toString()
+                        );
+                        if (currentQuestionIndex === -1) {
+                            currentQuestionIndex = 0;
+                        }
+                        
+                        // Update progress text for direct question loading
+                        progressTextEl.textContent = `Đã tải câu hỏi ${urlParams.questionId}. ${urlParams.autoStart ? 'Tự động bắt đầu...' : 'Nhấn "Bắt đầu" để bắt đầu.'}`;
+                        
+                        // Auto-start if requested
+                        if (urlParams.autoStart) {
+                            setTimeout(() => {
+                                startQuestionSequence();
+                            }, 1000);
+                        }
+                    } else {
+                        progressTextEl.textContent = `Không tìm thấy câu hỏi ${urlParams.questionId}. Hiển thị câu hỏi đầu tiên.`;
+                    }
+                } else {
+                    progressTextEl.textContent = `Đã tải ${allQuestions.length} câu hỏi thực hành. Nhấn "Bắt đầu" để bắt đầu.`;
+                }
+                
                 // Update round info display
                 updateRoundInfoDisplay();
                 renderSlide(allQuestions[currentQuestionIndex]);
@@ -441,17 +495,21 @@ document.addEventListener('DOMContentLoaded', () => {
                     questionSectionEl.style.opacity = '1';
                     questionSectionEl.style.visibility = 'visible';
                 }
-                progressTextEl.textContent = `Đã tải ${allQuestions.length} câu hỏi thực hành. Nhấn "Bắt đầu" để bắt đầu.`;
             } else {
                 progressTextEl.textContent = "Không tìm thấy câu hỏi nào trong file vong3.json.";
-            }        } catch (error) {
+            }} catch (error) {
             console.error("Could not load questions:", error);
             progressTextEl.textContent = "Lỗi tải dữ liệu câu hỏi. Vui lòng kiểm tra file vong3.json và console.";
         }
-    }
-
-    startSequenceBtn.addEventListener('click', startQuestionSequence);
-    nextQuestionBtn.addEventListener('click', nextQuestion);    document.addEventListener('keydown', (e) => {
+    }    startSequenceBtn.addEventListener('click', startQuestionSequence);
+    nextQuestionBtn.addEventListener('click', nextQuestion);
+    
+    // Back to thuchanh.html button functionality
+    if (backToThuchanhBtn) {
+        backToThuchanhBtn.addEventListener('click', () => {
+            window.location.href = 'thuchanh.html';
+        });
+    }document.addEventListener('keydown', (e) => {
         if (e.key === 'ArrowRight') {
             // Phím mũi tên phải: next câu hỏi hoặc về page3.html nếu ở câu cuối
             e.preventDefault();
