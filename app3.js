@@ -35,34 +35,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const DEFAULT_TIME_PER_QUESTION = 300; // Default 5 minutes for Round 3 practical exams
     let audioContext;
     let currentAudio = null;
-    let sequenceInProgress = false;
-    let currentBackgroundIndex = 0; // For cycling backgrounds
-
+    let sequenceInProgress = false;    // Background styles for cleanup purposes only
     const backgroundStyles = [
-        'bg-default',               // The original gradient
-        'bg-image-1-gradient',
-        'bg-image-1-stripes',
-        'bg-image-2-gradient',
-        'bg-image-2-stripes',
-        'bg-image-3-gradient',
-        'bg-image-3-stripes',
-        'bg-image-4-gradient',
-        'bg-image-4-stripes',
-        'bg-image-5-gradient',
-        'bg-image-5-stripes',
-        'bg-image-6-gradient',
-        'bg-image-6-stripes',
-        'bg-image-7-gradient',
-        'bg-image-7-stripes',
-        'bg-image-8-gradient',
-        'bg-image-8-stripes',
-        'bg-image-9-gradient',
-        'bg-image-9-stripes',
-        'bg-abstract',
-        'bg-wave',
-        'bg-svg-pattern-1',
-        'bg-svg-pattern-2',
-        'bg-svg-pattern-3'
+        'bg-default', 'bg-abstract', 'bg-wave', 'bg-svg-pattern-1', 'bg-svg-pattern-2', 'bg-svg-pattern-3'
     ];
 
     // Initialize AudioContext
@@ -166,26 +141,56 @@ document.addEventListener('DOMContentLoaded', () => {
         
         // Add the new theme class
         slideContainer.classList.add(themeClass);
-    }
-
-    function renderSlide(questionData) {
+    }    function renderSlide(questionData) {
         console.log('--- renderSlide START ---', questionData);
         currentQuestionData = questionData;
         sequenceInProgress = false;
 
-        // Define the background style sequence
-        const backgroundSequence = [
-            'bg-default', // Default gradient
-            'bg-image-1-gradient', 'bg-image-2-gradient', 'bg-image-3-gradient', 'bg-image-4-gradient', 'bg-image-5-gradient', 'bg-image-6-gradient', 'bg-image-7-gradient', 'bg-image-8-gradient', 'bg-image-9-gradient', // Image + gradient
-            'bg-image-1-stripes', 'bg-image-2-stripes', 'bg-image-3-stripes', 'bg-image-4-stripes', 'bg-image-5-stripes', 'bg-image-6-stripes', 'bg-image-7-stripes', 'bg-image-8-stripes', 'bg-image-9-stripes', // Image + stripes
-            'bg-abstract', 'bg-wave', 'bg-svg-pattern-1', 'bg-svg-pattern-2', 'bg-svg-pattern-3' // Patterns
-        ];
+        // Function to apply background image with gradient or stripes overlay
+        const applyBgImage = (bgImage, style) => {
+            if (slideContainer) {
+                // Clear any existing background styles
+                slideContainer.classList.remove(...backgroundStyles);
+                slideContainer.style.backgroundImage = '';
+                slideContainer.classList.remove('bg-gradient-overlay', 'bg-stripes-overlay');
+                
+                // Convert Windows path to web path
+                const webPath = bgImage.replace(/\\/g, '/');
+                
+                if (style === 'gradient') {
+                    // Apply gradient overlay with the specified image
+                    slideContainer.style.backgroundImage = `linear-gradient(to bottom right, rgba(245, 158, 11, 0.7), rgba(255, 255, 255, 0.7)), url('${webPath}')`;
+                } else if (style === 'stripes') {
+                    // Apply diagonal stripes overlay with the specified image
+                    slideContainer.style.backgroundImage = `linear-gradient(45deg,
+                        rgba(245, 158, 11, 0.7) 0%,
+                        rgba(245, 158, 11, 0.7) 33.33%,
+                        rgba(255, 255, 255, 0.7) 33.33%,
+                        rgba(255, 255, 255, 0.7) 66.66%,
+                        rgba(245, 158, 11, 0.7) 66.66%,
+                        rgba(245, 158, 11, 0.7) 100%),
+                        url('${webPath}')`;
+                }
+                
+                slideContainer.style.backgroundSize = 'cover';
+                slideContainer.style.backgroundPosition = 'center';
+                slideContainer.style.backgroundRepeat = 'no-repeat';
+            }
+        };
 
-        // Apply the next background in sequence
-        const backgroundClass = backgroundSequence[currentBackgroundIndex % backgroundSequence.length];
-        slideContainer.classList.remove(...backgroundStyles);
-        slideContainer.classList.add(backgroundClass);
-        currentBackgroundIndex++;
+        // Apply background based on bg_image property
+        if (slideContainer) {
+            if (questionData.bg_image) {
+                // Use bg_image from JSON data and alternate between gradient and stripes
+                const imageStyle = currentQuestionIndex % 2 === 0 ? 'gradient' : 'stripes';
+                applyBgImage(questionData.bg_image, imageStyle);
+            } else {
+                // Fallback to default background if no bg_image is specified
+                slideContainer.classList.remove(...backgroundStyles);
+                slideContainer.style.backgroundImage = '';
+                slideContainer.classList.add('bg-default');
+            }
+        }
 
         // Reset UI state
         progressTextEl.textContent = '';
