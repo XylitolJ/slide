@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hiển thị Câu hỏi Lý thuyết</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        * {
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .quiz-container {
+            min-height: 100vh;
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            position: relative;
+        }
+        
+        .quiz-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, 
+                rgba(30, 58, 138, 0.85) 0%, 
+                rgba(59, 130, 246, 0.75) 25%, 
+                rgba(96, 165, 250, 0.65) 50%, 
+                rgba(219, 234, 254, 0.55) 75%, 
+                rgba(255, 255, 255, 0.45) 100%);
+        }
+        
+        .quiz-overlay.theme-bqvc {
+            background: linear-gradient(135deg, 
+                rgba(30, 64, 175, 0.85) 0%, 
+                rgba(59, 130, 246, 0.75) 50%, 
+                rgba(191, 219, 254, 0.65) 100%);
+        }
+        
+        .quiz-overlay.theme-bv {
+            background: linear-gradient(135deg, 
+                rgba(6, 78, 59, 0.85) 0%, 
+                rgba(16, 185, 129, 0.75) 50%, 
+                rgba(167, 243, 208, 0.65) 100%);
+        }
+        
+        .quiz-overlay.theme-ktm {
+            background: linear-gradient(135deg, 
+                rgba(120, 53, 15, 0.85) 0%, 
+                rgba(217, 119, 6, 0.75) 50%, 
+                rgba(253, 230, 138, 0.65) 100%);
+        }
+        
+        .floating-particles {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 1;
+        }
+        
+        .particle {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            animation: float 20s infinite linear;
+        }
+        
+        .particle:nth-child(1) { width: 10px; height: 10px; left: 10%; animation-delay: 0s; }
+        .particle:nth-child(2) { width: 15px; height: 15px; left: 20%; animation-delay: 5s; }
+        .particle:nth-child(3) { width: 8px; height: 8px; left: 30%; animation-delay: 10s; }
+        .particle:nth-child(4) { width: 12px; height: 12px; left: 40%; animation-delay: 15s; }
+        .particle:nth-child(5) { width: 6px; height: 6px; left: 50%; animation-delay: 2s; }
+        .particle:nth-child(6) { width: 14px; height: 14px; left: 60%; animation-delay: 7s; }
+        .particle:nth-child(7) { width: 9px; height: 9px; left: 70%; animation-delay: 12s; }
+        .particle:nth-child(8) { width: 11px; height: 11px; left: 80%; animation-delay: 17s; }
+        
+        @keyframes float {
+            0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(-100px) rotate(360deg); opacity: 0; }
+        }
+        
+        .question-card {
+            backdrop-filter: blur(15px);
+            background: rgba(255, 255, 255, 0.95);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+        
+        .option-card {
+            transition: all 0.3s ease;
+            cursor: pointer;
+            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.9);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .option-card:hover {
+            transform: translateX(8px) scale(1.02);
+            background: rgba(255, 255, 255, 0.95);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+        
+        .option-card.selected {
+            background: rgba(59, 130, 246, 0.1);
+            border-color: #3b82f6;
+            transform: translateX(8px);
+        }
+        
+        .navigation-btn {
+            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            transition: all 0.3s ease;
+        }
+        
+        .navigation-btn:hover {
+            background: rgba(255, 255, 255, 1);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+        
+        .progress-bar {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            background: linear-gradient(90deg, #10b981, #34d399);
+            height: 100%;
+            transition: width 0.5s ease;
+            border-radius: 10px;
+        }
+        
+        .quiz-image {
+            max-height: 500px;
+            object-fit: contain;
+            border-radius: 12px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+        
+        .slide-in {
+            animation: slideInFromTop 0.8s ease-out;
+        }
+        
+        @keyframes slideInFromTop {
+            0% { transform: translateY(-30px); opacity: 0; }
+            100% { transform: translateY(0); opacity: 1; }
+        }
+        
+        .fade-in {
+            animation: fadeIn 1s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            0% { opacity: 0; }
+            100% { opacity: 1; }
+        }
+        
+        .score-card {
+            backdrop-filter: blur(15px);
+            background: rgba(255, 255, 255, 0.95);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            animation: scoreShow 0.8s ease-out;
+        }
+        
+        @keyframes scoreShow {
+            0% { transform: scale(0.8); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <div id="quizContainer" class="quiz-container">
+        <!-- Background particles -->
+        <div class="floating-particles">
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+        </div>
+        
+        <!-- Theme overlay -->
+        <div id="quizOverlay" class="quiz-overlay"></div>
+        
+        <!-- Quiz content -->
+        <div class="relative z-10 min-h-screen flex flex-col">
+            <!-- Header -->
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <button onclick="goBack()" class="navigation-btn px-6 py-3 rounded-lg font-semibold text-gray-700">
+                        <i class="fas fa-arrow-left mr-2"></i>
+                        Quay lại
+                    </button>
+                    
+                    <div class="text-center">
+                        <h1 id="quizTitle" class="text-2xl font-bold text-white text-shadow">Lý thuyết</h1>
+                        <p id="quizSubtitle" class="text-white/80">Đề số 1</p>
+                    </div>
+                    
+                    <button onclick="showResults()" class="navigation-btn px-6 py-3 rounded-lg font-semibold text-gray-700">
+                        <i class="fas fa-chart-bar mr-2"></i>
+                        Kết quả
+                    </button>
+                </div>
+                
+                <!-- Progress bar -->
+                <div class="progress-bar h-3 mb-4">
+                    <div id="progressFill" class="progress-fill" style="width: 0%"></div>
+                </div>
+                
+                <div class="text-center text-white/90">
+                    <span id="questionCounter">Câu 1 / 3</span>
+                </div>
+            </div>
+            
+            <!-- Main quiz area -->
+            <div class="flex-1 px-6 pb-6">
+                <div id="questionCard" class="question-card rounded-2xl p-8 max-w-6xl mx-auto slide-in">
+                    <!-- Question content will be populated here -->
+                </div>
+            </div>
+            
+            <!-- Navigation buttons -->
+            <div class="p-6">
+                <div class="flex justify-between max-w-6xl mx-auto">
+                    <button id="prevBtn" onclick="previousQuestion()" class="navigation-btn px-8 py-4 rounded-lg font-semibold text-gray-700 disabled:opacity-50" disabled>
+                        <i class="fas fa-chevron-left mr-2"></i>
+                        Câu trước
+                    </button>
+                    
+                    <button id="nextBtn" onclick="nextQuestion()" class="navigation-btn px-8 py-4 rounded-lg font-semibold text-gray-700">
+                        Câu tiếp theo
+                        <i class="fas fa-chevron-right ml-2"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Results Modal -->
+    <div id="resultsModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="score-card rounded-2xl p-8 max-w-md mx-4 text-center">
+            <div class="mb-6">
+                <i id="resultIcon" class="fas fa-trophy text-6xl text-yellow-500"></i>
+            </div>
+            <h2 class="text-3xl font-bold text-gray-800 mb-4">Kết quả bài thi</h2>
+            <div class="mb-6">
+                <div class="text-5xl font-bold text-blue-600 mb-2" id="scoreDisplay">0/3</div>
+                <p class="text-gray-600" id="scorePercentage">0%</p>
+            </div>
+            <div class="space-y-2 mb-6">
+                <div class="flex justify-between">
+                    <span class="text-gray-600">Tổng số câu:</span>
+                    <span id="totalQuestions" class="font-semibold">3</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-gray-600">Câu đúng:</span>
+                    <span id="correctAnswers" class="font-semibold text-green-600">0</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-gray-600">Câu sai:</span>
+                    <span id="wrongAnswers" class="font-semibold text-red-600">0</span>
+                </div>
+            </div>
+            <div class="space-y-3">
+                <button onclick="retakeQuiz()" class="w-full bg-blue-500 hover:bg-blue-600 text-white py-3 rounded-lg font-semibold">
+                    <i class="fas fa-redo mr-2"></i>
+                    Làm lại
+                </button>
+                <button onclick="closeResults()" class="w-full bg-gray-500 hover:bg-gray-600 text-white py-3 rounded-lg font-semibold">
+                    <i class="fas fa-times mr-2"></i>
+                    Đóng
+                </button>
+                <button onclick="goToTheoryList()" class="w-full bg-green-500 hover:bg-green-600 text-white py-3 rounded-lg font-semibold">
+                    <i class="fas fa-list mr-2"></i>
+                    Chọn đề khác
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        let quizData = null;
+        let currentQuestionIndex = 0;
+        let questions = [];
+        let userAnswers = {};
+        let selectedCategory = '';
+        let selectedSet = 1;
+
+        // Quiz set definitions (based on your requirements)
+        const quizSets = {
+            ly_thuyet_boc_xep_bao_quan_van_chuyen: {
+                1: ['V2_BXV_LT_1', 'V2_BXV_HA_8', 'V2_BXV_HA_9'],
+                2: ['V2_BXV_LT_8', 'V2_BXV_HA_11', 'V2_BXV_HA_10'],
+                3: ['V2_BXV_LT_2', 'V2_BXV_HA_3', 'V2_BXV_HA_4'],
+                4: ['V2_BXV_LT_3', 'V2_BXV_HA_5', 'V2_BXV_HA_6'],
+                5: ['V2_BXV_LT_4', 'V2_BXV_HA_7', 'V2_BXV_HA_12']
+            },
+            ly_thuyet_bao_ve: {
+                1: ['V2_BV_LT_1', 'V2_BV_HA_1', 'V2_BV_HA_2'],
+                2: ['V2_BV_LT_2', 'V2_BV_HA_3', 'V2_BV_HA_4'],
+                3: ['V2_BV_LT_3', 'V2_BV_HA_5', 'V2_BV_HA_6'],
+                4: ['V2_BV_LT_4', 'V2_BV_HA_7', 'V2_BV_HA_8'],
+                5: ['V2_BV_LT_5', 'V2_BV_HA_9', 'V2_BV_HA_1'],
+                6: ['V2_BV_LT_6', 'V2_BV_HA_2', 'V2_BV_HA_3'],
+                7: ['V2_BV_LT_7', 'V2_BV_HA_4', 'V2_BV_HA_5'],
+                8: ['V2_BV_LT_8', 'V2_BV_HA_6', 'V2_BV_HA_7']
+            },
+            ly_thuyet_khai_thac_mo: {
+                1: ['V2_KTM_LT_1', 'V2_KTM_HA_1', 'V2_KTM_HA_2'],
+                2: ['V2_KTM_LT_2', 'V2_KTM_HA_3', 'V2_KTM_HA_4'],
+                3: ['V2_KTM_LT_3', 'V2_KTM_HA_5', 'V2_KTM_HA_6'],
+                4: ['V2_KTM_LT_4', 'V2_KTM_HA_7', 'V2_KTM_HA_8'],
+                5: ['V2_KTM_LT_5', 'V2_KTM_HA_9', 'V2_KTM_HA_10'],
+                6: ['V2_KTM_LT_6', 'V2_KTM_HA_11', 'V2_KTM_HA_12'],
+                7: ['V2_KTM_LT_7', 'V2_KTM_HA_13', 'V2_KTM_HA_14'],
+                8: ['V2_KTM_LT_8', 'V2_KTM_HA_15', 'V2_KTM_HA_1']
+            }
+        };
+
+        // Initialize quiz
+        async function initializeQuiz() {
+            try {
+                // Get selected category and set from localStorage
+                selectedCategory = localStorage.getItem('selectedCategory') || 'ly_thuyet_boc_xep_bao_quan_van_chuyen';
+                selectedSet = parseInt(localStorage.getItem('selectedSet')) || 1;
+
+                // Load quiz data
+                const response = await fetch('vong2.json');
+                quizData = await response.json();
+
+                // Get question IDs for this set
+                const questionIds = quizSets[selectedCategory][selectedSet] || [];
+                
+                // Build questions array from the quiz data
+                questions = [];
+                const allQuestions = quizData.vong_2[selectedCategory].trac_nghiem;
+                
+                questionIds.forEach(id => {
+                    const question = allQuestions.find(q => q.id === id);
+                    if (question) {
+                        questions.push(question);
+                    }
+                });
+
+                if (questions.length === 0) {
+                    alert('Không tìm thấy câu hỏi cho bộ đề này!');
+                    goBack();
+                    return;
+                }
+
+                // Set up UI
+                setupUI();
+                displayQuestion();
+
+            } catch (error) {
+                console.error('Error loading quiz:', error);
+                alert('Có lỗi xảy ra khi tải dữ liệu!');
+                goBack();
+            }
+        }
+
+        // Setup UI based on category
+        function setupUI() {
+            const container = document.getElementById('quizContainer');
+            const overlay = document.getElementById('quizOverlay');
+            const title = document.getElementById('quizTitle');
+            const subtitle = document.getElementById('quizSubtitle');
+            
+            // Set background image from first question
+            if (questions[0] && questions[0].bg_image) {
+                container.style.backgroundImage = `url('${questions[0].bg_image}')`;
+            }
+            
+            // Set theme class
+            if (selectedCategory.includes('boc_xep_bao_quan_van_chuyen')) {
+                overlay.classList.add('theme-bqvc');
+                title.textContent = 'LÝ THUYẾT BẢO QUẢN, BỐC XẾP, VẬN CHUYỂN VLNCN';
+            } else if (selectedCategory.includes('bao_ve')) {
+                overlay.classList.add('theme-bv');
+                title.textContent = 'LÝ THUYẾT BẢO VỆ';
+            } else if (selectedCategory.includes('khai_thac_mo')) {
+                overlay.classList.add('theme-ktm');
+                title.textContent = 'LÝ THUYẾT KHAI THÁC MỎ';
+            }
+            
+            subtitle.textContent = `Đề số ${selectedSet}`;
+            
+            // Update question counter
+            document.getElementById('totalQuestions').textContent = questions.length;
+        }
+
+        // Display current question
+        function displayQuestion() {
+            const question = questions[currentQuestionIndex];
+            const questionCard = document.getElementById('questionCard');
+            
+            // Update progress
+            updateProgress();
+            
+            // Update background if question has different bg_image
+            if (question.bg_image) {
+                document.getElementById('quizContainer').style.backgroundImage = `url('${question.bg_image}')`;
+            }
+            
+            let questionHTML = `
+                <div class="mb-8">
+                    <div class="flex items-center justify-between mb-4">
+                        <span class="bg-blue-500 text-white px-4 py-2 rounded-lg font-semibold">
+                            <i class="fas fa-question-circle mr-2"></i>
+                            Câu ${currentQuestionIndex + 1}
+                        </span>
+                        <span class="text-gray-500 text-sm">${question.subcategory}</span>
+                    </div>
+                    <h2 class="text-2xl font-bold text-gray-800 leading-relaxed">${question.cau_hoi}</h2>
+                </div>
+            `;
+            
+            // Add image if present
+            if (question.question_image === "Yes" && question.image_id) {
+                questionHTML += `
+                    <div class="mb-8 text-center">
+                        <img src="${question.image_id}" alt="Hình ảnh câu hỏi" class="quiz-image mx-auto">
+                    </div>
+                `;
+            }
+            
+            // Add options
+            questionHTML += '<div class="space-y-4">';
+            const options = Object.keys(question.phuong_an);
+            
+            options.forEach(optionKey => {
+                const isSelected = userAnswers[currentQuestionIndex] && userAnswers[currentQuestionIndex].includes(optionKey);
+                questionHTML += `
+                    <div class="option-card ${isSelected ? 'selected' : ''} p-4 rounded-lg" onclick="selectOption('${optionKey}')">
+                        <div class="flex items-center">
+                            <div class="option-char option-char-${optionKey} w-8 h-8 rounded-full flex items-center justify-center text-white font-bold mr-4">
+                                ${optionKey.toUpperCase()}
+                            </div>
+                            <span class="text-gray-800 flex-1">${question.phuong_an[optionKey]}</span>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            questionHTML += '</div>';
+            
+            // Add audio controls if available
+            if (question.speech_id_question) {
+                questionHTML += `
+                    <div class="mt-8 p-4 bg-blue-50 rounded-lg">
+                        <h4 class="font-semibold text-blue-800 mb-3">
+                            <i class="fas fa-volume-up mr-2"></i>
+                            Nghe câu hỏi:
+                        </h4>
+                        <audio controls class="w-full">
+                            <source src="speech/${question.speech_id_question}" type="audio/wav">
+                            Trình duyệt của bạn không hỗ trợ phát audio.
+                        </audio>
+                    </div>
+                `;
+            }
+            
+            questionCard.innerHTML = questionHTML;
+            
+            // Update navigation buttons
+            updateNavigationButtons();
+        }
+
+        // Select option
+        function selectOption(optionKey) {
+            const question = questions[currentQuestionIndex];
+            
+            if (!userAnswers[currentQuestionIndex]) {
+                userAnswers[currentQuestionIndex] = [];
+            }
+            
+            // Check if multiple answers are allowed
+            const isMultipleChoice = Array.isArray(question.dap_an_dung) && question.dap_an_dung.length > 1;
+            
+            if (isMultipleChoice) {
+                // Toggle selection for multiple choice
+                const index = userAnswers[currentQuestionIndex].indexOf(optionKey);
+                if (index > -1) {
+                    userAnswers[currentQuestionIndex].splice(index, 1);
+                } else {
+                    userAnswers[currentQuestionIndex].push(optionKey);
+                }
+            } else {
+                // Single choice
+                userAnswers[currentQuestionIndex] = [optionKey];
+            }
+            
+            // Refresh display
+            displayQuestion();
+        }
+
+        // Update progress bar
+        function updateProgress() {
+            const progress = ((currentQuestionIndex + 1) / questions.length) * 100;
+            document.getElementById('progressFill').style.width = `${progress}%`;
+            document.getElementById('questionCounter').textContent = `Câu ${currentQuestionIndex + 1} / ${questions.length}`;
+        }
+
+        // Update navigation buttons
+        function updateNavigationButtons() {
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            
+            prevBtn.disabled = currentQuestionIndex === 0;
+            
+            if (currentQuestionIndex === questions.length - 1) {
+                nextBtn.textContent = 'Hoàn thành';
+                nextBtn.innerHTML = '<i class="fas fa-check mr-2"></i>Hoàn thành';
+            } else {
+                nextBtn.innerHTML = 'Câu tiếp theo<i class="fas fa-chevron-right ml-2"></i>';
+            }
+        }
+
+        // Navigation functions
+        function previousQuestion() {
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                displayQuestion();
+            }
+        }
+
+        function nextQuestion() {
+            if (currentQuestionIndex < questions.length - 1) {
+                currentQuestionIndex++;
+                displayQuestion();
+            } else {
+                showResults();
+            }
+        }
+
+        // Calculate score
+        function calculateScore() {
+            let correct = 0;
+            
+            questions.forEach((question, index) => {
+                const userAnswer = userAnswers[index] || [];
+                const correctAnswer = Array.isArray(question.dap_an_dung) ? question.dap_an_dung : [question.dap_an_dung];
+                
+                // Check if arrays are equal
+                if (userAnswer.length === correctAnswer.length && 
+                    userAnswer.every(answer => correctAnswer.includes(answer))) {
+                    correct++;
+                }
+            });
+            
+            return correct;
+        }
+
+        // Show results
+        function showResults() {
+            const correct = calculateScore();
+            const total = questions.length;
+            const percentage = Math.round((correct / total) * 100);
+            
+            document.getElementById('scoreDisplay').textContent = `${correct}/${total}`;
+            document.getElementById('scorePercentage').textContent = `${percentage}%`;
+            document.getElementById('correctAnswers').textContent = correct;
+            document.getElementById('wrongAnswers').textContent = total - correct;
+            
+            // Update icon based on score
+            const resultIcon = document.getElementById('resultIcon');
+            if (percentage >= 80) {
+                resultIcon.className = 'fas fa-trophy text-6xl text-yellow-500';
+            } else if (percentage >= 60) {
+                resultIcon.className = 'fas fa-medal text-6xl text-gray-400';
+            } else {
+                resultIcon.className = 'fas fa-times-circle text-6xl text-red-500';
+            }
+            
+            document.getElementById('resultsModal').classList.remove('hidden');
+        }
+
+        // Modal functions
+        function closeResults() {
+            document.getElementById('resultsModal').classList.add('hidden');
+        }
+
+        function retakeQuiz() {
+            currentQuestionIndex = 0;
+            userAnswers = {};
+            closeResults();
+            displayQuestion();
+        }
+
+        function goToTheoryList() {
+            window.location.href = 'lythuyet.html';
+        }
+
+        function goBack() {
+            window.location.href = 'lythuyet.html';
+        }
+
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', initializeQuiz);
+
+        // Keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'ArrowLeft') {
+                previousQuestion();
+            } else if (e.key === 'ArrowRight') {
+                nextQuestion();
+            } else if (e.key === 'Escape') {
+                if (!document.getElementById('resultsModal').classList.contains('hidden')) {
+                    closeResults();
+                }
+            }
+        });
+    </script>
+</body>
+</html>
