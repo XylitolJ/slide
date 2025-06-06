@@ -257,26 +257,22 @@
             max-height: 70vh;
             overflow: hidden;
         }
-        
-        /* Sequential display animations */
+          /* Optimized Sequential display animations */
         .sequential-hide {
             opacity: 0;
             transform: translateY(20px);
+            transition: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
         }
         
         .sequential-show {
-            animation: sequentialShow 0.8s ease-out forwards;
+            opacity: 1;
+            transform: translateY(0);
+            transition: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
         }
         
-        @keyframes sequentialShow {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+        .sequential-element {
+            transition: opacity 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94), 
+                        transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
         }
           /* Content spacing adjustments */
         .content-spacing-tight {
@@ -663,8 +659,33 @@
             if (hasImage) {
                 questionHTML += '</div>'; // Close question-with-image div
             }
+              questionCard.innerHTML = questionHTML;
             
-            questionCard.innerHTML = questionHTML;
+            // Initialize optimized sequential animations for mode 2
+            if (displayMode === 2) {
+                // Add sequential element classes and set initial state with optimized timing
+                requestAnimationFrame(() => {
+                    const questionText = document.getElementById('questionText');
+                    const questionImage = document.getElementById('questionImage');
+                    const optionElements = document.querySelectorAll('.option-display');
+                    
+                    // Add transition classes for smooth animations
+                    if (questionText) {
+                        questionText.classList.add('sequential-element');
+                    }
+                    
+                    if (questionImage) {
+                        questionImage.classList.add('sequential-element');
+                    }
+                    
+                    optionElements.forEach(el => {
+                        el.classList.add('sequential-element');
+                    });
+                    
+                    // Force reflow to ensure classes are applied
+                    void questionCard.offsetHeight;
+                });
+            }
             
             // Start audio based on display mode
             if (displayMode === 1) {
@@ -675,22 +696,21 @@
                 startSequentialAudio(question);
             }
         }
-        
-        // Sequential audio display mode - content appears synchronized with audio
+          // Sequential audio display mode - content appears synchronized with audio (OPTIMIZED)
         function startSequentialAudio(question) {
             stopAllAudio(); // Stop any currently playing audio
             
             audioQueue = [];
             let sequenceIndex = 0;
             
-            // Show question first
+            // Show question first with optimized timing
             setTimeout(() => {
                 const questionText = document.getElementById('questionText');
                 if (questionText) {
                     questionText.classList.remove('sequential-hide');
                     questionText.classList.add('sequential-show');
                 }
-            }, 500);
+            }, 150); // Reduced from 100ms for better visual flow
             
             // Add question audio if available
             if (question.speech_id_question) {
@@ -700,13 +720,14 @@
                     description: 'Đọc câu hỏi',
                     sequence: sequenceIndex++,
                     showElement: () => {
-                        // Question is already shown, maybe show image if exists
+                        // Question is already shown, show image if exists
                         const questionImage = document.getElementById('questionImage');
                         if (questionImage) {
+                            // Use smooth transition timing
                             setTimeout(() => {
                                 questionImage.classList.remove('sequential-hide');
                                 questionImage.classList.add('sequential-show');
-                            }, 1000);
+                            }, 800); // Optimized timing for better flow
                         }
                     }
                 });
@@ -728,8 +749,11 @@
                         showElement: () => {
                             const optionElement = document.getElementById(`option-${optionKey}`);
                             if (optionElement) {
-                                optionElement.classList.remove('sequential-hide');
-                                optionElement.classList.add('sequential-show');
+                                // Use requestAnimationFrame for smooth transitions
+                                requestAnimationFrame(() => {
+                                    optionElement.classList.remove('sequential-hide');
+                                    optionElement.classList.add('sequential-show');
+                                });
                             }
                         }
                     });
@@ -861,8 +885,7 @@
                     playNextAudio();
                 }, 500);            });
         }
-        
-        // Play next audio in sequential mode with element reveal
+          // Play next audio in sequential mode with optimized element reveal
         function playNextSequentialAudio() {
             if (audioQueue.length === 0) {
                 isPlayingAudio = false;
@@ -882,12 +905,12 @@
             const statusMessage = `${audioItem.description || 'Đang phát tuần tự...'} (còn ${remainingCount})`;
             updateAudioStatus(statusMessage, true);
             
-            // Show the element before playing audio
+            // Show the element with optimized timing
             if (audioItem.showElement) {
                 audioItem.showElement();
             }
             
-            // Wait a bit for element to appear, then highlight and play audio
+            // Optimized timing for element appearance and audio sync
             setTimeout(() => {
                 highlightCurrentAudio(audioItem);
                 
@@ -903,15 +926,17 @@
                 
                 currentAudio.addEventListener('ended', () => {
                     console.log(`Sequential audio ended: ${audioItem.file}`);
-                    // Remove highlight from current item
-                    document.querySelectorAll('.audio-highlight').forEach(el => {
-                        el.classList.remove('audio-highlight');
+                    // Remove highlight from current item with smooth transition
+                    requestAnimationFrame(() => {
+                        document.querySelectorAll('.audio-highlight').forEach(el => {
+                            el.classList.remove('audio-highlight');
+                        });
                     });
                     
-                    // Longer pause between sequential segments for better comprehension
+                    // Optimized pause between sequential segments
                     setTimeout(() => {
                         playNextSequentialAudio();
-                    }, 800); // 800ms pause between sequential audio segments
+                    }, 200); // Reduced from 300ms for better flow
                 });
                 
                 currentAudio.addEventListener('error', (e) => {
@@ -923,10 +948,10 @@
                         el.classList.remove('audio-highlight');
                     });
                     
-                    // Continue to next audio on error
+                    // Continue to next audio on error with shorter delay
                     setTimeout(() => {
                         playNextSequentialAudio();
-                    }, 500);
+                    }, 300);
                 });
                 
                 // Attempt to play the audio
@@ -939,12 +964,12 @@
                         el.classList.remove('audio-highlight');
                     });
                     
-                    // Continue to next audio on play error
+                    // Continue to next audio on play error with shorter delay
                     setTimeout(() => {
                         playNextSequentialAudio();
-                    }, 500);
+                    }, 300);
                 });
-            }, 500); // Wait for element appearance animation
+            }, 300); // Reduced from 500ms for better responsiveness
         }
 
         // Enhanced highlighting for current audio being played
