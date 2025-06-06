@@ -152,12 +152,17 @@
             transition: width 0.5s ease;
             border-radius: 10px;
         }
-        
-        .quiz-image {
-            max-height: 500px;
+          .quiz-image {
+            max-height: 100%;
             object-fit: contain;
             border-radius: 12px;
             box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+        
+        .quiz-image:hover {
+            transform: scale(1.02);
         }
         
         .slide-in {
@@ -246,33 +251,11 @@
             gap: 2rem;
             align-items: start;
         }
-        
-        .question-image-fixed {
+          .question-image-fixed {
             position: sticky;
             top: 1rem;
             max-height: 70vh;
             overflow: hidden;
-        }
-          /* Display mode toggle button */
-        .display-mode-toggle {
-            position: absolute;
-            top: -3rem;
-            right: 0;
-            z-index: 50;
-            backdrop-filter: blur(10px);
-            background: rgba(255, 255, 255, 0.9);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            border-radius: 8px;
-            padding: 0.5rem 1rem;
-            transition: all 0.3s ease;
-            font-size: 0.875rem;
-            font-weight: 600;
-        }
-        
-        .display-mode-toggle:hover {
-            background: rgba(255, 255, 255, 1);
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
         }
         
         /* Sequential display animations */
@@ -295,14 +278,66 @@
                 transform: translateY(0);
             }
         }
-        
-        /* Content spacing adjustments */
+          /* Content spacing adjustments */
         .content-spacing-tight {
             gap: 1rem;
         }
         
         .content-spacing-normal {
             gap: 1.5rem;
+        }
+        
+        /* Fullscreen image modal */
+        .fullscreen-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .fullscreen-modal.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .fullscreen-modal img {
+            max-width: 95vw;
+            max-height: 95vh;
+            object-fit: contain;
+            border-radius: 8px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        }
+        
+        .fullscreen-modal .close-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 20px;
+            color: #333;
+            transition: all 0.3s ease;
+        }
+        
+        .fullscreen-modal .close-btn:hover {
+            background: white;
+            transform: scale(1.1);
         }
     </style>
 </head>
@@ -328,14 +363,9 @@
                 <!-- Progress bar -->
                 <div class="progress-bar h-3 mb-4">
                     <div id="progressFill" class="progress-fill" style="width: 0%"></div>
-                </div>                  <div class="flex justify-between items-center text-white relative">
+                </div>                <div class="flex justify-between items-center text-white relative">
                     <h1 id="quizTitle" class="text-2xl font-bold text-shadow">Lý thuyết</h1>
                     <div class="flex items-center space-x-4 relative">
-                        <!-- Display Mode Toggle -->
-                        <button id="displayModeToggle" class="display-mode-toggle text-gray-700 hover:text-blue-600" title="Chuyển đổi kiểu hiển thị">
-                            <i class="fas fa-eye mr-2"></i>
-                            <span id="displayModeText">Kiểu 1</span>
-                        </button>
                         <div id="audioStatus" class="text-sm opacity-75 hidden">
                             <i class="fas fa-volume-up mr-1"></i>
                             <span id="audioStatusText">Đang phát âm thanh...</span>
@@ -350,8 +380,7 @@
                     <!-- Question content will be populated here -->
                 </div>
             </div>
-              <!-- Footer with keyboard shortcuts -->
-            <div class="px-6 pb-4">
+              <!-- Footer with keyboard shortcuts -->            <div class="px-6 pb-4">
                 <div class="bg-black/20 backdrop-blur-sm rounded-lg p-3 text-white text-sm">
                     <div class="flex justify-center items-center space-x-6">
                         <span><kbd class="bg-white/20 px-2 py-1 rounded">←</kbd> Câu trước</span>
@@ -361,11 +390,23 @@
                         <span><kbd class="bg-white/20 px-2 py-1 rounded">S</kbd> Dừng</span>
                         <span><kbd class="bg-white/20 px-2 py-1 rounded">M</kbd> Chuyển kiểu</span>
                         <span><kbd class="bg-white/20 px-2 py-1 rounded">Q</kbd> Thoát</span>
+                        <!-- Display Mode Toggle -->
+                        <button id="displayModeToggle" class="bg-white/20 px-2 py-1 rounded text-xs hover:bg-white/30 transition-colors" title="Chuyển đổi kiểu hiển thị">
+                            <i class="fas fa-eye mr-1"></i><span id="displayModeText">Kiểu 1</span>
+                        </button>
                     </div>
                 </div>
-            </div>
-        </div>
-    </div>    <script>        /**
+            </div>        </div>
+    </div>
+      <!-- Fullscreen Image Modal -->
+    <div id="fullscreenModal" class="fullscreen-modal" onclick="closeFullscreenImage()">
+        <button class="close-btn" onclick="closeFullscreenImage()">
+            <i class="fas fa-times"></i>
+        </button>
+        <img id="fullscreenImage" src="" alt="Hình ảnh toàn màn hình" onclick="event.stopPropagation()">
+    </div>
+
+    <script>/**
          * SHOWQUIZ.HTML - ENHANCED PRESENTATION MODE
          * 
          * This is a transformed version of the interactive quiz for presentation/display purposes.
@@ -577,9 +618,8 @@
                                     <span class="text-gray-500 text-sm">${question.subcategory}</span>
                                 </div>
                                 <h2 id="questionText" class="text-2xl font-bold text-gray-800 leading-relaxed mb-6 ${displayMode === 2 ? 'sequential-hide' : ''}">${question.cau_hoi}</h2>
-                            </div>
-                            <div id="questionImage" class="text-center ${displayMode === 2 ? 'sequential-hide' : ''}">
-                                <img src="${question.image_id}" alt="Hình ảnh câu hỏi" class="quiz-image mx-auto max-w-full h-auto rounded-lg shadow-lg">
+                            </div>                            <div id="questionImage" class="text-center ${displayMode === 2 ? 'sequential-hide' : ''}">
+                                <img src="${question.image_id}" alt="Hình ảnh câu hỏi" class="quiz-image mx-auto max-w-full h-auto rounded-lg shadow-lg" onclick="openFullscreenImage('${question.image_id}')">
                             </div>
                         </div>
                         
@@ -1051,7 +1091,29 @@
                 // Start sequential audio again
                 startSequentialAudio(questions[currentQuestionIndex]);
             }
-        }// Removed unused functions: calculateScore, showResults, closeResults, retakeQuiz, goToTheoryList
+        }
+
+        // Fullscreen image functions
+        function openFullscreenImage(imageSrc) {
+            const modal = document.getElementById('fullscreenModal');
+            const fullscreenImg = document.getElementById('fullscreenImage');
+            
+            fullscreenImg.src = imageSrc;
+            modal.classList.add('active');
+            
+            // Prevent body scroll when modal is open
+            document.body.style.overflow = 'hidden';
+        }
+        
+        function closeFullscreenImage() {
+            const modal = document.getElementById('fullscreenModal');
+            modal.classList.remove('active');
+            
+            // Restore body scroll
+            document.body.style.overflow = '';
+        }
+
+        // Removed unused functions: calculateScore, showResults, closeResults, retakeQuiz, goToTheoryList
 
         function goBack() {
             window.location.href = 'lythuyet.html';
@@ -1092,11 +1154,17 @@
             } else if (e.key === 's' || e.key === 'S') {
                 e.preventDefault();
                 // Stop audio
-                stopAllAudio();
-            } else if (e.key === 'm' || e.key === 'M') {
+                stopAllAudio();            } else if (e.key === 'm' || e.key === 'M') {
                 e.preventDefault();
                 // Toggle display mode
                 document.getElementById('displayModeToggle').click();
+            } else if (e.key === 'Escape') {
+                e.preventDefault();
+                // Close fullscreen modal if open
+                const modal = document.getElementById('fullscreenModal');
+                if (modal.classList.contains('active')) {
+                    closeFullscreenImage();
+                }
             }
         });
     </script>
