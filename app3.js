@@ -1,8 +1,30 @@
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', () => {    // URL Parameter handling for direct question access
+    function getUrlParameters() {
+        const urlParams = new URLSearchParams(window.location.search);
+        return {
+            questionId: urlParams.get('questionId'),
+            category: urlParams.get('category'),
+            subcategory: urlParams.get('subcategory'),
+            autoStart: urlParams.get('autoStart') === 'true'
+        };
+    }// Function to find question by ID and category
+    function findQuestionById(questionId, category, subcategory) {
+        if (!allQuestions || !questionId) return null;
+        
+        return allQuestions.find(q => {
+            const matchesId = q.cau_hoi_so.toString() === questionId.toString();
+            const matchesCategory = category ? q.category.toLowerCase().includes(category.toLowerCase()) : true;
+            const matchesSubcategory = subcategory ? q.subcategory.toLowerCase().includes(subcategory.toLowerCase()) : true;
+            
+            return matchesId && matchesCategory && matchesSubcategory;
+        });
+    }
+
     // DOM Elements
     const slideContainer = document.getElementById('slideContainer');
     // Header elements
-    const headerEl = document.querySelector('.header');    const questionNumberEl = document.getElementById('newQuestionNumber');
+    const headerEl = document.querySelector('.header');    
+    const questionNumberEl = document.getElementById('newQuestionNumber');
     const questionCategoryEl = document.getElementById('newQuestionCategory');
     const timerCircleEl = document.getElementById('timerProgress');
     const timerTextEl = document.getElementById('timer');
@@ -15,6 +37,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const progressTextEl = document.getElementById('progressText');
     const startSequenceBtn = document.getElementById('startSequenceBtn');
     const nextQuestionBtn = document.getElementById('nextQuestionBtn');
+    const backToThuchanhBtn = document.getElementById('backToThuchanhBtn');
     const footerProgressBarEl = document.getElementById('footerProgressBar');
     const roundInfoDisplayEl = document.getElementById('roundInfoDisplay');
     const DELAY_NO_SPEECH_ANSWER = 1000; // ms to wait after showing answer if no speech
@@ -49,7 +72,31 @@ document.addEventListener('DOMContentLoaded', () => {
                 console.error("Web Audio API is not supported in this browser.", e);
                 progressTextEl.textContent = "Lỗi: Trình duyệt không hỗ trợ âm thanh.";
             }
+        }    }
+
+    // --- Emergency Exit Function ---
+    function emergencyExitToPage3() {
+        console.log('Emergency exit function called');
+        // Stop all audio
+        if (currentAudio && currentAudio.source) {
+            currentAudio.source.stop();
+            currentAudio.source.disconnect();
+            currentAudio = null;
         }
+        
+        // Clear all timers
+        if (timerInterval) {
+            clearInterval(timerInterval);
+            timerInterval = null;
+        }
+        
+        // Reset all flags
+        sequenceInProgress = false;
+        answerShown = false;
+        
+        // Navigate to page3.html
+        console.log('Navigating to page3.html');
+        window.location.href = 'page3.html';
     }
 
     // --- Audio Playback ---
@@ -429,9 +476,43 @@ document.addEventListener('DOMContentLoaded', () => {
                         allQuestions = allQuestions.concat(category[typeKey]);
                     }
                 }
-            }
-
-            if (allQuestions.length > 0) {
+            }            if (allQuestions.length > 0) {                // Check if we need to load a specific question from URL parameters
+                const urlParams = getUrlParameters();
+                if (urlParams.questionId) {
+                    // Show back button when coming from thuchanh.html
+                    if (backToThuchanhBtn) {
+                        backToThuchanhBtn.style.display = 'block';
+                    }
+                      const specificQuestion = findQuestionById(urlParams.questionId, urlParams.category, urlParams.subcategory);
+                    if (specificQuestion) {
+                        // Find the index of the specific question using both ID and category/subcategory
+                        currentQuestionIndex = allQuestions.findIndex(q => {
+                            const matchesId = q.cau_hoi_so.toString() === urlParams.questionId.toString();
+                            const matchesCategory = urlParams.category ? q.category.toLowerCase().includes(urlParams.category.toLowerCase()) : true;
+                            const matchesSubcategory = urlParams.subcategory ? q.subcategory.toLowerCase().includes(urlParams.subcategory.toLowerCase()) : true;
+                            
+                            return matchesId && matchesCategory && matchesSubcategory;
+                        });
+                        if (currentQuestionIndex === -1) {
+                            currentQuestionIndex = 0;
+                        }
+                        
+                        // Update progress text for direct question loading
+                        progressTextEl.textContent = `Đã tải câu hỏi ${urlParams.questionId}. ${urlParams.autoStart ? 'Tự động bắt đầu...' : 'Nhấn "Bắt đầu" để bắt đầu.'}`;
+                        
+                        // Auto-start if requested
+                        if (urlParams.autoStart) {
+                            setTimeout(() => {
+                                startQuestionSequence();
+                            }, 1000);
+                        }
+                    } else {
+                        progressTextEl.textContent = `Không tìm thấy câu hỏi ${urlParams.questionId}. Hiển thị câu hỏi đầu tiên.`;
+                    }
+                } else {
+                    progressTextEl.textContent = `Đã tải ${allQuestions.length} câu hỏi thực hành. Nhấn "Bắt đầu" để bắt đầu.`;
+                }
+                
                 // Update round info display
                 updateRoundInfoDisplay();
                 renderSlide(allQuestions[currentQuestionIndex]);
@@ -440,23 +521,26 @@ document.addEventListener('DOMContentLoaded', () => {
                     questionSectionEl.style.display = 'block';
                     questionSectionEl.style.opacity = '1';
                     questionSectionEl.style.visibility = 'visible';
-                }
-                progressTextEl.textContent = `Đã tải ${allQuestions.length} câu hỏi thực hành. Nhấn "Bắt đầu" để bắt đầu.`;
-            } else {
-                progressTextEl.textContent = "Không tìm thấy câu hỏi nào trong file vong3.json.";
-            }        } catch (error) {
-            console.error("Could not load questions:", error);
-            progressTextEl.textContent = "Lỗi tải dữ liệu câu hỏi. Vui lòng kiểm tra file vong3.json và console.";
+                }        } else {
+            progressTextEl.textContent = "Không tìm thấy câu hỏi nào trong file vong3.json.";
         }
-    }
-
+    } catch (error) {
+        console.error("Could not load questions:", error);
+        progressTextEl.textContent = "Lỗi tải dữ liệu câu hỏi. Vui lòng kiểm tra file vong3.json và console.";    }
+    
     startSequenceBtn.addEventListener('click', startQuestionSequence);
-    nextQuestionBtn.addEventListener('click', nextQuestion);    document.addEventListener('keydown', (e) => {
+    nextQuestionBtn.addEventListener('click', nextQuestion);
+    
+    // Back to thuchanh.html button functionality    if (backToThuchanhBtn) {
+        backToThuchanhBtn.addEventListener('click', () => {
+            window.location.href = 'thuchanh.html';
+        });
+    }    document.addEventListener('keydown', (e) => {
+        console.log('Key pressed:', e.key); // Debug log
         if (e.key === 'ArrowRight') {
             // Phím mũi tên phải: next câu hỏi hoặc về page3.html nếu ở câu cuối
             e.preventDefault();
-            nextQuestion();
-        } else if (e.key === 'ArrowLeft') {
+            nextQuestion();        } else if (e.key === 'ArrowLeft') {
             // Phím mũi tên trái: previous câu hỏi hoặc về page3.html nếu ở câu đầu
             e.preventDefault();
             previousQuestion();
@@ -472,8 +556,13 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         } else if (e.key.toLowerCase() === 'd' && e.ctrlKey) { // Ctrl+D to toggle debug
             e.preventDefault();
-            console.log("Debug mode toggle attempted. Reload page if DEBUG_MODE constant was changed.");
+            console.log("Debug mode toggle attempted. Reload page if DEBUG_MODE constant was changed.");        } else if (e.key.toLowerCase() === 'q') { // Q key for emergency exit
+            e.preventDefault();
+            console.log('Q key pressed - Emergency exit activated');
+            emergencyExitToPage3();
         }
-    });// --- Initialization ---
+    });
+
+    // --- Initialization ---
     loadQuestions();
 });

@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lý Thuyết An Toàn Vệ Sinh Viên Giỏi 2025</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>        * {
+            font-family: 'Inter', sans-serif;
+        }
+        
+        html, body {
+            height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        .main-container {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .content-wrapper {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 2rem 0;
+        }
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 25%, #60a5fa 50%, #dbeafe 75%, #ffffff 100%);
+        }
+          .theory-card {
+            transition: none;
+            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .quiz-set-btn {
+            transition: all 0.3s ease;
+        }
+        
+        .quiz-set-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .floating-particles {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 1;
+        }
+        
+        .particle {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            animation: float 20s infinite linear;
+        }
+        
+        .particle:nth-child(1) { width: 10px; height: 10px; left: 10%; animation-delay: 0s; }
+        .particle:nth-child(2) { width: 15px; height: 15px; left: 20%; animation-delay: 5s; }
+        .particle:nth-child(3) { width: 8px; height: 8px; left: 30%; animation-delay: 10s; }
+        .particle:nth-child(4) { width: 12px; height: 12px; left: 40%; animation-delay: 15s; }
+        .particle:nth-child(5) { width: 6px; height: 6px; left: 50%; animation-delay: 2s; }
+        .particle:nth-child(6) { width: 14px; height: 14px; left: 60%; animation-delay: 7s; }
+        .particle:nth-child(7) { width: 9px; height: 9px; left: 70%; animation-delay: 12s; }
+        .particle:nth-child(8) { width: 11px; height: 11px; left: 80%; animation-delay: 17s; }
+        
+        @keyframes float {
+            0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(-100px) rotate(360deg); opacity: 0; }
+        }
+        
+        .slide-in {
+            animation: slideInFromTop 1s ease-out;
+        }
+        
+        @keyframes slideInFromTop {
+            0% { transform: translateY(-50px); opacity: 0; }
+            100% { transform: translateY(0); opacity: 1; }
+        }
+        
+        .fade-in {
+            animation: fadeIn 1.5s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            0% { opacity: 0; }
+            100% { opacity: 1; }
+        }
+        
+        .theory-icon-bqvc { color: #3b82f6; }
+        .theory-icon-bv { color: #10b981; }
+        .theory-icon-ktm { color: #f59e0b; }
+        
+        .quiz-set-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container gradient-bg relative overflow-hidden">
+        <!-- Background decorative elements -->
+        <div class="floating-particles">
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+        </div>
+        
+        <!-- Decorative icons -->
+        <div class="absolute top-10 left-10 text-blue-200 opacity-20">
+            <i class="fas fa-book text-6xl"></i>
+        </div>
+        <div class="absolute bottom-10 right-10 text-green-200 opacity-20">
+            <i class="fas fa-graduation-cap text-6xl"></i>
+        </div>
+        <div class="absolute top-1/4 right-20 text-yellow-200 opacity-20">
+            <i class="fas fa-lightbulb text-4xl"></i>
+        </div>
+        <div class="absolute bottom-1/4 left-20 text-red-200 opacity-20">
+            <i class="fas fa-brain text-4xl"></i>
+        </div>        <!-- Main content -->
+        <div class="content-wrapper relative z-10">
+            <div class="container mx-auto px-6">
+            <!-- Header -->
+            <div class="text-center mb-12 slide-in">
+                <h1 class="text-5xl font-bold text-white text-shadow mb-4">
+                    <i class="fas fa-book-open mr-4"></i>
+                    LÝ THUYẾT AN TOÀN VỆ SINH VIÊN
+                </h1>
+                <p class="text-xl text-blue-100 font-semibold">
+                    Chọn chủ đề để tham gia các bộ đề lý thuyết
+                </p>
+            </div>
+
+            <!-- Theory Cards Grid -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 fade-in">
+                
+                <!-- Lý thuyết Bảo quản, Bốc xếp, Vận chuyển VLNCN -->
+                <div class="theory-card rounded-2xl p-8 text-center">
+                    <div class="mb-6">
+                        <i class="fas fa-boxes theory-icon-bqvc text-6xl"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-800 mb-4">
+                        LÝ THUYẾT BẢO QUẢN, BỐC XẾP, VẬN CHUYỂN VLNCN
+                    </h3>
+                    <p class="text-gray-600 mb-6">
+                        Kiến thức về quy định an toàn trong bảo quản, bốc xếp và vận chuyển vật liệu nổ công nghiệp
+                    </p>
+                    
+                    <!-- Quiz Sets -->
+                    <div class="quiz-set-grid">
+                        <button class="quiz-set-btn bg-blue-500 hover:bg-blue-600 text-white py-3 px-4 rounded-lg font-semibold" 
+                                onclick="startQuiz('ly_thuyet_boc_xep_bao_quan_van_chuyen', 1)">
+                            <i class="fas fa-play-circle mr-2"></i>
+                            Đề số 1
+                        </button>
+                        <button class="quiz-set-btn bg-blue-500 hover:bg-blue-600 text-white py-3 px-4 rounded-lg font-semibold" 
+                                onclick="startQuiz('ly_thuyet_boc_xep_bao_quan_van_chuyen', 2)">
+                            <i class="fas fa-play-circle mr-2"></i>
+                            Đề số 2
+                        </button>
+                        <button class="quiz-set-btn bg-blue-500 hover:bg-blue-600 text-white py-3 px-4 rounded-lg font-semibold" 
+                                onclick="startQuiz('ly_thuyet_boc_xep_bao_quan_van_chuyen', 3)">
+                            <i class="fas fa-play-circle mr-2"></i>
+                            Đề số 3
+                        </button>
+                        <button class="quiz-set-btn bg-blue-500 hover:bg-blue-600 text-white py-3 px-4 rounded-lg font-semibold" 
+                                onclick="startQuiz('ly_thuyet_boc_xep_bao_quan_van_chuyen', 4)">
+                            <i class="fas fa-play-circle mr-2"></i>
+                            Đề số 4
+                        </button>
+                        <button class="quiz-set-btn bg-blue-500 hover:bg-blue-600 text-white py-3 px-4 rounded-lg font-semibold" 
+                                onclick="startQuiz('ly_thuyet_boc_xep_bao_quan_van_chuyen', 5)">
+                            <i class="fas fa-play-circle mr-2"></i>
+                            Đề số 5
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Lý thuyết Bảo vệ -->
+                <div class="theory-card rounded-2xl p-8 text-center">
+                    <div class="mb-6">
+                        <i class="fas fa-shield-alt theory-icon-bv text-6xl"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-800 mb-4">
+                        LÝ THUYẾT BẢO VỆ
+                    </h3>
+                    <p class="text-gray-600 mb-6">
+                        Kiến thức về nội quy, quản lý an ninh và các quy định công tác bảo vệ
+                    </p>
+                    
+                    <!-- Quiz Sets -->
+                    <div class="quiz-set-grid">
+                        <button class="quiz-set-btn bg-green-500 hover:bg-green-600 text-white py-3 px-4 rounded-lg font-semibold" 
+                                onclick="startQuiz('ly_thuyet_bao_ve', 1)">
+                            <i class="fas fa-play-circle mr-2"></i>
+                            Đề số 1
+                        </button>
+                        <button class="quiz-set-btn bg-green-500 hover:bg-green-600 text-white py-3 px-4 rounded-lg font-semibold" 
+                                onclick="startQuiz('ly_thuyet_bao_ve', 2)">
+                            <i class="fas fa-play-circle mr-2"></i>
+                            Đề số 2
+                        </button>
+                        <button class="quiz-set-btn bg-green-500 hover:bg-green-600 text-white py-3 px-4 rounded-lg font-semibold" 
+                                onclick="startQuiz('ly_thuyet_bao_ve', 3)">
+                            <i class="fas fa-play-circle mr-2"></i>
+                            Đề số 3
+                        </button>
+                        <button class="quiz-set-btn bg-green-500 hover:bg-green-600 text-white py-3 px-4 rounded-lg font-semibold" 
+                                onclick="startQuiz('ly_thuyet_bao_ve', 4)">
+                            <i class="fas fa-play-circle mr-2"></i>
+                            Đề số 4
+                        </button>
+                        <button class="quiz-set-btn bg-green-500 hover:bg-green-600 text-white py-3 px-4 rounded-lg font-semibold" 
+                                onclick="startQuiz('ly_thuyet_bao_ve', 5)">
+                            <i class="fas fa-play-circle mr-2"></i>
+                            Đề số 5
+                        </button>
+                        <button class="quiz-set-btn bg-green-500 hover:bg-green-600 text-white py-3 px-4 rounded-lg font-semibold" 
+                                onclick="startQuiz('ly_thuyet_bao_ve', 6)">
+                            <i class="fas fa-play-circle mr-2"></i>
+                            Đề số 6
+                        </button>
+                        <button class="quiz-set-btn bg-green-500 hover:bg-green-600 text-white py-3 px-4 rounded-lg font-semibold" 
+                                onclick="startQuiz('ly_thuyet_bao_ve', 7)">
+                            <i class="fas fa-play-circle mr-2"></i>
+                            Đề số 7
+                        </button>
+                        <button class="quiz-set-btn bg-green-500 hover:bg-green-600 text-white py-3 px-4 rounded-lg font-semibold" 
+                                onclick="startQuiz('ly_thuyet_bao_ve', 8)">
+                            <i class="fas fa-play-circle mr-2"></i>
+                            Đề số 8
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Lý thuyết Khai thác mỏ -->
+                <div class="theory-card rounded-2xl p-8 text-center">
+                    <div class="mb-6">
+                        <i class="fas fa-mountain theory-icon-ktm text-6xl"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-800 mb-4">
+                        LÝ THUYẾT KHAI THÁC MỎ
+                    </h3>
+                    <p class="text-gray-600 mb-6">
+                        Kiến thức về an toàn nổ mìn, khai thác và các quy định kỹ thuật khai thác mỏ
+                    </p>
+                    
+                    <!-- Quiz Sets -->
+                    <div class="quiz-set-grid">
+                        <button class="quiz-set-btn bg-yellow-500 hover:bg-yellow-600 text-white py-3 px-4 rounded-lg font-semibold" 
+                                onclick="startQuiz('ly_thuyet_khai_thac_mo', 1)">
+                            <i class="fas fa-play-circle mr-2"></i>
+                            Đề số 1
+                        </button>
+                        <button class="quiz-set-btn bg-yellow-500 hover:bg-yellow-600 text-white py-3 px-4 rounded-lg font-semibold" 
+                                onclick="startQuiz('ly_thuyet_khai_thac_mo', 2)">
+                            <i class="fas fa-play-circle mr-2"></i>
+                            Đề số 2
+                        </button>
+                        <button class="quiz-set-btn bg-yellow-500 hover:bg-yellow-600 text-white py-3 px-4 rounded-lg font-semibold" 
+                                onclick="startQuiz('ly_thuyet_khai_thac_mo', 3)">
+                            <i class="fas fa-play-circle mr-2"></i>
+                            Đề số 3
+                        </button>
+                        <button class="quiz-set-btn bg-yellow-500 hover:bg-yellow-600 text-white py-3 px-4 rounded-lg font-semibold" 
+                                onclick="startQuiz('ly_thuyet_khai_thac_mo', 4)">
+                            <i class="fas fa-play-circle mr-2"></i>
+                            Đề số 4
+                        </button>
+                        <button class="quiz-set-btn bg-yellow-500 hover:bg-yellow-600 text-white py-3 px-4 rounded-lg font-semibold" 
+                                onclick="startQuiz('ly_thuyet_khai_thac_mo', 5)">
+                            <i class="fas fa-play-circle mr-2"></i>
+                            Đề số 5
+                        </button>
+                        <button class="quiz-set-btn bg-yellow-500 hover:bg-yellow-600 text-white py-3 px-4 rounded-lg font-semibold" 
+                                onclick="startQuiz('ly_thuyet_khai_thac_mo', 6)">
+                            <i class="fas fa-play-circle mr-2"></i>
+                            Đề số 6
+                        </button>
+                        <button class="quiz-set-btn bg-yellow-500 hover:bg-yellow-600 text-white py-3 px-4 rounded-lg font-semibold" 
+                                onclick="startQuiz('ly_thuyet_khai_thac_mo', 7)">
+                            <i class="fas fa-play-circle mr-2"></i>
+                            Đề số 7
+                        </button>
+                        <button class="quiz-set-btn bg-yellow-500 hover:bg-yellow-600 text-white py-3 px-4 rounded-lg font-semibold" 
+                                onclick="startQuiz('ly_thuyet_khai_thac_mo', 8)">
+                            <i class="fas fa-play-circle mr-2"></i>
+                            Đề số 8
+                        </button>
+                    </div>
+                </div>
+            </div>            <!-- Back to home button -->
+            <div class="text-center mt-12">
+                <a href="page3.html" class="inline-block bg-white text-blue-600 px-8 py-4 rounded-full font-bold text-lg hover:bg-gray-100 transition-colors duration-300 shadow-lg">
+                    <i class="fas fa-home mr-2"></i>
+                    Quay về trang chủ
+                </a>
+            </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Quiz set configurations for each category
+        const quizSets = {
+            ly_thuyet_boc_xep_bao_quan_van_chuyen: {
+                1: [], // Will be populated dynamically
+                2: [],
+                3: [],
+                4: [],
+                5: []
+            },
+            ly_thuyet_bao_ve: {
+                1: [],
+                2: [],
+                3: [],
+                4: [],
+                5: [],
+                6: [],
+                7: [],
+                8: []
+            },
+            ly_thuyet_khai_thac_mo: {
+                1: [],
+                2: [],
+                3: [],
+                4: [],
+                5: [],
+                6: [],
+                7: [],
+                8: []
+            }
+        };
+
+        // Function to start a quiz
+        function startQuiz(category, setNumber) {
+            // Store the selected category and set number in localStorage
+            localStorage.setItem('selectedCategory', category);
+            localStorage.setItem('selectedSet', setNumber);
+            
+            // Navigate to the quiz page
+            window.location.href = 'showquiz.html';
+        }
+
+        // Generate quiz sets automatically based on question availability
+        async function generateQuizSets() {
+            try {
+                const response = await fetch('vong2.json');
+                const data = await response.json();
+                
+                // Process each category
+                Object.keys(quizSets).forEach(category => {
+                    if (data.vong_2[category] && data.vong_2[category].trac_nghiem) {
+                        const questions = data.vong_2[category].trac_nghiem;
+                        
+                        // Separate theory and image questions
+                        const theoryQuestions = questions.filter(q => q.question_image === "No");
+                        const imageQuestions = questions.filter(q => q.question_image === "Yes");
+                        
+                        // Generate quiz sets (1 theory + 2 image questions per set)
+                        const maxSets = Math.min(
+                            theoryQuestions.length,
+                            Math.floor(imageQuestions.length / 2),
+                            Object.keys(quizSets[category]).length
+                        );
+                        
+                        for (let i = 0; i < maxSets; i++) {
+                            const setQuestions = [];
+                            
+                            // Add 1 theory question
+                            if (theoryQuestions[i]) {
+                                setQuestions.push(theoryQuestions[i].id);
+                            }
+                            
+                            // Add 2 image questions
+                            if (imageQuestions[i * 2]) {
+                                setQuestions.push(imageQuestions[i * 2].id);
+                            }
+                            if (imageQuestions[i * 2 + 1]) {
+                                setQuestions.push(imageQuestions[i * 2 + 1].id);
+                            }
+                            
+                            quizSets[category][i + 1] = setQuestions;
+                        }
+                    }
+                });
+                
+                console.log('Generated quiz sets:', quizSets);
+            } catch (error) {
+                console.error('Error generating quiz sets:', error);
+            }
+        }        // Initialize quiz sets when page loads
+        document.addEventListener('DOMContentLoaded', generateQuizSets);
+
+        // Add keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'q' || e.key === 'Q') {
+                window.location.href = 'page3.html';
+            }
+        });
+    </script>
+</body>
+</html>

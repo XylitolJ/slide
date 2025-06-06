@@ -84,9 +84,7 @@
             position: relative;
             overflow: hidden;
         }
-        
-        .round-card:hover {
-            transform: translateY(-8px) scale(1.02);
+          .round-card:hover {
             box-shadow: 0 30px 60px rgba(0, 0, 0, 0.15);
         }
         
@@ -199,14 +197,59 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
-        
-        .fade-in {
+          .fade-in {
             animation: fadeIn 0.6s ease-in-out;
         }
         
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Enhanced slide-in animations for cards */
+        .slide-in-left {
+            animation: slideInLeft 0.8s ease-out;
+        }
+        
+        .slide-in-center {
+            animation: slideInCenter 0.8s ease-out;
+        }
+        
+        .slide-in-right {
+            animation: slideInRight 0.8s ease-out;
+        }
+        
+        @keyframes slideInLeft {
+            from { 
+                opacity: 0; 
+                transform: translateX(-100px) scale(0.9); 
+            }
+            to { 
+                opacity: 1; 
+                transform: translateX(0) scale(1); 
+            }
+        }
+        
+        @keyframes slideInCenter {
+            from { 
+                opacity: 0; 
+                transform: translateY(-100px) scale(0.9); 
+            }
+            to { 
+                opacity: 1; 
+                transform: translateY(0) scale(1); 
+            }
+        }
+        
+        @keyframes slideInRight {
+            from { 
+                opacity: 0; 
+                transform: translateX(100px) scale(0.9); 
+            }
+            to { 
+                opacity: 1; 
+                transform: translateX(0) scale(1); 
+            }
         }
     </style>
 </head>
@@ -296,14 +339,13 @@
                 roundsData.forEach((round, index) => {
                     const roundCard = createRoundCard(round, index + 1);
                     roundSelection.appendChild(roundCard);
-                });
-
-                // Add animation delay for cards
+                });                // Add enhanced slide-in animation for cards
                 const cards = roundSelection.querySelectorAll('.round-card');
+                const animationClasses = ['slide-in-left', 'slide-in-center', 'slide-in-right'];
                 cards.forEach((card, index) => {
                     setTimeout(() => {
-                        card.classList.add('fade-in');
-                    }, index * 200);
+                        card.classList.add(animationClasses[index] || 'slide-in-center');
+                    }, index * 300);
                 });
 
             } catch (error) {
@@ -414,13 +456,22 @@
             roundIndicator.addEventListener('click', (e) => {
                 e.stopPropagation(); // Prevent triggering the card click event
                 window.location.href = `vong${roundNumber}.html`;
-            });
-
-            // Add click event for "Xem câu hỏi" button to load questions
+            });            // Add click event for "Xem câu hỏi" button with correct routing per round
             const viewQuestionsBtn = card.querySelector('.view-questions-btn');
             viewQuestionsBtn.addEventListener('click', (e) => {
                 e.stopPropagation(); // Prevent triggering the card click event
-                loadQuestions(roundNumber);
+                
+                // Route correctly based on round number
+                if (roundNumber === 1) {
+                    // Round 1: Show questions inline (current behavior)
+                    loadQuestions(roundNumber);
+                } else if (roundNumber === 2) {
+                    // Round 2: Go to lythuyet.html
+                    window.location.href = 'lythuyet.html';
+                } else if (roundNumber === 3) {
+                    // Round 3: Go to thuchanh.html
+                    window.location.href = 'thuchanh.html';
+                }
             });
 
             return card;
@@ -454,11 +505,15 @@
                 3: 'from-purple-500 to-purple-600'
             };
             return gradients[roundNumber] || 'from-blue-500 to-blue-600';
-        }
-
-        // Load and display questions for selected round
+        }        // Load and display questions for selected round
         async function loadQuestions(roundNumber) {
             try {
+                // Special handling for round 3 - redirect to thuchanh.html
+                if (roundNumber === 3) {
+                    window.location.href = 'thuchanh.html';
+                    return;
+                }
+                
                 const questionContainer = document.getElementById('questionContainer');
                 const roundSelection = document.getElementById('roundSelection');
                 
@@ -557,24 +612,28 @@
         document.getElementById('backToRounds').addEventListener('click', () => {
             document.getElementById('questionContainer').style.display = 'none';
             document.getElementById('roundSelection').style.display = 'grid';
-        });
-
-        // Keyboard navigation
+        });        // Keyboard navigation
         document.addEventListener('keydown', (e) => {
             if (e.key === 'ArrowLeft') {
                 // Navigate to page2.html
                 window.location.href = 'page2.html';
-            } else if (e.key === 'ArrowRight') {
-                // Navigate to vong1.html
-                window.location.href = 'vong1.html';
-            } else if (e.key === 'Escape') {
+            } 
+            // Right arrow key disabled to prevent accidental navigation to vong1.html
+            // else if (e.key === 'ArrowRight') {
+            //     // Navigate to vong1.html
+            //     window.location.href = 'vong1.html';
+            // } 
+            else if (e.key === 'Escape') {
                 // Back to rounds if viewing questions
                 const questionContainer = document.getElementById('questionContainer');
                 if (questionContainer.style.display !== 'none') {
                     document.getElementById('backToRounds').click();
                 }
+            } else if (e.key.toLowerCase() === 'q') {
+                // Stay on page3.html (already here)
+                console.log('Already on page3.html');
             }
-        });        // Initialize on page load
+        });// Initialize on page load
         document.addEventListener('DOMContentLoaded', loadRounds);
     </script>
 </body>

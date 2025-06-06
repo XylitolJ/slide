@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thực Hành - Hội thi ATVSV giỏi 2025</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">    <style>
+        .practice-container {
+            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 30%, #60a5fa 70%, #dbeafe 100%);
+            min-height: 100vh;
+        }
+        
+        .floating-particles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+        }
+        
+        .particle {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            animation: float 6s infinite linear;
+        }
+        
+        .particle:nth-child(1) { width: 8px; height: 8px; left: 10%; animation-delay: -1s; }
+        .particle:nth-child(2) { width: 12px; height: 12px; left: 20%; animation-delay: -2s; }
+        .particle:nth-child(3) { width: 6px; height: 6px; left: 30%; animation-delay: -3s; }
+        .particle:nth-child(4) { width: 10px; height: 10px; left: 40%; animation-delay: -4s; }
+        .particle:nth-child(5) { width: 8px; height: 8px; left: 60%; animation-delay: -1.5s; }
+        .particle:nth-child(6) { width: 14px; height: 14px; left: 70%; animation-delay: -2.5s; }
+        .particle:nth-child(7) { width: 6px; height: 6px; left: 80%; animation-delay: -3.5s; }
+        .particle:nth-child(8) { width: 10px; height: 10px; left: 90%; animation-delay: -4.5s; }
+        
+        @keyframes float {
+            0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(-100px) rotate(360deg); opacity: 0; }
+        }
+        
+        .question-button {
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: 2px solid #e5e7eb;
+            background: linear-gradient(135deg, #ffffff 0%, #f9fafb 100%);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            min-height: 100px;
+        }
+        
+        .question-button:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            border-color: #3b82f6;
+        }
+        
+        .question-button:active {
+            transform: translateY(-1px) scale(1.01);
+        }
+        
+        .section-title {
+            color: #1f2937;
+            font-weight: 800;
+        }
+        
+        .practice-icon {
+            background: linear-gradient(135deg, #7c3aed, #a855f7);
+            color: white;
+        }
+        
+        .theory-icon {
+            background: linear-gradient(135deg, #dc2626, #ef4444);
+            color: white;
+        }
+        
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            max-height: 65vh;
+            overflow-y: auto;
+            padding-right: 8px;
+        }
+        
+        .grid-container::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .grid-container::-webkit-scrollbar-track {
+            background: #f1f5f9;
+            border-radius: 10px;
+        }
+        
+        .grid-container::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+        
+        .grid-container::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+        
+        @media (max-width: 1024px) {
+            .grid-container {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 0.75rem;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .grid-container {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 0.5rem;
+                max-height: 50vh;
+            }
+            
+            .question-button {
+                min-height: 80px;
+                padding: 0.75rem;
+            }
+        }
+        
+        .section-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+    </style>
+</head>
+<body>
+    <div class="practice-container relative overflow-hidden">
+        <!-- Floating particles background -->
+        <div class="floating-particles">
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+        </div>
+
+        <div class="content-layer relative z-10 p-6">            <!-- Header -->
+            <header class="text-center mb-6">
+                <h1 class="text-4xl font-bold text-white text-shadow mb-2">
+                    <i class="fas fa-hands-helping mr-3"></i>
+                    Thực Hành - Y Tế & PCCC
+                </h1>
+                <p class="text-xl text-blue-100">Hội thi ATVSV giỏi 2025 - Công ty Công nghiệp Hóa chất mỏ Thái Nguyên</p>
+                
+                <!-- Display Mode Toggle -->
+                <div class="mt-4 flex justify-center">
+                    <div class="bg-white/95 backdrop-blur-sm rounded-full p-1 flex items-center space-x-2 shadow-lg border border-blue-200">
+                        <button id="modalModeBtn" 
+                                class="px-4 py-2 rounded-full text-sm font-semibold transition-all duration-300 bg-blue-600 text-white shadow-md">
+                            <i class="fas fa-window-maximize mr-2"></i>
+                            Modal Popup
+                        </button>                        <button id="slideModeBtn" 
+                                class="px-4 py-2 rounded-full text-sm font-semibold transition-all duration-300 text-blue-700 hover:bg-blue-50">
+                            <i class="fas fa-desktop mr-2"></i>
+                            Slide Presentation
+                        </button>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Main Content Grid -->
+            <div class="grid lg:grid-cols-2 gap-6 max-w-7xl mx-auto">
+                <!-- Left Side: Y Tế Thực Hành -->
+                <div class="section-container rounded-xl p-6 shadow-xl">
+                    <h2 class="text-2xl font-bold section-title mb-4 text-center">
+                        <i class="fas fa-user-md mr-2 text-purple-600"></i>
+                        Y Tế - Thực Hành
+                    </h2>
+                    <div class="bg-gray-50 rounded-lg p-2 mb-4">
+                        <p class="text-sm text-gray-600 text-center">
+                            <i class="fas fa-info-circle mr-1"></i>
+                            <span id="yteQuestionCount">0</span> câu hỏi thực hành
+                        </p>
+                    </div>
+                    <div id="ytePracticeContainer" class="grid-container">
+                        <!-- Y tế thực hành questions will be loaded here -->
+                    </div>
+                </div>
+
+                <!-- Right Side: PCCC Lý Thuyết & Thực Hành -->
+                <div class="section-container rounded-xl p-6 shadow-xl">
+                    <h2 class="text-2xl font-bold section-title mb-4 text-center">
+                        <i class="fas fa-fire-extinguisher mr-2 text-red-600"></i>
+                        PCCC - Lý Thuyết & Thực Hành
+                    </h2>
+                    <div class="bg-gray-50 rounded-lg p-2 mb-4">
+                        <p class="text-sm text-gray-600 text-center">
+                            <i class="fas fa-info-circle mr-1"></i>
+                            <span id="pcccQuestionCount">0</span> câu hỏi lý thuyết & thực hành
+                        </p>
+                    </div>
+                    <div id="pcccTheoryPracticeContainer" class="grid-container">
+                        <!-- PCCC lý thuyết & thực hành questions will be loaded here -->
+                    </div>
+                </div>
+            </div>            <!-- Back Button -->
+            <div class="fixed bottom-6 left-6">
+                <button onclick="window.location.href='page3.html'" 
+                        class="bg-white/95 backdrop-blur-sm text-blue-700 px-6 py-3 rounded-full font-semibold shadow-lg hover:bg-white hover:shadow-xl transition-all duration-300 border border-blue-200">
+                    <i class="fas fa-arrow-left mr-2"></i>
+                    Quay lại
+                </button>
+            </div>
+            
+            <!-- Navigation Info -->
+            <div class="fixed bottom-6 right-6">
+                <div class="bg-white/95 backdrop-blur-sm text-gray-700 px-4 py-2 rounded-full text-sm shadow-lg border border-gray-200">
+                    <i class="fas fa-mouse-pointer mr-2"></i>
+                    Nhấn câu hỏi để xem chi tiết
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>        // Global state variables
+        let questionsData = null;
+        let currentAudio = null;
+        
+        // Display mode control - true for modal popup, false for slide presentation
+        let displayMode = localStorage.getItem('thuchanh-display-mode') === 'false' ? false : true; // Load from localStorage or default to modal
+        
+        // DOM Elements
+        const modalModeBtn = document.getElementById('modalModeBtn');
+        const slideModeBtn = document.getElementById('slideModeBtn');
+        
+        // Initialize mode toggle functionality
+        function initializeModeToggle() {
+            modalModeBtn.addEventListener('click', () => setDisplayMode(true));
+            slideModeBtn.addEventListener('click', () => setDisplayMode(false));
+        }
+          // Set display mode and update UI
+        function setDisplayMode(isModalMode) {
+            displayMode = isModalMode;
+            
+            // Save to localStorage
+            localStorage.setItem('thuchanh-display-mode', isModalMode.toString());
+            
+            // Update button styles
+            if (isModalMode) {
+                modalModeBtn.className = 'px-4 py-2 rounded-full text-sm font-semibold transition-all duration-300 bg-blue-600 text-white shadow-md';
+                slideModeBtn.className = 'px-4 py-2 rounded-full text-sm font-semibold transition-all duration-300 text-blue-700 hover:bg-blue-50';
+            } else {
+                modalModeBtn.className = 'px-4 py-2 rounded-full text-sm font-semibold transition-all duration-300 text-blue-700 hover:bg-blue-50';
+                slideModeBtn.className = 'px-4 py-2 rounded-full text-sm font-semibold transition-all duration-300 bg-blue-600 text-white shadow-md';
+            }
+              // Update navigation info
+            const navInfo = document.querySelector('.fixed.bottom-6.right-6 .bg-white\\/95');
+            if (navInfo) {
+                navInfo.innerHTML = isModalMode 
+                    ? '<i class="fas fa-mouse-pointer mr-2"></i>Nhấn câu hỏi để xem chi tiết'
+                    : '<i class="fas fa-desktop mr-2"></i>Nhấn câu hỏi để mở slide presentation';
+            }
+        }
+          // Initialize when DOM is loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            initializeModeToggle();
+            // Set initial UI state based on saved mode
+            setDisplayMode(displayMode);
+        });// Load and display questions
+        fetch('vong3.json')
+            .then(response => response.json())
+            .then(data => {
+                const vong3Data = data.vong_3;
+                
+                // Load Y Tế Thực Hành questions
+                const ytePracticeContainer = document.getElementById('ytePracticeContainer');
+                const ytePracticeQuestions = vong3Data.y_te.thuc_hanh;
+                
+                // Update question count
+                document.getElementById('yteQuestionCount').textContent = ytePracticeQuestions.length;
+                
+                ytePracticeQuestions.forEach((question, index) => {
+                    const questionButton = createQuestionButton(question, 'practice', index);
+                    ytePracticeContainer.appendChild(questionButton);
+                });
+                
+                // Load PCCC Lý Thuyết & Thực Hành questions
+                const pcccContainer = document.getElementById('pcccTheoryPracticeContainer');
+                const pcccQuestions = vong3Data.phong_chay_chua_chay.ly_thuyet_thuc_hanh;
+                
+                // Update question count
+                document.getElementById('pcccQuestionCount').textContent = pcccQuestions.length;
+                
+                pcccQuestions.forEach((question, index) => {
+                    const questionButton = createQuestionButton(question, 'theory', index);
+                    pcccContainer.appendChild(questionButton);
+                });
+            })
+            .catch(error => {
+                console.error('Error loading questions:', error);
+                // Show error message
+                document.getElementById('ytePracticeContainer').innerHTML = 
+                    '<div class="col-span-3 text-center text-red-600 p-4"><i class="fas fa-exclamation-triangle mb-2"></i><br>Không thể tải câu hỏi</div>';
+                document.getElementById('pcccTheoryPracticeContainer').innerHTML = 
+                    '<div class="col-span-3 text-center text-red-600 p-4"><i class="fas fa-exclamation-triangle mb-2"></i><br>Không thể tải câu hỏi</div>';
+            });
+
+        function createQuestionButton(question, type, index) {
+            const button = document.createElement('div');
+            button.className = 'question-button rounded-lg p-4 text-center flex flex-col justify-center items-center';
+            
+            const iconClass = type === 'practice' ? 'fas fa-stethoscope' : 'fas fa-fire-extinguisher';
+            const iconBgClass = type === 'practice' ? 'practice-icon' : 'theory-icon';
+            
+            button.innerHTML = `
+                <div class="${iconBgClass} w-10 h-10 rounded-full flex items-center justify-center mb-2">
+                    <i class="${iconClass} text-lg"></i>
+                </div>
+                <h3 class="font-bold text-lg text-gray-800 mb-1">Câu ${question.cau_hoi_so}</h3>
+                <p class="text-xs text-gray-600 text-center leading-tight">${question.subcategory}</p>
+            `;
+            
+            // Add click event to show question details
+            button.addEventListener('click', () => {
+                showQuestionDetails(question);
+            });
+            
+            // Add entrance animation with staggered delay
+            button.style.opacity = '0';
+            button.style.transform = 'translateY(20px)';
+            button.style.transition = 'all 0.5s ease';
+            
+            setTimeout(() => {
+                button.style.opacity = '1';
+                button.style.transform = 'translateY(0)';
+            }, (index + 1) * 100);
+            
+            return button;
+        }        function showQuestionDetails(question) {
+            if (displayMode) {
+                // Modal popup mode
+                showQuestionModal(question);
+            } else {
+                // Slide presentation mode - redirect to vong3.html
+                const params = new URLSearchParams({
+                    questionId: question.cau_hoi_so,
+                    category: question.category,
+                    subcategory: question.subcategory,
+                    autoStart: 'true'
+                });
+                window.location.href = `vong3.html?${params.toString()}`;
+            }
+        }
+        
+        function showQuestionModal(question) {
+            // Create modal to show question details
+            const modal = document.createElement('div');
+            modal.className = 'fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-6';              modal.innerHTML = `
+                <div class="bg-white rounded-2xl w-[95vw] h-[95vh] overflow-hidden shadow-2xl" style="max-width: 95vw; max-height: 95vh;">
+                    <div class="bg-gradient-to-r from-blue-600 to-blue-700 text-white p-10 h-auto">
+                        <div class="flex justify-between items-start">
+                            <div class="flex-1">
+                                <h3 class="text-6xl font-bold mb-4">Câu ${question.cau_hoi_so}</h3>
+                                <div class="flex items-center space-x-8 text-blue-100 text-2xl flex-wrap">
+                                    <span class="flex items-center mb-2">
+                                        <i class="fas fa-tag mr-3 text-2xl"></i>
+                                        ${question.category}
+                                    </span>
+                                    <span class="flex items-center mb-2">
+                                        <i class="fas fa-bookmark mr-3 text-2xl"></i>
+                                        ${question.subcategory}
+                                    </span>
+                                    <span class="flex items-center mb-2">
+                                        <i class="fas fa-clipboard-list mr-3 text-2xl"></i>
+                                        ${question.type_question}
+                                    </span>
+                                </div>
+                            </div>
+                            <button onclick="this.closest('.fixed').remove()" 
+                                    class="text-blue-100 hover:text-white text-4xl p-4 rounded-full hover:bg-blue-800 transition-colors ml-4">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="p-10 overflow-y-auto" style="height: calc(95vh - 220px);">
+                        <div class="bg-gray-50 rounded-xl p-8 mb-8 border-l-8 border-blue-500">
+                            <h4 class="font-bold text-gray-800 mb-6 flex items-center text-3xl">
+                                <i class="fas fa-question-circle mr-4 text-blue-600 text-4xl"></i>
+                                Nội dung câu hỏi:
+                            </h4>
+                            <p class="text-gray-800 leading-relaxed text-4xl font-semibold" style="line-height: 1.6;">${question.cau_hoi}</p>
+                        </div>                          ${question.speech_id_question ? `
+                            <div class="bg-blue-50 rounded-xl p-8 border-2 border-blue-200 border-l-8 border-l-blue-500">
+                                <h4 class="font-bold text-blue-800 mb-6 flex items-center text-3xl">
+                                    <i class="fas fa-volume-up mr-4 text-3xl"></i>
+                                    Nghe câu hỏi:
+                                </h4>
+                                <audio controls class="w-full h-16 text-lg" id="questionAudio" preload="auto" style="height: 4rem;">
+                                    <source src="speech/${question.speech_id_question}" type="audio/wav">
+                                    <p class="text-red-600 text-xl mt-4">Trình duyệt của bạn không hỗ trợ phát audio.</p>
+                                </audio>
+                            </div>
+                        ` : ''}
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            
+            // Auto-play audio if available
+            if (question.speech_id_question) {
+                // Wait a moment for the modal to be fully rendered
+                setTimeout(() => {
+                    const audioElement = modal.querySelector('#questionAudio');
+                    if (audioElement) {
+                        // Try to play audio with error handling
+                        audioElement.play().catch(error => {
+                            console.log('Auto-play blocked by browser:', error);
+                            // Show a message to user if autoplay is blocked
+                            const audioContainer = audioElement.closest('.bg-blue-50');
+                            if (audioContainer) {
+                                const autoplayNotice = document.createElement('div');                                autoplayNotice.className = 'mt-4 text-xl text-orange-600 bg-orange-50 p-4 rounded-lg border-2 border-orange-200';
+                                autoplayNotice.innerHTML = '<i class="fas fa-info-circle mr-2 text-xl"></i>Nhấn nút phát để nghe câu hỏi (trình duyệt chặn tự động phát)';
+                                audioContainer.appendChild(autoplayNotice);
+                            }
+                        });
+                    }
+                }, 300);
+            }
+            
+            // Close modal when clicking outside
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    modal.remove();
+                }
+            });
+              // Prevent modal from closing when clicking inside the content
+            modal.querySelector('.bg-white').addEventListener('click', (e) => {
+                e.stopPropagation();
+            });
+        }        // Add keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                const modal = document.querySelector('.fixed.inset-0');
+                if (modal) {
+                    modal.remove();
+                }
+            } else if (e.key.toLowerCase() === 'q') {
+                // Emergency exit to page3.html
+                window.location.href = 'page3.html';
+            }
+        });
+    </script>
+</body>
+</html>
