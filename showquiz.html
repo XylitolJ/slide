@@ -185,10 +185,26 @@
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
             animation: scoreShow 0.8s ease-out;
         }
-        
-        @keyframes scoreShow {
+          @keyframes scoreShow {
             0% { transform: scale(0.8); opacity: 0; }
             100% { transform: scale(1); opacity: 1; }
+        }
+        
+        .audio-highlight {
+            background: rgba(255, 255, 0, 0.3) !important;
+            border-color: #fbbf24 !important;
+            transform: scale(1.02);
+            transition: all 0.3s ease;
+        }
+        
+        .option-char-a { background: linear-gradient(135deg, #ef4444, #dc2626); }
+        .option-char-b { background: linear-gradient(135deg, #3b82f6, #2563eb); }
+        .option-char-c { background: linear-gradient(135deg, #10b981, #059669); }
+        .option-char-d { background: linear-gradient(135deg, #f59e0b, #d97706); }
+        .option-char-e { background: linear-gradient(135deg, #8b5cf6, #7c3aed); }
+        
+        .option-display {
+            transition: all 0.3s ease;
         }
     </style>
 </head>
@@ -209,108 +225,34 @@
         <!-- Theme overlay -->
         <div id="quizOverlay" class="quiz-overlay"></div>
           <!-- Quiz content -->
-        <div class="quiz-content-wrapper relative z-10">
-            <!-- Header -->
-            <div class="p-6">
-                <div class="flex justify-between items-center mb-4">
-                    <button onclick="goBack()" class="navigation-btn px-6 py-3 rounded-lg font-semibold text-gray-700">
-                        <i class="fas fa-arrow-left mr-2"></i>
-                        Quay lại
-                    </button>
-                    
-                    <div class="text-center">
-                        <h1 id="quizTitle" class="text-2xl font-bold text-white text-shadow">Lý thuyết</h1>
-                        <p id="quizSubtitle" class="text-white/80">Đề số 1</p>
-                    </div>
-                    
-                    <button onclick="showResults()" class="navigation-btn px-6 py-3 rounded-lg font-semibold text-gray-700">
-                        <i class="fas fa-chart-bar mr-2"></i>
-                        Kết quả
-                    </button>
-                </div>
-                
+        <div class="quiz-content-wrapper relative z-10">            <!-- Header -->
+            <div class="p-6">                
                 <!-- Progress bar -->
                 <div class="progress-bar h-3 mb-4">
                     <div id="progressFill" class="progress-fill" style="width: 0%"></div>
                 </div>
                 
-                <div class="text-center text-white/90">
-                    <span id="questionCounter">Câu 1 / 3</span>
+                <div class="flex justify-between items-center text-white">
+                    <h1 id="quizTitle" class="text-2xl font-bold text-shadow">Lý thuyết</h1>
+                    <p id="quizSubtitle" class="text-lg">Đề số 1</p>
+                    <span id="questionCounter" class="text-lg">Câu 1 / 3</span>
                 </div>
             </div>
-            
-            <!-- Main quiz area -->
+              <!-- Main quiz area -->
             <div class="flex-1 px-6 pb-6">
                 <div id="questionCard" class="question-card rounded-2xl p-8 max-w-6xl mx-auto slide-in">
                     <!-- Question content will be populated here -->
                 </div>
             </div>
-            
-            <!-- Navigation buttons -->
-            <div class="p-6">
-                <div class="flex justify-between max-w-6xl mx-auto">
-                    <button id="prevBtn" onclick="previousQuestion()" class="navigation-btn px-8 py-4 rounded-lg font-semibold text-gray-700 disabled:opacity-50" disabled>
-                        <i class="fas fa-chevron-left mr-2"></i>
-                        Câu trước
-                    </button>
-                    
-                    <button id="nextBtn" onclick="nextQuestion()" class="navigation-btn px-8 py-4 rounded-lg font-semibold text-gray-700">
-                        Câu tiếp theo
-                        <i class="fas fa-chevron-right ml-2"></i>
-                    </button>
-                </div>                </div>
-            </div>
         </div>
-    </div>
-
-    <!-- Results Modal -->
-    <div id="resultsModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
-        <div class="score-card rounded-2xl p-8 max-w-md mx-4 text-center">
-            <div class="mb-6">
-                <i id="resultIcon" class="fas fa-trophy text-6xl text-yellow-500"></i>
-            </div>
-            <h2 class="text-3xl font-bold text-gray-800 mb-4">Kết quả bài thi</h2>
-            <div class="mb-6">
-                <div class="text-5xl font-bold text-blue-600 mb-2" id="scoreDisplay">0/3</div>
-                <p class="text-gray-600" id="scorePercentage">0%</p>
-            </div>
-            <div class="space-y-2 mb-6">
-                <div class="flex justify-between">
-                    <span class="text-gray-600">Tổng số câu:</span>
-                    <span id="totalQuestions" class="font-semibold">3</span>
-                </div>
-                <div class="flex justify-between">
-                    <span class="text-gray-600">Câu đúng:</span>
-                    <span id="correctAnswers" class="font-semibold text-green-600">0</span>
-                </div>
-                <div class="flex justify-between">
-                    <span class="text-gray-600">Câu sai:</span>
-                    <span id="wrongAnswers" class="font-semibold text-red-600">0</span>
-                </div>
-            </div>
-            <div class="space-y-3">
-                <button onclick="retakeQuiz()" class="w-full bg-blue-500 hover:bg-blue-600 text-white py-3 rounded-lg font-semibold">
-                    <i class="fas fa-redo mr-2"></i>
-                    Làm lại
-                </button>
-                <button onclick="closeResults()" class="w-full bg-gray-500 hover:bg-gray-600 text-white py-3 rounded-lg font-semibold">
-                    <i class="fas fa-times mr-2"></i>
-                    Đóng
-                </button>
-                <button onclick="goToTheoryList()" class="w-full bg-green-500 hover:bg-green-600 text-white py-3 rounded-lg font-semibold">
-                    <i class="fas fa-list mr-2"></i>
-                    Chọn đề khác
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <script>
+    </div>    <script>
         // Global variables
         let quizData = null;
         let currentQuestionIndex = 0;
         let questions = [];
-        let userAnswers = {};
+        let currentAudio = null;
+        let audioQueue = [];
+        let isPlayingAudio = false;
         let selectedCategory = '';
         let selectedSet = 1;
 
@@ -410,14 +352,10 @@
                 overlay.classList.add('theme-ktm');
                 title.textContent = 'LÝ THUYẾT KHAI THÁC MỎ';
             }
+              subtitle.textContent = `Đề số ${selectedSet}`;
             
-            subtitle.textContent = `Đề số ${selectedSet}`;
-            
-            // Update question counter
-            document.getElementById('totalQuestions').textContent = questions.length;
-        }
-
-        // Display current question
+            // Question counter will be updated in displayQuestion()
+        }// Display current question
         function displayQuestion() {
             const question = questions[currentQuestionIndex];
             const questionCard = document.getElementById('questionCard');
@@ -439,7 +377,7 @@
                         </span>
                         <span class="text-gray-500 text-sm">${question.subcategory}</span>
                     </div>
-                    <h2 class="text-2xl font-bold text-gray-800 leading-relaxed">${question.cau_hoi}</h2>
+                    <h2 class="text-3xl font-bold text-gray-800 leading-relaxed mb-8">${question.cau_hoi}</h2>
                 </div>
             `;
             
@@ -447,24 +385,23 @@
             if (question.question_image === "Yes" && question.image_id) {
                 questionHTML += `
                     <div class="mb-8 text-center">
-                        <img src="${question.image_id}" alt="Hình ảnh câu hỏi" class="quiz-image mx-auto">
+                        <img src="${question.image_id}" alt="Hình ảnh câu hỏi" class="quiz-image mx-auto max-w-full h-auto rounded-lg shadow-lg">
                     </div>
                 `;
             }
             
-            // Add options
-            questionHTML += '<div class="space-y-4">';
+            // Add options for display only (no interaction)
+            questionHTML += '<div class="space-y-6">';
             const options = Object.keys(question.phuong_an);
             
             options.forEach(optionKey => {
-                const isSelected = userAnswers[currentQuestionIndex] && userAnswers[currentQuestionIndex].includes(optionKey);
                 questionHTML += `
-                    <div class="option-card ${isSelected ? 'selected' : ''} p-4 rounded-lg" onclick="selectOption('${optionKey}')">
+                    <div class="option-display p-6 rounded-lg bg-white/90 border-2 border-gray-200 shadow-sm">
                         <div class="flex items-center">
-                            <div class="option-char option-char-${optionKey} w-8 h-8 rounded-full flex items-center justify-center text-white font-bold mr-4">
+                            <div class="option-char-${optionKey} w-12 h-12 rounded-full flex items-center justify-center text-white font-bold mr-6 text-xl">
                                 ${optionKey.toUpperCase()}
                             </div>
-                            <span class="text-gray-800 flex-1">${question.phuong_an[optionKey]}</span>
+                            <span class="text-gray-800 flex-1 text-xl leading-relaxed">${question.phuong_an[optionKey]}</span>
                         </div>
                     </div>
                 `;
@@ -472,170 +409,159 @@
             
             questionHTML += '</div>';
             
-            // Add audio controls if available
-            if (question.speech_id_question) {
-                questionHTML += `
-                    <div class="mt-8 p-4 bg-blue-50 rounded-lg">
-                        <h4 class="font-semibold text-blue-800 mb-3">
-                            <i class="fas fa-volume-up mr-2"></i>
-                            Nghe câu hỏi:
-                        </h4>
-                        <audio controls class="w-full">
-                            <source src="speech/${question.speech_id_question}" type="audio/wav">
-                            Trình duyệt của bạn không hỗ trợ phát audio.
-                        </audio>
-                    </div>
-                `;
-            }
-            
             questionCard.innerHTML = questionHTML;
             
-            // Update navigation buttons
-            updateNavigationButtons();
+            // Start auto-playing audio
+            startAutoPlayAudio(question);
         }
 
-        // Select option
-        function selectOption(optionKey) {
-            const question = questions[currentQuestionIndex];
+        // Auto-play audio function
+        function startAutoPlayAudio(question) {
+            stopAllAudio(); // Stop any currently playing audio
             
-            if (!userAnswers[currentQuestionIndex]) {
-                userAnswers[currentQuestionIndex] = [];
+            audioQueue = [];
+            
+            // Add question audio if available
+            if (question.speech_id_question) {
+                audioQueue.push({
+                    file: `speech/${question.speech_id_question}`,
+                    type: 'question'
+                });
             }
             
-            // Check if multiple answers are allowed
-            const isMultipleChoice = Array.isArray(question.dap_an_dung) && question.dap_an_dung.length > 1;
+            // Add option audio files if available
+            const options = Object.keys(question.phuong_an);
+            options.forEach(optionKey => {
+                const audioFile = `speech/${question.id}_${optionKey}.wav`;
+                audioQueue.push({
+                    file: audioFile,
+                    type: 'option',
+                    option: optionKey
+                });
+            });
             
-            if (isMultipleChoice) {
-                // Toggle selection for multiple choice
-                const index = userAnswers[currentQuestionIndex].indexOf(optionKey);
-                if (index > -1) {
-                    userAnswers[currentQuestionIndex].splice(index, 1);
-                } else {
-                    userAnswers[currentQuestionIndex].push(optionKey);
+            // Start playing the audio queue
+            playNextAudio();
+        }
+
+        // Play next audio in queue
+        function playNextAudio() {
+            if (audioQueue.length === 0) {
+                isPlayingAudio = false;
+                return;
+            }
+            
+            const audioItem = audioQueue.shift();
+            isPlayingAudio = true;
+            
+            // Highlight the current item being read
+            highlightCurrentAudio(audioItem);
+            
+            currentAudio = new Audio(audioItem.file);
+            currentAudio.addEventListener('ended', () => {
+                setTimeout(() => {
+                    playNextAudio();
+                }, 500); // 500ms pause between audio segments
+            });
+            
+            currentAudio.addEventListener('error', () => {
+                // If audio file doesn't exist, continue to next
+                setTimeout(() => {
+                    playNextAudio();
+                }, 200);
+            });
+            
+            currentAudio.play().catch(() => {
+                // If audio fails to play, continue to next
+                setTimeout(() => {
+                    playNextAudio();
+                }, 200);
+            });
+        }
+
+        // Highlight current audio being played
+        function highlightCurrentAudio(audioItem) {
+            // Remove previous highlights
+            document.querySelectorAll('.audio-highlight').forEach(el => {
+                el.classList.remove('audio-highlight');
+            });
+            
+            if (audioItem.type === 'question') {
+                // Highlight question
+                const questionElement = document.querySelector('h2');
+                if (questionElement) {
+                    questionElement.classList.add('audio-highlight');
                 }
-            } else {
-                // Single choice
-                userAnswers[currentQuestionIndex] = [optionKey];
+            } else if (audioItem.type === 'option') {
+                // Highlight specific option
+                const optionElement = document.querySelector(`.option-char-${audioItem.option}`);
+                if (optionElement) {
+                    optionElement.closest('.option-display').classList.add('audio-highlight');
+                }
             }
-            
-            // Refresh display
-            displayQuestion();
         }
 
-        // Update progress bar
+        // Stop all audio
+        function stopAllAudio() {
+            if (currentAudio) {
+                currentAudio.pause();
+                currentAudio = null;
+            }
+            audioQueue = [];
+            isPlayingAudio = false;
+            
+            // Remove all highlights
+            document.querySelectorAll('.audio-highlight').forEach(el => {
+                el.classList.remove('audio-highlight');
+            });
+        }        // Update progress bar
         function updateProgress() {
             const progress = ((currentQuestionIndex + 1) / questions.length) * 100;
             document.getElementById('progressFill').style.width = `${progress}%`;
             document.getElementById('questionCounter').textContent = `Câu ${currentQuestionIndex + 1} / ${questions.length}`;
         }
 
-        // Update navigation buttons
-        function updateNavigationButtons() {
-            const prevBtn = document.getElementById('prevBtn');
-            const nextBtn = document.getElementById('nextBtn');
-            
-            prevBtn.disabled = currentQuestionIndex === 0;
-            
-            if (currentQuestionIndex === questions.length - 1) {
-                nextBtn.textContent = 'Hoàn thành';
-                nextBtn.innerHTML = '<i class="fas fa-check mr-2"></i>Hoàn thành';
-            } else {
-                nextBtn.innerHTML = 'Câu tiếp theo<i class="fas fa-chevron-right ml-2"></i>';
-            }
-        }
-
         // Navigation functions
         function previousQuestion() {
+            stopAllAudio();
             if (currentQuestionIndex > 0) {
                 currentQuestionIndex--;
                 displayQuestion();
+            } else {
+                // If at first question, go back to theory selection
+                window.location.href = 'lythuyet.html';
             }
         }
 
         function nextQuestion() {
+            stopAllAudio();
             if (currentQuestionIndex < questions.length - 1) {
                 currentQuestionIndex++;
                 displayQuestion();
             } else {
-                showResults();
+                // If at last question, go back to theory selection
+                window.location.href = 'lythuyet.html';
             }
         }
 
-        // Calculate score
-        function calculateScore() {
-            let correct = 0;
-            
-            questions.forEach((question, index) => {
-                const userAnswer = userAnswers[index] || [];
-                const correctAnswer = Array.isArray(question.dap_an_dung) ? question.dap_an_dung : [question.dap_an_dung];
-                
-                // Check if arrays are equal
-                if (userAnswer.length === correctAnswer.length && 
-                    userAnswer.every(answer => correctAnswer.includes(answer))) {
-                    correct++;
-                }
-            });
-            
-            return correct;
-        }
-
-        // Show results
-        function showResults() {
-            const correct = calculateScore();
-            const total = questions.length;
-            const percentage = Math.round((correct / total) * 100);
-            
-            document.getElementById('scoreDisplay').textContent = `${correct}/${total}`;
-            document.getElementById('scorePercentage').textContent = `${percentage}%`;
-            document.getElementById('correctAnswers').textContent = correct;
-            document.getElementById('wrongAnswers').textContent = total - correct;
-            
-            // Update icon based on score
-            const resultIcon = document.getElementById('resultIcon');
-            if (percentage >= 80) {
-                resultIcon.className = 'fas fa-trophy text-6xl text-yellow-500';
-            } else if (percentage >= 60) {
-                resultIcon.className = 'fas fa-medal text-6xl text-gray-400';
-            } else {
-                resultIcon.className = 'fas fa-times-circle text-6xl text-red-500';
-            }
-            
-            document.getElementById('resultsModal').classList.remove('hidden');
-        }
-
-        // Modal functions
-        function closeResults() {
-            document.getElementById('resultsModal').classList.add('hidden');
-        }
-
-        function retakeQuiz() {
-            currentQuestionIndex = 0;
-            userAnswers = {};
-            closeResults();
-            displayQuestion();
-        }
-
-        function goToTheoryList() {
+        function goBack() {
+            stopAllAudio();
             window.location.href = 'lythuyet.html';
-        }
+        }        // Removed unused functions: calculateScore, showResults, closeResults, retakeQuiz, goToTheoryList
 
         function goBack() {
             window.location.href = 'lythuyet.html';
         }
 
         // Initialize when page loads
-        document.addEventListener('DOMContentLoaded', initializeQuiz);
-
-        // Keyboard navigation
+        document.addEventListener('DOMContentLoaded', initializeQuiz);        // Keyboard navigation
         document.addEventListener('keydown', function(e) {
             if (e.key === 'ArrowLeft') {
                 previousQuestion();
             } else if (e.key === 'ArrowRight') {
                 nextQuestion();
-            } else if (e.key === 'Escape') {
-                if (!document.getElementById('resultsModal').classList.contains('hidden')) {
-                    closeResults();
-                }
+            } else if (e.key.toLowerCase() === 'q') {
+                window.location.href = 'page3.html';
             }
         });
     </script>
