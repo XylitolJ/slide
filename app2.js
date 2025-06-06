@@ -24,6 +24,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const footerProgressBarEl = document.getElementById('footerProgressBar');
     const roundInfoDisplayEl = document.getElementById('roundInfoDisplay'); // New element for round info
  
+    // Parse query parameters for selected question IDs
+    function getSelectedIds() {
+        const params = new URLSearchParams(window.location.search);
+        const idsParam = params.get('ids');
+        if (!idsParam) return [];
+        return idsParam.split(',').map(id => id.trim()).filter(Boolean);
+    }
  
     // Popup
     const timesUpPopupEl = document.getElementById('timeUpOverlay'); // Updated ID for new overlay
@@ -48,8 +55,10 @@ document.addEventListener('DOMContentLoaded', () => {
     let audioContext;
     let currentAudio = null;
     let sequenceInProgress = false;
-    let answerShown = false;    const OPTION_KEYS = ['a', 'b', 'c', 'd', 'e', 'g']; // Possible option keys
-      // Background styles for cleanup purposes only
+    let answerShown = false;
+    const OPTION_KEYS = ['a', 'b', 'c', 'd', 'e', 'g']; // Possible option keys
+    let selectedIds = [];
+    // Background styles for cleanup purposes only
     const backgroundStyles = [
         'bg-default', 'bg-abstract', 'bg-wave', 'bg-svg-pattern-1', 'bg-svg-pattern-2', 'bg-svg-pattern-3'
     ];
@@ -671,7 +680,8 @@ document.addEventListener('DOMContentLoaded', () => {
         // Enable navigation to next question
     }
 
-    // --- Navigation ---    function nextQuestion() {
+    // --- Navigation ---
+    function nextQuestion() {
         if (currentAudio && currentAudio.source) { // Stop any ongoing audio
             currentAudio.source.stop();
             currentAudio.source.disconnect();
@@ -683,18 +693,11 @@ document.addEventListener('DOMContentLoaded', () => {
             currentQuestionIndex++;
             renderSlide(allQuestions[currentQuestionIndex]);
         } else {
-<<<<<<< HEAD
-            // If we're at the last question, navigate back to page3.html
-            window.location.href = 'page3.html';
-        }
-    }function previousQuestion() {
-=======
             window.location.href = 'page3.html';
         }
     }
 
     function previousQuestion() {
->>>>>>> fix1
         if (currentAudio && currentAudio.source) {
             currentAudio.source.stop();
             currentAudio.source.disconnect();
@@ -767,13 +770,17 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                 }
             }
+            selectedIds = getSelectedIds();
+            if (selectedIds.length > 0) {
+                allQuestions = allQuestions.filter(q => selectedIds.includes(q.id));
+            }
 
             if (allQuestions.length > 0) {
                 // Update round info display
                 updateRoundInfoDisplay();
                 renderSlide(allQuestions[currentQuestionIndex]);
             } else {
-                progressTextEl.textContent = "Không tìm thấy câu hỏi nào trong file vong2.json.";
+                progressTextEl.textContent = "Không tìm thấy câu hỏi phù hợp.";
             }
         } catch (error) {
             console.error("Could not load questions:", error);
@@ -805,15 +812,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Event Listeners ---
     startSequenceBtn.addEventListener('click', startQuestionSequence);
-    showAnswerBtn.addEventListener('click', displayAnswer);    document.addEventListener('keydown', (e) => {
+    showAnswerBtn.addEventListener('click', displayAnswer);
+
+    document.addEventListener('keydown', (e) => {
         if (e.key === 'ArrowRight') {
-            // Phím mũi tên phải: next câu hỏi hoặc về page3.html nếu ở câu cuối
-            e.preventDefault();
-            nextQuestion();
+            if (!sequenceInProgress) {
+                nextQuestion();
+            }
         } else if (e.key === 'ArrowLeft') {
-            // Phím mũi tên trái: previous câu hỏi hoặc về page3.html nếu ở câu đầu
-            e.preventDefault();
-            previousQuestion();
+            if (!sequenceInProgress) {
+                previousQuestion();
+            }
         } else if (e.key === ' ' || e.key === 'Spacebar') {
             e.preventDefault(); 
             if (!startSequenceBtn.disabled) {
