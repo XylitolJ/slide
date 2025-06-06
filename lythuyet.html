@@ -385,38 +385,12 @@
             }
         }
 
-        // Display mode control - true for detail page, false for slide
-        let detailMode = localStorage.getItem('lythuyet-display-mode') === 'slide' ? false : true;
-
-        const detailModeBtn = document.getElementById('detailModeBtn');
-        const slideModeBtn = document.getElementById('slideModeBtn');
-
-        function initializeModeToggle() {
-            detailModeBtn.addEventListener('click', () => setDisplayMode(true));
-            slideModeBtn.addEventListener('click', () => setDisplayMode(false));
-        }
-
-        function setDisplayMode(isDetail) {
-            detailMode = isDetail;
-            localStorage.setItem('lythuyet-display-mode', isDetail ? 'detail' : 'slide');
-
-            if (isDetail) {
-                detailModeBtn.className = 'px-3 py-1 rounded-full font-semibold transition-all duration-300 bg-blue-600 text-white shadow-md';
-                slideModeBtn.className = 'px-3 py-1 rounded-full font-semibold transition-all duration-300 text-blue-700 hover:bg-blue-50';
-            } else {
-                detailModeBtn.className = 'px-3 py-1 rounded-full font-semibold transition-all duration-300 text-blue-700 hover:bg-blue-50';
-                slideModeBtn.className = 'px-3 py-1 rounded-full font-semibold transition-all duration-300 bg-blue-600 text-white shadow-md';
-            }
-        }
-
         // Function to start a quiz
         function startQuiz(category, setNumber) {
+            // Store the selected category and set number in localStorage
             localStorage.setItem('selectedCategory', category);
             localStorage.setItem('selectedSet', setNumber);
-<<<<<<< HEAD
             
-=======
->>>>>>> 68e7a5bfc13a54e18a8faae273741a4a65e70413
 
             if (detailMode) {
                 window.location.href = 'showquiz.html';

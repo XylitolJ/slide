@@ -23,14 +23,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // const footerTimeScoreEl = document.getElementById('footerTimeScore')?.querySelector('span'); // This element might not exist
     const footerProgressBarEl = document.getElementById('footerProgressBar');
     const roundInfoDisplayEl = document.getElementById('roundInfoDisplay'); // New element for round info
-
-    // Parse query parameters for selected question IDs
-    function getSelectedIds() {
-        const params = new URLSearchParams(window.location.search);
-        const idsParam = params.get('ids');
-        if (!idsParam) return [];
-        return idsParam.split(',').map(id => id.trim()).filter(Boolean);
-    }
  
     // Parse query parameters for selected question IDs
     function getSelectedIds() {
@@ -66,11 +58,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let answerShown = false;
     const OPTION_KEYS = ['a', 'b', 'c', 'd', 'e', 'g']; // Possible option keys
     let selectedIds = [];
-<<<<<<< HEAD
     // Background styles for cleanup purposes only
-=======
-      // Background styles for cleanup purposes only
->>>>>>> 68e7a5bfc13a54e18a8faae273741a4a65e70413
     const backgroundStyles = [
         'bg-default', 'bg-abstract', 'bg-wave', 'bg-svg-pattern-1', 'bg-svg-pattern-2', 'bg-svg-pattern-3'
     ];
@@ -782,11 +770,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                 }
             }
-            selectedIds = getSelectedIds();
-            if (selectedIds.length > 0) {
-                allQuestions = allQuestions.filter(q => selectedIds.includes(q.id));
-            }
-
             selectedIds = getSelectedIds();
             if (selectedIds.length > 0) {
                 allQuestions = allQuestions.filter(q => selectedIds.includes(q.id));
