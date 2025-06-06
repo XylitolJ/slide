@@ -414,13 +414,11 @@
             roundIndicator.addEventListener('click', (e) => {
                 e.stopPropagation(); // Prevent triggering the card click event
                 window.location.href = `vong${roundNumber}.html`;
-            });
-
-            // Add click event for "Xem câu hỏi" button to load questions
+            });            // Add click event for "Xem câu hỏi" button to redirect to lythuyet.html
             const viewQuestionsBtn = card.querySelector('.view-questions-btn');
             viewQuestionsBtn.addEventListener('click', (e) => {
                 e.stopPropagation(); // Prevent triggering the card click event
-                loadQuestions(roundNumber);
+                window.location.href = 'lythuyet.html';
             });
 
             return card;

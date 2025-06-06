@@ -8,17 +8,30 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
-    <style>
-        * {
+    <style>        * {
             font-family: 'Inter', sans-serif;
         }
         
+        html, body {
+            height: 100vh;
+            overflow-x: hidden;
+        }
+        
         .quiz-container {
-            min-height: 100vh;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
             position: relative;
+        }
+        
+        .quiz-content-wrapper {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
         }
         
         .quiz-overlay {
@@ -195,9 +208,8 @@
         
         <!-- Theme overlay -->
         <div id="quizOverlay" class="quiz-overlay"></div>
-        
-        <!-- Quiz content -->
-        <div class="relative z-10 min-h-screen flex flex-col">
+          <!-- Quiz content -->
+        <div class="quiz-content-wrapper relative z-10">
             <!-- Header -->
             <div class="p-6">
                 <div class="flex justify-between items-center mb-4">
@@ -246,7 +258,7 @@
                         Câu tiếp theo
                         <i class="fas fa-chevron-right ml-2"></i>
                     </button>
-                </div>
+                </div>                </div>
             </div>
         </div>
     </div>
