@@ -23,6 +23,14 @@ document.addEventListener('DOMContentLoaded', () => {
     // const footerTimeScoreEl = document.getElementById('footerTimeScore')?.querySelector('span'); // This element might not exist
     const footerProgressBarEl = document.getElementById('footerProgressBar');
     const roundInfoDisplayEl = document.getElementById('roundInfoDisplay'); // New element for round info
+
+    // Parse query parameters for selected question IDs
+    function getSelectedIds() {
+        const params = new URLSearchParams(window.location.search);
+        const idsParam = params.get('ids');
+        if (!idsParam) return [];
+        return idsParam.split(',').map(id => id.trim()).filter(Boolean);
+    }
  
  
     // Popup
@@ -48,7 +56,9 @@ document.addEventListener('DOMContentLoaded', () => {
     let audioContext;
     let currentAudio = null;
     let sequenceInProgress = false;
-    let answerShown = false;    const OPTION_KEYS = ['a', 'b', 'c', 'd', 'e', 'g']; // Possible option keys
+    let answerShown = false;
+    const OPTION_KEYS = ['a', 'b', 'c', 'd', 'e', 'g']; // Possible option keys
+    let selectedIds = [];
       // Background styles for cleanup purposes only
     const backgroundStyles = [
         'bg-default', 'bg-abstract', 'bg-wave', 'bg-svg-pattern-1', 'bg-svg-pattern-2', 'bg-svg-pattern-3'
@@ -768,12 +778,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
 
+            selectedIds = getSelectedIds();
+            if (selectedIds.length > 0) {
+                allQuestions = allQuestions.filter(q => selectedIds.includes(q.id));
+            }
+
             if (allQuestions.length > 0) {
                 // Update round info display
                 updateRoundInfoDisplay();
                 renderSlide(allQuestions[currentQuestionIndex]);
             } else {
-                progressTextEl.textContent = "Không tìm thấy câu hỏi nào trong file vong2.json.";
+                progressTextEl.textContent = "Không tìm thấy câu hỏi phù hợp.";
             }
         } catch (error) {
             console.error("Could not load questions:", error);

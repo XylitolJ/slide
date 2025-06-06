@@ -148,6 +148,17 @@
                 <p class="text-xl text-blue-100 font-semibold">
                     Chọn chủ đề để tham gia các bộ đề lý thuyết
                 </p>
+                <!-- Display mode toggle -->
+                <div class="mt-4 flex justify-center">
+                    <div class="bg-white/90 backdrop-blur-sm rounded-full p-1 flex items-center space-x-1 shadow-lg border border-blue-200 text-sm">
+                        <button id="detailModeBtn" class="px-3 py-1 rounded-full font-semibold transition-all duration-300 bg-blue-600 text-white shadow-md">
+                            Chi tiết
+                        </button>
+                        <button id="slideModeBtn" class="px-3 py-1 rounded-full font-semibold transition-all duration-300 text-blue-700 hover:bg-blue-50">
+                            Trình chiếu
+                        </button>
+                    </div>
+                </div>
             </div>
 
             <!-- Theory Cards Grid -->
@@ -351,14 +362,42 @@
             }
         };
 
+        // Display mode control - true for detail page, false for slide
+        let detailMode = localStorage.getItem('lythuyet-display-mode') === 'slide' ? false : true;
+
+        const detailModeBtn = document.getElementById('detailModeBtn');
+        const slideModeBtn = document.getElementById('slideModeBtn');
+
+        function initializeModeToggle() {
+            detailModeBtn.addEventListener('click', () => setDisplayMode(true));
+            slideModeBtn.addEventListener('click', () => setDisplayMode(false));
+        }
+
+        function setDisplayMode(isDetail) {
+            detailMode = isDetail;
+            localStorage.setItem('lythuyet-display-mode', isDetail ? 'detail' : 'slide');
+
+            if (isDetail) {
+                detailModeBtn.className = 'px-3 py-1 rounded-full font-semibold transition-all duration-300 bg-blue-600 text-white shadow-md';
+                slideModeBtn.className = 'px-3 py-1 rounded-full font-semibold transition-all duration-300 text-blue-700 hover:bg-blue-50';
+            } else {
+                detailModeBtn.className = 'px-3 py-1 rounded-full font-semibold transition-all duration-300 text-blue-700 hover:bg-blue-50';
+                slideModeBtn.className = 'px-3 py-1 rounded-full font-semibold transition-all duration-300 bg-blue-600 text-white shadow-md';
+            }
+        }
+
         // Function to start a quiz
         function startQuiz(category, setNumber) {
-            // Store the selected category and set number in localStorage
             localStorage.setItem('selectedCategory', category);
             localStorage.setItem('selectedSet', setNumber);
-            
-            // Navigate to the quiz page
-            window.location.href = 'showquiz.html';
+
+            if (detailMode) {
+                window.location.href = 'showquiz.html';
+            } else {
+                const ids = (quizSets[category][setNumber] || []).join(',');
+                const params = new URLSearchParams({ ids });
+                window.location.href = `vong2.html?${params.toString()}`;
+            }
         }
 
         // Generate quiz sets automatically based on question availability
@@ -408,8 +447,13 @@
             } catch (error) {
                 console.error('Error generating quiz sets:', error);
             }
-        }        // Initialize quiz sets when page loads
-        document.addEventListener('DOMContentLoaded', generateQuizSets);
+        }
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            generateQuizSets();
+            initializeModeToggle();
+            setDisplayMode(detailMode);
+        });
 
         // Add keyboard navigation
         document.addEventListener('keydown', function(e) {
