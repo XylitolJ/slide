@@ -216,9 +216,93 @@
         .option-char-k { background: linear-gradient(135deg, #06b6d4, #0891b2); box-shadow: 0 2px 8px rgba(6, 182, 212, 0.3); }
         .option-char-l { background: linear-gradient(135deg, #84cc16, #65a30d); box-shadow: 0 2px 8px rgba(132, 204, 22, 0.3); }
         .option-char-m { background: linear-gradient(135deg, #f59e0b, #d97706); box-shadow: 0 2px 8px rgba(245, 158, 11, 0.3); }
-        
-        .option-display {
+          .option-display {
             transition: all 0.3s ease;
+        }
+        
+        /* Enhanced layout for wider content */
+        .quiz-content-expanded {
+            max-width: 95vw !important;
+        }
+        
+        /* Two-column layout for options when no image */
+        .options-two-column {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+        
+        /* Single column for options when image is present */
+        .options-single-column {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+        
+        /* Image layout with fixed positioning */
+        .question-with-image {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            align-items: start;
+        }
+        
+        .question-image-fixed {
+            position: sticky;
+            top: 1rem;
+            max-height: 70vh;
+            overflow: hidden;
+        }
+          /* Display mode toggle button */
+        .display-mode-toggle {
+            position: absolute;
+            top: -3rem;
+            right: 0;
+            z-index: 50;
+            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 8px;
+            padding: 0.5rem 1rem;
+            transition: all 0.3s ease;
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+        
+        .display-mode-toggle:hover {
+            background: rgba(255, 255, 255, 1);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+        
+        /* Sequential display animations */
+        .sequential-hide {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        
+        .sequential-show {
+            animation: sequentialShow 0.8s ease-out forwards;
+        }
+        
+        @keyframes sequentialShow {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* Content spacing adjustments */
+        .content-spacing-tight {
+            gap: 1rem;
+        }
+        
+        .content-spacing-normal {
+            gap: 1.5rem;
         }
     </style>
 </head>
@@ -244,10 +328,14 @@
                 <!-- Progress bar -->
                 <div class="progress-bar h-3 mb-4">
                     <div id="progressFill" class="progress-fill" style="width: 0%"></div>
-                </div>
-                  <div class="flex justify-between items-center text-white">
+                </div>                  <div class="flex justify-between items-center text-white relative">
                     <h1 id="quizTitle" class="text-2xl font-bold text-shadow">Lý thuyết</h1>
-                    <div class="flex items-center space-x-4">
+                    <div class="flex items-center space-x-4 relative">
+                        <!-- Display Mode Toggle -->
+                        <button id="displayModeToggle" class="display-mode-toggle text-gray-700 hover:text-blue-600" title="Chuyển đổi kiểu hiển thị">
+                            <i class="fas fa-eye mr-2"></i>
+                            <span id="displayModeText">Kiểu 1</span>
+                        </button>
                         <div id="audioStatus" class="text-sm opacity-75 hidden">
                             <i class="fas fa-volume-up mr-1"></i>
                             <span id="audioStatusText">Đang phát âm thanh...</span>
@@ -258,12 +346,11 @@
                 </div>
             </div>            <!-- Main quiz area -->
             <div class="flex-1 px-6 pb-6">
-                <div id="questionCard" class="question-card rounded-2xl p-8 max-w-6xl mx-auto slide-in">
+                <div id="questionCard" class="question-card rounded-2xl p-8 quiz-content-expanded mx-auto slide-in">
                     <!-- Question content will be populated here -->
                 </div>
             </div>
-            
-            <!-- Footer with keyboard shortcuts -->
+              <!-- Footer with keyboard shortcuts -->
             <div class="px-6 pb-4">
                 <div class="bg-black/20 backdrop-blur-sm rounded-lg p-3 text-white text-sm">
                     <div class="flex justify-center items-center space-x-6">
@@ -272,18 +359,27 @@
                         <span><kbd class="bg-white/20 px-2 py-1 rounded">Space</kbd> Tạm dừng/Phát</span>
                         <span><kbd class="bg-white/20 px-2 py-1 rounded">R</kbd> Phát lại</span>
                         <span><kbd class="bg-white/20 px-2 py-1 rounded">S</kbd> Dừng</span>
+                        <span><kbd class="bg-white/20 px-2 py-1 rounded">M</kbd> Chuyển kiểu</span>
                         <span><kbd class="bg-white/20 px-2 py-1 rounded">Q</kbd> Thoát</span>
                     </div>
                 </div>
             </div>
         </div>
-    </div>    <script>
-        /**
-         * SHOWQUIZ.HTML - PRESENTATION MODE
+    </div>    <script>        /**
+         * SHOWQUIZ.HTML - ENHANCED PRESENTATION MODE
          * 
          * This is a transformed version of the interactive quiz for presentation/display purposes.
          * 
-         * Features:
+         * NEW FEATURES (Version 2.0):
+         * - Enhanced layout with wider content container for longer answer options
+         * - Smart layout: 2-column for questions without images, image-optimized for questions with images
+         * - Fixed image positioning to prevent auto-scrolling
+         * - Two display modes with localStorage persistence:
+         *   Mode 1: All content shown immediately, audio highlights content
+         *   Mode 2: Sequential display synchronized with audio playback
+         * - Display mode toggle button with keyboard shortcut (M key)
+         * 
+         * EXISTING FEATURES:
          * - Auto-playing synchronized audio narration using JSON speech file names
          * - Visual highlighting of current audio content (questions and options)
          * - Presentation-only display (no interactive elements)
@@ -295,7 +391,7 @@
          * - Uses proper speech file names from JSON data (speech_id_question, speech_id_options_A, etc.)
          * - Sequential playback with visual highlighting synchronized to audio
          * - Error handling for missing audio files
-         * - Keyboard controls: Space (play/pause), R (replay), S (stop)
+         * - Keyboard controls: Space (play/pause), R (replay), S (stop), M (toggle mode)
          * 
          * Navigation:
          * - Arrow keys for question navigation
@@ -308,9 +404,9 @@
          * - Better contrast for readability on white backgrounds
          * - Audio status indicator in header
          * - Keyboard shortcuts display in footer
+         * - Responsive layout for different content types
          */
-        
-        // Global variables
+          // Global variables
         let quizData = null;
         let currentQuestionIndex = 0;
         let questions = [];
@@ -319,6 +415,9 @@
         let isPlayingAudio = false;
         let selectedCategory = '';
         let selectedSet = 1;
+        
+        // Display mode: 1 = All content shown immediately, 2 = Sequential display with audio sync
+        let displayMode = parseInt(localStorage.getItem('quizDisplayMode')) || 1;
 
         // Quiz set definitions (based on your requirements)
         const quizSets = {
@@ -380,9 +479,7 @@
                     alert('Không tìm thấy câu hỏi cho bộ đề này!');
                     goBack();
                     return;
-                }
-
-                // Set up UI
+                }                // Set up UI
                 setupUI();
                 displayQuestion();
 
@@ -391,9 +488,7 @@
                 alert('Có lỗi xảy ra khi tải dữ liệu!');
                 goBack();
             }
-        }
-
-        // Setup UI based on category
+        }// Setup UI based on category
         function setupUI() {
             const container = document.getElementById('quizContainer');
             const overlay = document.getElementById('quizOverlay');
@@ -416,10 +511,40 @@
                 overlay.classList.add('theme-ktm');
                 title.textContent = 'LÝ THUYẾT KHAI THÁC MỎ';
             }
-              subtitle.textContent = `Đề số ${selectedSet}`;
+              
+            subtitle.textContent = `Đề số ${selectedSet}`;
+            
+            // Setup display mode toggle
+            setupDisplayModeToggle();
             
             // Question counter will be updated in displayQuestion()
-        }// Display current question
+        }
+        
+        // Setup display mode toggle functionality
+        function setupDisplayModeToggle() {
+            const toggleBtn = document.getElementById('displayModeToggle');
+            const modeText = document.getElementById('displayModeText');
+            
+            // Update button text based on current mode
+            updateDisplayModeText();
+            
+            toggleBtn.addEventListener('click', () => {
+                displayMode = displayMode === 1 ? 2 : 1;
+                localStorage.setItem('quizDisplayMode', displayMode.toString());
+                updateDisplayModeText();
+                
+                // Re-display current question with new mode
+                displayQuestion();
+            });
+        }
+        
+        // Update display mode text
+        function updateDisplayModeText() {
+            const modeText = document.getElementById('displayModeText');
+            modeText.textContent = displayMode === 1 ? 'Kiểu 1' : 'Kiểu 2';
+        }
+
+        // Display current question with enhanced layout and display modes
         function displayQuestion() {
             const question = questions[currentQuestionIndex];
             const questionCard = document.getElementById('questionCard');
@@ -432,40 +557,62 @@
                 document.getElementById('quizContainer').style.backgroundImage = `url('${question.bg_image}')`;
             }
             
-            let questionHTML = `
-                <div class="mb-8">
-                    <div class="flex items-center justify-between mb-4">
-                        <span class="bg-blue-500 text-white px-4 py-2 rounded-lg font-semibold">
-                            <i class="fas fa-question-circle mr-2"></i>
-                            Câu ${currentQuestionIndex + 1}
-                        </span>
-                        <span class="text-gray-500 text-sm">${question.subcategory}</span>
-                    </div>
-                    <h2 class="text-3xl font-bold text-gray-800 leading-relaxed mb-8">${question.cau_hoi}</h2>
-                </div>
-            `;
+            const hasImage = question.question_image === "Yes" && question.image_id;
+            const options = Object.keys(question.phuong_an);
             
-            // Add image if present
-            if (question.question_image === "Yes" && question.image_id) {
-                questionHTML += `
-                    <div class="mb-8 text-center">
-                        <img src="${question.image_id}" alt="Hình ảnh câu hỏi" class="quiz-image mx-auto max-w-full h-auto rounded-lg shadow-lg">
+            let questionHTML = '';
+            
+            if (hasImage) {
+                // Layout with image - use two-column grid
+                questionHTML = `
+                    <div class="question-with-image">
+                        <!-- Left column: Question and Image -->
+                        <div class="question-image-fixed">
+                            <div class="mb-6">
+                                <div class="flex items-center justify-between mb-4">
+                                    <span class="bg-blue-500 text-white px-4 py-2 rounded-lg font-semibold">
+                                        <i class="fas fa-question-circle mr-2"></i>
+                                        Câu ${currentQuestionIndex + 1}
+                                    </span>
+                                    <span class="text-gray-500 text-sm">${question.subcategory}</span>
+                                </div>
+                                <h2 id="questionText" class="text-2xl font-bold text-gray-800 leading-relaxed mb-6 ${displayMode === 2 ? 'sequential-hide' : ''}">${question.cau_hoi}</h2>
+                            </div>
+                            <div id="questionImage" class="text-center ${displayMode === 2 ? 'sequential-hide' : ''}">
+                                <img src="${question.image_id}" alt="Hình ảnh câu hỏi" class="quiz-image mx-auto max-w-full h-auto rounded-lg shadow-lg">
+                            </div>
+                        </div>
+                        
+                        <!-- Right column: Options -->
+                        <div id="optionsContainer" class="options-single-column">
+                `;
+            } else {
+                // Layout without image - question at top, options in two columns
+                questionHTML = `
+                    <div class="mb-8">
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="bg-blue-500 text-white px-4 py-2 rounded-lg font-semibold">
+                                <i class="fas fa-question-circle mr-2"></i>
+                                Câu ${currentQuestionIndex + 1}
+                            </span>
+                            <span class="text-gray-500 text-sm">${question.subcategory}</span>
+                        </div>
+                        <h2 id="questionText" class="text-3xl font-bold text-gray-800 leading-relaxed mb-8 ${displayMode === 2 ? 'sequential-hide' : ''}">${question.cau_hoi}</h2>
                     </div>
+                    
+                    <div id="optionsContainer" class="options-two-column">
                 `;
             }
             
-            // Add options for display only (no interaction)
-            questionHTML += '<div class="space-y-6">';
-            const options = Object.keys(question.phuong_an);
-            
-            options.forEach(optionKey => {
+            // Add options
+            options.forEach((optionKey, index) => {
                 questionHTML += `
-                    <div class="option-display p-6 rounded-lg bg-white/90 border-2 border-gray-200 shadow-sm">
+                    <div id="option-${optionKey}" class="option-display p-6 rounded-lg bg-white/90 border-2 border-gray-200 shadow-sm ${displayMode === 2 ? 'sequential-hide' : ''}" data-option="${optionKey}">
                         <div class="flex items-center">
                             <div class="option-char-${optionKey} w-12 h-12 rounded-full flex items-center justify-center text-white font-bold mr-6 text-xl">
                                 ${optionKey.toUpperCase()}
                             </div>
-                            <span class="text-gray-800 flex-1 text-xl leading-relaxed">${question.phuong_an[optionKey]}</span>
+                            <span class="text-gray-800 flex-1 text-lg leading-relaxed">${question.phuong_an[optionKey]}</span>
                         </div>
                     </div>
                 `;
@@ -473,11 +620,90 @@
             
             questionHTML += '</div>';
             
+            if (hasImage) {
+                questionHTML += '</div>'; // Close question-with-image div
+            }
+            
             questionCard.innerHTML = questionHTML;
             
-            // Start auto-playing audio
-            startAutoPlayAudio(question);
-        }        // Auto-play audio function with status updates
+            // Start audio based on display mode
+            if (displayMode === 1) {
+                // Mode 1: Show all content, then start audio with highlighting
+                startAutoPlayAudio(question);
+            } else {
+                // Mode 2: Sequential display synchronized with audio
+                startSequentialAudio(question);
+            }
+        }
+        
+        // Sequential audio display mode - content appears synchronized with audio
+        function startSequentialAudio(question) {
+            stopAllAudio(); // Stop any currently playing audio
+            
+            audioQueue = [];
+            let sequenceIndex = 0;
+            
+            // Show question first
+            setTimeout(() => {
+                const questionText = document.getElementById('questionText');
+                if (questionText) {
+                    questionText.classList.remove('sequential-hide');
+                    questionText.classList.add('sequential-show');
+                }
+            }, 500);
+            
+            // Add question audio if available
+            if (question.speech_id_question) {
+                audioQueue.push({
+                    file: `speech/${question.speech_id_question}`,
+                    type: 'question',
+                    description: 'Đọc câu hỏi',
+                    sequence: sequenceIndex++,
+                    showElement: () => {
+                        // Question is already shown, maybe show image if exists
+                        const questionImage = document.getElementById('questionImage');
+                        if (questionImage) {
+                            setTimeout(() => {
+                                questionImage.classList.remove('sequential-hide');
+                                questionImage.classList.add('sequential-show');
+                            }, 1000);
+                        }
+                    }
+                });
+            }
+            
+            // Add option audio files using proper speech file names from JSON
+            const options = Object.keys(question.phuong_an);
+            options.forEach(optionKey => {
+                const speechFileKey = `speech_id_options_${optionKey.toUpperCase()}`;
+                const speechFile = question[speechFileKey];
+                
+                if (speechFile) {
+                    audioQueue.push({
+                        file: `speech/${speechFile}`,
+                        type: 'option',
+                        option: optionKey,
+                        description: `Đọc phương án ${optionKey.toUpperCase()}`,
+                        sequence: sequenceIndex++,
+                        showElement: () => {
+                            const optionElement = document.getElementById(`option-${optionKey}`);
+                            if (optionElement) {
+                                optionElement.classList.remove('sequential-hide');
+                                optionElement.classList.add('sequential-show');
+                            }
+                        }
+                    });
+                }
+            });
+            
+            // Update audio status
+            updateAudioStatus(`Bắt đầu phát tuần tự (${audioQueue.length} đoạn)`, true);
+            
+            // Start playing the audio queue with sequential display
+            playNextSequentialAudio();
+        }
+
+        // Auto-play audio function with status updates
         function startAutoPlayAudio(question) {
             stopAllAudio(); // Stop any currently playing audio
             
@@ -593,9 +819,95 @@
                 // Continue to next audio on play error
                 setTimeout(() => {
                     playNextAudio();
-                }, 500);
-            });
-        }// Enhanced highlighting for current audio being played
+                }, 500);            });
+        }
+        
+        // Play next audio in sequential mode with element reveal
+        function playNextSequentialAudio() {
+            if (audioQueue.length === 0) {
+                isPlayingAudio = false;
+                // Remove all highlights when audio sequence is complete
+                document.querySelectorAll('.audio-highlight').forEach(el => {
+                    el.classList.remove('audio-highlight');
+                });
+                updateAudioStatus('Hoàn thành phát tuần tự', false);
+                return;
+            }
+            
+            const audioItem = audioQueue.shift();
+            isPlayingAudio = true;
+            
+            // Update status with current audio description and remaining count
+            const remainingCount = audioQueue.length;
+            const statusMessage = `${audioItem.description || 'Đang phát tuần tự...'} (còn ${remainingCount})`;
+            updateAudioStatus(statusMessage, true);
+            
+            // Show the element before playing audio
+            if (audioItem.showElement) {
+                audioItem.showElement();
+            }
+            
+            // Wait a bit for element to appear, then highlight and play audio
+            setTimeout(() => {
+                highlightCurrentAudio(audioItem);
+                
+                currentAudio = new Audio(audioItem.file);
+                
+                currentAudio.addEventListener('loadstart', () => {
+                    console.log(`Loading sequential audio: ${audioItem.file}`);
+                });
+                
+                currentAudio.addEventListener('canplaythrough', () => {
+                    console.log(`Sequential audio ready to play: ${audioItem.file}`);
+                });
+                
+                currentAudio.addEventListener('ended', () => {
+                    console.log(`Sequential audio ended: ${audioItem.file}`);
+                    // Remove highlight from current item
+                    document.querySelectorAll('.audio-highlight').forEach(el => {
+                        el.classList.remove('audio-highlight');
+                    });
+                    
+                    // Longer pause between sequential segments for better comprehension
+                    setTimeout(() => {
+                        playNextSequentialAudio();
+                    }, 800); // 800ms pause between sequential audio segments
+                });
+                
+                currentAudio.addEventListener('error', (e) => {
+                    console.error(`Error loading sequential audio: ${audioItem.file}`, e);
+                    updateAudioStatus(`Lỗi tải âm thanh: ${audioItem.file.split('/').pop()}`, false);
+                    
+                    // Remove highlight on error
+                    document.querySelectorAll('.audio-highlight').forEach(el => {
+                        el.classList.remove('audio-highlight');
+                    });
+                    
+                    // Continue to next audio on error
+                    setTimeout(() => {
+                        playNextSequentialAudio();
+                    }, 500);
+                });
+                
+                // Attempt to play the audio
+                currentAudio.play().catch((e) => {
+                    console.error(`Error playing sequential audio: ${audioItem.file}`, e);
+                    updateAudioStatus(`Lỗi phát âm thanh: ${audioItem.file.split('/').pop()}`, false);
+                    
+                    // Remove highlight on play error
+                    document.querySelectorAll('.audio-highlight').forEach(el => {
+                        el.classList.remove('audio-highlight');
+                    });
+                    
+                    // Continue to next audio on play error
+                    setTimeout(() => {
+                        playNextSequentialAudio();
+                    }, 500);
+                });
+            }, 500); // Wait for element appearance animation
+        }
+
+        // Enhanced highlighting for current audio being played
         function highlightCurrentAudio(audioItem) {
             // Remove previous highlights
             document.querySelectorAll('.audio-highlight').forEach(el => {
@@ -680,7 +992,7 @@
             const progress = ((currentQuestionIndex + 1) / questions.length) * 100;
             document.getElementById('progressFill').style.width = `${progress}%`;
             document.getElementById('questionCounter').textContent = `Câu ${currentQuestionIndex + 1} / ${questions.length}`;
-        }        // Navigation functions with audio management
+        }        // Navigation functions with audio management and display mode support
         function previousQuestion() {
             stopAllAudio();
             if (currentQuestionIndex > 0) {
@@ -706,12 +1018,38 @@
         function goBack() {
             stopAllAudio();
             window.location.href = 'lythuyet.html';
-        }
-
-        // Restart audio for current question
+        }// Restart audio for current question
         function restartAudio() {
             if (questions[currentQuestionIndex]) {
                 startAutoPlayAudio(questions[currentQuestionIndex]);
+            }
+        }
+        
+        // Restart sequential audio for current question
+        function restartSequentialAudio() {
+            if (questions[currentQuestionIndex]) {
+                // Reset all elements to hidden state first
+                const questionText = document.getElementById('questionText');
+                const questionImage = document.getElementById('questionImage');
+                const optionElements = document.querySelectorAll('[id^="option-"]');
+                
+                if (questionText) {
+                    questionText.classList.add('sequential-hide');
+                    questionText.classList.remove('sequential-show');
+                }
+                
+                if (questionImage) {
+                    questionImage.classList.add('sequential-hide');
+                    questionImage.classList.remove('sequential-show');
+                }
+                
+                optionElements.forEach(el => {
+                    el.classList.add('sequential-hide');
+                    el.classList.remove('sequential-show');
+                });
+                
+                // Start sequential audio again
+                startSequentialAudio(questions[currentQuestionIndex]);
             }
         }// Removed unused functions: calculateScore, showResults, closeResults, retakeQuiz, goToTheoryList
 
@@ -720,7 +1058,7 @@
         }
 
         // Initialize when page loads
-        document.addEventListener('DOMContentLoaded', initializeQuiz);        // Enhanced keyboard navigation with audio controls
+        document.addEventListener('DOMContentLoaded', initializeQuiz);        // Enhanced keyboard navigation with audio controls and display mode toggle
         document.addEventListener('keydown', function(e) {
             if (e.key === 'ArrowLeft') {
                 e.preventDefault();
@@ -737,16 +1075,28 @@
                 if (isPlayingAudio) {
                     stopAllAudio();
                 } else {
-                    restartAudio();
+                    if (displayMode === 1) {
+                        restartAudio();
+                    } else {
+                        restartSequentialAudio();
+                    }
                 }
             } else if (e.key === 'r' || e.key === 'R') {
                 e.preventDefault();
                 // Restart audio
-                restartAudio();
+                if (displayMode === 1) {
+                    restartAudio();
+                } else {
+                    restartSequentialAudio();
+                }
             } else if (e.key === 's' || e.key === 'S') {
                 e.preventDefault();
                 // Stop audio
                 stopAllAudio();
+            } else if (e.key === 'm' || e.key === 'M') {
+                e.preventDefault();
+                // Toggle display mode
+                document.getElementById('displayModeToggle').click();
             }
         });
     </script>
