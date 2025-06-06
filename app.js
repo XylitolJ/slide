@@ -671,7 +671,8 @@ document.addEventListener('DOMContentLoaded', () => {
         // Enable navigation to next question
     }
 
-    // --- Navigation ---    function nextQuestion() {
+    // --- Navigation ---
+    function nextQuestion() {
         if (currentAudio && currentAudio.source) { // Stop any ongoing audio
             currentAudio.source.stop();
             currentAudio.source.disconnect();
@@ -683,17 +684,9 @@ document.addEventListener('DOMContentLoaded', () => {
             currentQuestionIndex++;
             renderSlide(allQuestions[currentQuestionIndex]);
         } else {
-<<<<<<< HEAD
-            // If we're at the last question, navigate back to page3.html
-            window.location.href = 'page3.html';        }
-    }
-
-    function previousQuestion() {
-=======
             window.location.href = 'page3.html';
         }
     }    function previousQuestion() {
->>>>>>> fix1
         if (currentAudio && currentAudio.source) {
             currentAudio.source.stop();
             currentAudio.source.disconnect();
@@ -805,15 +798,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Event Listeners ---
     startSequenceBtn.addEventListener('click', startQuestionSequence);
-    showAnswerBtn.addEventListener('click', displayAnswer);    document.addEventListener('keydown', (e) => {
+    showAnswerBtn.addEventListener('click', displayAnswer);
+
+    document.addEventListener('keydown', (e) => {
         if (e.key === 'ArrowRight') {
-            // Phím mũi tên phải: next câu hỏi hoặc về page3.html nếu ở câu cuối
-            e.preventDefault();
-            nextQuestion();
+            if (!sequenceInProgress) {
+                nextQuestion();
+            }
         } else if (e.key === 'ArrowLeft') {
-            // Phím mũi tên trái: previous câu hỏi hoặc về page3.html nếu ở câu đầu
-            e.preventDefault();
-            previousQuestion();
+            if (!sequenceInProgress) {
+                previousQuestion();
+            }
         } else if (e.key === ' ' || e.key === 'Spacebar') {
             e.preventDefault(); 
             if (!startSequenceBtn.disabled) {
