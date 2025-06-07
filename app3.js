@@ -309,27 +309,17 @@ document.addEventListener('DOMContentLoaded', () => {    // URL Parameter handli
         applyTheme(questionData.category);
  
         // Update footer progress bar
-        if (footerProgressBarEl) footerProgressBarEl.style.width = `${((currentQuestionIndex + 1) / allQuestions.length) * 100}%`;
-        
-        // Update footer round information
+        if (footerProgressBarEl) footerProgressBarEl.style.width = `${((currentQuestionIndex + 1) / allQuestions.length) * 100}%`;        // Update footer round information
         if (roundInfoDisplayEl && contestRoundsData.length > 0) {
-            let cumulativeQuestions = 0;
-            let currentRound = null;
-            for (let i = 0; i < contestRoundsData.length; i++) {
-                const round = contestRoundsData[i];
-                if (currentQuestionIndex < cumulativeQuestions + round.so_cau_hoi) {
-                    currentRound = round;
-                    break;
-                }
-                cumulativeQuestions += round.so_cau_hoi;
-            }
-
-            if (currentRound) {
+            // Since this is app3.js for Round 3, always show Round 3 info
+            const round3 = contestRoundsData.find(r => r.vong === 3);
+            if (round3) {
                 roundInfoDisplayEl.innerHTML = `
-                    <h3><i class="fas fa-trophy mr-2"></i>Vòng ${currentRound.vong}: ${currentRound.ten_vong}</h3>
-                    <p>Thời gian thực hiện: ${currentRound.thoi_gian_tra_loi} | Thang điểm: ${currentRound.thang_diem} điểm</p>
-                `;            } else {
-                roundInfoDisplayEl.innerHTML = ''; // Clear if no round info found (should not happen)
+                    <h3><i class="fas fa-trophy mr-2"></i>Vòng ${round3.vong}: ${round3.ten_vong}</h3>
+                    <p>${round3.cau_hoi_phan_bo} | Thời gian chuẩn bị: ${round3.thoi_gian_chuan_bi} | Thang điểm: ${round3.thang_diem} điểm</p>
+                `;
+            } else {
+                roundInfoDisplayEl.innerHTML = ''; // Clear if Round 3 not found
             }
         }
         
@@ -485,9 +475,7 @@ document.addEventListener('DOMContentLoaded', () => {    // URL Parameter handli
         setTimeout(() => {
             navigationInProgress = false;
         }, 100);
-    }
-
-    // --- Update Round Info Display ---
+    }    // --- Update Round Info Display ---
     function updateRoundInfoDisplay() {
         if (roundInfoDisplayEl && contestRoundsData.length > 0) {
             // For Round 3
@@ -495,11 +483,11 @@ document.addEventListener('DOMContentLoaded', () => {    // URL Parameter handli
             if (round3) {
                 roundInfoDisplayEl.innerHTML = `
                     <h3><i class="fas fa-trophy mr-2"></i>Vòng ${round3.vong}: ${round3.ten_vong}</h3>
-                    <p>Thời gian thực hiện: ${round3.thoi_gian_tra_loi} | Thang điểm: ${round3.thang_diem} điểm</p>
+                    <p>${round3.cau_hoi_phan_bo} | Thời gian chuẩn bị: ${round3.thoi_gian_chuan_bi} | Thang điểm: ${round3.thang_diem} điểm</p>
                 `;
             }
         }
-    }    // --- Load Data ---
+    }// --- Load Data ---
     async function loadQuestions() {
         try {
             // Load Round 3 questions from vong3.json
