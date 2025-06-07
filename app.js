@@ -75,9 +75,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         // Stop any currently playing audio
-        if (currentAudio && currentAudio.source) {
-            currentAudio.source.stop();
-            currentAudio.source.disconnect();
+        if (currentAudio) {
+            currentAudio.pause();
+            currentAudio.currentTime = 0;
         }
         
         // Create a new audio object for each playback to handle 'ended' event correctly
@@ -628,9 +628,9 @@ async function displayAnswer() {
 
     // Utility to stop all ongoing timers and audio
     function stopAllEvents() {
-        if (currentAudio && currentAudio.source) {
-            currentAudio.source.stop();
-            currentAudio.source.disconnect();
+        if (currentAudio) {
+            currentAudio.pause();
+            currentAudio.currentTime = 0;
             currentAudio = null;
         }
         if (timerInterval) {
@@ -787,9 +787,9 @@ async function displayAnswer() {
     // --- Emergency Exit Function ---
     function emergencyExitToPage3() {
         // Stop all audio
-        if (currentAudio && currentAudio.source) {
-            currentAudio.source.stop();
-            currentAudio.source.disconnect();
+        if (currentAudio) {
+            currentAudio.pause();
+            currentAudio.currentTime = 0;
             currentAudio = null;
         }
         

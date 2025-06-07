@@ -78,9 +78,9 @@ document.addEventListener('DOMContentLoaded', () => {    // URL Parameter handli
     function emergencyExitToPage3() {
         console.log('Emergency exit function called');
         // Stop all audio
-        if (currentAudio && currentAudio.source) {
-            currentAudio.source.stop();
-            currentAudio.source.disconnect();
+        if (currentAudio) {
+            currentAudio.pause();
+            currentAudio.currentTime = 0;
             currentAudio = null;
         }
         
@@ -101,9 +101,9 @@ document.addEventListener('DOMContentLoaded', () => {    // URL Parameter handli
 
     // Utility to stop all ongoing timers and audio without navigating away
     function stopAllEvents() {
-        if (currentAudio && currentAudio.source) {
-            currentAudio.source.stop();
-            currentAudio.source.disconnect();
+        if (currentAudio) {
+            currentAudio.pause();
+            currentAudio.currentTime = 0;
             currentAudio = null;
         }
         if (timerInterval) {
@@ -127,9 +127,9 @@ document.addEventListener('DOMContentLoaded', () => {    // URL Parameter handli
         }
 
         // Stop any currently playing audio
-        if (currentAudio && currentAudio.source) {
-            currentAudio.source.stop();
-            currentAudio.source.disconnect();
+        if (currentAudio) {
+            currentAudio.pause();
+            currentAudio.currentTime = 0;
         }
         
         // Create a new audio object for each playback to handle 'ended' event correctly
