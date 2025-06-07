@@ -99,6 +99,26 @@ document.addEventListener('DOMContentLoaded', () => {    // URL Parameter handli
         window.location.href = 'page3.html';
     }
 
+    // Utility to stop all ongoing timers and audio without navigating away
+    function stopAllEvents() {
+        if (currentAudio && currentAudio.source) {
+            currentAudio.source.stop();
+            currentAudio.source.disconnect();
+            currentAudio = null;
+        }
+        if (timerInterval) {
+            clearInterval(timerInterval);
+            timerInterval = null;
+        }
+        if (timesUpPopupEl) {
+            timesUpPopupEl.style.display = 'none';
+            timesUpPopupEl.style.opacity = '0';
+            timesUpPopupEl.style.animation = 'none';
+        }
+        sequenceInProgress = false;
+        answerShown = false;
+    }
+
     // --- Audio Playback ---
     async function playAudio(filePath, onEndCallback) {
         if (!USE_SPEECH || !audioContext || !filePath) {
@@ -400,12 +420,8 @@ document.addEventListener('DOMContentLoaded', () => {    // URL Parameter handli
 
     // --- Navigation ---
     function nextQuestion() {
-        if (currentAudio && currentAudio.source) { // Stop any ongoing audio
-            currentAudio.source.stop();
-            currentAudio.source.disconnect();
-            currentAudio = null;
-        }
-        if (timerInterval) clearInterval(timerInterval);        if (currentQuestionIndex < allQuestions.length - 1) {
+        stopAllEvents();
+        if (currentQuestionIndex < allQuestions.length - 1) {
             currentQuestionIndex++;
             renderSlide(allQuestions[currentQuestionIndex]);
         } else {
@@ -415,12 +431,7 @@ document.addEventListener('DOMContentLoaded', () => {    // URL Parameter handli
     }
 
     function previousQuestion() {
-        if (currentAudio && currentAudio.source) {
-            currentAudio.source.stop();
-            currentAudio.source.disconnect();
-            currentAudio = null;
-        }
-        if (timerInterval) clearInterval(timerInterval);
+        stopAllEvents();
 
         if (currentQuestionIndex > 0) {
             currentQuestionIndex--;
@@ -538,11 +549,12 @@ document.addEventListener('DOMContentLoaded', () => {    // URL Parameter handli
     }    document.addEventListener('keydown', (e) => {
         console.log('Key pressed:', e.key); // Debug log
         if (e.key === 'ArrowRight') {
-            // Phím mũi tên phải: next câu hỏi hoặc về page3.html nếu ở câu cuối
             e.preventDefault();
-            nextQuestion();        } else if (e.key === 'ArrowLeft') {
-            // Phím mũi tên trái: previous câu hỏi hoặc về page3.html nếu ở câu đầu
+            stopAllEvents();
+            nextQuestion();
+        } else if (e.key === 'ArrowLeft') {
             e.preventDefault();
+            stopAllEvents();
             previousQuestion();
         } else if (e.key === ' ' || e.key === 'Spacebar') {
             e.preventDefault();
