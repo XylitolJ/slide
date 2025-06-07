@@ -157,6 +157,9 @@
                         <button id="slideModeBtn" class="px-3 py-1 rounded-full font-semibold transition-all duration-300 text-blue-700 hover:bg-blue-50">
                             Mode 2
                         </button>
+                        <a href="page3.html" class="ml-3 text-blue-700 hover:text-blue-900">
+                            <i class="fas fa-home"></i>
+                        </a>
                     </div>
                 </div>
             </div>
@@ -319,47 +322,22 @@
                         </button>
                     </div>
                 </div>
-            </div>            <!-- Back to home button -->
-            <div class="text-center mt-12">
-                <a href="page3.html" class="inline-block bg-white text-blue-600 px-8 py-4 rounded-full font-bold text-lg hover:bg-gray-100 transition-colors duration-300 shadow-lg">
-                    <i class="fas fa-home"></i>
-                </a>
             </div>
             </div>
         </div>
-    </div>
 
     <script>
-        // Quiz set configurations for each category
-        const quizSets = {
-            ly_thuyet_boc_xep_bao_quan_van_chuyen: {
-                1: [], // Will be populated dynamically
-                2: [],
-                3: [],
-                4: [],
-                5: []
-            },
-            ly_thuyet_bao_ve: {
-                1: [],
-                2: [],
-                3: [],
-                4: [],
-                5: [],
-                6: [],
-                7: [],
-                8: []
-            },
-            ly_thuyet_khai_thac_mo: {
-                1: [],
-                2: [],
-                3: [],
-                4: [],
-                5: [],
-                6: [],
-                7: [],
-                8: []
+        let quizSets = {};
+
+        async function loadQuizSets() {
+            try {
+                const res = await fetch('question_sets.json');
+                const data = await res.json();
+                quizSets = data.vong2 || {};
+            } catch (err) {
+                console.error('Error loading question sets:', err);
             }
-        };
+        }
         // Display mode control - true for detail page, false for slide
         let detailMode = localStorage.getItem('lythuyet-display-mode') === 'slide' ? false : true;
 
@@ -400,57 +378,9 @@
             }
         }
 
-        // Generate quiz sets automatically based on question availability
-        async function generateQuizSets() {
-            try {
-                const response = await fetch('vong2.json');
-                const data = await response.json();
-                
-                // Process each category
-                Object.keys(quizSets).forEach(category => {
-                    if (data.vong_2[category] && data.vong_2[category].trac_nghiem) {
-                        const questions = data.vong_2[category].trac_nghiem;
-                        
-                        // Separate theory and image questions
-                        const theoryQuestions = questions.filter(q => q.question_image === "No");
-                        const imageQuestions = questions.filter(q => q.question_image === "Yes");
-                        
-                        // Generate quiz sets (1 theory + 2 image questions per set)
-                        const maxSets = Math.min(
-                            theoryQuestions.length,
-                            Math.floor(imageQuestions.length / 2),
-                            Object.keys(quizSets[category]).length
-                        );
-                        
-                        for (let i = 0; i < maxSets; i++) {
-                            const setQuestions = [];
-                            
-                            // Add 1 theory question
-                            if (theoryQuestions[i]) {
-                                setQuestions.push(theoryQuestions[i].id);
-                            }
-                            
-                            // Add 2 image questions
-                            if (imageQuestions[i * 2]) {
-                                setQuestions.push(imageQuestions[i * 2].id);
-                            }
-                            if (imageQuestions[i * 2 + 1]) {
-                                setQuestions.push(imageQuestions[i * 2 + 1].id);
-                            }
-                            
-                            quizSets[category][i + 1] = setQuestions;
-                        }
-                    }
-                });
-                
-                console.log('Generated quiz sets:', quizSets);
-            } catch (error) {
-                console.error('Error generating quiz sets:', error);
-            }
-        }
         // Initialize when page loads
-        document.addEventListener('DOMContentLoaded', () => {
-            generateQuizSets();
+        document.addEventListener('DOMContentLoaded', async () => {
+            await loadQuizSets();
             initializeModeToggle();
             setDisplayMode(detailMode);
         });

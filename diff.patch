@@ -1,0 +1,1056 @@
+diff --git a/app2.js b/app2.js
+index 8150cb4b0ed571f9f9a67324f0b79d9ba11ea76c..79f18a2a2d1c1111180f77d42d5065337abb8cf1 100644
+--- a/app2.js
++++ b/app2.js
+@@ -1,41 +1,43 @@
+ // npx http-server -o
+ document.addEventListener('DOMContentLoaded', () => {
+     // DOM Elements
+     const slideContainer = document.getElementById('slideContainer');
+     // Header elements
+     const headerEl = document.querySelector('.header'); 
+     const questionNumberEl = document.getElementById('newQuestionNumber'); // Updated ID
+     const questionCategoryEl = document.getElementById('newQuestionCategory'); // Updated ID
+     const timerCircleEl = document.getElementById('timerProgress'); // Updated ID
+     const timerTextEl = document.getElementById('timer'); // Updated ID
+     // Main content elements
+     const questionSectionEl = document.getElementById('questionSection'); 
+     const questionTextContentEl = document.getElementById('questionTextContent');
+     const optionsContainerEl = document.getElementById('optionsContainer'); 
+     const imageAreaEl = document.getElementById('imageArea'); 
+     const slideImageEl = document.getElementById('slideImage');
++    const imageModalEl = document.getElementById('imageModal');
++    const modalImageEl = document.getElementById('modalImage');
+     // Footer elements
+     const footerEl = document.querySelector('.footer'); 
+     const progressTextEl = document.getElementById('progressText'); // ID remains the same, but element is in new footer
+     const startSequenceBtn = document.getElementById('startSequenceBtn');
+     const showAnswerBtn = document.getElementById('showAnswerBtn');
+     // const footerContestInfoEl = document.getElementById('footerContestInfo')?.querySelector('span'); // This element might not exist in the new footer structure or needs re-evaluation
+     // const footerTimeScoreEl = document.getElementById('footerTimeScore')?.querySelector('span'); // This element might not exist
+     const footerProgressBarEl = document.getElementById('footerProgressBar');
+     const roundInfoDisplayEl = document.getElementById('roundInfoDisplay'); // New element for round info
+  
+     // Parse query parameters for selected question IDs
+     function getSelectedIds() {
+         const params = new URLSearchParams(window.location.search);
+         const idsParam = params.get('ids');
+         if (!idsParam) return [];
+         return idsParam.split(',').map(id => id.trim()).filter(Boolean);
+     }
+  
+     // Popup
+     const timesUpPopupEl = document.getElementById('timeUpOverlay'); // Updated ID for new overlay
+ 
+     // --- Configuration ---
+     const DEBUG_MODE = false; // Set to true to enable debug mode
+     const USE_SPEECH = true; // Set to false to disable all speech synthesis & audio file playback
+     const SHOW_IMAGE_PLACEHOLDER_ON_ERROR = true; // If true, shows a placeholder if an image fails to load
+@@ -306,88 +308,96 @@ document.addEventListener('DOMContentLoaded', () => {
+         // Prepare image 
+         let showImageArea = questionData.use_image === 'Yes' && questionData.image_id;
+         const questionTextLength = questionData.cau_hoi.length;
+ 
+         if (questionData.question_image !== 'Yes' && questionTextLength > 250 && questionData.use_image === 'Yes') {
+             showImageArea = false;
+         }
+         
+         const questionOptionsSection = document.getElementById('questionOptionsArea');
+         // The main content container is the one with class 'px-8.py-4.flex-grow.flex.overflow-hidden'
+         const mainContentFlexContainer = document.querySelector('.px-8.py-4.flex-grow.flex.overflow-hidden');
+ 
+         // Reset layout classes first
+         if (mainContentFlexContainer) {
+             mainContentFlexContainer.classList.remove('flex-col', 'flex-row'); // Remove old direction
+         }
+         if (questionOptionsSection) {
+             questionOptionsSection.classList.remove('w-full', 'w-3/5', 'w-2/5', 'pr-6', 'pl-6');
+             questionOptionsSection.style.order = ''; // Reset order
+         }
+         if (imageAreaEl) {
+             imageAreaEl.classList.remove('w-full', 'w-3/5', 'w-2/5', 'pr-6', 'pl-6', 'h-2/3', 'py-4');
+             imageAreaEl.style.order = ''; // Reset order
+             imageAreaEl.classList.add('hidden'); // Default to hidden
+         }
++        if (imageWrapperEl) {
++            imageWrapperEl.classList.remove('relative', 'w-full', 'question-image');
++            imageWrapperEl.classList.add('absolute', 'inset-y-0', 'right-0', 'w-[calc(100%+3rem)]', 'custom-image-shape');
++        }
+ 
+ 
+         slideImageEl.onload = () => {
+             if(showImageArea && imageAreaEl) {
+                 imageAreaEl.classList.remove('hidden');
+             }
+         };
+         slideImageEl.onerror = () => {
+             if (SHOW_IMAGE_PLACEHOLDER_ON_ERROR) {
+                 slideImageEl.src = IMAGE_PLACEHOLDER_SVG;
+                 slideImageEl.alt = "Không tìm thấy hình ảnh, hiển thị ảnh mẫu";
+                 if(showImageArea && imageAreaEl) {
+                     imageAreaEl.classList.remove('hidden');
+                 }
+             } else {
+                 if(imageAreaEl) imageAreaEl.classList.add('hidden');
+                  // If image area is hidden, questionOptionsSection should take full width
+                 if(questionOptionsSection) questionOptionsSection.classList.add('w-full');
+                 if(mainContentFlexContainer) mainContentFlexContainer.classList.add('flex-row'); // Ensure row layout if no image
+             }
+         };
+ 
+         if (showImageArea && imageAreaEl && questionOptionsSection && mainContentFlexContainer) {
+             // Ensure the image area is made visible if an image is supposed to be shown
+             imageAreaEl.classList.remove('hidden');
+             
+             slideImageEl.src = questionData.image_id;
+             slideImageEl.alt = `Hình ảnh cho câu ${questionData.id}`;
+             // The line below is now redundant due to the above change, but harmless if onload also calls it.
+             // imageAreaEl.classList.remove('hidden'); // Handled by onload
+ 
+             if (questionData.question_image === 'Yes') {
+-                mainContentFlexContainer.classList.add('flex-col');
+-                questionOptionsSection.classList.add('w-full');
++                mainContentFlexContainer.classList.add('flex-row');
++                questionOptionsSection.classList.add('w-2/5', 'pr-6');
+                 questionOptionsSection.style.order = 1;
+-                imageAreaEl.classList.add('w-full', 'h-2/3', 'py-4'); // Adjust image height as needed
++                imageAreaEl.classList.add('w-3/5', 'pl-6');
+                 imageAreaEl.style.order = 2;
+                 slideImageEl.classList.replace('object-cover', 'object-contain');
++                if (imageWrapperEl) {
++                    imageWrapperEl.classList.remove('absolute', 'inset-y-0', 'right-0', 'w-[calc(100%+3rem)]', 'custom-image-shape');
++                    imageWrapperEl.classList.add('relative', 'w-full', 'question-image');
++                }
+             } else if (questionData.position_image === 'Left') {
+                 mainContentFlexContainer.classList.add('flex-row');
+                 questionOptionsSection.classList.add('w-3/5', 'pl-6');
+                 questionOptionsSection.style.order = 2;
+                 imageAreaEl.classList.add('w-2/5', 'pr-6');
+                 imageAreaEl.style.order = 1;
+                 slideImageEl.classList.replace('object-contain', 'object-cover');
+             } else { // Default to Right or if position_image is 'Right'
+                 mainContentFlexContainer.classList.add('flex-row');
+                 questionOptionsSection.classList.add('w-3/5', 'pr-6');
+                 questionOptionsSection.style.order = 1;
+                 imageAreaEl.classList.add('w-2/5', 'pl-6');
+                 imageAreaEl.style.order = 2;
+                 slideImageEl.classList.replace('object-contain', 'object-cover');
+             }
+         } else { // No image to show
+             if(imageAreaEl) imageAreaEl.classList.add('hidden');
+             if(questionOptionsSection) questionOptionsSection.classList.add('w-full');
+             if(mainContentFlexContainer) mainContentFlexContainer.classList.add('flex-row');
+         }
+ 
+         if (questionData.phuong_an) {
+             Object.entries(questionData.phuong_an).forEach(([key, value]) => {
+                 if (value) {
+                     const optionKeyUpper = key.toUpperCase();
+@@ -533,51 +543,51 @@ document.addEventListener('DOMContentLoaded', () => {
+         // 1. Show Question and Image simultaneously
+         const imageWrapperEl = document.getElementById('imageWrapper'); 
+         
+         // Start animations simultaneously
+         if (questionSectionEl) questionSectionEl.classList.remove('u-hidden-initially');
+         if (optionsContainerEl) optionsContainerEl.classList.remove('u-hidden-initially');
+         if (imageAreaEl && slideImageEl.complete) imageAreaEl.classList.remove('u-hidden-initially');
+ 
+         animateElement(questionSectionEl, 'question-appear');
+         if (imageAreaEl && slideImageEl.complete) animateElement(imageAreaEl, 'image-appear');
+         if (slideImageEl.src && imageAreaEl && !imageAreaEl.classList.contains('hidden') && imageWrapperEl) {
+             console.log(`%cstartQuestionSequence: Attempting to animate image. Conditions: slideImageEl.src="${slideImageEl.src}", imageAreaEl exists=${!!imageAreaEl}, imageAreaEl.hidden=${imageAreaEl.classList.contains('hidden')}, imageWrapperEl exists=${!!imageWrapperEl}`, "color: green; font-weight: bold;");
+             animateElement(imageWrapperEl, 'image-appear');
+         } else {
+             console.log(`%cstartQuestionSequence: Image will NOT be animated. Conditions: slideImageEl.src="${slideImageEl.src}", imageAreaEl exists=${!!imageAreaEl}, imageAreaEl.hidden=${imageAreaEl ? imageAreaEl.classList.contains('hidden') : 'N/A'}, imageWrapperEl exists=${!!imageWrapperEl}`, "color: red; font-weight: bold;");
+         }
+         
+         // 2. Speak Question (after showing both question and image)
+         if (USE_SPEECH && currentQuestionData.speech_id_question) {
+             await playAudio(`speech/${currentQuestionData.speech_id_question}`);
+         } else {
+             await new Promise(r => setTimeout(r, DELAY_NO_SPEECH_QUESTION));
+         }
+ 
+         // 3. Show & Speak Options (if Trac nghiem)
+-        if (currentQuestionData.type_question === "Trắc nghiệm" && currentQuestionData.phuong_an) {
++        if ((currentQuestionData.type_question === "Trắc nghiệm" || currentQuestionData.type_question === "Trắc nghiệm Hình ảnh") && currentQuestionData.phuong_an) {
+             const optionElements = optionsContainerEl.querySelectorAll('.option-card');
+             console.log(`startQuestionSequence: Found ${optionElements.length} option elements to animate.`);
+             
+             let animationDelayBase = 0; // For staggering option animations
+             for (let i = 0; i < optionElements.length; i++) {
+                 const optionEl = optionElements[i];
+                 console.log('startQuestionSequence: Animating option', optionEl.id);
+                 
+                 // Set animation delay for staggered effect
+                 optionEl.style.animationDelay = `${animationDelayBase}s`;
+                 animateElement(optionEl, 'option-appear');
+                 
+                 // Speak option if audio exists
+                 const optionKey = optionEl.dataset.optionKey;
+                 const speechFileKey = `speech_id_options_${optionKey.toUpperCase()}`;
+                 const speechFile = currentQuestionData[speechFileKey];
+                 
+                 if (USE_SPEECH && speechFile) {
+                     await playAudio(`speech/${speechFile}`);
+                 } else {
+                     await new Promise(r => setTimeout(r, DELAY_NO_SPEECH_OPTION));
+                 }
+                 
+                 animationDelayBase += 0.15; // Stagger next option by 150ms
+             }
+@@ -619,51 +629,51 @@ document.addEventListener('DOMContentLoaded', () => {
+                         behavior: 'smooth', 
+                         block: 'center' 
+                     });
+                 }, 300);
+             }
+         });
+     }
+     
+     async function displayAnswer() {
+         if (answerShown || !currentQuestionData) return;
+         answerShown = true;
+ 
+         if (timerInterval) clearInterval(timerInterval);
+         
+         // Immediately hide time-up overlay without delay or animation
+         if (!DEBUG_MODE && timesUpPopupEl) {
+             timesUpPopupEl.style.display = 'none';
+             timesUpPopupEl.style.opacity = '0';
+             timesUpPopupEl.style.animation = 'none'; // Stop any ongoing animations
+         }
+ 
+         showAnswerBtn.disabled = true;
+         showAnswerBtn.classList.add('opacity-50', 'cursor-not-allowed');
+         
+         let answerDisplayString = "";
+-        if (currentQuestionData.type_question === "Trắc nghiệm") {
++        if (currentQuestionData.type_question === "Trắc nghiệm" || currentQuestionData.type_question === "Trắc nghiệm Hình ảnh") {
+             if (currentQuestionData.dap_an_dung) {
+                 const correctKeys = Array.isArray(currentQuestionData.dap_an_dung) 
+                                     ? currentQuestionData.dap_an_dung 
+                                     : [currentQuestionData.dap_an_dung];
+                 answerDisplayString = "Đáp án: " + correctKeys.map(k => k.toUpperCase()).join(', ');
+                 highlightCorrectAnswer();
+             } else {
+                 answerDisplayString = "Không có đáp án cho câu này.";
+             }
+         } else if (currentQuestionData.type_question === "Lý thuyết tự luận" || currentQuestionData.type_question === "Câu hỏi hình ảnh") {
+             if (typeof currentQuestionData.cau_tra_loi === 'string') {
+                 answerDisplayString = `<span class="font-bold">Đáp án:</span> (Chi tiết trong tài liệu)`;
+             } else if (typeof currentQuestionData.cau_tra_loi === 'object' && currentQuestionData.cau_tra_loi !== null) {
+                 let structuredAnswer = "";
+                 for (const key in currentQuestionData.cau_tra_loi) {
+                     structuredAnswer += `<p><strong>${key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}:</strong> ${currentQuestionData.cau_tra_loi[key]}</p>`;
+                 }
+                 answerDisplayString = structuredAnswer; // This will be HTML
+             }
+              else {
+                 answerDisplayString = "Đáp án được trình bày bởi BGK/Tài liệu.";
+             }
+         } else if (currentQuestionData.type_question === "Thực hành") {
+             answerDisplayString = "Ban giám khảo chấm điểm thực hành.";
+         }
+@@ -789,50 +799,61 @@ document.addEventListener('DOMContentLoaded', () => {
+     function emergencyExitToPage3() {
+         // Stop all audio
+         if (currentAudio && currentAudio.source) {
+             currentAudio.source.stop();
+             currentAudio.source.disconnect();
+             currentAudio = null;
+         }
+         
+         // Clear all timers
+         if (timerInterval) {
+             clearInterval(timerInterval);
+             timerInterval = null;
+         }
+         
+         // Reset all flags
+         sequenceInProgress = false;
+         answerShown = false;
+         
+         // Navigate to page3.html
+         window.location.href = 'page3.html';
+     }
+ 
+     // --- Event Listeners ---
+     startSequenceBtn.addEventListener('click', startQuestionSequence);
+     showAnswerBtn.addEventListener('click', displayAnswer);
++    if (slideImageEl && imageModalEl && modalImageEl) {
++        slideImageEl.addEventListener('click', () => {
++            if (!slideImageEl.src) return;
++            modalImageEl.src = slideImageEl.src;
++            imageModalEl.classList.remove('hidden');
++        });
++        imageModalEl.addEventListener('click', () => {
++            imageModalEl.classList.add('hidden');
++            modalImageEl.src = '';
++        });
++    }
+ 
+     document.addEventListener('keydown', (e) => {
+         if (e.key === 'ArrowRight') {
+             if (!sequenceInProgress) {
+                 nextQuestion();
+             }
+         } else if (e.key === 'ArrowLeft') {
+             if (!sequenceInProgress) {
+                 previousQuestion();
+             }
+         } else if (e.key === ' ' || e.key === 'Spacebar') {
+             e.preventDefault(); 
+             if (!startSequenceBtn.disabled) {
+                 startQuestionSequence();
+             }
+         } else if (e.key === 'Enter') {
+             if (!showAnswerBtn.disabled && showAnswerBtn.style.display !== 'none') {
+                 e.preventDefault();
+                 displayAnswer();
+             }        } else if (e.key.toLowerCase() === 'd' && e.ctrlKey) { // Ctrl+D to toggle debug
+             e.preventDefault();
+             // This is a simple way to toggle, for a real app, you might want a UI element
+             // For now, this requires manual change of DEBUG_MODE constant and reload.
+             // Or, we can make DEBUG_MODE a let and toggle it here, then re-render.
+             console.log("Debug mode toggle attempted. Reload page if DEBUG_MODE constant was changed.");
+diff --git a/lythuyet.html b/lythuyet.html
+index d53900fe9432749af2029c94dbf3b3aac75a4588..a038aec3f60fee9b6ae3c503d69f2c4e78d97ec7 100644
+--- a/lythuyet.html
++++ b/lythuyet.html
+@@ -135,50 +135,53 @@
+             <i class="fas fa-lightbulb text-4xl"></i>
+         </div>
+         <div class="absolute bottom-1/4 left-20 text-red-200 opacity-20">
+             <i class="fas fa-brain text-4xl"></i>
+         </div>        <!-- Main content -->
+         <div class="content-wrapper relative z-10">
+             <div class="container mx-auto px-6">
+             <!-- Header -->
+             <div class="text-center mb-12 slide-in">
+                 <h1 class="text-5xl font-bold text-white text-shadow mb-4">
+                     <i class="fas fa-book-open mr-4"></i>
+                     LÝ THUYẾT AN TOÀN VỆ SINH VIÊN
+                 </h1>
+                 <p class="text-xl text-blue-100 font-semibold">
+                     Chọn chủ đề để tham gia các bộ đề lý thuyết
+                 </p>
+                 <!-- Display mode toggle -->
+                 <div class="mt-4 flex justify-center">
+                     <div class="bg-white/90 backdrop-blur-sm rounded-full p-1 flex items-center space-x-1 shadow-lg border border-blue-200 text-sm">
+                         <button id="detailModeBtn" class="px-3 py-1 rounded-full font-semibold transition-all duration-300 bg-blue-600 text-white shadow-md">
+                             Mode 1
+                         </button>
+                         <button id="slideModeBtn" class="px-3 py-1 rounded-full font-semibold transition-all duration-300 text-blue-700 hover:bg-blue-50">
+                             Mode 2
+                         </button>
++                        <a href="page3.html" class="ml-3 text-blue-700 hover:text-blue-900">
++                            <i class="fas fa-home"></i>
++                        </a>
+                     </div>
+                 </div>
+             </div>
+ 
+             <!-- Theory Cards Grid -->
+             <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 fade-in">
+                 
+                 <!-- Lý thuyết Bảo quản, Bốc xếp, Vận chuyển VLNCN -->
+                 <div class="theory-card rounded-2xl p-8 text-center">
+                     <div class="mb-6">
+                         <i class="fas fa-boxes theory-icon-bqvc text-6xl"></i>
+                     </div>
+                     <h3 class="text-2xl font-bold text-gray-800 mb-4">
+                         LÝ THUYẾT BẢO QUẢN, BỐC XẾP, VẬN CHUYỂN VLNCN
+                     </h3>
+                     <p class="text-gray-600 mb-6">
+                         Kiến thức về quy định an toàn trong bảo quản, bốc xếp và vận chuyển vật liệu nổ công nghiệp
+                     </p>
+                     
+                     <!-- Quiz Sets -->
+                     <div class="quiz-set-grid">
+                         <button class="quiz-set-btn bg-blue-500 hover:bg-blue-600 text-white py-3 px-4 rounded-lg font-semibold" 
+                                 onclick="startQuiz('ly_thuyet_boc_xep_bao_quan_van_chuyen', 1)">
+                             <i class="fas fa-play-circle mr-2"></i>
+                             Đề số 1
+@@ -297,170 +300,97 @@
+                             <i class="fas fa-play-circle mr-2"></i>
+                             Đề số 4
+                         </button>
+                         <button class="quiz-set-btn bg-yellow-500 hover:bg-yellow-600 text-white py-3 px-4 rounded-lg font-semibold" 
+                                 onclick="startQuiz('ly_thuyet_khai_thac_mo', 5)">
+                             <i class="fas fa-play-circle mr-2"></i>
+                             Đề số 5
+                         </button>
+                         <button class="quiz-set-btn bg-yellow-500 hover:bg-yellow-600 text-white py-3 px-4 rounded-lg font-semibold" 
+                                 onclick="startQuiz('ly_thuyet_khai_thac_mo', 6)">
+                             <i class="fas fa-play-circle mr-2"></i>
+                             Đề số 6
+                         </button>
+                         <button class="quiz-set-btn bg-yellow-500 hover:bg-yellow-600 text-white py-3 px-4 rounded-lg font-semibold" 
+                                 onclick="startQuiz('ly_thuyet_khai_thac_mo', 7)">
+                             <i class="fas fa-play-circle mr-2"></i>
+                             Đề số 7
+                         </button>
+                         <button class="quiz-set-btn bg-yellow-500 hover:bg-yellow-600 text-white py-3 px-4 rounded-lg font-semibold" 
+                                 onclick="startQuiz('ly_thuyet_khai_thac_mo', 8)">
+                             <i class="fas fa-play-circle mr-2"></i>
+                             Đề số 8
+                         </button>
+                     </div>
+                 </div>
+-            </div>            <!-- Back to home button -->
+-            <div class="text-center mt-12">
+-                <a href="page3.html" class="inline-block bg-white text-blue-600 px-8 py-4 rounded-full font-bold text-lg hover:bg-gray-100 transition-colors duration-300 shadow-lg">
+-                    <i class="fas fa-home"></i>
+-                </a>
+             </div>
+             </div>
+         </div>
+-    </div>
+ 
+     <script>
+-        // Quiz set configurations for each category
+-        const quizSets = {
+-            ly_thuyet_boc_xep_bao_quan_van_chuyen: {
+-                1: [], // Will be populated dynamically
+-                2: [],
+-                3: [],
+-                4: [],
+-                5: []
+-            },
+-            ly_thuyet_bao_ve: {
+-                1: [],
+-                2: [],
+-                3: [],
+-                4: [],
+-                5: [],
+-                6: [],
+-                7: [],
+-                8: []
+-            },
+-            ly_thuyet_khai_thac_mo: {
+-                1: [],
+-                2: [],
+-                3: [],
+-                4: [],
+-                5: [],
+-                6: [],
+-                7: [],
+-                8: []
++        let quizSets = {};
++
++        async function loadQuizSets() {
++            try {
++                const res = await fetch('question_sets.json');
++                const data = await res.json();
++                quizSets = data.vong2 || {};
++            } catch (err) {
++                console.error('Error loading question sets:', err);
+             }
+-        };
++        }
+         // Display mode control - true for detail page, false for slide
+         let detailMode = localStorage.getItem('lythuyet-display-mode') === 'slide' ? false : true;
+ 
+         const detailModeBtn = document.getElementById('detailModeBtn');
+         const slideModeBtn = document.getElementById('slideModeBtn');
+ 
+         function initializeModeToggle() {
+             detailModeBtn.addEventListener('click', () => setDisplayMode(true));
+             slideModeBtn.addEventListener('click', () => setDisplayMode(false));
+         }
+ 
+         function setDisplayMode(isDetail) {
+             detailMode = isDetail;
+             localStorage.setItem('lythuyet-display-mode', isDetail ? 'detail' : 'slide');
+ 
+             if (isDetail) {
+                 detailModeBtn.className = 'px-3 py-1 rounded-full font-semibold transition-all duration-300 bg-blue-600 text-white shadow-md';
+                 slideModeBtn.className = 'px-3 py-1 rounded-full font-semibold transition-all duration-300 text-blue-700 hover:bg-blue-50';
+             } else {
+                 detailModeBtn.className = 'px-3 py-1 rounded-full font-semibold transition-all duration-300 text-blue-700 hover:bg-blue-50';
+                 slideModeBtn.className = 'px-3 py-1 rounded-full font-semibold transition-all duration-300 bg-blue-600 text-white shadow-md';
+             }
+         }
+ 
+         // Function to start a quiz
+         function startQuiz(category, setNumber) {
+             // Store the selected category and set number in localStorage
+             localStorage.setItem('selectedCategory', category);
+             localStorage.setItem('selectedSet', setNumber);
+             
+ 
+             if (detailMode) {
+                 window.location.href = 'showquiz.html';
+             } else {
+                 const ids = (quizSets[category][setNumber] || []).join(',');
+                 const params = new URLSearchParams({ ids });
+                 window.location.href = `vong2.html?${params.toString()}`;
+             }
+         }
+ 
+-        // Generate quiz sets automatically based on question availability
+-        async function generateQuizSets() {
+-            try {
+-                const response = await fetch('vong2.json');
+-                const data = await response.json();
+-                
+-                // Process each category
+-                Object.keys(quizSets).forEach(category => {
+-                    if (data.vong_2[category] && data.vong_2[category].trac_nghiem) {
+-                        const questions = data.vong_2[category].trac_nghiem;
+-                        
+-                        // Separate theory and image questions
+-                        const theoryQuestions = questions.filter(q => q.question_image === "No");
+-                        const imageQuestions = questions.filter(q => q.question_image === "Yes");
+-                        
+-                        // Generate quiz sets (1 theory + 2 image questions per set)
+-                        const maxSets = Math.min(
+-                            theoryQuestions.length,
+-                            Math.floor(imageQuestions.length / 2),
+-                            Object.keys(quizSets[category]).length
+-                        );
+-                        
+-                        for (let i = 0; i < maxSets; i++) {
+-                            const setQuestions = [];
+-                            
+-                            // Add 1 theory question
+-                            if (theoryQuestions[i]) {
+-                                setQuestions.push(theoryQuestions[i].id);
+-                            }
+-                            
+-                            // Add 2 image questions
+-                            if (imageQuestions[i * 2]) {
+-                                setQuestions.push(imageQuestions[i * 2].id);
+-                            }
+-                            if (imageQuestions[i * 2 + 1]) {
+-                                setQuestions.push(imageQuestions[i * 2 + 1].id);
+-                            }
+-                            
+-                            quizSets[category][i + 1] = setQuestions;
+-                        }
+-                    }
+-                });
+-                
+-                console.log('Generated quiz sets:', quizSets);
+-            } catch (error) {
+-                console.error('Error generating quiz sets:', error);
+-            }
+-        }
+         // Initialize when page loads
+-        document.addEventListener('DOMContentLoaded', () => {
+-            generateQuizSets();
++        document.addEventListener('DOMContentLoaded', async () => {
++            await loadQuizSets();
+             initializeModeToggle();
+             setDisplayMode(detailMode);
+         });
+ 
+         // Add keyboard navigation
+         document.addEventListener('keydown', function(e) {
+             if (e.key === 'q' || e.key === 'Q') {
+                 window.location.href = 'page3.html';
+             }
+         });
+     </script>
+ </body>
+ </html>
+diff --git a/page3.html b/page3.html
+index 91741178ea1ee5f505ce56e315521d50bd217372..0430099749d9b2b5dbad8f84b0715ca901e6de5d 100644
+--- a/page3.html
++++ b/page3.html
+@@ -493,99 +493,97 @@
+                     scoringRules: [
+                         "Câu trả lời đúng theo đáp án của câu hỏi thì đạt thang điểm 10",
+                         "Câu ghi thiếu ý đúng theo đáp án thì chấm theo thang điểm của từng ý",
+                         "Câu ghi ý sai thì mỗi ý sai sẽ bị trừ điểm tương đương là 1 ý đúng",
+                         "Lưu ý: Không có điểm âm, điểm tối thiểu là 0 điểm"
+                     ]
+                 },
+                 3: {
+                     title: "Thi thực hành về PCCC và Y tế",
+                     questionCount: "2 câu",
+                     categories: [
+                         { name: "Phòng cháy chữa cháy", questions: "1 câu", color: "#f59e0b" },
+                         { name: "Y tế", questions: "1 câu", color: "#ef4444" }
+                     ],
+                     scoringRules: [
+                         "Căn cứ vào kết quả thi của từng đội, Ban giám khảo chấm điểm",
+                         "Mỗi câu chấm theo thang điểm 10"
+                     ]
+                 }
+             };
+ 
+             const details = roundDetails[roundNumber];
+             
+             card.innerHTML = `
+                 <div class="round-indicator" data-round="${roundNumber}">${roundNumber}</div>
++                <button class="view-questions-btn absolute top-1 left-1 bg-gradient-to-r ${getGradientColor(roundNumber)} text-white px-3 py-1 rounded-full text-xs font-semibold hover:shadow-md transform hover:scale-105">
++                    <i class="fas fa-eye"></i>
++                </button>
+                 <div class="mb-4">
+                     <div class="text-4xl ${color} mb-3">${icon}</div>
+                     <h3 class="text-xl font-bold text-gray-800 mb-2">Vòng ${roundNumber}</h3>
+                     <p class="text-gray-700 font-medium text-sm leading-relaxed">${details.title}</p>
+                 </div>
+                 
+                 <div class="mb-4">
+                     <div class="flex items-center justify-center mb-3">
+                         <div class="text-center">
+                             <div class="text-3xl font-bold ${color}">${details.questionCount}</div>
+                             <div class="text-xs text-gray-600 font-medium">Tổng số câu hỏi</div>
+                         </div>
+                     </div>
+                     
+                     <div class="category-list">
+                         <div class="text-sm font-semibold text-gray-700 mb-2">Phân bổ câu hỏi:</div>
+                         ${details.categories.map((category, index) => `
+                             <div class="category-item">
+                                 <div class="icon" style="background-color: ${category.color}">
+                                     ${index + 1}
+                                 </div>
+                                 <div class="flex-1">
+                                     <div class="font-medium text-gray-800">${category.name}</div>
+                                 </div>
+                                 <div class="text-sm font-semibold ${color}">
+                                     ${category.questions}
+                                 </div>
+                             </div>
+                         `).join('')}
+                     </div>
+                 </div>
+                 
+                 <div class="scoring-section">
+                     <div class="text-sm font-bold text-gray-800 mb-3">
+                         <i class="fas fa-calculator mr-2 ${color}"></i>Cách tính điểm:
+                     </div>
+                     ${details.scoringRules.map(rule => `
+                         <div class="scoring-rule">
+                             <div class="bullet"></div>
+                             <span class="text-gray-700">${rule}</span>
+                         </div>
+                     `).join('')}
+                 </div>
+                 
+-                <div class="mt-4 pt-4 border-t border-gray-200">
+-                    <button class="view-questions-btn w-full bg-gradient-to-r ${getGradientColor(roundNumber)} text-white py-3 px-4 rounded-lg font-semibold transition-all hover:shadow-lg transform hover:scale-105 text-sm">
+-                        <i class="fas fa-eye mr-2"></i>Xem chi tiết
+-                    </button>
+-                </div>
+             `;
+ 
+             // Add click event for round indicator (number) to navigate to respective HTML file
+             const roundIndicator = card.querySelector('.round-indicator');
+             roundIndicator.addEventListener('click', (e) => {
+                 e.stopPropagation(); // Prevent triggering the card click event
+                 window.location.href = `vong${roundNumber}.html`;
+             });
+ 
+             // Add click event for "Xem chi tiết" button with correct routing per round
+             const viewQuestionsBtn = card.querySelector('.view-questions-btn');
+             viewQuestionsBtn.addEventListener('click', (e) => {
+                 e.stopPropagation(); // Prevent triggering the card click event
+                 
+                 // Route correctly based on round number
+                 if (roundNumber === 1) {
+                     // Round 1: Show questions inline (current behavior)
+                     loadQuestions(roundNumber);
+                 } else if (roundNumber === 2) {
+                     // Round 2: Go to lythuyet.html
+                     window.location.href = 'lythuyet.html';
+                 } else if (roundNumber === 3) {
+                     // Round 3: Go to thuchanh.html
+                     window.location.href = 'thuchanh.html';
+                 }
+diff --git a/question_sets.json b/question_sets.json
+new file mode 100644
+index 0000000000000000000000000000000000000000..12c0a0528ea7ea809ef0ee94376bfdef81008b50
+--- /dev/null
++++ b/question_sets.json
+@@ -0,0 +1,42 @@
++{
++  "vong1": {
++    "1": ["CSPL_TN_1","CSPL_TN_2","CSPL_TN_3","CSPL_TN_4","CSPL_TN_5","YT_SC_TN_1","YT_SC_TN_2","YT_SC_TN_3","PCCC_TN_1","PCCC_TN_2","PCCC_TN_3","PCCC_TN_4","PCCC_TN_5","PCCC_TN_6","PCCC_TN_7"]
++  },
++  "vong2": {
++    "ly_thuyet_boc_xep_bao_quan_van_chuyen": {
++      "1": ["V2_BXV_LT_1","V2_BXV_HA_8","V2_BXV_HA_9"],
++      "2": ["V2_BXV_LT_8","V2_BXV_HA_11","V2_BXV_HA_10"],
++      "3": ["V2_BXV_LT_2","V2_BXV_HA_3","V2_BXV_HA_4"],
++      "4": ["V2_BXV_LT_3","V2_BXV_HA_5","V2_BXV_HA_6"],
++      "5": ["V2_BXV_LT_4","V2_BXV_HA_7","V2_BXV_HA_12"]
++    },
++    "ly_thuyet_bao_ve": {
++      "1": ["V2_BV_LT_1","V2_BV_HA_1","V2_BV_HA_2"],
++      "2": ["V2_BV_LT_2","V2_BV_HA_3","V2_BV_HA_4"],
++      "3": ["V2_BV_LT_3","V2_BV_HA_5","V2_BV_HA_6"],
++      "4": ["V2_BV_LT_4","V2_BV_HA_7","V2_BV_HA_8"],
++      "5": ["V2_BV_LT_5","V2_BV_HA_9","V2_BV_HA_1"],
++      "6": ["V2_BV_LT_6","V2_BV_HA_2","V2_BV_HA_3"],
++      "7": ["V2_BV_LT_7","V2_BV_HA_4","V2_BV_HA_5"],
++      "8": ["V2_BV_LT_8","V2_BV_HA_6","V2_BV_HA_7"]
++    },
++    "ly_thuyet_khai_thac_mo": {
++      "1": ["V2_KTM_LT_11","V2_KTM_LT_14","V2_KTM_HA_4"],
++      "2": ["V2_KTM_LT_2","V2_KTM_HA_3","V2_KTM_HA_4"],
++      "3": ["V2_KTM_LT_3","V2_KTM_HA_5","V2_KTM_HA_6"],
++      "4": ["V2_KTM_LT_4","V2_KTM_HA_7","V2_KTM_HA_8"],
++      "5": ["V2_KTM_LT_5","V2_KTM_HA_9","V2_KTM_HA_10"],
++      "6": ["V2_KTM_LT_6","V2_KTM_HA_11","V2_KTM_HA_12"],
++      "7": ["V2_KTM_LT_7","V2_KTM_HA_13","V2_KTM_HA_14"],
++      "8": ["V2_KTM_LT_8","V2_KTM_HA_15","V2_KTM_HA_1"]
++    }
++  },
++  "vong3": {
++    "1": ["V3_YT_SC_TH_1","V3_PCCC_TL_1"],
++    "2": ["V3_YT_SC_TH_2","V3_PCCC_TL_2"],
++    "3": ["V3_YT_SC_TH_3","V3_PCCC_TL_3"],
++    "4": ["V3_YT_SC_TH_4","V3_PCCC_TL_4"],
++    "5": ["V3_YT_SC_TH_5","V3_PCCC_TL_5"],
++    "6": ["V3_YT_SC_TH_6","V3_PCCC_TL_6"]
++  }
++}
+diff --git a/showquiz.html b/showquiz.html
+index d2725db68453ab8939735578bcb60d365826f6df..99789ccce8aeb08bea33f78a0fb740b9de788916 100644
+--- a/showquiz.html
++++ b/showquiz.html
+@@ -575,80 +575,61 @@
+          * - Arrow keys for question navigation
+          * - Q key to return to main page
+          * - Automatic audio stop on navigation
+          * 
+          * Visual Improvements:
+          * - Enhanced color scheme for option character badges
+          * - Pulse animations during audio playback
+          * - Better contrast for readability on white backgrounds
+          * - Audio status indicator in header
+          * - Keyboard shortcuts display in footer
+          * - Responsive layout for different content types
+          */          // Global variables
+         let quizData = null;
+         let currentQuestionIndex = 0;
+         let questions = [];
+         let currentAudio = null;
+         let audioQueue = [];
+         let isPlayingAudio = false;
+         let selectedCategory = '';
+         let selectedSet = 1;
+         let currentTimerAudio = null; // Thêm biến để track timer audio
+         
+         // Display mode: 1 = All content shown immediately, 2 = Sequential display with audio sync
+         let displayMode = parseInt(localStorage.getItem('quizDisplayMode')) || 1;
+ 
+-        // Quiz set definitions (based on your requirements)
+-        const quizSets = {
+-            ly_thuyet_boc_xep_bao_quan_van_chuyen: {
+-                1: ['V2_BXV_LT_1', 'V2_BXV_HA_8', 'V2_BXV_HA_9'],
+-                2: ['V2_BXV_LT_8', 'V2_BXV_HA_11', 'V2_BXV_HA_10'],
+-                3: ['V2_BXV_LT_2', 'V2_BXV_HA_3', 'V2_BXV_HA_4'],
+-                4: ['V2_BXV_LT_3', 'V2_BXV_HA_5', 'V2_BXV_HA_6'],
+-                5: ['V2_BXV_LT_4', 'V2_BXV_HA_7', 'V2_BXV_HA_12']
+-            },
+-            ly_thuyet_bao_ve: {
+-                1: ['V2_BV_LT_1', 'V2_BV_HA_1', 'V2_BV_HA_2'],
+-                2: ['V2_BV_LT_2', 'V2_BV_HA_3', 'V2_BV_HA_4'],
+-                3: ['V2_BV_LT_3', 'V2_BV_HA_5', 'V2_BV_HA_6'],
+-                4: ['V2_BV_LT_4', 'V2_BV_HA_7', 'V2_BV_HA_8'],
+-                5: ['V2_BV_LT_5', 'V2_BV_HA_9', 'V2_BV_HA_1'],
+-                6: ['V2_BV_LT_6', 'V2_BV_HA_2', 'V2_BV_HA_3'],
+-                7: ['V2_BV_LT_7', 'V2_BV_HA_4', 'V2_BV_HA_5'],
+-                8: ['V2_BV_LT_8', 'V2_BV_HA_6', 'V2_BV_HA_7']
+-            },
+-            ly_thuyet_khai_thac_mo: {
+-                1: ['V2_KTM_LT_11', 'V2_KTM_LT_14', 'V2_KTM_HA_4'],
+-                2: ['V2_KTM_LT_2', 'V2_KTM_HA_3', 'V2_KTM_HA_4'],
+-                3: ['V2_KTM_LT_3', 'V2_KTM_HA_5', 'V2_KTM_HA_6'],
+-                4: ['V2_KTM_LT_4', 'V2_KTM_HA_7', 'V2_KTM_HA_8'],
+-                5: ['V2_KTM_LT_5', 'V2_KTM_HA_9', 'V2_KTM_HA_10'],
+-                6: ['V2_KTM_LT_6', 'V2_KTM_HA_11', 'V2_KTM_HA_12'],
+-                7: ['V2_KTM_LT_7', 'V2_KTM_HA_13', 'V2_KTM_HA_14'],
+-                8: ['V2_KTM_LT_8', 'V2_KTM_HA_15', 'V2_KTM_HA_1']
++        let quizSets = {};
++
++        async function loadQuizSets() {
++            try {
++                const res = await fetch('question_sets.json');
++                const data = await res.json();
++                quizSets = data.vong2 || {};
++            } catch (err) {
++                console.error('Error loading question sets:', err);
+             }
+-        };
++        }
+ 
+         // Initialize quiz
+         async function initializeQuiz() {
+             try {
+                 // Get selected category and set from localStorage
+                 selectedCategory = localStorage.getItem('selectedCategory') || 'ly_thuyet_boc_xep_bao_quan_van_chuyen';
+                 selectedSet = parseInt(localStorage.getItem('selectedSet')) || 1;
+ 
+                 // Load quiz data
+                 const response = await fetch('vong2.json');
+                 quizData = await response.json();
+ 
+                 // Get question IDs for this set
+                 const questionIds = quizSets[selectedCategory][selectedSet] || [];
+                 
+                 // Build questions array from the quiz data
+                 questions = [];
+                 const allQuestions = quizData.vong_2[selectedCategory].trac_nghiem;
+                 
+                 questionIds.forEach(id => {
+                     const question = allQuestions.find(q => q.id === id);
+                     if (question) {
+                         questions.push(question);
+                     }
+                 });
+@@ -1290,52 +1271,57 @@
+             const modal = document.getElementById('fullscreenModal');
+             const fullscreenImg = document.getElementById('fullscreenImage');
+             
+             fullscreenImg.src = imageSrc;
+             modal.classList.add('active');
+             
+             // Prevent body scroll when modal is open
+             document.body.style.overflow = 'hidden';
+         }
+         
+         function closeFullscreenImage() {
+             const modal = document.getElementById('fullscreenModal');
+             modal.classList.remove('active');
+             
+             // Restore body scroll
+             document.body.style.overflow = '';
+         }
+ 
+         // Removed unused functions: calculateScore, showResults, closeResults, retakeQuiz, goToTheoryList
+ 
+         function goBack() {
+             window.location.href = 'lythuyet.html';
+         }
+ 
+         // Initialize when page loads
+-        document.addEventListener('DOMContentLoaded', initializeQuiz);        // Enhanced keyboard navigation with audio controls and display mode toggle        document.addEventListener('keydown', function(e) {        // Enhanced keyboard navigation with audio controls and display mode toggle
+-        document.addEventListener('keydown', function(e) {
++        document.addEventListener("DOMContentLoaded", async () => {
++            await loadQuizSets();
++            initializeQuiz();
++        });
++
++        // Enhanced keyboard navigation with audio controls and display mode toggle
++        document.addEventListener("keydown", function(e) {
+             if (e.key === 'ArrowLeft') {
+                 e.preventDefault();
+                 previousQuestion(); // stopAllAudio() đã được gọi trong hàm này
+             } else if (e.key === 'ArrowRight') {
+                 e.preventDefault();
+                 nextQuestion(); // stopAllAudio() đã được gọi trong hàm này
+             } else if (e.key.toLowerCase() === 'q') {
+                 e.preventDefault();
+                 stopAllAudio(); // Dừng audio trước khi thoát
+                 window.location.href = 'page3.html';
+             } else if (e.key === ' ' || e.key === 'Spacebar') {
+                 e.preventDefault();
+                 // Toggle audio playback
+                 if (isPlayingAudio) {
+                     stopAllAudio();
+                 } else {
+                     if (displayMode === 1) {
+                         restartAudio();
+                     } else {
+                         restartSequentialAudio();
+                     }
+                 }
+             } else if (e.key === 'r' || e.key === 'R') {
+                 e.preventDefault();
+                 // Restart audio
+diff --git a/style.css b/style.css
+index 352c67f69350fea3de6457189dc4001ae8c85728..7b6b2dab3e006990801a5059df104ba8c7a7b86b 100644
+--- a/style.css
++++ b/style.css
+@@ -589,50 +589,56 @@ body, html {
+ .header-footer-theme-pccc .header,
+ .header-footer-theme-pccc .footer {
+     background: linear-gradient(135deg, #991b1b, #b91c1c) !important;
+ }
+ .header-footer-theme-yte .header,
+ .header-footer-theme-yte .footer {
+     background: linear-gradient(135deg, #5b21b6, #7c3aed) !important;
+ }
+ .header-footer-theme-ktm .header,
+ .header-footer-theme-ktm .footer {
+     background: linear-gradient(135deg, #78350f, #9a3412) !important;
+ }
+ .header-footer-theme-bq-bx-vc .header,
+ .header-footer-theme-bq-bx-vc .footer {
+     background: linear-gradient(135deg, #1e40af, #1d4ed8) !important;
+ }
+ 
+ /* Custom shape for the image wrapper */
+ .custom-image-shape {
+     border-top-left-radius: 80px;    /* Large radius for top-left */
+     border-bottom-left-radius: 250px; /* Different large radius for bottom-left */
+     border-top-right-radius: 0px;     /* No radius for top-right */
+     border-bottom-right-radius: 0px;  /* No radius for bottom-right */
+ }
+ 
++/* Image used as main question content */
++.question-image {
++    border: 2px solid #d1d5db; /* gray-300 */
++    border-radius: 6px;
++}
++
+ /* --- New Background Styles --- */
+ 
+ /* --- New Background Styles --- */
+ 
+ /* Abstract and Wave Backgrounds */
+ .bg-abstract {
+     background: 
+         url('data:image/svg+xml,<svg viewBox="0 0 1200 800" xmlns="http://www.w3.org/2000/svg"><defs><filter id="noiseFilter"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="4" stitchTiles="stitch"/><feColorMatrix type="saturate" values="0"/></filter></defs><rect width="100%" height="100%" fill="%23667eea"/><rect width="100%" height="100%" filter="url(%23noiseFilter)" opacity="0.4"/><circle cx="200" cy="150" r="80" fill="%23f093fb" opacity="0.8"/><circle cx="800" cy="200" r="120" fill="%23f5576c" opacity="0.6"/><circle cx="400" cy="400" r="100" fill="%234facfe" opacity="0.7"/><circle cx="900" cy="500" r="90" fill="%23ffecd2" opacity="0.8"/><circle cx="100" cy="600" r="70" fill="%2343e97b" opacity="0.6"/></svg>') center/cover,
+         linear-gradient(135deg, rgba(255, 202, 85, 0.9) 0%, rgba(242, 159, 5, 0.9) 50%, rgba(242, 92, 5, 0.9) 100%);
+     background-repeat: no-repeat;
+ }
+         
+ .bg-wave {
+     background: 
+         url('data:image/svg+xml,<svg viewBox="0 0 1200 800" xmlns="http://www.w3.org/2000/svg"><path d="M0,300 C300,200 600,400 900,300 C1050,250 1200,350 1200,350 L1200,800 L0,800 Z" fill="%23667eea" opacity="0.1"/><path d="M0,400 C300,300 600,500 900,400 C1050,350 1200,450 1200,450 L1200,800 L0,800 Z" fill="%23764ba2" opacity="0.1"/><path d="M0,500 C300,400 600,600 900,500 C1050,450 1200,550 1200,550 L1200,800 L0,800 Z" fill="%23f093fb" opacity="0.1"/></svg>') center/cover,
+         linear-gradient(135deg, rgba(255, 202, 85, 0.95) 0%, rgba(242, 159, 5, 0.95) 50%, rgba(242, 92, 5, 0.95) 100%);
+     background-repeat: no-repeat;
+ }
+ 
+ /* Default slide container background (can be one of the above or the original gradient) */
+ .slide-container.bg-default {
+     background: linear-gradient(135deg, #FFCA55 0%, #F29F05 50%, #F25C05 100%);
+ }
+ 
+ /* --- Footer Answer Highlight --- */
+@@ -661,25 +667,36 @@ body, html {
+ .bg-svg-pattern-1 {
+     background-image: url('images/svg (1).svg');
+     background-size: cover;
+     background-position: center;
+     background-repeat: no-repeat;
+ }
+ 
+ .bg-stripes {
+     background-image: linear-gradient(45deg, rgba(255, 255, 255, 0.1) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.1) 50%, rgba(255, 255, 255, 0.1) 75%, transparent 75%, transparent);
+     background-size: 20px 20px;
+ }
+ 
+ .bg-svg-pattern-2 {
+     background-image: url('images/svg (2).svg');
+     background-size: cover;
+     background-position: center;
+     background-repeat: no-repeat;
+ }
+ 
+ .bg-svg-pattern-3 {
+     background-image: url('images/svg (3).svg');
+     background-size: cover;
+     background-position: center;
+     background-repeat: no-repeat;
+ }
++
++/* Fullscreen image modal */
++.image-modal {
++    position: fixed;
++    inset: 0;
++    background: rgba(0, 0, 0, 0.8);
++    display: flex;
++    align-items: center;
++    justify-content: center;
++    z-index: 10050;
++}
+diff --git a/vong2.html b/vong2.html
+index 8f3932e75bf94ebc3e7c0b5e8534545d7d74b54a..94ae1d355cb31f9ee824fc41eb379a3de18a54d1 100644
+--- a/vong2.html
++++ b/vong2.html
+@@ -55,79 +55,84 @@
+         <div class="px-8 py-4 flex-grow flex overflow-hidden">
+             <!-- Left Column: Question and Options -->
+             <div id="questionOptionsArea" class="w-3/5 pr-6 flex flex-col overflow-y-auto">
+             <div id="questionSection" class="bg-white bg-opacity-95 rounded-xl p-6 mb-6">
+                 <div class="flex items-start space-x-4">
+                 <div id="questionIconContainer" class="bg-blue-600 text-white rounded-full p-3 pulse-icon">
+                     <i class="fas fa-question text-2xl"></i>
+                 </div>
+                 <div class="flex-1">
+                     <h2 id="questionTextContent" class="text-2xl font-bold text-gray-800 mb-2">
+                     <!-- Question text will be injected here -->
+                     </h2>
+                 </div>
+                 </div>
+             </div>
+ 
+             <!-- Options -->
+             <div id="optionsContainer" class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                 <!-- Options will be injected here -->
+             </div>
+             </div>
+ 
+             <!-- Right Column: Image -->
+             <div id="imageArea" class="w-2/5 flex items-stretch justify-start relative">
+             <div id="imageWrapper" class="absolute inset-y-0 right-0 w-[calc(100%+3rem)] custom-image-shape overflow-hidden shadow-xl">
+-                <img id="slideImage" src="" alt="Hình ảnh minh họa" class="block w-full h-full object-cover">
++                <img id="slideImage" src="" alt="Hình ảnh minh họa" class="block w-full h-full object-cover cursor-pointer">
+             </div>
+             </div>
+         </div>
+ 
+         <!-- Footer -->
+         <footer class="footer">
+             <div class="footer-left">
+                 <div id="roundInfoDisplay">
+                     <!-- Round information will be injected here by JS -->
+                 </div>
+             </div>
+             
+             <div class="footer-controls flex items-center space-x-3">
+                 <div id="progressText" class="text-white font-semibold text-xl mx-4">
+                     <!-- Progress/status text will be updated by JS -->
+                 </div>
+                 <button id="startSequenceBtn" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-3 rounded-lg font-semibold transition-all text-xl">
+                     <i class="fas fa-play"></i> Bắt đầu
+                 </button>
+                 <button id="showAnswerBtn" class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-semibold transition-all" style="display: none;">
+                     <i class="fas fa-lightbulb mr-2"></i>Đáp án
+                 </button>
+             </div>
+ 
+             <div class="footer-right">
+                 <div class="date">
+                     <i class="fas fa-calendar-alt mr-2"></i>
+                     25/06/2025
+                 </div>
+                 <div class="location">
+                     <i class="fas fa-map-marker-alt mr-2"></i>
+                     Hội trường tầng 5 - Văn phòng Công ty
+                 </div>
+             </div>
+             
+             <div class="progress-bar" id="footerProgressBar"></div>
+         </footer>
+         </div>
+ 
+         <!-- Time's Up Overlay -->
+         <div id="timeUpOverlay" class="time-up-overlay" style="display: none;">
+             <div class="time-up-content">
+                 <i class="fas fa-clock mr-3"></i>HẾT GIỜ!
+                 <div class="subtitle">
+                     Các đội vui lòng giơ bảng đáp án
+                 </div>
+             </div>
+         </div>
++
++        <!-- Image Modal for full-screen view -->
++        <div id="imageModal" class="image-modal hidden">
++            <img id="modalImage" src="" alt="Preview" class="max-w-full max-h-full">
++        </div>
+     </div>
+ 
+     <script src="app2.js"></script>
+ </body>
+ </html>
+\ No newline at end of file

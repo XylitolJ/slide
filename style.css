@@ -610,6 +610,7 @@ body, html {
     border-top-right-radius: 0px;     /* No radius for top-right */
     border-bottom-right-radius: 0px;  /* No radius for bottom-right */
 }
+
 /* Image used as main question content */
 .question-image {
     border: 2px solid #d1d5db; /* gray-300 */

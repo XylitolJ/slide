@@ -335,6 +335,7 @@ document.addEventListener('DOMContentLoaded', () => {
             imageWrapperEl.classList.add('absolute', 'inset-y-0', 'right-0', 'w-[calc(100%+3rem)]', 'custom-image-shape');
         }
 
+
         slideImageEl.onload = () => {
             if(showImageArea && imageAreaEl) {
                 imageAreaEl.classList.remove('hidden');
@@ -564,7 +565,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         // 3. Show & Speak Options (if Trac nghiem)
-        if (currentQuestionData.type_question === "Trắc nghiệm" && currentQuestionData.phuong_an) {
+        if ((currentQuestionData.type_question === "Trắc nghiệm" || currentQuestionData.type_question === "Trắc nghiệm Hình ảnh") && currentQuestionData.phuong_an) {
             const optionElements = optionsContainerEl.querySelectorAll('.option-card');
             console.log(`startQuestionSequence: Found ${optionElements.length} option elements to animate.`);
             
@@ -650,7 +651,7 @@ document.addEventListener('DOMContentLoaded', () => {
         showAnswerBtn.classList.add('opacity-50', 'cursor-not-allowed');
         
         let answerDisplayString = "";
-        if (currentQuestionData.type_question === "Trắc nghiệm") {
+        if (currentQuestionData.type_question === "Trắc nghiệm" || currentQuestionData.type_question === "Trắc nghiệm Hình ảnh") {
             if (currentQuestionData.dap_an_dung) {
                 const correctKeys = Array.isArray(currentQuestionData.dap_an_dung) 
                                     ? currentQuestionData.dap_an_dung 
@@ -831,7 +832,7 @@ document.addEventListener('DOMContentLoaded', () => {
             modalImageEl.src = '';
         });
     }
-    
+
     document.addEventListener('keydown', (e) => {
         if (e.key === 'ArrowRight') {
             if (!sequenceInProgress) {
