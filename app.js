@@ -45,9 +45,9 @@ document.addEventListener('DOMContentLoaded', () => {
     let timerInterval;
     let timeLeft = 0; // Will be set per question
     const DEFAULT_TIME_PER_QUESTION = 30; // Default seconds, can be overridden by JSON
-    let audioContext;    let currentAudio = null;
-    let sequenceInProgress = false;
+    let audioContext;    let currentAudio = null;    let sequenceInProgress = false;
     let answerShown = false;
+    let navigationInProgress = false; // Add flag to prevent audio restart during navigation
 
     const OPTION_KEYS = ['a', 'b', 'c', 'd', 'e', 'g']; // Possible option keys
       // Background styles for cleanup purposes only
@@ -64,12 +64,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 console.error("Web Audio API is not supported in this browser.", e);
                 progressTextEl.textContent = "Lỗi: Trình duyệt không hỗ trợ âm thanh.";
             }
-        }
-    }
+        }    }
 
-    // --- Audio Playback ---
+        // --- Audio Playback ---
     async function playAudio(filePath, onEndCallback) {
-        if (!USE_SPEECH || !audioContext || !filePath) { // Check USE_SPEECH
+        if (!USE_SPEECH || !audioContext || !filePath || navigationInProgress) { // Check navigation flag
             if (onEndCallback) onEndCallback();
             return Promise.resolve();
         }
@@ -670,10 +669,9 @@ async function displayAnswer() {
             await new Promise(r => setTimeout(r, DELAY_NO_SPEECH_ANSWER));
         }
         // Enable navigation to next question
-    }
-
-    // --- Navigation ---
+    }    // --- Navigation ---
     function nextQuestion() {
+        navigationInProgress = true; // Set flag to prevent audio restart
         stopAllEvents();
 
         if (currentQuestionIndex < allQuestions.length - 1) {
@@ -682,7 +680,15 @@ async function displayAnswer() {
         } else {
             window.location.href = 'page3.html';
         }
-    }    function previousQuestion() {
+        
+        // Clear navigation flag after a short delay to allow page rendering
+        setTimeout(() => {
+            navigationInProgress = false;
+        }, 100);
+    }
+
+    function previousQuestion() {
+        navigationInProgress = true; // Set flag to prevent audio restart
         stopAllEvents();
 
         if (currentQuestionIndex > 0) {
@@ -785,38 +791,63 @@ async function displayAnswer() {
         
         // Navigate to page3.html
         window.location.href = 'page3.html';
-    }
-
-    // Utility to stop all ongoing timers and audio without navigating away
+    }    // Utility to stop all ongoing timers and audio without navigating away
     function stopAllEvents() {
+        console.log('%c[STOP ALL EVENTS] Starting stopAllEvents()', 'color: red; font-weight: bold;');
+        
         // Stop Web Audio API audio
         if (currentAudio && currentAudio.source) {
-            currentAudio.source.stop();
-            currentAudio.source.disconnect();
-            currentAudio = null;
+            console.log('%c[STOP ALL EVENTS] Stopping Web Audio API audio', 'color: red;');
+            try {
+                currentAudio.source.stop();
+                currentAudio.source.disconnect();
+                currentAudio = null;
+                console.log('%c[STOP ALL EVENTS] Web Audio API audio stopped successfully', 'color: green;');
+            } catch (e) {
+                console.error('[STOP ALL EVENTS] Error stopping Web Audio API:', e);
+            }
         }
+        
         // Stop HTML5 Audio elements
         if (currentAudio && currentAudio.pause) {
-            currentAudio.pause();
-            currentAudio.currentTime = 0;
-            currentAudio = null;
+            console.log('%c[STOP ALL EVENTS] Stopping HTML5 Audio element', 'color: red;');
+            try {
+                currentAudio.pause();
+                currentAudio.currentTime = 0;
+                currentAudio = null;
+                console.log('%c[STOP ALL EVENTS] HTML5 Audio element stopped successfully', 'color: green;');
+            } catch (e) {
+                console.error('[STOP ALL EVENTS] Error stopping HTML5 Audio:', e);
+            }
         }
+        
         // Stop all audio elements on the page (failsafe)
-        document.querySelectorAll('audio').forEach(audio => {
-            audio.pause();
-            audio.currentTime = 0;
+        const allAudioElements = document.querySelectorAll('audio');
+        console.log(`%c[STOP ALL EVENTS] Found ${allAudioElements.length} audio elements on page`, 'color: orange;');
+        allAudioElements.forEach((audio, index) => {
+            if (!audio.paused) {
+                console.log(`%c[STOP ALL EVENTS] Stopping audio element ${index + 1}: ${audio.src}`, 'color: red;');
+                audio.pause();
+                audio.currentTime = 0;
+            }
         });
+        
         if (timerInterval) {
+            console.log('%c[STOP ALL EVENTS] Clearing timer interval', 'color: red;');
             clearInterval(timerInterval);
             timerInterval = null;
         }
+        
         if (timesUpPopupEl) {
             timesUpPopupEl.style.display = 'none';
             timesUpPopupEl.style.opacity = '0';
             timesUpPopupEl.style.animation = 'none';
         }
-        sequenceInProgress = false;
+          sequenceInProgress = false;
         answerShown = false;
+        navigationInProgress = false; // Reset navigation flag
+        
+        console.log('%c[STOP ALL EVENTS] stopAllEvents() completed', 'color: green; font-weight: bold;');
     }
 
 

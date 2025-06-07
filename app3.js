@@ -56,9 +56,9 @@ document.addEventListener('DOMContentLoaded', () => {    // URL Parameter handli
     let timerInterval;
     let timeLeft = 0; // Will be set per question
     const DEFAULT_TIME_PER_QUESTION = 300; // Default 5 minutes for Round 3 practical exams
-    let audioContext;
-    let currentAudio = null;
-    let sequenceInProgress = false;    // Background styles for cleanup purposes only
+    let audioContext;    let currentAudio = null;
+    let sequenceInProgress = false;
+    let navigationInProgress = false; // Add flag to prevent audio restart during navigation// Background styles for cleanup purposes only
     const backgroundStyles = [
         'bg-default', 'bg-abstract', 'bg-wave', 'bg-svg-pattern-1', 'bg-svg-pattern-2', 'bg-svg-pattern-3'
     ];
@@ -97,27 +97,53 @@ document.addEventListener('DOMContentLoaded', () => {    // URL Parameter handli
         // Navigate to page3.html
         console.log('Navigating to page3.html');
         window.location.href = 'page3.html';
-    }
-    // Utility to stop all ongoing timers and audio without navigating away
+    }    // Utility to stop all ongoing timers and audio without navigating away
     function stopAllEvents() {
+        console.log('%c[STOP ALL EVENTS] Starting stopAllEvents() in app3.js', 'color: red; font-weight: bold;');
+        
+        // Stop Web Audio API audio
         if (currentAudio && currentAudio.source) {
-            currentAudio.source.stop();
-            currentAudio.source.disconnect();
-            currentAudio = null;
+            console.log('%c[STOP ALL EVENTS] Stopping Web Audio API audio', 'color: red;');
+            try {
+                currentAudio.source.stop();
+                currentAudio.source.disconnect();
+                currentAudio = null;
+                console.log('%c[STOP ALL EVENTS] Web Audio API audio stopped successfully', 'color: green;');
+            } catch (e) {
+                console.error('[STOP ALL EVENTS] Error stopping Web Audio API:', e);
+            }
         }
+        
+        // Stop HTML5 Audio elements
         if (currentAudio && currentAudio.pause) {
-            currentAudio.pause();
-            currentAudio.currentTime = 0;
-            currentAudio = null;
+            console.log('%c[STOP ALL EVENTS] Stopping HTML5 Audio element', 'color: red;');
+            try {
+                currentAudio.pause();
+                currentAudio.currentTime = 0;
+                currentAudio = null;
+                console.log('%c[STOP ALL EVENTS] HTML5 Audio element stopped successfully', 'color: green;');
+            } catch (e) {
+                console.error('[STOP ALL EVENTS] Error stopping HTML5 Audio:', e);
+            }
         }
-        document.querySelectorAll('audio').forEach(audio => {
-            audio.pause();
-            audio.currentTime = 0;
+        
+        // Stop all audio elements on the page (failsafe)
+        const allAudioElements = document.querySelectorAll('audio');
+        console.log(`%c[STOP ALL EVENTS] Found ${allAudioElements.length} audio elements on page`, 'color: orange;');
+        allAudioElements.forEach((audio, index) => {
+            if (!audio.paused) {
+                console.log(`%c[STOP ALL EVENTS] Stopping audio element ${index + 1}: ${audio.src}`, 'color: red;');
+                audio.pause();
+                audio.currentTime = 0;
+            }
         });
+        
         if (timerInterval) {
+            console.log('%c[STOP ALL EVENTS] Clearing timer interval', 'color: red;');
             clearInterval(timerInterval);
             timerInterval = null;
         }
+        
         if (timesUpPopupEl) {
             timesUpPopupEl.style.display = 'none';
             timesUpPopupEl.style.opacity = '0';
@@ -125,11 +151,12 @@ document.addEventListener('DOMContentLoaded', () => {    // URL Parameter handli
         }
         sequenceInProgress = false;
         answerShown = false;
-    }
-
-    // --- Audio Playback ---
+        navigationInProgress = false; // Reset navigation flag
+        
+        console.log('%c[STOP ALL EVENTS] stopAllEvents() completed in app3.js', 'color: green; font-weight: bold;');
+    }// --- Audio Playback ---
     async function playAudio(filePath, onEndCallback) {
-        if (!USE_SPEECH || !audioContext || !filePath) {
+        if (!USE_SPEECH || !audioContext || !filePath || navigationInProgress) { // Check navigation flag
             if (onEndCallback) onEndCallback();
             return Promise.resolve();
         }
@@ -424,10 +451,9 @@ document.addEventListener('DOMContentLoaded', () => {    // URL Parameter handli
         
         startSequenceBtn.classList.remove('speaking-indicator');
         sequenceInProgress = false;
-    }
-
-    // --- Navigation ---
+    }    // --- Navigation ---
     function nextQuestion() {
+        navigationInProgress = true; // Set flag to prevent audio restart
         stopAllEvents();
         if (currentQuestionIndex < allQuestions.length - 1) {
             currentQuestionIndex++;
@@ -436,9 +462,15 @@ document.addEventListener('DOMContentLoaded', () => {    // URL Parameter handli
             // If we're at the last question, navigate back to page3.html
             window.location.href = 'page3.html';
         }
+        
+        // Clear navigation flag after a short delay to allow page rendering
+        setTimeout(() => {
+            navigationInProgress = false;
+        }, 100);
     }
 
     function previousQuestion() {
+        navigationInProgress = true; // Set flag to prevent audio restart
         stopAllEvents();
 
         if (currentQuestionIndex > 0) {
@@ -448,6 +480,11 @@ document.addEventListener('DOMContentLoaded', () => {    // URL Parameter handli
             // If we're at the first question, navigate back to page3.html
             window.location.href = 'page3.html';
         }
+        
+        // Clear navigation flag after a short delay to allow page rendering
+        setTimeout(() => {
+            navigationInProgress = false;
+        }, 100);
     }
 
     // --- Update Round Info Display ---
