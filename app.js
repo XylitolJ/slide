@@ -787,15 +787,50 @@ async function displayAnswer() {
         window.location.href = 'page3.html';
     }
 
+    // Global utility to stop all ongoing timers and audio without navigating away
+    function stopAllEvents() {
+        // Stop Web Audio API audio
+        if (currentAudio && currentAudio.source) {
+            currentAudio.source.stop();
+            currentAudio.source.disconnect();
+            currentAudio = null;
+        }
+        // Stop HTML5 Audio elements
+        if (currentAudio && currentAudio.pause) {
+            currentAudio.pause();
+            currentAudio.currentTime = 0;
+            currentAudio = null;
+        }
+        // Stop all audio elements on the page (failsafe)
+        document.querySelectorAll('audio').forEach(audio => {
+            audio.pause();
+            audio.currentTime = 0;
+        });
+        if (timerInterval) {
+            clearInterval(timerInterval);
+            timerInterval = null;
+        }
+        if (timesUpPopupEl) {
+            timesUpPopupEl.style.display = 'none';
+            timesUpPopupEl.style.opacity = '0';
+            timesUpPopupEl.style.animation = 'none';
+        }
+        sequenceInProgress = false;
+        answerShown = false;
+    }
+
     // --- Event Listeners ---
     startSequenceBtn.addEventListener('click', startQuestionSequence);
     showAnswerBtn.addEventListener('click', displayAnswer);    document.addEventListener('keydown', (e) => {
+        console.log('Key pressed in app.js:', e.key); // Debug log
         if (e.key === 'ArrowRight') {
             e.preventDefault();
+            console.log('Arrow Right pressed - calling nextQuestion()');
             stopAllEvents();
             nextQuestion();
         } else if (e.key === 'ArrowLeft') {
             e.preventDefault();
+            console.log('Arrow Left pressed - calling previousQuestion()');
             stopAllEvents();
             previousQuestion();
         } else if (e.key === ' ' || e.key === 'Spacebar') {
