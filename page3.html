@@ -308,16 +308,10 @@
                     </div>
                 </div>
             </main>
-        </div>        <!-- Navigation Hint -->
-        <div class="navigation-hint">
-            <i class="fas fa-info-circle mr-2"></i>
-            <i class="fas fa-arrow-left mr-1"></i> Quay lại Page 2 
-            <span class="mx-2">|</span>
-            <i class="fas fa-mouse-pointer mr-1"></i> Nhấn số vòng để vào thi
-            <span class="mx-2">|</span>
-            <i class="fas fa-eye mr-1"></i> Nhấn "Xem câu hỏi" để xem trước
         </div>
-    </div>    <script>
+    </div>
+
+    <script>
         let roundsData = null;
         let questionsData = {};
 
@@ -632,11 +626,19 @@
             } else if (e.key.toLowerCase() === 'q') {
                 // Stay on page3.html (already here)
                 console.log('Already on page3.html');
+            } else if (e.key === '1') {
+                // Navigate to vong1.html (equivalent to clicking round 1 indicator)
+                window.location.href = 'vong1.html';
+            } else if (e.key === '2') {
+                // Navigate to vong2.html (equivalent to clicking round 2 indicator)
+                window.location.href = 'vong2.html';
+            } else if (e.key === '3') {
+                // Navigate to vong3.html (equivalent to clicking round 3 indicator)
+                window.location.href = 'vong3.html';
             }
-        });// Initialize on page load
+        });
+        // Initialize on page load
         document.addEventListener('DOMContentLoaded', loadRounds);
     </script>
-</body>
-</html>
 </body>
 </html>
