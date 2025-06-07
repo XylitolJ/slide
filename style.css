@@ -88,19 +88,63 @@ body, html {
     cursor: pointer;
     display: flex; 
     align-items: center;
+    /* Use a light gradient background instead of white to provide better contrast */
+    background: linear-gradient(135deg, rgba(248, 250, 252, 0.95), rgba(241, 245, 249, 0.95)) !important;
+    border: 1px solid rgba(203, 213, 225, 0.6) !important;
+    backdrop-filter: blur(8px);
 }
 .option-card:hover {
     transform: translateX(8px) scale(1.02);
     box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+    background: linear-gradient(135deg, rgba(241, 245, 249, 0.98), rgba(226, 232, 240, 0.98)) !important;
 }
 
-.option-char-default { background-color: #6b7280; } /* Default, can be themed */
-.option-char-a { background-color: #ef4444; } /* Red */
-.option-char-b { background-color: #3b82f6; } /* Blue */
-.option-char-c { background-color: #10b981; } /* Green */
-.option-char-d { background-color: #f59e0b; } /* Amber */
-.option-char-e { background-color: #6366f1; } /* Indigo */
-.option-char-g { background-color: #8b5cf6; } /* Violet */
+.option-char-default { 
+    background: linear-gradient(135deg, #475569, #334155) !important; 
+    box-shadow: 0 2px 8px rgba(71, 85, 105, 0.4) !important;
+} /* Default, darker */
+.option-char-a { 
+    background: linear-gradient(135deg, #dc2626, #b91c1c) !important; 
+    box-shadow: 0 2px 8px rgba(220, 38, 38, 0.4) !important;
+} /* Red - darker */
+.option-char-b { 
+    background: linear-gradient(135deg, #2563eb, #1d4ed8) !important; 
+    box-shadow: 0 2px 8px rgba(37, 99, 235, 0.4) !important;
+} /* Blue - darker */
+.option-char-c { 
+    background: linear-gradient(135deg, #059669, #047857) !important; 
+    box-shadow: 0 2px 8px rgba(5, 150, 105, 0.4) !important;
+} /* Green - darker */
+.option-char-d { 
+    background: linear-gradient(135deg, #d97706, #b45309) !important; 
+    box-shadow: 0 2px 8px rgba(217, 119, 6, 0.4) !important;
+} /* Amber - darker */
+.option-char-e { 
+    background: linear-gradient(135deg, #7c3aed, #6d28d9) !important; 
+    box-shadow: 0 2px 8px rgba(124, 58, 237, 0.4) !important;
+} /* Indigo - darker */
+.option-char-f { 
+    background: linear-gradient(135deg, #be185d, #9d174d) !important; 
+    box-shadow: 0 2px 8px rgba(190, 24, 93, 0.4) !important;
+} /* Pink - darker */
+.option-char-g { 
+    background: linear-gradient(135deg, #0891b2, #0e7490) !important; 
+    box-shadow: 0 2px 8px rgba(8, 145, 178, 0.4) !important;
+} /* Violet - darker */
+
+/* Additional option character colors for more options */
+.option-char-h { 
+    background: linear-gradient(135deg, #65a30d, #4d7c0f) !important; 
+    box-shadow: 0 2px 8px rgba(101, 163, 13, 0.4) !important;
+} /* Lime - darker */
+.option-char-i { 
+    background: linear-gradient(135deg, #ea580c, #c2410c) !important; 
+    box-shadow: 0 2px 8px rgba(234, 88, 12, 0.4) !important;
+} /* Orange - darker */
+.option-char-j { 
+    background: linear-gradient(135deg, #8b5cf6, #7c3aed) !important; 
+    box-shadow: 0 2px 8px rgba(139, 92, 246, 0.4) !important;
+} /* Purple - darker */
 
 /* Styles for the option character (A, B, C, D) to ensure it's always a circle */
 .option-char {
@@ -110,10 +154,12 @@ body, html {
     width: 2rem;          /* Fixed width for the circle (e.g., 32px if 1rem = 16px) */
     height: 2rem;         /* Fixed height, must be equal to width for a perfect circle */
     border-radius: 50%;   /* This makes the element circular */
-    color: white;         /* Text color for the character (A, B, C, D) */
-    font-weight: 600;     /* Makes the character font semi-bold */
+    color: white !important;         /* Text color for the character (A, B, C, D) - force white */
+    font-weight: 700 !important;     /* Makes the character font bold */
     flex-shrink: 0;       /* IMPORTANT: Prevents the circle from shrinking or deforming when option text is long or wraps */
     margin-right: 0.75rem; /* Adds some space between the circle and the option text (Tailwind's mr-3) */
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3) !important; /* Add text shadow for better readability */
+    border: 2px solid rgba(255, 255, 255, 0.2) !important; /* Subtle white border for definition */
     /* Background color for the circle itself is typically applied by specific classes like .option-char-a, .option-char-b, etc. */
 }
 
@@ -699,4 +745,17 @@ body, html {
     align-items: center;
     justify-content: center;
     z-index: 10050;
+}
+
+/* Ensure question section has consistent styling */
+#questionSection {
+    background: linear-gradient(135deg, rgba(248, 250, 252, 0.95), rgba(241, 245, 249, 0.95)) !important;
+    border: 1px solid rgba(203, 213, 225, 0.6) !important;
+    backdrop-filter: blur(8px) !important;
+}
+
+/* Override any conflicting background styles on option elements */
+.option-card .text-gray-800 {
+    color: #1f2937 !important; /* Ensure text is dark and readable on light background */
+    font-weight: 500 !important;
 }

@@ -401,12 +401,11 @@ document.addEventListener('DOMContentLoaded', () => {
             Object.entries(questionData.phuong_an).forEach(([key, value]) => {
                 if (value) {
                     const optionKeyUpper = key.toUpperCase();
-                    const optionEl = document.createElement('div');
-                    optionEl.id = `option${optionKeyUpper}`;
+                    const optionEl = document.createElement('div');                    optionEl.id = `option${optionKeyUpper}`;
                     optionEl.dataset.optionKey = key;
-                    // Add Tailwind classes for card styling directly here
-                    optionEl.classList.add('option-card', 'bg-white', 'bg-opacity-90', 'rounded-lg', 'p-4', 'border-l-4', 'border-gray-400');
-                    optionEl.style.opacity = '0'; 
+                    // Add classes for card styling without white background
+                    optionEl.classList.add('option-card', 'rounded-lg', 'p-4', 'border-l-4', 'border-gray-400');
+                    optionEl.style.opacity = '0';
 
                     const optionCharClass = `option-char-${key.toLowerCase()}`;
                     // Ensure correct inner structure for flex layout and char styling
