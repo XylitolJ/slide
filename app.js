@@ -624,27 +624,7 @@ async function displayAnswer() {
             timesUpPopupEl.style.display = 'none';
             timesUpPopupEl.style.opacity = '0';
             timesUpPopupEl.style.animation = 'none'; // Stop any ongoing animations
-}
-
-    // Utility to stop all ongoing timers and audio
-    function stopAllEvents() {
-        if (currentAudio && currentAudio.source) {
-            currentAudio.source.stop();
-            currentAudio.source.disconnect();
-            currentAudio = null;
         }
-        if (timerInterval) {
-            clearInterval(timerInterval);
-            timerInterval = null;
-        }
-        if (timesUpPopupEl) {
-            timesUpPopupEl.style.display = 'none';
-            timesUpPopupEl.style.opacity = '0';
-            timesUpPopupEl.style.animation = 'none';
-        }
-        sequenceInProgress = false;
-        answerShown = false;
-    }
 
         showAnswerBtn.disabled = true;
         showAnswerBtn.classList.add('opacity-50', 'cursor-not-allowed');
@@ -809,13 +789,13 @@ async function displayAnswer() {
 
     // --- Event Listeners ---
     startSequenceBtn.addEventListener('click', startQuestionSequence);
-    showAnswerBtn.addEventListener('click', displayAnswer);
-
-    document.addEventListener('keydown', (e) => {
+    showAnswerBtn.addEventListener('click', displayAnswer);    document.addEventListener('keydown', (e) => {
         if (e.key === 'ArrowRight') {
+            e.preventDefault();
             stopAllEvents();
             nextQuestion();
         } else if (e.key === 'ArrowLeft') {
+            e.preventDefault();
             stopAllEvents();
             previousQuestion();
         } else if (e.key === ' ' || e.key === 'Spacebar') {
