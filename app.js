@@ -75,9 +75,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         // Stop any currently playing audio
-        if (currentAudio && currentAudio.source) {
-            currentAudio.source.stop();
-            currentAudio.source.disconnect();
+        if (currentAudio) {
+            currentAudio.pause();
+            currentAudio.currentTime = 0;
         }
         
         // Create a new audio object for each playback to handle 'ended' event correctly
@@ -615,7 +615,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
     
-    async function displayAnswer() {
+async function displayAnswer() {
         if (answerShown || !currentQuestionData) return;
         answerShown = true;
 
@@ -624,7 +624,27 @@ document.addEventListener('DOMContentLoaded', () => {
             timesUpPopupEl.style.display = 'none';
             timesUpPopupEl.style.opacity = '0';
             timesUpPopupEl.style.animation = 'none'; // Stop any ongoing animations
+}
+
+    // Utility to stop all ongoing timers and audio
+    function stopAllEvents() {
+        if (currentAudio) {
+            currentAudio.pause();
+            currentAudio.currentTime = 0;
+            currentAudio = null;
         }
+        if (timerInterval) {
+            clearInterval(timerInterval);
+            timerInterval = null;
+        }
+        if (timesUpPopupEl) {
+            timesUpPopupEl.style.display = 'none';
+            timesUpPopupEl.style.opacity = '0';
+            timesUpPopupEl.style.animation = 'none';
+        }
+        sequenceInProgress = false;
+        answerShown = false;
+    }
 
         showAnswerBtn.disabled = true;
         showAnswerBtn.classList.add('opacity-50', 'cursor-not-allowed');
@@ -674,12 +694,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Navigation ---
     function nextQuestion() {
-        if (currentAudio && currentAudio.source) { // Stop any ongoing audio
-            currentAudio.source.stop();
-            currentAudio.source.disconnect();
-            currentAudio = null;
-        }
-        if (timerInterval) clearInterval(timerInterval);
+        stopAllEvents();
 
         if (currentQuestionIndex < allQuestions.length - 1) {
             currentQuestionIndex++;
@@ -688,12 +703,7 @@ document.addEventListener('DOMContentLoaded', () => {
             window.location.href = 'page3.html';
         }
     }    function previousQuestion() {
-        if (currentAudio && currentAudio.source) {
-            currentAudio.source.stop();
-            currentAudio.source.disconnect();
-            currentAudio = null;
-        }
-        if (timerInterval) clearInterval(timerInterval);
+        stopAllEvents();
 
         if (currentQuestionIndex > 0) {
             currentQuestionIndex--;
@@ -777,9 +787,9 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Emergency Exit Function ---
     function emergencyExitToPage3() {
         // Stop all audio
-        if (currentAudio && currentAudio.source) {
-            currentAudio.source.stop();
-            currentAudio.source.disconnect();
+        if (currentAudio) {
+            currentAudio.pause();
+            currentAudio.currentTime = 0;
             currentAudio = null;
         }
         
@@ -803,13 +813,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     document.addEventListener('keydown', (e) => {
         if (e.key === 'ArrowRight') {
-            if (!sequenceInProgress) {
-                nextQuestion();
-            }
+            stopAllEvents();
+            nextQuestion();
         } else if (e.key === 'ArrowLeft') {
-            if (!sequenceInProgress) {
-                previousQuestion();
-            }
+            stopAllEvents();
+            previousQuestion();
         } else if (e.key === ' ' || e.key === 'Spacebar') {
             e.preventDefault(); 
             if (!startSequenceBtn.disabled) {
