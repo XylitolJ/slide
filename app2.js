@@ -51,7 +51,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentQuestionData = null;
     let timerInterval;
     let timeLeft = 0; // Will be set per question
-    const DEFAULT_TIME_PER_QUESTION = 20; // Default seconds for Round 2, can be overridden by JSON
+    const DEFAULT_TIME_PER_QUESTION = 60; // Default seconds for Round 2, can be overridden by JSON
     let audioContext;
     let currentAudio = null;
     let sequenceInProgress = false;
@@ -440,8 +440,8 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        if (USE_SPEECH && (currentQuestionData.speech_id_timer || 'speech/20s.mp3')) {
-            playAudio(currentQuestionData.speech_id_timer || 'speech/20s.mp3');
+        if (USE_SPEECH && (currentQuestionData.speech_id_timer || 'speech/60s.mp3')) {
+            playAudio(currentQuestionData.speech_id_timer || 'speech/60s.mp3');
         }
 
         const totalDuration = parseInt(currentQuestionData.thoi_gian_tra_loi) || DEFAULT_TIME_PER_QUESTION;
@@ -629,9 +629,12 @@ document.addEventListener('DOMContentLoaded', () => {
         answerShown = true;
 
         if (timerInterval) clearInterval(timerInterval);
-        if (!DEBUG_MODE && timesUpPopupEl.style.display !== 'none') {
-            timesUpPopupEl.style.opacity = '0'; // Start fade out
-            setTimeout(() => timesUpPopupEl.style.display = 'none', 500); // Hide after fade
+        
+        // Immediately hide time-up overlay without delay or animation
+        if (!DEBUG_MODE && timesUpPopupEl) {
+            timesUpPopupEl.style.display = 'none';
+            timesUpPopupEl.style.opacity = '0';
+            timesUpPopupEl.style.animation = 'none'; // Stop any ongoing animations
         }
 
         showAnswerBtn.disabled = true;
@@ -650,12 +653,8 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         } else if (currentQuestionData.type_question === "Lý thuyết tự luận" || currentQuestionData.type_question === "Câu hỏi hình ảnh") {
             if (typeof currentQuestionData.cau_tra_loi === 'string') {
-                // For long answers, it might be better to just announce and refer to material
                 answerDisplayString = `<span class="font-bold">Đáp án:</span> (Chi tiết trong tài liệu)`;
-                 // If you want to show short answers:
-                 // answerDisplayString = `<span class="font-bold">Đáp án:</span> ${currentQuestionData.cau_tra_loi}`;
             } else if (typeof currentQuestionData.cau_tra_loi === 'object' && currentQuestionData.cau_tra_loi !== null) {
-                // Handle structured answers for "Câu hỏi hình ảnh"
                 let structuredAnswer = "";
                 for (const key in currentQuestionData.cau_tra_loi) {
                     structuredAnswer += `<p><strong>${key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}:</strong> ${currentQuestionData.cau_tra_loi[key]}</p>`;
@@ -677,7 +676,6 @@ document.addEventListener('DOMContentLoaded', () => {
         } else if (!USE_SPEECH) {
             await new Promise(r => setTimeout(r, DELAY_NO_SPEECH_ANSWER));
         }
-        // Enable navigation to next question
     }
 
     // --- Navigation ---

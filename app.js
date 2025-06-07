@@ -620,9 +620,10 @@ document.addEventListener('DOMContentLoaded', () => {
         answerShown = true;
 
         if (timerInterval) clearInterval(timerInterval);
-        if (!DEBUG_MODE && timesUpPopupEl.style.display !== 'none') {
-            timesUpPopupEl.style.opacity = '0'; // Start fade out
-            setTimeout(() => timesUpPopupEl.style.display = 'none', 500); // Hide after fade
+        if (!DEBUG_MODE && timesUpPopupEl) {
+            timesUpPopupEl.style.display = 'none';
+            timesUpPopupEl.style.opacity = '0';
+            timesUpPopupEl.style.animation = 'none'; // Stop any ongoing animations
         }
 
         showAnswerBtn.disabled = true;
