@@ -97,21 +97,19 @@ document.addEventListener('DOMContentLoaded', () => {    // URL Parameter handli
         // Navigate to page3.html
         console.log('Navigating to page3.html');
         window.location.href = 'page3.html';
-    }    // Utility to stop all ongoing timers and audio without navigating away
+    }
+    // Utility to stop all ongoing timers and audio without navigating away
     function stopAllEvents() {
-        // Stop Web Audio API audio
         if (currentAudio && currentAudio.source) {
             currentAudio.source.stop();
             currentAudio.source.disconnect();
             currentAudio = null;
         }
-        // Stop HTML5 Audio elements
         if (currentAudio && currentAudio.pause) {
             currentAudio.pause();
             currentAudio.currentTime = 0;
             currentAudio = null;
         }
-        // Stop all audio elements on the page (failsafe)
         document.querySelectorAll('audio').forEach(audio => {
             audio.pause();
             audio.currentTime = 0;

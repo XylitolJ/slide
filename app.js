@@ -787,7 +787,7 @@ async function displayAnswer() {
         window.location.href = 'page3.html';
     }
 
-    // Global utility to stop all ongoing timers and audio without navigating away
+    // Utility to stop all ongoing timers and audio without navigating away
     function stopAllEvents() {
         // Stop Web Audio API audio
         if (currentAudio && currentAudio.source) {
@@ -818,6 +818,7 @@ async function displayAnswer() {
         sequenceInProgress = false;
         answerShown = false;
     }
+
 
     // --- Event Listeners ---
     startSequenceBtn.addEventListener('click', startQuestionSequence);
