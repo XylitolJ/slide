@@ -597,36 +597,17 @@
         // Display mode: 1 = All content shown immediately, 2 = Sequential display with audio sync
         let displayMode = parseInt(localStorage.getItem('quizDisplayMode')) || 1;
 
-        // Quiz set definitions (based on your requirements)
-        const quizSets = {
-            ly_thuyet_boc_xep_bao_quan_van_chuyen: {
-                1: ['V2_BXV_LT_1', 'V2_BXV_HA_8', 'V2_BXV_HA_9'],
-                2: ['V2_BXV_LT_8', 'V2_BXV_HA_11', 'V2_BXV_HA_10'],
-                3: ['V2_BXV_LT_2', 'V2_BXV_HA_3', 'V2_BXV_HA_4'],
-                4: ['V2_BXV_LT_3', 'V2_BXV_HA_5', 'V2_BXV_HA_6'],
-                5: ['V2_BXV_LT_4', 'V2_BXV_HA_7', 'V2_BXV_HA_12']
-            },
-            ly_thuyet_bao_ve: {
-                1: ['V2_BV_LT_1', 'V2_BV_HA_1', 'V2_BV_HA_2'],
-                2: ['V2_BV_LT_2', 'V2_BV_HA_3', 'V2_BV_HA_4'],
-                3: ['V2_BV_LT_3', 'V2_BV_HA_5', 'V2_BV_HA_6'],
-                4: ['V2_BV_LT_4', 'V2_BV_HA_7', 'V2_BV_HA_8'],
-                5: ['V2_BV_LT_5', 'V2_BV_HA_9', 'V2_BV_HA_1'],
-                6: ['V2_BV_LT_6', 'V2_BV_HA_2', 'V2_BV_HA_3'],
-                7: ['V2_BV_LT_7', 'V2_BV_HA_4', 'V2_BV_HA_5'],
-                8: ['V2_BV_LT_8', 'V2_BV_HA_6', 'V2_BV_HA_7']
-            },
-            ly_thuyet_khai_thac_mo: {
-                1: ['V2_KTM_LT_11', 'V2_KTM_LT_14', 'V2_KTM_HA_4'],
-                2: ['V2_KTM_LT_2', 'V2_KTM_HA_3', 'V2_KTM_HA_4'],
-                3: ['V2_KTM_LT_3', 'V2_KTM_HA_5', 'V2_KTM_HA_6'],
-                4: ['V2_KTM_LT_4', 'V2_KTM_HA_7', 'V2_KTM_HA_8'],
-                5: ['V2_KTM_LT_5', 'V2_KTM_HA_9', 'V2_KTM_HA_10'],
-                6: ['V2_KTM_LT_6', 'V2_KTM_HA_11', 'V2_KTM_HA_12'],
-                7: ['V2_KTM_LT_7', 'V2_KTM_HA_13', 'V2_KTM_HA_14'],
-                8: ['V2_KTM_LT_8', 'V2_KTM_HA_15', 'V2_KTM_HA_1']
+        let quizSets = {};
+
+        async function loadQuizSets() {
+            try {
+                const res = await fetch('question_sets.json');
+                const data = await res.json();
+                quizSets = data.vong2 || {};
+            } catch (err) {
+                console.error('Error loading question sets:', err);
             }
-        };
+        }
 
         // Initialize quiz
         async function initializeQuiz() {
@@ -1312,8 +1293,13 @@
         }
 
         // Initialize when page loads
-        document.addEventListener('DOMContentLoaded', initializeQuiz);        // Enhanced keyboard navigation with audio controls and display mode toggle        document.addEventListener('keydown', function(e) {        // Enhanced keyboard navigation with audio controls and display mode toggle
-        document.addEventListener('keydown', function(e) {
+        document.addEventListener("DOMContentLoaded", async () => {
+            await loadQuizSets();
+            initializeQuiz();
+        });
+
+        // Enhanced keyboard navigation with audio controls and display mode toggle
+        document.addEventListener("keydown", function(e) {
             if (e.key === 'ArrowLeft') {
                 e.preventDefault();
                 previousQuestion(); // stopAllAudio() đã được gọi trong hàm này

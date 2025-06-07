@@ -611,6 +611,12 @@ body, html {
     border-bottom-right-radius: 0px;  /* No radius for bottom-right */
 }
 
+/* Image used as main question content */
+.question-image {
+    border: 2px solid #d1d5db; /* gray-300 */
+    border-radius: 6px;
+}
+
 /* --- New Background Styles --- */
 
 /* --- New Background Styles --- */
@@ -682,4 +688,15 @@ body, html {
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
+}
+
+/* Fullscreen image modal */
+.image-modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10050;
 }

@@ -1,0 +1,42 @@
+{
+  "vong1": {
+    "1": ["CSPL_TN_1","CSPL_TN_2","CSPL_TN_3","CSPL_TN_4","CSPL_TN_5","YT_SC_TN_1","YT_SC_TN_2","YT_SC_TN_3","PCCC_TN_1","PCCC_TN_2","PCCC_TN_3","PCCC_TN_4","PCCC_TN_5","PCCC_TN_6","PCCC_TN_7"]
+  },
+  "vong2": {
+    "ly_thuyet_boc_xep_bao_quan_van_chuyen": {
+      "1": ["V2_BXV_LT_1","V2_BXV_HA_8","V2_BXV_HA_9"],
+      "2": ["V2_BXV_LT_8","V2_BXV_HA_11","V2_BXV_HA_10"],
+      "3": ["V2_BXV_LT_2","V2_BXV_HA_3","V2_BXV_HA_4"],
+      "4": ["V2_BXV_LT_3","V2_BXV_HA_5","V2_BXV_HA_6"],
+      "5": ["V2_BXV_LT_4","V2_BXV_HA_7","V2_BXV_HA_12"]
+    },
+    "ly_thuyet_bao_ve": {
+      "1": ["V2_BV_LT_1","V2_BV_HA_1","V2_BV_HA_2"],
+      "2": ["V2_BV_LT_2","V2_BV_HA_3","V2_BV_HA_4"],
+      "3": ["V2_BV_LT_3","V2_BV_HA_5","V2_BV_HA_6"],
+      "4": ["V2_BV_LT_4","V2_BV_HA_7","V2_BV_HA_8"],
+      "5": ["V2_BV_LT_5","V2_BV_HA_9","V2_BV_HA_1"],
+      "6": ["V2_BV_LT_6","V2_BV_HA_2","V2_BV_HA_3"],
+      "7": ["V2_BV_LT_7","V2_BV_HA_4","V2_BV_HA_5"],
+      "8": ["V2_BV_LT_8","V2_BV_HA_6","V2_BV_HA_7"]
+    },
+    "ly_thuyet_khai_thac_mo": {
+      "1": ["V2_KTM_LT_11","V2_KTM_LT_14","V2_KTM_HA_4"],
+      "2": ["V2_KTM_LT_2","V2_KTM_HA_3","V2_KTM_HA_4"],
+      "3": ["V2_KTM_LT_3","V2_KTM_HA_5","V2_KTM_HA_6"],
+      "4": ["V2_KTM_LT_4","V2_KTM_HA_7","V2_KTM_HA_8"],
+      "5": ["V2_KTM_LT_5","V2_KTM_HA_9","V2_KTM_HA_10"],
+      "6": ["V2_KTM_LT_6","V2_KTM_HA_11","V2_KTM_HA_12"],
+      "7": ["V2_KTM_LT_7","V2_KTM_HA_13","V2_KTM_HA_14"],
+      "8": ["V2_KTM_LT_8","V2_KTM_HA_15","V2_KTM_HA_1"]
+    }
+  },
+  "vong3": {
+    "1": ["V3_YT_SC_TH_1","V3_PCCC_TL_1"],
+    "2": ["V3_YT_SC_TH_2","V3_PCCC_TL_2"],
+    "3": ["V3_YT_SC_TH_3","V3_PCCC_TL_3"],
+    "4": ["V3_YT_SC_TH_4","V3_PCCC_TL_4"],
+    "5": ["V3_YT_SC_TH_5","V3_PCCC_TL_5"],
+    "6": ["V3_YT_SC_TH_6","V3_PCCC_TL_6"]
+  }
+}

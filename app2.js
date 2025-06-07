@@ -14,6 +14,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const optionsContainerEl = document.getElementById('optionsContainer'); 
     const imageAreaEl = document.getElementById('imageArea'); 
     const slideImageEl = document.getElementById('slideImage');
+    const imageModalEl = document.getElementById('imageModal');
+    const modalImageEl = document.getElementById('modalImage');
     // Footer elements
     const footerEl = document.querySelector('.footer'); 
     const progressTextEl = document.getElementById('progressText'); // ID remains the same, but element is in new footer
@@ -328,6 +330,10 @@ document.addEventListener('DOMContentLoaded', () => {
             imageAreaEl.style.order = ''; // Reset order
             imageAreaEl.classList.add('hidden'); // Default to hidden
         }
+        if (imageWrapperEl) {
+            imageWrapperEl.classList.remove('relative', 'w-full', 'question-image');
+            imageWrapperEl.classList.add('absolute', 'inset-y-0', 'right-0', 'w-[calc(100%+3rem)]', 'custom-image-shape');
+        }
 
 
         slideImageEl.onload = () => {
@@ -360,12 +366,16 @@ document.addEventListener('DOMContentLoaded', () => {
             // imageAreaEl.classList.remove('hidden'); // Handled by onload
 
             if (questionData.question_image === 'Yes') {
-                mainContentFlexContainer.classList.add('flex-col');
-                questionOptionsSection.classList.add('w-full');
+                mainContentFlexContainer.classList.add('flex-row');
+                questionOptionsSection.classList.add('w-2/5', 'pr-6');
                 questionOptionsSection.style.order = 1;
-                imageAreaEl.classList.add('w-full', 'h-2/3', 'py-4'); // Adjust image height as needed
+                imageAreaEl.classList.add('w-3/5', 'pl-6');
                 imageAreaEl.style.order = 2;
                 slideImageEl.classList.replace('object-cover', 'object-contain');
+                if (imageWrapperEl) {
+                    imageWrapperEl.classList.remove('absolute', 'inset-y-0', 'right-0', 'w-[calc(100%+3rem)]', 'custom-image-shape');
+                    imageWrapperEl.classList.add('relative', 'w-full', 'question-image');
+                }
             } else if (questionData.position_image === 'Left') {
                 mainContentFlexContainer.classList.add('flex-row');
                 questionOptionsSection.classList.add('w-3/5', 'pl-6');
@@ -555,7 +565,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         // 3. Show & Speak Options (if Trac nghiem)
-        if (currentQuestionData.type_question === "Trắc nghiệm" && currentQuestionData.phuong_an) {
+        if ((currentQuestionData.type_question === "Trắc nghiệm" || currentQuestionData.type_question === "Trắc nghiệm Hình ảnh") && currentQuestionData.phuong_an) {
             const optionElements = optionsContainerEl.querySelectorAll('.option-card');
             console.log(`startQuestionSequence: Found ${optionElements.length} option elements to animate.`);
             
@@ -641,7 +651,7 @@ document.addEventListener('DOMContentLoaded', () => {
         showAnswerBtn.classList.add('opacity-50', 'cursor-not-allowed');
         
         let answerDisplayString = "";
-        if (currentQuestionData.type_question === "Trắc nghiệm") {
+        if (currentQuestionData.type_question === "Trắc nghiệm" || currentQuestionData.type_question === "Trắc nghiệm Hình ảnh") {
             if (currentQuestionData.dap_an_dung) {
                 const correctKeys = Array.isArray(currentQuestionData.dap_an_dung) 
                                     ? currentQuestionData.dap_an_dung 
@@ -811,6 +821,17 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Event Listeners ---
     startSequenceBtn.addEventListener('click', startQuestionSequence);
     showAnswerBtn.addEventListener('click', displayAnswer);
+    if (slideImageEl && imageModalEl && modalImageEl) {
+        slideImageEl.addEventListener('click', () => {
+            if (!slideImageEl.src) return;
+            modalImageEl.src = slideImageEl.src;
+            imageModalEl.classList.remove('hidden');
+        });
+        imageModalEl.addEventListener('click', () => {
+            imageModalEl.classList.add('hidden');
+            modalImageEl.src = '';
+        });
+    }
 
     document.addEventListener('keydown', (e) => {
         if (e.key === 'ArrowRight') {
