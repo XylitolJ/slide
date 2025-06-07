@@ -935,6 +935,13 @@
                 });
                 updateAudioStatus('Hoàn thành phát âm thanh', false);
                 
+                // Start timer after all audio is complete in Mode 1
+                if (displayMode === 1) {
+                    setTimeout(() => {
+                        startCountdownTimer();
+                    }, 500);
+                }
+                
                 // Auto-advance option: Uncomment the lines below to auto-advance to next question
                 // setTimeout(() => {
                 //     nextQuestion();
@@ -1005,7 +1012,8 @@
                 // Continue to next audio on play error
                 setTimeout(() => {
                     playNextAudio();
-                }, 500);            });
+                }, 500);
+            });
         }        // Play next audio in sequential mode with optimized element reveal
         function playNextSequentialAudio() {
             if (audioQueue.length === 0) {
@@ -1522,13 +1530,8 @@
             }
         }        // Start timer after all options are displayed
         function startTimerAfterOptions() {
-            if (displayMode === 1) {
-                // For immediate display mode, start timer after a short delay
-                setTimeout(() => {
-                    startCountdownTimer();
-                }, 1000);
-            }
-            // For sequential mode, timer will be started after audio completion
+            // This function is no longer needed as timer now starts after audio completion
+            // Timer will be started in playNextAudio() and playNextSequentialAudio()
         }
 
         // Add Enter key handler for popup
@@ -1581,7 +1584,8 @@
                                     <span class="text-gray-500 text-sm">${question.subcategory}</span>
                                 </div>
                                 <h2 id="questionText" class="text-2xl font-bold text-gray-800 leading-relaxed mb-6 ${displayMode === 2 ? 'sequential-hide' : ''}">${question.cau_hoi}</h2>
-                            </div>                            <div id="questionImage" class="text-center ${displayMode === 2 ? 'sequential-hide' : ''}">
+                            </div>
+                            <div id="questionImage" class="text-center ${displayMode === 2 ? 'sequential-hide' : ''}">
                                 <img src="${question.image_id}" alt="Hình ảnh câu hỏi" class="quiz-image mx-auto max-w-full h-auto rounded-lg shadow-lg" onclick="openFullscreenImage('${question.image_id}')">
                             </div>
                         </div>
@@ -1669,9 +1673,9 @@
             
             // Start audio based on display mode
             if (displayMode === 1) {
-                // Mode 1: Show all content, then start audio with highlighting, then timer
+                // Mode 1: Show all content, then start audio with highlighting
+                // Timer will start after audio completion in playNextAudio()
                 startAutoPlayAudio(question);
-                startTimerAfterOptions();
             } else {
                 // Mode 2: Sequential display synchronized with audio, timer starts after completion
                 startSequentialAudio(question);

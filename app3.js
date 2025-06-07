@@ -114,18 +114,23 @@ document.addEventListener('DOMContentLoaded', () => {    // URL Parameter handli
             }
         }
         
-        // Stop HTML5 Audio elements
-        if (currentAudio && currentAudio.pause) {
-            console.log('%c[STOP ALL EVENTS] Stopping HTML5 Audio element', 'color: red;');
-            try {
-                currentAudio.pause();
-                currentAudio.currentTime = 0;
-                currentAudio = null;
-                console.log('%c[STOP ALL EVENTS] HTML5 Audio element stopped successfully', 'color: green;');
-            } catch (e) {
-                console.error('[STOP ALL EVENTS] Error stopping HTML5 Audio:', e);
-            }
+    // Stop HTML5 Audio elements
+    if (currentAudio) {
+        try {
+            currentAudio.pause();
+            // Hủy bỏ callbacks
+            currentAudio.oncanplaythrough = null;
+            currentAudio.onended        = null;
+            currentAudio.onerror        = null;
+            // Reset src và abort request
+            currentAudio.src = '';
+            currentAudio.load();
+        } catch (e) {
+            console.error('Error fully stopping audio:', e);
         }
+        currentAudio = null;
+        console.log('[STOP ALL EVENTS] Fully stopped audio element');
+    }
         
         // Stop all audio elements on the page (failsafe)
         const allAudioElements = document.querySelectorAll('audio');
