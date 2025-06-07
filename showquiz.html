@@ -193,8 +193,7 @@
           @keyframes scoreShow {
             0% { transform: scale(0.8); opacity: 0; }
             100% { transform: scale(1); opacity: 1; }
-        }
-          .audio-highlight {
+        }        .audio-highlight {
             background: rgba(255, 235, 59, 0.25) !important;
             border-color: #fbbf24 !important;
             border-width: 3px !important;
@@ -207,6 +206,125 @@
             0% { transform: scale(1); }
             50% { transform: scale(1.1); }
             100% { transform: scale(1); }
+        }
+
+        /* Timer styles */
+        .timer-display {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 50%;
+            padding: 10px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            backdrop-filter: blur(10px);
+        }
+
+        .timer-circle {
+            position: relative;
+            width: 80px;
+            height: 80px;
+        }
+
+        .timer-svg {
+            transform: rotate(-90deg);
+            width: 100%;
+            height: 100%;
+        }
+
+        .timer-circle-bg {
+            fill: none;
+            stroke: rgba(0, 0, 0, 0.1);
+            stroke-width: 6;
+        }
+
+        .timer-circle-progress {
+            fill: none;
+            stroke: #10b981;
+            stroke-width: 6;
+            stroke-linecap: round;
+            stroke-dasharray: 283; /* 2 * Math.PI * 45 */
+            stroke-dashoffset: 283;
+            transition: stroke-dashoffset 1s linear, stroke 0.3s ease;
+        }
+
+        .timer-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #10b981;
+            font-size: 18px;
+            font-weight: 700;
+            transition: color 0.3s ease;
+        }
+
+        /* Time's up overlay styles */
+        .time-up-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 10000;
+            backdrop-filter: blur(10px);
+            opacity: 0;
+            transition: opacity 0.5s ease-out;
+        }
+
+        .time-up-content {
+            background: rgba(220, 38, 38, 0.95);
+            color: white;
+            padding: 40px 60px;
+            border-radius: 25px;
+            font-size: 3rem;
+            font-weight: 800;
+            text-align: center;
+            box-shadow: 0 25px 80px rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(15px);
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            transform: scale(0.8);
+        }
+
+        .time-up-content .subtitle {
+            font-size: 1.5rem;
+            margin-top: 20px;
+            opacity: 0.95;
+            font-weight: 600;
+        }
+
+        @keyframes slideInTimeUp {
+            from {
+                transform: scale(0.8) translateY(30px);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1) translateY(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes pulseTimeUpSmooth {
+            0%, 100% {
+                transform: scale(1);
+                box-shadow: 0 25px 80px rgba(220, 38, 38, 0.3);
+            }
+            50% {
+                transform: scale(1.015);
+                box-shadow: 0 30px 90px rgba(220, 38, 38, 0.5);
+            }
+        }
+
+        /* No hover class to disable hover effects */
+        .no-hover:hover {
+            transform: none !important;
+            background: rgba(255, 255, 255, 0.9) !important;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15) !important;
         }
           .option-char-a { background: linear-gradient(135deg, #dc2626, #b91c1c); box-shadow: 0 2px 8px rgba(220, 38, 38, 0.3); }
         .option-char-b { background: linear-gradient(135deg, #2563eb, #1d4ed8); box-shadow: 0 2px 8px rgba(37, 99, 235, 0.3); }
@@ -884,8 +1002,7 @@
                 setTimeout(() => {
                     playNextAudio();
                 }, 500);            });
-        }
-          // Play next audio in sequential mode with optimized element reveal
+        }        // Play next audio in sequential mode with optimized element reveal
         function playNextSequentialAudio() {
             if (audioQueue.length === 0) {
                 isPlayingAudio = false;
@@ -894,6 +1011,12 @@
                     el.classList.remove('audio-highlight');
                 });
                 updateAudioStatus('Hoàn thành phát tuần tự', false);
+                
+                // Start timer after sequential audio completion
+                setTimeout(() => {
+                    startCountdownTimer();
+                }, 500);
+                
                 return;
             }
             
@@ -1189,9 +1312,323 @@
                 const modal = document.getElementById('fullscreenModal');
                 if (modal.classList.contains('active')) {
                     closeFullscreenImage();
+                }            }
+        });
+
+        // Timer variables
+        let timerInterval;
+        let timeLeft = 60; // 60 seconds
+        let timerActive = false;
+
+        // Timer functions
+        function startCountdownTimer() {
+            if (timerInterval) clearInterval(timerInterval);
+            
+            timeLeft = 60;
+            timerActive = true;
+            
+            // Show timer
+            const timerDisplay = document.getElementById('timerDisplay');
+            if (timerDisplay) {
+                timerDisplay.style.display = 'block';
+                updateTimerDisplay();
+            }
+            
+            // Play 60s audio
+            playTimerAudio();
+            
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                updateTimerDisplay();
+                
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    timerActive = false;
+                    showTimeUpPopup();
+                }
+            }, 1000);
+        }
+
+        function updateTimerDisplay() {
+            const timerText = document.getElementById('timerText');
+            const timerProgress = document.getElementById('timerProgress');
+            
+            if (timerText) {
+                timerText.textContent = timeLeft;
+            }
+            
+            if (timerProgress) {
+                const progress = (60 - timeLeft) / 60;
+                const circumference = 2 * Math.PI * 45; // radius is 45% of circle
+                const offset = circumference * progress;
+                timerProgress.style.strokeDashoffset = circumference - offset;
+                
+                // Change color based on time remaining
+                if (timeLeft <= 20) {
+                    timerProgress.style.stroke = '#FF4444'; // Red
+                    timerText.style.color = '#FF4444';
+                } else if (timeLeft <= 40) {
+                    timerProgress.style.stroke = '#FFA500'; // Orange
+                    timerText.style.color = '#FFA500';
+                } else {
+                    timerProgress.style.stroke = '#10b981'; // Green
+                    timerText.style.color = '#10b981';
+                }
+            }
+        }
+
+        function playTimerAudio() {
+            const timerAudio = new Audio('speech/60s.mp3');
+            timerAudio.play().catch(e => {
+                console.error('Error playing timer audio:', e);
+            });
+        }
+
+        function showTimeUpPopup() {
+            const timeUpOverlay = document.getElementById('timeUpOverlay');
+            if (timeUpOverlay) {
+                timeUpOverlay.style.display = 'flex';
+                timeUpOverlay.style.opacity = '0';
+                
+                // Trigger animation
+                requestAnimationFrame(() => {
+                    timeUpOverlay.style.opacity = '1';
+                    const content = timeUpOverlay.querySelector('.time-up-content');
+                    if (content) {
+                        content.style.animation = 'slideInTimeUp 0.6s ease-out forwards, pulseTimeUpSmooth 2s ease-in-out infinite 0.6s';
+                    }
+                });
+            }
+        }
+
+        function hideTimeUpPopup() {
+            const timeUpOverlay = document.getElementById('timeUpOverlay');
+            if (timeUpOverlay) {
+                timeUpOverlay.style.display = 'none';
+                showCorrectAnswers();
+            }
+        }
+
+        function showCorrectAnswers() {
+            const currentQuestion = questions[currentQuestionIndex];
+            if (!currentQuestion) return;
+
+            // Remove hover effects for multiple correct answers in round 2
+            const isRound2 = currentQuestion.vong === 2;
+            const correctAnswers = currentQuestion.dap_an_dung;
+            const hasMultipleCorrect = Array.isArray(correctAnswers) && correctAnswers.length > 1;
+
+            if (isRound2 && hasMultipleCorrect) {
+                // Remove hover effects
+                document.querySelectorAll('.option-display').forEach(option => {
+                    option.style.cursor = 'default';
+                    option.classList.add('no-hover');
+                });
+            }
+
+            // Highlight correct answers
+            const correctAnswerKeys = Array.isArray(correctAnswers) ? correctAnswers : [correctAnswers];
+            correctAnswerKeys.forEach(answerKey => {
+                const optionElement = document.getElementById(`option-${answerKey}`);
+                if (optionElement) {
+                    optionElement.style.backgroundColor = 'rgba(34, 197, 94, 0.3)';
+                    optionElement.style.borderColor = '#22c55e';
+                    optionElement.style.borderWidth = '3px';
+                    
+                    if (isRound2 && hasMultipleCorrect) {
+                        // Only use background color change for multiple correct answers
+                        optionElement.style.transform = 'none';
+                    } else {
+                        optionElement.style.transform = 'translateX(8px) scale(1.02)';
+                    }
+                }
+            });
+
+            // Play answer audio if available
+            if (currentQuestion.speech_id_answer) {
+                const answerAudio = new Audio(`speech/${currentQuestion.speech_id_answer}`);
+                answerAudio.play().catch(e => {
+                    console.error('Error playing answer audio:', e);
+                });
+            }
+        }        // Start timer after all options are displayed
+        function startTimerAfterOptions() {
+            if (displayMode === 1) {
+                // For immediate display mode, start timer after a short delay
+                setTimeout(() => {
+                    startCountdownTimer();
+                }, 1000);
+            }
+            // For sequential mode, timer will be started after audio completion
+        }
+
+        // Add Enter key handler for popup
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                const timeUpOverlay = document.getElementById('timeUpOverlay');
+                if (timeUpOverlay && timeUpOverlay.style.display === 'flex') {
+                    e.preventDefault();
+                    hideTimeUpPopup();
                 }
             }
         });
+
+        // Store original displayQuestion function and enhance it
+        const originalDisplayQuestionFunc = window.displayQuestion;
+        window.displayQuestion = function(index) {
+            // Call original function if index is provided, otherwise use current index
+            if (typeof index !== 'undefined') {
+                currentQuestionIndex = index;
+            }
+            
+            const question = questions[currentQuestionIndex];
+            const questionCard = document.getElementById('questionCard');
+            
+            // Update progress
+            updateProgress();
+            
+            // Update background if question has different bg_image
+            if (question.bg_image) {
+                document.getElementById('quizContainer').style.backgroundImage = `url('${question.bg_image}')`;
+            }
+            
+            const hasImage = question.question_image === "Yes" && question.image_id;
+            const options = Object.keys(question.phuong_an);
+            
+            let questionHTML = '';
+            
+            if (hasImage) {
+                // Layout with image - use two-column grid
+                questionHTML = `
+                    <div class="question-with-image">
+                        <!-- Left column: Question and Image -->
+                        <div class="question-image-fixed">
+                            <div class="mb-6">
+                                <div class="flex items-center justify-between mb-4">
+                                    <span class="bg-blue-500 text-white px-4 py-2 rounded-lg font-semibold">
+                                        <i class="fas fa-question-circle mr-2"></i>
+                                        Câu ${currentQuestionIndex + 1}
+                                    </span>
+                                    <span class="text-gray-500 text-sm">${question.subcategory}</span>
+                                </div>
+                                <h2 id="questionText" class="text-2xl font-bold text-gray-800 leading-relaxed mb-6 ${displayMode === 2 ? 'sequential-hide' : ''}">${question.cau_hoi}</h2>
+                            </div>                            <div id="questionImage" class="text-center ${displayMode === 2 ? 'sequential-hide' : ''}">
+                                <img src="${question.image_id}" alt="Hình ảnh câu hỏi" class="quiz-image mx-auto max-w-full h-auto rounded-lg shadow-lg" onclick="openFullscreenImage('${question.image_id}')">
+                            </div>
+                        </div>
+                        
+                        <!-- Right column: Options -->
+                        <div id="optionsContainer" class="options-single-column">
+                `;
+            } else {
+                // Layout without image - question at top, options in two columns
+                questionHTML = `
+                    <div class="mb-8">
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="bg-blue-500 text-white px-4 py-2 rounded-lg font-semibold">
+                                <i class="fas fa-question-circle mr-2"></i>
+                                Câu ${currentQuestionIndex + 1}
+                            </span>
+                            <span class="text-gray-500 text-sm">${question.subcategory}</span>
+                        </div>
+                        <h2 id="questionText" class="text-3xl font-bold text-gray-800 leading-relaxed mb-8 ${displayMode === 2 ? 'sequential-hide' : ''}">${question.cau_hoi}</h2>
+                    </div>
+                    
+                    <div id="optionsContainer" class="options-two-column">
+                `;
+            }
+            
+            // Add options
+            options.forEach((optionKey, index) => {
+                questionHTML += `
+                    <div id="option-${optionKey}" class="option-display p-6 rounded-lg bg-white/90 border-2 border-gray-200 shadow-sm ${displayMode === 2 ? 'sequential-hide' : ''}" data-option="${optionKey}">
+                        <div class="flex items-center">
+                            <div class="option-char-${optionKey} w-12 h-12 rounded-full flex items-center justify-center text-white font-bold mr-6 text-xl">
+                                ${optionKey.toUpperCase()}
+                            </div>
+                            <span class="text-gray-800 flex-1 text-lg leading-relaxed">${question.phuong_an[optionKey]}</span>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            questionHTML += '</div>';
+            
+            if (hasImage) {
+                questionHTML += '</div>'; // Close question-with-image div
+            }
+              
+            questionCard.innerHTML = questionHTML;
+            
+            // Initialize optimized sequential animations for mode 2
+            if (displayMode === 2) {
+                // Add sequential element classes and set initial state with optimized timing
+                requestAnimationFrame(() => {
+                    const questionText = document.getElementById('questionText');
+                    const questionImage = document.getElementById('questionImage');
+                    const optionElements = document.querySelectorAll('.option-display');
+                    
+                    // Add transition classes for smooth animations
+                    if (questionText) {
+                        questionText.classList.add('sequential-element');
+                    }
+                    
+                    if (questionImage) {
+                        questionImage.classList.add('sequential-element');
+                    }
+                    
+                    optionElements.forEach(el => {
+                        el.classList.add('sequential-element');
+                    });
+                    
+                    // Force reflow to ensure classes are applied
+                    void questionCard.offsetHeight;
+                });
+            }
+            
+            // Reset timer display
+            const timerDisplay = document.getElementById('timerDisplay');
+            if (timerDisplay) {
+                timerDisplay.style.display = 'none';
+            }
+            
+            // Clear any existing timer
+            if (timerInterval) {
+                clearInterval(timerInterval);
+                timerActive = false;
+            }
+            
+            // Start audio based on display mode
+            if (displayMode === 1) {
+                // Mode 1: Show all content, then start audio with highlighting, then timer
+                startAutoPlayAudio(question);
+                startTimerAfterOptions();
+            } else {
+                // Mode 2: Sequential display synchronized with audio, timer starts after completion
+                startSequentialAudio(question);
+            }
+        };
     </script>
+
+    <!-- Timer Display -->
+    <div id="timerDisplay" class="timer-display" style="display: none;">
+        <div class="timer-circle">
+            <svg class="timer-svg">
+                <circle class="timer-circle-bg" cx="50%" cy="50%" r="45%"></circle>
+                <circle class="timer-circle-progress" id="timerProgress" cx="50%" cy="50%" r="45%"></circle>
+            </svg>
+            <div class="timer-text" id="timerText">60</div>
+        </div>
+    </div>
+
+    <!-- Time's Up Overlay -->
+    <div id="timeUpOverlay" class="time-up-overlay" style="display: none;">
+        <div class="time-up-content">
+            <i class="fas fa-clock mr-3"></i>HẾT GIỜ!
+            <div class="subtitle">
+                Các đội vui lòng giơ bảng đáp án
+            </div>
+        </div>
+    </div>
 </body>
 </html>
