@@ -77,7 +77,7 @@
             <!-- Right Column: Image -->
             <div id="imageArea" class="w-2/5 flex items-stretch justify-start relative">
             <div id="imageWrapper" class="absolute inset-y-0 right-0 w-[calc(100%+3rem)] custom-image-shape overflow-hidden shadow-xl">
-                <img id="slideImage" src="" alt="Hình ảnh minh họa" class="block w-full h-full object-cover">
+                <img id="slideImage" src="" alt="Hình ảnh minh họa" class="block w-full h-full object-cover cursor-pointer">
             </div>
             </div>
         </div>
@@ -125,6 +125,10 @@
                     Các đội vui lòng giơ bảng đáp án
                 </div>
             </div>
+        </div>
+        <!-- Image Modal for full-screen view -->
+        <div id="imageModal" class="image-modal hidden">
+            <img id="modalImage" src="" alt="Preview" class="max-w-full max-h-full">
         </div>
     </div>
 

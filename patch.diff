@@ -1,0 +1,222 @@
+ (cd "$(git rev-parse --show-toplevel)" && git apply --3way <<'EOF' 
+diff --git a/app2.js b/app2.js
+index 8150cb4b0ed571f9f9a67324f0b79d9ba11ea76c..442e977c7565ddf43dcc56e2a3b7c3df5cb6bc4b 100644
+--- a/app2.js
++++ b/app2.js
+@@ -1,41 +1,43 @@
+ // npx http-server -o
+ document.addEventListener('DOMContentLoaded', () => {
+     // DOM Elements
+     const slideContainer = document.getElementById('slideContainer');
+     // Header elements
+     const headerEl = document.querySelector('.header'); 
+     const questionNumberEl = document.getElementById('newQuestionNumber'); // Updated ID
+     const questionCategoryEl = document.getElementById('newQuestionCategory'); // Updated ID
+     const timerCircleEl = document.getElementById('timerProgress'); // Updated ID
+     const timerTextEl = document.getElementById('timer'); // Updated ID
+     // Main content elements
+     const questionSectionEl = document.getElementById('questionSection'); 
+     const questionTextContentEl = document.getElementById('questionTextContent');
+     const optionsContainerEl = document.getElementById('optionsContainer'); 
+     const imageAreaEl = document.getElementById('imageArea'); 
+     const slideImageEl = document.getElementById('slideImage');
++    const imageModalEl = document.getElementById('imageModal');
++    const modalImageEl = document.getElementById('modalImage');
+     // Footer elements
+     const footerEl = document.querySelector('.footer'); 
+     const progressTextEl = document.getElementById('progressText'); // ID remains the same, but element is in new footer
+     const startSequenceBtn = document.getElementById('startSequenceBtn');
+     const showAnswerBtn = document.getElementById('showAnswerBtn');
+     // const footerContestInfoEl = document.getElementById('footerContestInfo')?.querySelector('span'); // This element might not exist in the new footer structure or needs re-evaluation
+     // const footerTimeScoreEl = document.getElementById('footerTimeScore')?.querySelector('span'); // This element might not exist
+     const footerProgressBarEl = document.getElementById('footerProgressBar');
+     const roundInfoDisplayEl = document.getElementById('roundInfoDisplay'); // New element for round info
+  
+     // Parse query parameters for selected question IDs
+     function getSelectedIds() {
+         const params = new URLSearchParams(window.location.search);
+         const idsParam = params.get('ids');
+         if (!idsParam) return [];
+         return idsParam.split(',').map(id => id.trim()).filter(Boolean);
+     }
+  
+     // Popup
+     const timesUpPopupEl = document.getElementById('timeUpOverlay'); // Updated ID for new overlay
+ 
+     // --- Configuration ---
+     const DEBUG_MODE = false; // Set to true to enable debug mode
+     const USE_SPEECH = true; // Set to false to disable all speech synthesis & audio file playback
+     const SHOW_IMAGE_PLACEHOLDER_ON_ERROR = true; // If true, shows a placeholder if an image fails to load
+diff --git a/app2.js b/app2.js
+index 8150cb4b0ed571f9f9a67324f0b79d9ba11ea76c..442e977c7565ddf43dcc56e2a3b7c3df5cb6bc4b 100644
+--- a/app2.js
++++ b/app2.js
+@@ -306,88 +308,96 @@ document.addEventListener('DOMContentLoaded', () => {
+         // Prepare image 
+         let showImageArea = questionData.use_image === 'Yes' && questionData.image_id;
+         const questionTextLength = questionData.cau_hoi.length;
+ 
+         if (questionData.question_image !== 'Yes' && questionTextLength > 250 && questionData.use_image === 'Yes') {
+             showImageArea = false;
+         }
+         
+         const questionOptionsSection = document.getElementById('questionOptionsArea');
+         // The main content container is the one with class 'px-8.py-4.flex-grow.flex.overflow-hidden'
+         const mainContentFlexContainer = document.querySelector('.px-8.py-4.flex-grow.flex.overflow-hidden');
+ 
+         // Reset layout classes first
+         if (mainContentFlexContainer) {
+             mainContentFlexContainer.classList.remove('flex-col', 'flex-row'); // Remove old direction
+         }
+         if (questionOptionsSection) {
+             questionOptionsSection.classList.remove('w-full', 'w-3/5', 'w-2/5', 'pr-6', 'pl-6');
+             questionOptionsSection.style.order = ''; // Reset order
+         }
+         if (imageAreaEl) {
+             imageAreaEl.classList.remove('w-full', 'w-3/5', 'w-2/5', 'pr-6', 'pl-6', 'h-2/3', 'py-4');
+             imageAreaEl.style.order = ''; // Reset order
+             imageAreaEl.classList.add('hidden'); // Default to hidden
+         }
++        if (imageWrapperEl) {
++            imageWrapperEl.classList.remove('relative', 'w-full', 'question-image');
++            imageWrapperEl.classList.add('absolute', 'inset-y-0', 'right-0', 'w-[calc(100%+3rem)]', 'custom-image-shape');
++        }
+ 
+ 
+         slideImageEl.onload = () => {
+             if(showImageArea && imageAreaEl) {
+                 imageAreaEl.classList.remove('hidden');
+             }
+         };
+         slideImageEl.onerror = () => {
+             if (SHOW_IMAGE_PLACEHOLDER_ON_ERROR) {
+                 slideImageEl.src = IMAGE_PLACEHOLDER_SVG;
+                 slideImageEl.alt = "Không tìm thấy hình ảnh, hiển thị ảnh mẫu";
+                 if(showImageArea && imageAreaEl) {
+                     imageAreaEl.classList.remove('hidden');
+                 }
+             } else {
+                 if(imageAreaEl) imageAreaEl.classList.add('hidden');
+                  // If image area is hidden, questionOptionsSection should take full width
+                 if(questionOptionsSection) questionOptionsSection.classList.add('w-full');
+                 if(mainContentFlexContainer) mainContentFlexContainer.classList.add('flex-row'); // Ensure row layout if no image
+             }
+         };
+ 
+         if (showImageArea && imageAreaEl && questionOptionsSection && mainContentFlexContainer) {
+             // Ensure the image area is made visible if an image is supposed to be shown
+             imageAreaEl.classList.remove('hidden');
+             
+             slideImageEl.src = questionData.image_id;
+             slideImageEl.alt = `Hình ảnh cho câu ${questionData.id}`;
+             // The line below is now redundant due to the above change, but harmless if onload also calls it.
+             // imageAreaEl.classList.remove('hidden'); // Handled by onload
+ 
+             if (questionData.question_image === 'Yes') {
+-                mainContentFlexContainer.classList.add('flex-col');
+-                questionOptionsSection.classList.add('w-full');
++                mainContentFlexContainer.classList.add('flex-row');
++                questionOptionsSection.classList.add('w-2/5', 'pr-6');
+                 questionOptionsSection.style.order = 1;
+-                imageAreaEl.classList.add('w-full', 'h-2/3', 'py-4'); // Adjust image height as needed
++                imageAreaEl.classList.add('w-3/5', 'pl-6');
+                 imageAreaEl.style.order = 2;
+                 slideImageEl.classList.replace('object-cover', 'object-contain');
++                if (imageWrapperEl) {
++                    imageWrapperEl.classList.remove('absolute', 'inset-y-0', 'right-0', 'w-[calc(100%+3rem)]', 'custom-image-shape');
++                    imageWrapperEl.classList.add('relative', 'w-full', 'question-image');
++                }
+             } else if (questionData.position_image === 'Left') {
+                 mainContentFlexContainer.classList.add('flex-row');
+                 questionOptionsSection.classList.add('w-3/5', 'pl-6');
+                 questionOptionsSection.style.order = 2;
+                 imageAreaEl.classList.add('w-2/5', 'pr-6');
+                 imageAreaEl.style.order = 1;
+                 slideImageEl.classList.replace('object-contain', 'object-cover');
+             } else { // Default to Right or if position_image is 'Right'
+                 mainContentFlexContainer.classList.add('flex-row');
+                 questionOptionsSection.classList.add('w-3/5', 'pr-6');
+                 questionOptionsSection.style.order = 1;
+                 imageAreaEl.classList.add('w-2/5', 'pl-6');
+                 imageAreaEl.style.order = 2;
+                 slideImageEl.classList.replace('object-contain', 'object-cover');
+             }
+         } else { // No image to show
+             if(imageAreaEl) imageAreaEl.classList.add('hidden');
+             if(questionOptionsSection) questionOptionsSection.classList.add('w-full');
+             if(mainContentFlexContainer) mainContentFlexContainer.classList.add('flex-row');
+         }
+ 
+         if (questionData.phuong_an) {
+             Object.entries(questionData.phuong_an).forEach(([key, value]) => {
+                 if (value) {
+                     const optionKeyUpper = key.toUpperCase();
+diff --git a/app2.js b/app2.js
+index 8150cb4b0ed571f9f9a67324f0b79d9ba11ea76c..442e977c7565ddf43dcc56e2a3b7c3df5cb6bc4b 100644
+--- a/app2.js
++++ b/app2.js
+@@ -789,50 +799,61 @@ document.addEventListener('DOMContentLoaded', () => {
+     function emergencyExitToPage3() {
+         // Stop all audio
+         if (currentAudio && currentAudio.source) {
+             currentAudio.source.stop();
+             currentAudio.source.disconnect();
+             currentAudio = null;
+         }
+         
+         // Clear all timers
+         if (timerInterval) {
+             clearInterval(timerInterval);
+             timerInterval = null;
+         }
+         
+         // Reset all flags
+         sequenceInProgress = false;
+         answerShown = false;
+         
+         // Navigate to page3.html
+         window.location.href = 'page3.html';
+     }
+ 
+     // --- Event Listeners ---
+     startSequenceBtn.addEventListener('click', startQuestionSequence);
+     showAnswerBtn.addEventListener('click', displayAnswer);
++    if (slideImageEl && imageModalEl && modalImageEl) {
++        slideImageEl.addEventListener('click', () => {
++            if (!slideImageEl.src) return;
++            modalImageEl.src = slideImageEl.src;
++            imageModalEl.classList.remove('hidden');
++        });
++        imageModalEl.addEventListener('click', () => {
++            imageModalEl.classList.add('hidden');
++            modalImageEl.src = '';
++        });
++    }
+ 
+     document.addEventListener('keydown', (e) => {
+         if (e.key === 'ArrowRight') {
+             if (!sequenceInProgress) {
+                 nextQuestion();
+             }
+         } else if (e.key === 'ArrowLeft') {
+             if (!sequenceInProgress) {
+                 previousQuestion();
+             }
+         } else if (e.key === ' ' || e.key === 'Spacebar') {
+             e.preventDefault(); 
+             if (!startSequenceBtn.disabled) {
+                 startQuestionSequence();
+             }
+         } else if (e.key === 'Enter') {
+             if (!showAnswerBtn.disabled && showAnswerBtn.style.display !== 'none') {
+                 e.preventDefault();
+                 displayAnswer();
+             }        } else if (e.key.toLowerCase() === 'd' && e.ctrlKey) { // Ctrl+D to toggle debug
+             e.preventDefault();
+             // This is a simple way to toggle, for a real app, you might want a UI element
+             // For now, this requires manual change of DEBUG_MODE constant and reload.
+             // Or, we can make DEBUG_MODE a let and toggle it here, then re-render.
+             console.log("Debug mode toggle attempted. Reload page if DEBUG_MODE constant was changed.");
+ 
+EOF
+)
