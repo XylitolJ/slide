@@ -448,14 +448,37 @@
             color: #333;
             transition: all 0.3s ease;
         }
-        
-        .fullscreen-modal .close-btn:hover {
+          .fullscreen-modal .close-btn:hover {
             background: white;
             transform: scale(1.1);
+        }
+        
+        /* Header progress bar styles */
+        .header-progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 0%;
+            height: 4px;
+            background: linear-gradient(90deg, #10b981, #34d399);
+            z-index: 10001;
+            transition: width 1s linear, background 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .header-progress-bar.warning {
+            background: linear-gradient(90deg, #f59e0b, #fbbf24);
+        }
+        
+        .header-progress-bar.danger {
+            background: linear-gradient(90deg, #ef4444, #f87171);
         }
     </style>
 </head>
 <body>
+    <!-- Thêm header progress bar ở đầu trang -->
+    <div class="header-progress-bar" id="headerProgressBar"></div>
+    
     <div id="quizContainer" class="quiz-container">
         <!-- Background particles -->
         <div class="floating-particles">
@@ -560,8 +583,7 @@
          * - Audio status indicator in header
          * - Keyboard shortcuts display in footer
          * - Responsive layout for different content types
-         */
-          // Global variables
+         */          // Global variables
         let quizData = null;
         let currentQuestionIndex = 0;
         let questions = [];
@@ -570,6 +592,7 @@
         let isPlayingAudio = false;
         let selectedCategory = '';
         let selectedSet = 1;
+        let currentTimerAudio = null; // Thêm biến để track timer audio
         
         // Display mode: 1 = All content shown immediately, 2 = Sequential display with audio sync
         let displayMode = parseInt(localStorage.getItem('quizDisplayMode')) || 1;
@@ -1149,17 +1172,38 @@
                     audioStatus.style.color = '#f87171'; // Red for errors
                 }
             }
-        }
-
-        // Stop all audio with improved cleanup and status updates
+        }        // Stop all audio with improved cleanup and status updates
         function stopAllAudio() {
+            // Dừng audio câu hỏi/đáp án
             if (currentAudio) {
                 currentAudio.pause();
                 currentAudio.currentTime = 0;
                 currentAudio = null;
             }
+            
+            // Dừng timer audio
+            if (currentTimerAudio) {
+                currentTimerAudio.pause();
+                currentTimerAudio.currentTime = 0;
+                currentTimerAudio = null;
+            }
+            
             audioQueue = [];
             isPlayingAudio = false;
+            
+            // Dừng timer
+            if (timerInterval) {
+                clearInterval(timerInterval);
+                timerInterval = null;
+                timerActive = false;
+            }
+            
+            // Reset header progress bar
+            const headerProgressBarEl = document.getElementById('headerProgressBar');
+            if (headerProgressBarEl) {
+                headerProgressBarEl.style.width = '0%';
+                headerProgressBarEl.classList.remove('warning', 'danger');
+            }
             
             // Remove all highlights and animations
             document.querySelectorAll('.audio-highlight').forEach(el => {
@@ -1172,7 +1216,7 @@
             });
             
             // Update audio status
-            updateAudioStatus('Đã dừng phát âm thanh', false);
+            updateAudioStatus('Đã dừng tất cả âm thanh', false);
             
             console.log('All audio stopped and highlights cleared');
         }// Update progress bar
@@ -1268,16 +1312,17 @@
         }
 
         // Initialize when page loads
-        document.addEventListener('DOMContentLoaded', initializeQuiz);        // Enhanced keyboard navigation with audio controls and display mode toggle
+        document.addEventListener('DOMContentLoaded', initializeQuiz);        // Enhanced keyboard navigation with audio controls and display mode toggle        document.addEventListener('keydown', function(e) {        // Enhanced keyboard navigation with audio controls and display mode toggle
         document.addEventListener('keydown', function(e) {
             if (e.key === 'ArrowLeft') {
                 e.preventDefault();
-                previousQuestion();
+                previousQuestion(); // stopAllAudio() đã được gọi trong hàm này
             } else if (e.key === 'ArrowRight') {
                 e.preventDefault();
-                nextQuestion();
+                nextQuestion(); // stopAllAudio() đã được gọi trong hàm này
             } else if (e.key.toLowerCase() === 'q') {
                 e.preventDefault();
+                stopAllAudio(); // Dừng audio trước khi thoát
                 window.location.href = 'page3.html';
             } else if (e.key === ' ' || e.key === 'Spacebar') {
                 e.preventDefault();
@@ -1302,7 +1347,8 @@
             } else if (e.key === 's' || e.key === 'S') {
                 e.preventDefault();
                 // Stop audio
-                stopAllAudio();            } else if (e.key === 'm' || e.key === 'M') {
+                stopAllAudio();
+            } else if (e.key === 'm' || e.key === 'M') {
                 e.preventDefault();
                 // Toggle display mode
                 document.getElementById('displayModeToggle').click();
@@ -1312,15 +1358,14 @@
                 const modal = document.getElementById('fullscreenModal');
                 if (modal.classList.contains('active')) {
                     closeFullscreenImage();
-                }            }
+                }
+            }
         });
 
         // Timer variables
         let timerInterval;
         let timeLeft = 60; // 60 seconds
-        let timerActive = false;
-
-        // Timer functions
+        let timerActive = false;        // Timer functions
         function startCountdownTimer() {
             if (timerInterval) clearInterval(timerInterval);
             
@@ -1329,21 +1374,61 @@
             
             // Show timer
             const timerDisplay = document.getElementById('timerDisplay');
+            const headerProgressBarEl = document.getElementById('headerProgressBar');
+            
             if (timerDisplay) {
                 timerDisplay.style.display = 'block';
                 updateTimerDisplay();
             }
             
-            // Play 60s audio
-            playTimerAudio();
+            // Reset header progress bar
+            if (headerProgressBarEl) {
+                headerProgressBarEl.style.width = '100%';
+                headerProgressBarEl.classList.remove('warning', 'danger');
+            }
+            
+            // Play 60s audio và track nó
+            if (currentTimerAudio) {
+                currentTimerAudio.pause();
+                currentTimerAudio = null;
+            }
+            
+            currentTimerAudio = new Audio('speech/60s.mp3');
+            currentTimerAudio.play().catch(e => {
+                console.error('Error playing timer audio:', e);
+            });
             
             timerInterval = setInterval(() => {
                 timeLeft--;
                 updateTimerDisplay();
                 
+                // Update header progress bar
+                const progressPercentage = (timeLeft / 60) * 100;
+                if (headerProgressBarEl) {
+                    headerProgressBarEl.style.width = `${progressPercentage}%`;
+                    
+                    // Update colors based on time remaining
+                    if (timeLeft <= 20) {
+                        headerProgressBarEl.classList.remove('warning');
+                        headerProgressBarEl.classList.add('danger');
+                    } else if (timeLeft <= 40) {
+                        headerProgressBarEl.classList.remove('danger');
+                        headerProgressBarEl.classList.add('warning');
+                    } else {
+                        headerProgressBarEl.classList.remove('warning', 'danger');
+                    }
+                }
+                
                 if (timeLeft <= 0) {
                     clearInterval(timerInterval);
                     timerActive = false;
+                    
+                    // Stop timer audio when time is up
+                    if (currentTimerAudio) {
+                        currentTimerAudio.pause();
+                        currentTimerAudio = null;
+                    }
+                    
                     showTimeUpPopup();
                 }
             }, 1000);
@@ -1378,10 +1463,8 @@
         }
 
         function playTimerAudio() {
-            const timerAudio = new Audio('speech/60s.mp3');
-            timerAudio.play().catch(e => {
-                console.error('Error playing timer audio:', e);
-            });
+            // Được gọi từ startCountdownTimer(), không cần thiết nữa
+            // vì đã được tích hợp vào startCountdownTimer()
         }
 
         function showTimeUpPopup() {
