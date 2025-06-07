@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thi Trắc Nghiệm An Toàn Vệ Sinh Viên Giỏi 2025</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            font-family: 'Inter', sans-serif;
+        }
+        html, body {
+            height: 100vh;
+            width: 100vw;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+        .slide-container {
+            width: 100vw;
+            height: 100vh;
+            margin: 0;
+        }        .gradient-bg {
+            background: linear-gradient(135deg, #dc2626 0%, #f97316 30%, #facc15 60%, #a855f7 85%, #fdf2f8 100%);
+        }
+        .text-shadow {
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        .safety-icon {
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        .slide-in {
+            animation: slideInFromTop 1s ease-out;
+        }
+        @keyframes slideInFromTop {
+            0% { transform: translateY(-50px); opacity: 0; }
+            100% { transform: translateY(0); opacity: 1; }
+        }
+        .fade-in {
+            animation: fadeIn 1.5s ease-in;
+        }
+        @keyframes fadeIn {
+            0% { opacity: 0; }
+            100% { opacity: 1; }
+        }        .logo-container {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+          /* Bubble particles animation */
+        .bubble {
+            position: absolute;
+            border-radius: 50%;
+            animation: float 4s infinite linear;
+            opacity: 0.7;
+        }
+        
+        @keyframes float {
+            0% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 0;
+            }
+            5% {
+                opacity: 0.7;
+            }
+            95% {
+                opacity: 0.7;
+            }
+            100% {
+                transform: translateY(-100px) rotate(360deg);
+                opacity: 0;
+            }
+        }
+        
+        /* Rotating gear animation */
+        .rotating-gear {
+            animation: rotate 4s linear infinite;
+        }
+        
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        /* Pulsing triangle animation */
+        .pulsing-triangle {
+            animation: pulse-triangle 1.5s ease-in-out infinite alternate;
+        }
+        
+        @keyframes pulse-triangle {
+            0% { 
+                transform: scale(1);
+                text-shadow: 0 0 10px rgba(255, 255, 0, 0.5);
+            }
+            100% { 
+                transform: scale(1.2);
+                text-shadow: 0 0 20px rgba(255, 255, 0, 0.8);
+            }
+        }
+        
+        /* Floating shield animation */
+        .floating-shield {
+            animation: float-shield 3s ease-in-out infinite;
+        }
+        
+        @keyframes float-shield {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-15px); }
+        }
+        
+        /* Swinging tools animation */
+        .swinging-tools {
+            animation: swing 2s ease-in-out infinite;
+            transform-origin: top center;
+        }
+        
+        @keyframes swing {
+            0%, 100% { transform: rotate(-5deg); }
+            50% { transform: rotate(5deg); }
+        }
+        
+        /* Enhanced text shadow for better readability */
+        .enhanced-text-shadow {
+            text-shadow: 
+                2px 2px 4px rgba(0,0,0,0),
+                0 0 10px rgba(0,0,0,0.5),
+                0 0 20px rgba(0,0,0,0.3);
+        }
+        
+        /* Content container with subtle backdrop */
+        .content-backdrop {
+            background: #374151;
+            backdrop-filter: blur(2px);
+            border-radius: 20px;
+            padding: 2rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="slide-container gradient-bg flex items-center justify-center relative overflow-hidden">
+        <!-- Animated bubble particles -->
+        <div id="bubbles-container"></div>
+        
+        <!-- Background decorative elements with animations -->
+        <div class="absolute top-10 left-10 text-blue-200 opacity-30">
+            <i class="fas fa-cog text-6xl rotating-gear"></i>
+        </div>
+        <div class="absolute bottom-10 right-10 text-red-200 opacity-30">
+            <i class="fas fa-tools text-6xl swinging-tools"></i>
+        </div>
+        <div class="absolute top-1/4 right-20 text-yellow-200 opacity-40">
+            <i class="fas fa-exclamation-triangle text-4xl pulsing-triangle"></i>
+        </div>
+        <div class="absolute bottom-1/4 left-20 text-green-200 opacity-30">
+            <i class="fas fa-shield-alt text-4xl floating-shield"></i>
+        </div>        <!-- Main content container -->
+        <div class="text-center z-10 px-8">
+            <!-- Content backdrop for better readability -->
+            <div class="content-backdrop">
+                <!-- Safety icon header -->
+                <div class="mb-8 slide-in">
+                    <div class="logo-container rounded-full p-6 inline-block mb-4">
+                        <i class="fas fa-hard-hat safety-icon text-6xl text-yellow-400"></i>
+                    </div>
+                </div>
+
+                <!-- Main title -->
+                <h1 class="text-5xl md:text-6xl font-bold text-white enhanced-text-shadow mb-4 slide-in">
+                    HỘI THI
+                </h1>
+                <h2 class="text-4xl md:text-5xl font-bold text-red-400 enhanced-text-shadow mb-6 slide-in">
+                    AN TOÀN VỆ SINH VIÊN GIỎI
+                </h2>
+                
+                <!-- Year badge -->
+                <div class="inline-block bg-red-600 text-white px-8 py-4 rounded-full text-3xl font-bold mb-8 shadow-lg fade-in">
+                    <i class="fas fa-calendar-alt mr-3"></i>
+                    2025
+                </div>
+
+                <!-- Organization info -->
+                <div class="fade-in">
+                    <p class="text-xl text-white mb-2 font-semibold enhanced-text-shadow">
+                        <i class="fas fa-building mr-2 text-yellow-400"></i>
+                        TẬP ĐOÀN CÔNG NGHIỆP THAN - KHOÁNG SẢN VIỆT NAM
+                    </p>
+                    <p class="text-lg text-blue-100 mb-8 enhanced-text-shadow">
+                        <i class="fas fa-industry mr-2"></i>
+                        TỔNG CÔNG TY CÔNG NGHIỆP HÓA CHẤT MỎ - VINACOMIN
+                    </p>
+                </div>
+
+                <!-- Safety message -->
+                <div class="bg-white bg-opacity-20 rounded-lg p-6 max-w-2xl mx-auto fade-in">
+                    <p class="text-white text-lg font-semibold enhanced-text-shadow">
+                        <i class="fas fa-exclamation-circle text-yellow-400 mr-2"></i>
+                        "An toàn là ưu tiên hàng đầu - Sự cẩn thận tạo nên thành công"
+                    </p>
+                </div>
+
+                <!-- Safety icons row -->
+                <div class="flex justify-center space-x-8 mt-8 fade-in">
+                    <div class="text-center">
+                        <i class="fas fa-fire-extinguisher text-3xl text-red-400 mb-2"></i>
+                        <p class="text-white text-sm enhanced-text-shadow">PCCC</p>
+                    </div>
+                    <div class="text-center">
+                        <i class="fas fa-first-aid text-3xl text-green-400 mb-2"></i>
+                        <p class="text-white text-sm enhanced-text-shadow">Y TẾ</p>
+                    </div>
+                    <div class="text-center">
+                        <i class="fas fa-shield-alt text-3xl text-blue-400 mb-2"></i>
+                        <p class="text-white text-sm enhanced-text-shadow">BẢO VỆ</p>
+                    </div>
+                    <div class="text-center">
+                        <i class="fas fa-hammer text-3xl text-yellow-400 mb-2"></i>
+                        <p class="text-white text-sm enhanced-text-shadow">KHAI THÁC</p>
+                    </div>
+                </div>
+            </div>
+        </div>        <!-- Bottom decoration -->
+        <div class="absolute bottom-0 left-0 right-0 h-2 bg-gradient-to-r from-red-600 via-yellow-500 to-blue-600"></div>
+    </div>
+    
+    <script>        // Create bubble particles
+        function createBubble() {
+            const bubble = document.createElement('div');
+            bubble.className = 'bubble';
+            
+            // Random size between 10px and 40px
+            const size = Math.random() * 30 + 10;
+            bubble.style.width = size + 'px';
+            bubble.style.height = size + 'px';
+            
+            // Random horizontal position
+            bubble.style.left = Math.random() * 100 + '%';
+            
+            // Random colors with transparency
+            const colors = [
+                'rgba(255, 255, 255, 0.6)',
+                'rgba(173, 216, 230, 0.6)',
+                'rgba(255, 182, 193, 0.6)',
+                'rgba(255, 255, 0, 0.4)',
+                'rgba(144, 238, 144, 0.6)',
+                'rgba(255, 160, 122, 0.6)',
+                'rgba(221, 160, 221, 0.6)'
+            ];
+            bubble.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+            
+            // Faster animation duration between 3-6 seconds
+            const duration = Math.random() * 3 + 3;
+            bubble.style.animationDuration = duration + 's';
+            
+            // No delay for immediate appearance
+            bubble.style.animationDelay = '0s';
+            
+            document.getElementById('bubbles-container').appendChild(bubble);
+            
+            // Remove bubble after animation completes
+            setTimeout(() => {
+                if (bubble.parentNode) {
+                    bubble.parentNode.removeChild(bubble);
+                }
+            }, duration * 1000);
+        }
+        
+        // Create bubbles continuously
+        function startBubbles() {
+            createBubble();
+            setTimeout(startBubbles, Math.random() * 400 + 200); // Create new bubble every 200-600ms (faster)
+        }
+        
+        // Create initial bubbles immediately and start continuous generation
+        function initializeBubbles() {
+            // Create several bubbles immediately
+            for (let i = 0; i < 8; i++) {
+                setTimeout(() => {
+                    createBubble();
+                }, i * 100); // Stagger initial bubbles every 100ms
+            }
+            // Start continuous bubble generation
+            setTimeout(startBubbles, 800);
+        }
+        
+        // Start bubble animation immediately when page loads
+        window.addEventListener('DOMContentLoaded', function() {
+            initializeBubbles();
+        });
+        
+        // Keyboard navigation
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'ArrowRight') {
+                window.location.href = 'page3.html';
+            } else if (event.key.toLowerCase() === 'q') {
+                // Emergency exit to page3.html
+                window.location.href = 'page3.html';
+            }
+        });
+    </script>
+</body>
+</html>
