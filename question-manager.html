@@ -57,8 +57,7 @@
             overflow-y: auto;
         }
         
-        /* Drop zone styles */
-        .drop-zone {
+        /* Drop zone styles */        .drop-zone {
             min-height: 150px;
             transition: all 0.3s ease;
         }
@@ -66,6 +65,35 @@
             background-color: #f0f9ff;
             border-color: #3b82f6;
             transform: scale(1.02);
+        }
+        .drag-item {
+            cursor: move;
+            transition: all 0.2s ease;
+        }
+        
+        .drag-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        .drag-over {
+            border: 2px dashed #3b82f6 !important;
+            background-color: rgba(59, 130, 246, 0.05) !important;
+        }
+        
+        .question-set-item {
+            transition: all 0.2s ease;
+        }
+        
+        .question-set-item:hover {
+            transform: translateY(-1px);
+        }
+          .line-clamp-2 {
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
         }
     </style>
 </head>
@@ -81,10 +109,15 @@
                         <p class="text-gray-600">An Toàn Vệ Sinh Viên Giỏi 2025</p>
                     </div>
                 </div>
-                <div class="flex items-center space-x-4">
-                    <div class="text-right">
-                        <div class="text-sm text-gray-500">Tổng câu hỏi</div>
-                        <div id="totalQuestions" class="text-xl font-bold text-blue-600">0</div>
+                <div class="flex items-center space-x-4">                    <div class="flex items-center">
+                        <span class="text-sm text-gray-500 mr-2">Phím tắt:</span>
+                        <div class="text-xs text-gray-400 space-x-2">
+                            <span>Ctrl+S: Lưu</span>
+                            <span>Ctrl+N: Tạo mới</span>
+                            <span>Ctrl+L: Tải dữ liệu</span>
+                            <span>Ctrl+E: Xuất</span>
+                            <span>Ctrl+1/2: Chuyển tab</span>
+                        </div>
                     </div>
                     <button id="loadDataBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg smooth-transition">
                         <i class="fas fa-upload mr-2"></i>Tải dữ liệu
@@ -112,10 +145,58 @@
     </div>
 
     <!-- Main Content -->
-    <div class="container mx-auto px-4 py-6">
-        <!-- Tab 1: Edit Questions -->
+    <div class="container mx-auto px-4 py-6">        <!-- Tab 1: Edit Questions -->
         <div id="editTab" class="tab-content active">
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Questions List -->
+                <div class="lg:col-span-2">
+                    <div class="bg-white rounded-lg shadow-lg">
+                        <div class="px-6 py-4 border-b border-gray-200">
+                            <div class="flex items-center justify-between">
+                                <h2 class="text-xl font-semibold text-gray-800">
+                                    <i class="fas fa-list mr-2"></i>Danh sách Câu hỏi
+                                </h2>
+                                <div class="flex items-center space-x-4">
+                                    <!-- Filter -->
+                                    <div class="flex items-center space-x-2">
+                                        <select id="filterCategory" class="border border-gray-300 rounded-lg px-3 py-1 text-sm">
+                                            <option value="">Tất cả danh mục</option>
+                                            <option value="CSPL">Chính sách pháp luật</option>
+                                            <option value="PCCC">Phòng cháy chữa cháy</option>
+                                            <option value="BV">Bảo vệ</option>
+                                            <option value="KTM">Khai thác mỏ</option>
+                                            <option value="BXVC">Bốc xếp vận chuyển</option>
+                                            <option value="YT">Y tế</option>
+                                        </select>
+                                        <select id="filterRound" class="border border-gray-300 rounded-lg px-3 py-1 text-sm">
+                                            <option value="">Tất cả vòng</option>
+                                            <option value="1">Vòng 1</option>
+                                            <option value="2">Vòng 2</option>
+                                            <option value="3">Vòng 3</option>
+                                        </select>
+                                    </div>
+                                    <!-- Search -->
+                                    <div class="relative">
+                                        <input type="text" id="searchQuestions" placeholder="Tìm kiếm câu hỏi..." 
+                                               class="border border-gray-300 rounded-lg px-3 py-1 pl-8 text-sm w-64">
+                                        <i class="fas fa-search absolute left-3 top-2 text-gray-400 text-sm"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="p-6">
+                            <div id="questionsList" class="space-y-4">
+                                <!-- Questions will be displayed here -->
+                                <div class="text-center text-gray-500 py-8">
+                                    <i class="fas fa-question-circle text-4xl mb-4 opacity-50"></i>
+                                    <p>Chưa có câu hỏi nào. Hãy thêm câu hỏi đầu tiên!</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
                 <!-- Question Form -->
                 <div class="lg:col-span-1">
                     <div class="bg-white rounded-lg shadow-lg">
@@ -158,13 +239,12 @@
                                               class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
                                               placeholder="Nhập nội dung câu hỏi..." required></textarea>
                                 </div>
-                                
-                                <!-- Phương án trả lời -->
+                                  <!-- Phương án trả lời -->
                                 <div class="mb-4">
                                     <label class="block text-sm font-medium text-gray-700 mb-2">
                                         <i class="fas fa-list-ul mr-1"></i>Các phương án trả lời:
                                     </label>
-                                    <div class="space-y-2">
+                                    <div class="space-y-2" id="optionsContainer">
                                         <div class="flex items-center space-x-2">
                                             <span class="w-6 h-6 bg-blue-500 text-white rounded-full flex items-center justify-center text-sm font-medium">A</span>
                                             <input type="text" id="optionA" placeholder="Phương án A" 
@@ -185,33 +265,47 @@
                                             <input type="text" id="optionD" placeholder="Phương án D" 
                                                    class="flex-1 border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                                         </div>
+                                        <div class="flex items-center space-x-2" style="display: none;">
+                                            <span class="w-6 h-6 bg-purple-500 text-white rounded-full flex items-center justify-center text-sm font-medium">E</span>
+                                            <input type="text" id="optionE" placeholder="Phương án E" 
+                                                   class="flex-1 border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                        </div>
+                                        <div class="flex items-center space-x-2" style="display: none;">
+                                            <span class="w-6 h-6 bg-pink-500 text-white rounded-full flex items-center justify-center text-sm font-medium">F</span>
+                                            <input type="text" id="optionF" placeholder="Phương án F" 
+                                                   class="flex-1 border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                        </div>
+                                        <div class="flex items-center space-x-2" style="display: none;">
+                                            <span class="w-6 h-6 bg-indigo-500 text-white rounded-full flex items-center justify-center text-sm font-medium">G</span>
+                                            <input type="text" id="optionG" placeholder="Phương án G" 
+                                                   class="flex-1 border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                        </div>
+                                        <div class="flex items-center space-x-2" style="display: none;">
+                                            <span class="w-6 h-6 bg-gray-500 text-white rounded-full flex items-center justify-center text-sm font-medium">H</span>
+                                            <input type="text" id="optionH" placeholder="Phương án H" 
+                                                   class="flex-1 border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                        </div>
                                     </div>
+                                    <button type="button" id="addOptionBtn" class="mt-2 text-sm text-blue-600 hover:text-blue-800">
+                                        <i class="fas fa-plus mr-1"></i>Thêm phương án
+                                    </button>
                                 </div>
-                                
-                                <!-- Cài đặt câu hỏi -->
+                                  <!-- Cài đặt câu hỏi -->
                                 <div class="grid grid-cols-1 gap-4 mb-6">
                                     <div>
                                         <label class="block text-sm font-medium text-gray-700 mb-2">
                                             <i class="fas fa-check-circle mr-1"></i>Đáp án đúng:
                                         </label>
-                                        <select id="correctAnswer" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                                            <option value="a">A</option>
-                                            <option value="b">B</option>
-                                            <option value="c">C</option>
-                                            <option value="d">D</option>
-                                        </select>
-                                    </div>
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-700 mb-2">
-                                            <i class="fas fa-clock mr-1"></i>Thời gian (giây):
-                                        </label>
-                                        <input type="number" id="timeLimit" value="30" min="10" max="300" 
+                                        <input type="text" id="correctAnswer" 
+                                               placeholder="VD: A hoặc A,B,C hoặc A, B, C" 
                                                class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                        <p class="text-xs text-gray-500 mt-1">Nhập một hoặc nhiều đáp án đúng, cách nhau bằng dấu phẩy</p>
                                     </div>
                                     <div>
                                         <label class="block text-sm font-medium text-gray-700 mb-2">
                                             <i class="fas fa-folder mr-1"></i>Danh mục:
-                                        </label>                                        <select id="category" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                        </label>
+                                        <select id="category" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                                             <option value="CSPL">Chính sách pháp luật</option>
                                             <option value="PCCC">Phòng cháy chữa cháy</option>
                                             <option value="BV">Bảo vệ</option>
@@ -231,8 +325,7 @@
                                         </select>
                                     </div>
                                 </div>
-                                
-                                <!-- Tùy chọn bổ sung -->
+                                  <!-- Tùy chọn bổ sung -->
                                 <div class="mb-6 p-4 bg-gray-50 rounded-lg">
                                     <h3 class="text-sm font-medium text-gray-700 mb-3">
                                         <i class="fas fa-cog mr-1"></i>Tùy chọn bổ sung:
@@ -242,9 +335,50 @@
                                             <input type="checkbox" id="useImage" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
                                             <label for="useImage" class="ml-2 text-sm text-gray-700">Có hình ảnh minh họa</label>
                                         </div>
-                                        <div id="imageIdSection" class="hidden">
-                                            <input type="text" id="imageId" placeholder="Tên file hình ảnh (VD: image1.jpg)" 
+                                        <div id="imageIdSection" class="hidden space-y-2">
+                                            <input type="text" id="imageId" placeholder="Đường dẫn hình ảnh (VD: images/cauhoi/ktm_image_1.jpeg)" 
                                                    class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                            <input type="text" id="bgImage" placeholder="Hình nền (VD: images/bg/bg1.jpg)" 
+                                                   class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                            <select id="positionImage" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm">
+                                                <option value="Right">Vị trí hình ảnh: Bên phải</option>
+                                                <option value="Left">Vị trí hình ảnh: Bên trái</option>
+                                                <option value="Top">Vị trí hình ảnh: Trên</option>
+                                                <option value="Bottom">Vị trí hình ảnh: Dưới</option>
+                                            </select>
+                                        </div>
+                                        
+                                        <div class="flex items-center">
+                                            <input type="checkbox" id="questionImage" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                                            <label for="questionImage" class="ml-2 text-sm text-gray-700">Câu hỏi hình ảnh (question_image)</label>
+                                        </div>
+                                        
+                                        <div class="border-t pt-3 mt-3">
+                                            <h4 class="text-sm font-medium text-gray-700 mb-2">File âm thanh:</h4>
+                                            <div class="space-y-2">
+                                                <input type="text" id="speechIdQuestion" placeholder="Âm thanh câu hỏi (VD: V2_KTM_HA_1.wav)" 
+                                                       class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                                <input type="text" id="speechIdAnswer" placeholder="Âm thanh đáp án (VD: V2_KTM_HA_1_ans.wav)" 
+                                                       class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                                <div id="speechOptionsContainer" class="space-y-1">
+                                                    <input type="text" id="speechIdA" placeholder="Âm thanh phương án A" 
+                                                           class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                                    <input type="text" id="speechIdB" placeholder="Âm thanh phương án B" 
+                                                           class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                                    <input type="text" id="speechIdC" placeholder="Âm thanh phương án C" 
+                                                           class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                                    <input type="text" id="speechIdD" placeholder="Âm thanh phương án D" 
+                                                           class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                                    <input type="text" id="speechIdE" placeholder="Âm thanh phương án E" style="display: none;"
+                                                           class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                                    <input type="text" id="speechIdF" placeholder="Âm thanh phương án F" style="display: none;"
+                                                           class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                                    <input type="text" id="speechIdG" placeholder="Âm thanh phương án G" style="display: none;"
+                                                           class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                                    <input type="text" id="speechIdH" placeholder="Âm thanh phương án H" style="display: none;"
+                                                           class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -372,8 +506,20 @@
                                 </div>
                             </div>
                         </div>
-                        
-                        <div class="p-6">
+                          <div class="p-6">
+                            <!-- Current Question Set Summary -->
+                            <div class="mb-6">
+                                <div class="bg-gray-50 rounded-lg p-4">
+                                    <h3 class="text-lg font-semibold text-gray-800 mb-3">
+                                        <i class="fas fa-list-check mr-2"></i>Bộ câu hỏi hiện tại
+                                        <span id="questionSetCount" class="text-sm bg-blue-100 text-blue-800 px-2 py-1 rounded-full ml-2">0</span>
+                                    </h3>
+                                    <div id="questionSetsList" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 max-h-64 overflow-y-auto">
+                                        <!-- Current question set will be displayed here -->
+                                    </div>
+                                </div>
+                            </div>
+                            
                             <!-- Round containers -->
                             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                                 <!-- Vòng 1 -->
@@ -459,6 +605,12 @@
                 setupEventListeners();
                 console.log('✓ Event listeners setup completed');
                 
+                initializeDragAndDrop();
+                console.log('✓ Drag and drop initialized');
+                
+                setupKeyboardShortcuts();
+                console.log('✓ Keyboard shortcuts initialized');
+                
                 loadQuestions();
                 console.log('✓ Questions loaded from localStorage');
                 
@@ -469,6 +621,11 @@
                 handleQuestionTypeChange();
                 console.log('✓ Initial form state setup completed');
                 
+                // Initialize compose tab
+                filterAvailableQuestions();
+                displayQuestionSets();
+                console.log('✓ Compose tab initialized');
+                
                 // Run test function for debugging
                 testFileLoading();
                 
@@ -477,6 +634,64 @@
                 console.error('❌ Error during initialization:', error);
                 showToast('Lỗi khởi tạo ứng dụng!', 'error');
             }
+        }
+
+        // Keyboard shortcuts
+        function setupKeyboardShortcuts() {
+            document.addEventListener('keydown', function(e) {
+                // Ctrl+S: Save current form
+                if (e.ctrlKey && e.key === 's') {
+                    e.preventDefault();
+                    const form = document.getElementById('questionForm');
+                    if (form) {
+                        form.dispatchEvent(new Event('submit'));
+                    }
+                    return;
+                }
+                
+                // Ctrl+N: Clear form (New question)
+                if (e.ctrlKey && e.key === 'n') {
+                    e.preventDefault();
+                    clearForm();
+                    document.getElementById('questionId').focus();
+                    return;
+                }
+                
+                // Ctrl+L: Focus on file load
+                if (e.ctrlKey && e.key === 'l') {
+                    e.preventDefault();
+                    document.getElementById('loadDataBtn').click();
+                    return;
+                }
+                
+                // Ctrl+E: Export all
+                if (e.ctrlKey && e.key === 'e') {
+                    e.preventDefault();
+                    exportToJSON();
+                    return;
+                }
+                
+                // Tab navigation: Ctrl+1, Ctrl+2
+                if (e.ctrlKey && e.key === '1') {
+                    e.preventDefault();
+                    switchTab('edit');
+                    return;
+                }
+                
+                if (e.ctrlKey && e.key === '2') {
+                    e.preventDefault();
+                    switchTab('compose');
+                    return;
+                }
+                
+                // Escape: Clear form or close dialogs
+                if (e.key === 'Escape') {
+                    clearForm();
+                    return;
+                }
+            });
+            
+            console.log('Keyboard shortcuts setup completed');
         }
 
         // Test function to verify file loading (for debugging)
@@ -563,9 +778,7 @@
             if (composeSearch) {
                 composeSearch.addEventListener('input', filterAvailableQuestions);
                 console.log('Compose search event listener added');
-            }
-
-            // File operations
+            }            // File operations
             const loadDataBtn = document.getElementById('loadDataBtn');
             const fileInput = document.getElementById('fileInput');
             const exportAllBtn = document.getElementById('exportAllBtn');
@@ -609,6 +822,15 @@
             if (clearQuestionSetBtn) {
                 clearQuestionSetBtn.addEventListener('click', clearQuestionSet);
                 console.log('Clear question set event listener added');
+            }
+
+            // Add option button
+            const addOptionBtn = document.getElementById('addOptionBtn');
+            if (addOptionBtn) {
+                addOptionBtn.addEventListener('click', addOption);
+                console.log('Add option button event listener added');
+            } else {
+                console.error('Add option button not found');
             }
 
             // Setup drag and drop
@@ -679,9 +901,7 @@
             setTimeout(() => {
                 toast.style.transform = 'translateX(100%)';
             }, 3000);
-        }
-
-        // Handle form submission
+        }        // Handle form submission
         function handleFormSubmit(e) {
             e.preventDefault();
             
@@ -692,20 +912,31 @@
                 category: document.getElementById('category').value,
                 round: document.getElementById('round').value,
                 phuong_an: {},
-                dap_an_dung: document.getElementById('correctAnswer').value,
-                thoi_gian_tra_loi: parseInt(document.getElementById('timeLimit').value),
+                dap_an_dung: document.getElementById('correctAnswer').value.trim(),
                 use_image: document.getElementById('useImage').checked ? 'Yes' : 'No',
-                image_id: document.getElementById('imageId').value.trim()
+                image_id: document.getElementById('imageId').value.trim(),
+                question_image: document.getElementById('questionImage').checked ? 'Yes' : 'No',
+                position_image: document.getElementById('positionImage').value,
+                bg_image: document.getElementById('bgImage').value.trim(),
+                speech_id_question: document.getElementById('speechIdQuestion').value.trim(),
+                speech_id_answer: document.getElementById('speechIdAnswer').value.trim()
             };
-            
-            // Add non-empty options
-            const options = ['optionA', 'optionB', 'optionC', 'optionD'];
-            const optionKeys = ['a', 'b', 'c', 'd'];
+
+            // Add non-empty options (A-H)
+            const options = ['optionA', 'optionB', 'optionC', 'optionD', 'optionE', 'optionF', 'optionG', 'optionH'];
+            const optionKeys = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
+            const speechOptions = ['speechIdA', 'speechIdB', 'speechIdC', 'speechIdD', 'speechIdE', 'speechIdF', 'speechIdG', 'speechIdH'];
             
             options.forEach((optionId, index) => {
                 const value = document.getElementById(optionId).value.trim();
                 if (value) {
                     question.phuong_an[optionKeys[index]] = value;
+                    
+                    // Add corresponding speech ID
+                    const speechValue = document.getElementById(speechOptions[index]).value.trim();
+                    if (speechValue) {
+                        question[`speech_id_options_${optionKeys[index].toUpperCase()}`] = speechValue;
+                    }
                 }
             });
               // Use enhanced validation
@@ -740,9 +971,7 @@
                 title.textContent = 'Thêm câu hỏi mới';
                 submitBtn.textContent = 'Lưu câu hỏi';
             }
-        }
-
-        // Edit question
+        }        // Edit question
         function editQuestion(index) {
             const q = questions[index];
             editingIndex = index;
@@ -753,14 +982,24 @@
             document.getElementById('questionType').value = q.type_question;
             document.getElementById('category').value = q.category;
             document.getElementById('round').value = q.round;
-            document.getElementById('optionA').value = q.phuong_an.a || '';
-            document.getElementById('optionB').value = q.phuong_an.b || '';
-            document.getElementById('optionC').value = q.phuong_an.c || '';
-            document.getElementById('optionD').value = q.phuong_an.d || '';
-            document.getElementById('correctAnswer').value = q.dap_an_dung;
-            document.getElementById('timeLimit').value = q.thoi_gian_tra_loi;
+            
+            // Clear all options first
+            ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'].forEach(letter => {
+                document.getElementById(`option${letter}`).value = q.phuong_an[letter.toLowerCase()] || '';
+                document.getElementById(`speechId${letter}`).value = q[`speech_id_options_${letter}`] || '';
+            });
+            
+            // Show/hide options based on available data
+            updateOptionsDisplay(q.phuong_an);
+            
+            document.getElementById('correctAnswer').value = q.dap_an_dung || '';
             document.getElementById('useImage').checked = q.use_image === 'Yes';
+            document.getElementById('questionImage').checked = q.question_image === 'Yes';
             document.getElementById('imageId').value = q.image_id || '';
+            document.getElementById('bgImage').value = q.bg_image || '';
+            document.getElementById('positionImage').value = q.position_image || 'Right';
+            document.getElementById('speechIdQuestion').value = q.speech_id_question || '';
+            document.getElementById('speechIdAnswer').value = q.speech_id_answer || '';
             
             // Show/hide image section
             toggleImageSection();
@@ -769,16 +1008,45 @@
             handleQuestionTypeChange();
             
             // Scroll to form
-            document.getElementById('questionForm').scrollIntoView({ behavior: 'smooth' });        }
-
-        // Clear form
+            document.getElementById('questionForm').scrollIntoView({ behavior: 'smooth' });
+        }        // Clear form
         function clearForm() {
             document.getElementById('questionForm').reset();
-            document.getElementById('timeLimit').value = 30;
             editingIndex = -1;
             setFormMode('add');
+            
+            // Clear all option inputs
+            ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'].forEach(letter => {
+                document.getElementById(`option${letter}`).value = '';
+                document.getElementById(`speechId${letter}`).value = '';
+            });
+            
+            // Clear additional fields
+            document.getElementById('correctAnswer').value = '';
+            document.getElementById('imageId').value = '';
+            document.getElementById('bgImage').value = '';
+            document.getElementById('speechIdQuestion').value = '';
+            document.getElementById('speechIdAnswer').value = '';
+            document.getElementById('positionImage').value = 'Right';
+            document.getElementById('useImage').checked = false;
+            document.getElementById('questionImage').checked = false;
+            
+            // Hide extra options (E-H)
+            ['optionE', 'optionF', 'optionG', 'optionH'].forEach(optionId => {
+                const optionDiv = document.getElementById(optionId).parentElement;
+                optionDiv.style.display = 'none';
+            });
+            
+            // Hide extra speech options
+            ['speechIdE', 'speechIdF', 'speechIdG', 'speechIdH'].forEach(speechId => {
+                document.getElementById(speechId).style.display = 'none';
+            });
+            
+            // Show add option button
+            document.getElementById('addOptionBtn').style.display = 'block';
+            
             toggleImageSection();
-            handleQuestionTypeChange(); // Reset form fields based on question type
+            handleQuestionTypeChange();
         }
 
         // Toggle image section
@@ -950,9 +1218,9 @@
                                     <i class="fas fa-trash"></i>
                                 </button>
                             </div>
-                        </div>
-                        <p class="text-gray-700 mb-2">${question.cau_hoi}</p>
-                        ${Object.keys(question.phuong_an).length > 0 ? `                            <div class="text-sm text-gray-600">
+                        </div>                        <p class="text-gray-700 mb-2">${question.cau_hoi}</p>
+                        ${Object.keys(question.phuong_an).length > 0 ? `
+                            <div class="text-sm text-gray-600">
                                 <strong>Phương án:</strong> ${Object.entries(question.phuong_an).map(([key, value]) => `${(key || '').toString().toUpperCase()}: ${value}`).join(', ')}
                             </div>
                             <div class="text-sm text-green-600">
@@ -960,8 +1228,9 @@
                             </div>
                         ` : ''}
                         <div class="text-sm text-gray-500 mt-2">
-                            <i class="fas fa-clock mr-1"></i>Thời gian: ${question.thoi_gian_tra_loi}s
-                            ${question.use_image === 'Yes' ? `<i class="fas fa-image ml-3 mr-1"></i>Có hình ảnh` : ''}
+                            ${question.use_image === 'Yes' ? `<i class="fas fa-image mr-1"></i>Có hình ảnh` : ''}
+                            ${question.question_image === 'Yes' ? `<i class="fas fa-camera ml-3 mr-1"></i>Câu hỏi hình ảnh` : ''}
+                            ${question.image_id ? `<span class="ml-3 text-xs">${question.image_id}</span>` : ''}
                         </div>
                     </div>
                 `;
@@ -988,17 +1257,275 @@
                 'Thực hành': 'bg-green-100 text-green-800',
                 'Lý thuyết tự luận': 'bg-purple-100 text-purple-800'
             };
-            return typeClasses[type] || 'bg-gray-100 text-gray-800';        }
-
-        // Compose tab functions
+            return typeClasses[type] || 'bg-gray-100 text-gray-800';        }        // Compose tab functions
         function filterAvailableQuestions() {
-            // This is a placeholder for compose tab functionality
             console.log('Filtering available questions for compose tab');
+            const filterRound = document.getElementById('composeFilterRound').value;
+            const filterCategory = document.getElementById('composeFilterCategory').value;
+            const searchTerm = document.getElementById('composeSearch').value.toLowerCase();
+            
+            const filteredQuestions = questions.filter(question => {
+                const matchesRound = !filterRound || question.round === filterRound;
+                const matchesCategory = !filterCategory || question.category === filterCategory;
+                const matchesSearch = !searchTerm || 
+                    (question.id || '').toLowerCase().includes(searchTerm) ||
+                    (question.cau_hoi || '').toLowerCase().includes(searchTerm);
+                return matchesRound && matchesCategory && matchesSearch;
+            });
+            
+            displayAvailableQuestions(filteredQuestions);
+        }        function displayAvailableQuestions(questionsToShow) {
+            const container = document.getElementById('availableQuestions');
+            
+            if (questionsToShow.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center text-gray-500 py-4">
+                        <i class="fas fa-question-circle text-2xl mb-2 opacity-50"></i>
+                        <p class="text-sm">Không có câu hỏi nào</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = questionsToShow.map((question, index) => {
+                const originalIndex = questions.indexOf(question);
+                const isInSet = currentQuestionSet.find(q => q.id === question.id);
+                return `
+                    <div class="question-item-compose border rounded-lg p-3 hover:shadow-md transition-all cursor-pointer ${getCategoryClass(question.category)} ${isInSet ? 'opacity-50 bg-gray-100' : 'drag-item hover:scale-105'}" 
+                         draggable="${!isInSet}" data-question-index="${originalIndex}" 
+                         onclick="${!isInSet ? `addToQuestionSet(${originalIndex})` : ''}">
+                        <div class="flex items-center justify-between mb-1">
+                            <span class="font-bold text-sm text-blue-600">${question.id}</span>
+                            <div class="flex items-center space-x-1">
+                                <span class="px-2 py-1 rounded text-xs ${getTypeClass(question.type_question)}">${question.type_question}</span>
+                                ${isInSet ? '<i class="fas fa-check text-green-600"></i>' : '<i class="fas fa-plus text-gray-400"></i>'}
+                            </div>
+                        </div>
+                        <p class="text-xs text-gray-700 mb-1 line-clamp-2">${question.cau_hoi.substring(0, 80)}${question.cau_hoi.length > 80 ? '...' : ''}</p>
+                        <div class="flex items-center justify-between text-xs text-gray-500">
+                            <span>${question.category}</span>
+                            <span>Vòng ${question.round}</span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            
+            // Re-add drag event listeners to new draggable elements
+            container.querySelectorAll('.drag-item').forEach(item => {
+                item.addEventListener('dragstart', handleDragStart);
+                item.addEventListener('dragend', handleDragEnd);
+            });
+        }// Question set management
+        let currentQuestionSet = [];
+          // Drag and drop functionality
+        function initializeDragAndDrop() {
+            const availableQuestions = document.getElementById('availableQuestions');
+            const questionSetsList = document.getElementById('questionSetsList');
+            
+            // Add drag event listeners to available questions container
+            if (availableQuestions) {
+                availableQuestions.addEventListener('dragstart', handleDragStart);
+                availableQuestions.addEventListener('dragend', handleDragEnd);
+            }
+            
+            // Add drop event listeners to question sets container
+            if (questionSetsList) {
+                questionSetsList.addEventListener('dragover', handleDragOver);
+                questionSetsList.addEventListener('drop', handleDrop);
+                questionSetsList.addEventListener('dragenter', handleDragEnter);
+                questionSetsList.addEventListener('dragleave', handleDragLeave);
+            }
+            
+            console.log('Drag and drop initialized');
         }
-
-        function displayQuestionSets() {
-            // This is a placeholder for displaying question sets
-            console.log('Displaying question sets');
+        
+        let draggedQuestionIndex = null;
+        
+        function handleDragStart(e) {
+            if (e.target.classList.contains('drag-item')) {
+                draggedQuestionIndex = parseInt(e.target.dataset.questionIndex);
+                e.target.style.opacity = '0.5';
+                e.dataTransfer.effectAllowed = 'copy';
+                e.dataTransfer.setData('text/html', e.target.outerHTML);
+            }
+        }
+        
+        function handleDragEnd(e) {
+            if (e.target.classList.contains('drag-item')) {
+                e.target.style.opacity = '1';
+            }
+            draggedQuestionIndex = null;
+        }
+        
+        function handleDragOver(e) {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'copy';
+        }
+        
+        function handleDragEnter(e) {
+            e.preventDefault();
+            const container = document.getElementById('questionSetsList');
+            container.classList.add('drag-over');
+        }
+        
+        function handleDragLeave(e) {
+            // Only remove highlight if we're actually leaving the container
+            if (!e.currentTarget.contains(e.relatedTarget)) {
+                const container = document.getElementById('questionSetsList');
+                container.classList.remove('drag-over');
+            }
+        }
+          function handleDrop(e) {
+            e.preventDefault();
+            const container = document.getElementById('questionSetsList');
+            container.classList.remove('drag-over');
+            
+            if (draggedQuestionIndex !== null) {
+                addToQuestionSet(draggedQuestionIndex);
+            }
+        }
+          function displayQuestionSets() {
+            const container = document.getElementById('questionSetsList');
+            
+            if (currentQuestionSet.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center text-gray-500 py-4">
+                        <i class="fas fa-list-alt text-2xl mb-2 opacity-50"></i>
+                        <p class="text-sm">Chưa có câu hỏi nào trong bộ</p>
+                        <p class="text-xs mt-1">Kéo thả câu hỏi từ danh sách bên trái</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = currentQuestionSet.map((question, index) => `
+                <div class="question-set-item border rounded-lg p-3 hover:shadow-md transition-shadow ${getCategoryClass(question.category)}" 
+                     data-set-index="${index}">
+                    <div class="flex items-center justify-between mb-2">
+                        <div class="flex items-center space-x-2">
+                            <span class="font-bold text-sm text-blue-600">${question.id}</span>
+                            <span class="px-2 py-1 rounded text-xs ${getTypeClass(question.type_question)}">${question.type_question}</span>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <span class="text-xs text-gray-500">${index + 1}</span>
+                            <button onclick="removeFromQuestionSet(${index})" class="text-red-600 hover:text-red-800">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <p class="text-xs text-gray-700 mb-1 line-clamp-2">${question.cau_hoi.substring(0, 100)}${question.cau_hoi.length > 100 ? '...' : ''}</p>
+                    <div class="flex items-center justify-between text-xs text-gray-500">
+                        <span>${question.category}</span>
+                        <span>Vòng ${question.round}</span>
+                    </div>
+                </div>
+            `).join('');
+            
+            // Update question count and stats
+            updateQuestionSetStats();
+        }
+        
+        function updateQuestionSetStats() {
+            const countElement = document.getElementById('questionSetCount');
+            if (countElement) {
+                countElement.textContent = currentQuestionSet.length;
+            }
+            
+            // Count by rounds
+            const roundCounts = { '1': 0, '2': 0, '3': 0 };
+            currentQuestionSet.forEach(q => {
+                if (roundCounts[q.round] !== undefined) {
+                    roundCounts[q.round]++;
+                }
+            });
+            
+            // Display round statistics in header or create a stats section
+            const statsHTML = `
+                <div class="flex space-x-4 text-xs text-gray-600 mt-2">
+                    <span>Vòng 1: ${roundCounts['1']}</span>
+                    <span>Vòng 2: ${roundCounts['2']}</span>
+                    <span>Vòng 3: ${roundCounts['3']}</span>
+                    <span>Tổng: ${currentQuestionSet.length}</span>
+                </div>
+            `;
+            
+            // Find or create stats container
+            let statsContainer = document.getElementById('questionSetStats');
+            if (!statsContainer) {
+                const header = document.querySelector('#questionSetsList').parentElement.previousElementSibling;
+                statsContainer = document.createElement('div');
+                statsContainer.id = 'questionSetStats';
+                header.appendChild(statsContainer);
+            }
+            statsContainer.innerHTML = statsHTML;
+        }
+          function addToQuestionSet(questionIndex) {
+            const question = questions[questionIndex];
+            if (!question) return;
+            
+            // Check if question is already in set
+            if (currentQuestionSet.find(q => q.id === question.id)) {
+                showToast('Câu hỏi này đã có trong bộ!', 'error');
+                return;
+            }
+            
+            currentQuestionSet.push(question);
+            displayQuestionSets();
+            filterAvailableQuestions(); // Refresh available questions to show updated state
+            showToast(`Đã thêm câu hỏi ${question.id} vào bộ!`);
+        }
+        
+        function removeFromQuestionSet(index) {
+            const question = currentQuestionSet[index];
+            currentQuestionSet.splice(index, 1);
+            displayQuestionSets();
+            filterAvailableQuestions(); // Refresh available questions to show updated state
+            showToast(`Đã xóa câu hỏi ${question.id} khỏi bộ!`);
+        }
+        
+        function saveQuestionSet() {
+            if (currentQuestionSet.length === 0) {
+                showToast('Bộ câu hỏi trống!', 'error');
+                return;
+            }
+            
+            const setName = prompt('Nhập tên bộ câu hỏi:', `Bo_cau_hoi_${new Date().toISOString().slice(0, 10)}`);
+            if (!setName) return;
+            
+            try {
+                const questionSetData = {
+                    name: setName,
+                    created: new Date().toISOString(),
+                    questions: currentQuestionSet,
+                    count: currentQuestionSet.length
+                };
+                
+                const dataStr = JSON.stringify(questionSetData, null, 2);
+                const dataBlob = new Blob([dataStr], { type: 'application/json' });
+                
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(dataBlob);
+                link.download = `${setName}.json`;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                
+                showToast(`Đã lưu bộ câu hỏi "${setName}" với ${currentQuestionSet.length} câu hỏi!`);
+                
+            } catch (error) {
+                console.error('Error saving question set:', error);
+                showToast('Lỗi khi lưu bộ câu hỏi!', 'error');
+            }
+        }
+          function clearQuestionSet() {
+            if (currentQuestionSet.length === 0) return;
+            
+            if (confirm('Bạn có chắc muốn xóa toàn bộ bộ câu hỏi hiện tại?')) {
+                currentQuestionSet = [];
+                displayQuestionSets();
+                filterAvailableQuestions(); // Refresh available questions
+                showToast('Đã xóa bộ câu hỏi!');
+            }
         }
 
         function setupDragAndDrop() {
@@ -1212,9 +1739,7 @@
                     else if (item.type_question.toLowerCase().includes('lý thuyết')) questionType = 'Lý thuyết tự luận';
                 } else if (typeKey) {
                     questionType = typeMapping[typeKey] || 'Trắc nghiệm';
-                }
-
-                const question = {
+                }                const question = {
                     id: item.id || `${category}_${index + 1}`,
                     cau_hoi: item.cau_hoi || item.question || '',
                     type_question: questionType,
@@ -1222,8 +1747,21 @@
                     round: round,
                     phuong_an: item.phuong_an || item.options || {},
                     dap_an_dung: item.dap_an_dung || item.correct_answer || '',
-                    thoi_gian_tra_loi: item.thoi_gian_tra_loi || item.time_limit || 30,                    use_image: item.use_image || 'No',
-                    image_id: item.image_id || ''
+                    use_image: item.use_image || 'No',
+                    image_id: item.image_id || '',
+                    question_image: item.question_image || 'No',
+                    position_image: item.position_image || 'Right',
+                    bg_image: item.bg_image || '',
+                    speech_id_question: item.speech_id_question || '',
+                    speech_id_answer: item.speech_id_answer || '',
+                    speech_id_options_A: item.speech_id_options_A || '',
+                    speech_id_options_B: item.speech_id_options_B || '',
+                    speech_id_options_C: item.speech_id_options_C || '',
+                    speech_id_options_D: item.speech_id_options_D || '',
+                    speech_id_options_E: item.speech_id_options_E || '',
+                    speech_id_options_F: item.speech_id_options_F || '',
+                    speech_id_options_G: item.speech_id_options_G || '',
+                    speech_id_options_H: item.speech_id_options_H || ''
                 };
 
                 console.log('Converted question:', question);
@@ -1280,8 +1818,81 @@
             }
         }
 
+        // Add option functionality
+        function addOption() {
+            const options = ['optionE', 'optionF', 'optionG', 'optionH'];
+            const speechOptions = ['speechIdE', 'speechIdF', 'speechIdG', 'speechIdH'];
+            
+            for (let i = 0; i < options.length; i++) {
+                const optionDiv = document.getElementById(options[i]).parentElement;
+                const speechInput = document.getElementById(speechOptions[i]);
+                
+                if (optionDiv.style.display === 'none' || !optionDiv.style.display) {
+                    optionDiv.style.display = 'flex';
+                    speechInput.style.display = 'block';
+                    break;
+                }
+            }
+            
+            // Hide add button if all options are shown
+            const allOptionsVisible = options.every(optionId => {
+                const div = document.getElementById(optionId).parentElement;
+                return div.style.display === 'flex';
+            });
+            
+            if (allOptionsVisible) {
+                document.getElementById('addOptionBtn').style.display = 'none';
+            }
+        }
+        
+        // Update options display based on question data
+        function updateOptionsDisplay(phuongAn) {
+            const allOptions = ['optionA', 'optionB', 'optionC', 'optionD', 'optionE', 'optionF', 'optionG', 'optionH'];
+            const allSpeechOptions = ['speechIdA', 'speechIdB', 'speechIdC', 'speechIdD', 'speechIdE', 'speechIdF', 'speechIdG', 'speechIdH'];
+            const optionKeys = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
+            
+            // First hide all options beyond D
+            for (let i = 4; i < allOptions.length; i++) {
+                const optionDiv = document.getElementById(allOptions[i]).parentElement;
+                const speechInput = document.getElementById(allSpeechOptions[i]);
+                
+                if (phuongAn[optionKeys[i]]) {
+                    optionDiv.style.display = 'flex';
+                    speechInput.style.display = 'block';
+                } else {
+                    optionDiv.style.display = 'none';
+                    speechInput.style.display = 'none';
+                }
+            }
+            
+            // Show/hide add button
+            const visibleOptions = allOptions.filter((optionId, index) => {
+                if (index < 4) return true; // A-D always visible            const div = document.getElementById(optionId).parentElement;
+                return div.style.display === 'flex';
+            });
+            
+            document.getElementById('addOptionBtn').style.display = visibleOptions.length < 8 ? 'block' : 'none';
+        }
+
         // Initialize the application when DOM is loaded
         document.addEventListener('DOMContentLoaded', init);
+        
+        // Development mode: Add feature validation
+        if (window.location.search.includes('test=true')) {
+            console.log('🧪 Development mode: Running feature validation...');
+            
+            // Load and run feature validation script
+            const script = document.createElement('script');
+            script.src = 'feature-validation.js';
+            script.onload = () => {
+                setTimeout(() => {
+                    if (typeof window.runFeatureValidation === 'function') {
+                        window.runFeatureValidation();
+                    }
+                }, 1000);
+            };
+            document.head.appendChild(script);
+        }
     </script>
 </body>
 </html>
