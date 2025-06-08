@@ -533,23 +533,19 @@
                                 </div>
                                 
                                 <!-- Vòng 2 -->
-                                <div class="border-2 border-dashed border-gray-300 rounded-lg p-4 drop-zone" data-round="2">
+                                <div class="border-2 border-dashed border-gray-300 rounded-lg p-4">
                                     <h3 class="text-lg font-semibold text-center mb-4 text-green-600">
                                         <i class="fas fa-medal mr-2"></i>Vòng 2
                                     </h3>
-                                    <div id="round2Questions" class="space-y-2 min-h-32">
-                                        <p class="text-center text-gray-500 text-sm">Kéo thả câu hỏi vào đây</p>
-                                    </div>
+                                    <div id="round2Container"></div>
                                 </div>
                                 
                                 <!-- Vòng 3 -->
-                                <div class="border-2 border-dashed border-gray-300 rounded-lg p-4 drop-zone" data-round="3">
+                                <div class="border-2 border-dashed border-gray-300 rounded-lg p-4">
                                     <h3 class="text-lg font-semibold text-center mb-4 text-yellow-600">
                                         <i class="fas fa-crown mr-2"></i>Vòng 3
                                     </h3>
-                                    <div id="round3Questions" class="space-y-2 min-h-32">
-                                        <p class="text-center text-gray-500 text-sm">Kéo thả câu hỏi vào đây</p>
-                                    </div>
+                                    <div id="round3Questions"></div>
                                 </div>
                             </div>
                         </div>
@@ -575,10 +571,10 @@
     <script>
         // Global variables
         let questions = [];
-        let questionSets = {};
-        let editingIndex = -1;
-        let filteredQuestions = [];
-        let currentDraggedQuestion = null;        // Categories mapping
+        // Global variable for saved sets
+let questionSets = {};
+
+        // Categories mapping
         const categoryLabels = {
             'CSPL': 'Chính sách pháp luật',
             'PCCC': 'Phòng cháy chữa cháy',
@@ -625,6 +621,10 @@
                 filterAvailableQuestions();
                 displayQuestionSets();
                 console.log('✓ Compose tab initialized');
+                
+                // Load question sets from JSON file
+                loadQuestionSets();
+                console.log('✓ Question sets loaded');
                 
                 // Run test function for debugging
                 testFileLoading();
@@ -877,9 +877,69 @@
             updateTotalCount();
         }
 
+        // Load saved sets from JSON file
+        function loadQuestionSets() {
+  fetch('question_sets.json')
+    .then(res => res.json())
+    .then(data => {
+      questionSets = data;
+      renderSavedSets();
+    })
+    .catch(err => console.error('Failed to load question sets:', err));
+}
+
+// Render saved sets UI
+function renderSavedSets() {
+  const container = document.getElementById('questionSetsList');
+  container.innerHTML = '';
+  // Vòng 1
+  if (questionSets.vong1) {
+    Object.entries(questionSets.vong1).forEach(([idx, ids]) => {
+      const div = document.createElement('div');
+      div.className = 'p-2 border rounded mb-2';
+      const items = ids.map(id => {
+        const q = questions.find(q => q.id === id);
+        return q ? `<li><strong>${q.id}</strong>: ${q.cau_hoi}</li>` : `<li>${id} (chưa tải)</li>`;
+      }).join('');
+      div.innerHTML = `<strong>Vòng 1 - Bộ ${idx}:</strong><ul>${items}</ul>`;
+      container.appendChild(div);
+    });
+  }
+  // Vòng 2
+  if (questionSets.vong2) {
+    Object.entries(questionSets.vong2).forEach(([domain, sets]) => {
+      Object.entries(sets).forEach(([idx, ids]) => {
+        const div = document.createElement('div');
+        div.className = 'p-2 border rounded mb-2';
+        const items = ids.map(id => {
+          const q = questions.find(q => q.id === id);
+          return q ? `<li><strong>${q.id}</strong>: ${q.cau_hoi}</li>` : `<li>${id} (chưa tải)</li>`;
+        }).join('');
+        div.innerHTML = `<strong>Vòng 2 - ${domain} - Bộ ${idx}:</strong><ul>${items}</ul>`;
+        container.appendChild(div);
+      });
+    });
+  }
+  // Vòng 3
+  if (questionSets.vong3) {
+    Object.entries(questionSets.vong3).forEach(([idx, ids]) => {
+      const div = document.createElement('div');
+      div.className = 'p-2 border rounded mb-2';
+      const items = ids.map(id => {
+        const q = questions.find(q => q.id === id);
+        return q ? `<li><strong>${q.id}</strong>: ${q.cau_hoi}</li>` : `<li>${id} (chưa tải)</li>`;
+      }).join('');
+      div.innerHTML = `<strong>Vòng 3 - Đề ${idx}:</strong><ul>${items}</ul>`;
+      container.appendChild(div);
+    });
+  }
+}
+
         // Update total questions count
         function updateTotalCount() {
-            document.getElementById('totalQuestions').textContent = questions.length;
+            const countEl = document.getElementById('totalQuestions');
+            if (!countEl) return;
+            countEl.textContent = questions.length;
         }
 
         // Show toast notification
@@ -1336,6 +1396,11 @@
                 questionSetsList.addEventListener('dragleave', handleDragLeave);
             }
             
+            // Attach drop listeners to each question drop-zone
+            document.querySelectorAll('.drop-zone').forEach(zone => {
+                zone.addEventListener('dragover', handleDragOver);
+                zone.addEventListener('drop', handleZoneDrop);
+            });
             console.log('Drag and drop initialized');
         }
         
@@ -1384,6 +1449,23 @@
                 addToQuestionSet(draggedQuestionIndex);
             }
         }
+          // Handle dropping into individual round cells
+function handleZoneDrop(e) {
+    e.preventDefault();
+    const zone = e.currentTarget;
+    const round = zone.getAttribute('data-round');
+    const domain = zone.getAttribute('data-domain');
+    const setIndex = zone.getAttribute('data-set-index');
+    if (draggedQuestionIndex === null) return;
+    // Clone question to assign context
+    const question = JSON.parse(JSON.stringify(questions[draggedQuestionIndex]));
+    question.round = round;
+    if (domain) question.domain = domain;
+    if (setIndex) question.setIndex = setIndex;
+    currentQuestionSet.push(question);
+    displayQuestionSets();
+    showToast(`Đã thêm câu hỏi ${question.id} vào Vòng ${round}${domain ? ` - ${zone.querySelector('p').textContent}` : ''}`);
+}
           function displayQuestionSets() {
             const container = document.getElementById('questionSetsList');
             
@@ -1484,49 +1566,33 @@
         }
         
         function saveQuestionSet() {
-            if (currentQuestionSet.length === 0) {
-                showToast('Bộ câu hỏi trống!', 'error');
-                return;
-            }
-            
-            const setName = prompt('Nhập tên bộ câu hỏi:', `Bo_cau_hoi_${new Date().toISOString().slice(0, 10)}`);
-            if (!setName) return;
-            
-            try {
-                const questionSetData = {
-                    name: setName,
-                    created: new Date().toISOString(),
-                    questions: currentQuestionSet,
-                    count: currentQuestionSet.length
-                };
-                
-                const dataStr = JSON.stringify(questionSetData, null, 2);
-                const dataBlob = new Blob([dataStr], { type: 'application/json' });
-                
-                const link = document.createElement('a');
-                link.href = URL.createObjectURL(dataBlob);
-                link.download = `${setName}.json`;
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-                
-                showToast(`Đã lưu bộ câu hỏi "${setName}" với ${currentQuestionSet.length} câu hỏi!`);
-                
-            } catch (error) {
-                console.error('Error saving question set:', error);
-                showToast('Lỗi khi lưu bộ câu hỏi!', 'error');
-            }
-        }
-          function clearQuestionSet() {
-            if (currentQuestionSet.length === 0) return;
-            
-            if (confirm('Bạn có chắc muốn xóa toàn bộ bộ câu hỏi hiện tại?')) {
-                currentQuestionSet = [];
-                displayQuestionSets();
-                filterAvailableQuestions(); // Refresh available questions
-                showToast('Đã xóa bộ câu hỏi!');
-            }
-        }
+  // Build updated structure
+  const newSets = { vong1: {}, vong2: {}, vong3: {} };
+  currentQuestionSet.forEach(q => {
+    const id = q.id;
+    if (q.round === '1') {
+      newSets.vong1['1'] = newSets.vong1['1'] || [];
+      newSets.vong1['1'].push(id);
+    } else if (q.round === '2') {
+      newSets.vong2[q.domain] = newSets.vong2[q.domain] || {};
+      newSets.vong2[q.domain][q.setIndex] = newSets.vong2[q.domain][q.setIndex] || [];
+      newSets.vong2[q.domain][q.setIndex].push(id);
+    } else if (q.round === '3') {
+      newSets.vong3[q.setIndex] = newSets.vong3[q.setIndex] || [];
+      newSets.vong3[q.setIndex].push(id);
+    }
+  });
+  // Merge into questionSets
+  questionSets = newSets;
+  // Trigger download to overwrite file
+  const blob = new Blob([JSON.stringify(questionSets, null, 2)], { type: 'application/json' });
+  const link = document.createElement('a');
+  link.href = URL.createObjectURL(blob);
+  link.download = 'question_sets.json';
+  link.click();
+  showToast('Đã lưu cấu hình bộ câu hỏi!', 'success');
+  renderSavedSets();
+}
 
         function setupDragAndDrop() {
             // This is a placeholder for drag and drop functionality
@@ -1893,6 +1959,71 @@
             };
             document.head.appendChild(script);
         }
+
+        // Configuration for dynamic round sets
+const round2Config = [
+  { domainKey: 'ly_thuyet_bao_quan_boc_xep_van_chuyen', displayName: 'Lý thuyết bảo quản, bốc xếp, vận chuyển VLNCN', sets: 5 },
+  { domainKey: 'ly_thuyet_bao_ve', displayName: 'Lý thuyết bảo vệ', sets: 8 },
+  { domainKey: 'ly_thuyet_khai_thac_mo', displayName: 'Lý thuyết khai thác mỏ', sets: 8 }
+];
+const round3Config = [
+  { domainKey: 'y_te_thuc_hanh', displayName: 'Y tế - Thực hành', sets: 6 },
+  { domainKey: 'phong_chay_chua_chay', displayName: 'PCCC - Thực hành', sets: 11 }
+];
+
+// Render dynamic containers for Round 2 and Round 3
+function renderRoundContainers() {
+  // Render Round 2
+  const r2 = document.getElementById('round2Container');
+  r2.innerHTML = '';
+  round2Config.forEach(cfg => {
+    const domainDiv = document.createElement('div');
+    domainDiv.className = 'mb-4';
+    domainDiv.innerHTML = `<h4 class="font-semibold mb-2">${cfg.displayName}</h4>`;
+    const setsDiv = document.createElement('div');
+    setsDiv.className = 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2';
+    for (let i = 1; i <= cfg.sets; i++) {
+      const dz = document.createElement('div');
+      dz.className = 'border-2 border-dashed border-gray-300 rounded-lg p-2 drop-zone';
+      dz.setAttribute('data-round', '2');
+      dz.setAttribute('data-domain', cfg.domainKey);
+      dz.setAttribute('data-set-index', i);
+      dz.innerHTML = `<p class="text-center text-gray-500 text-sm">Bộ ${i}</p><div class="min-h-16"></div>`;
+      setsDiv.appendChild(dz);
+    }
+    domainDiv.appendChild(setsDiv);
+    r2.appendChild(domainDiv);
+  });
+
+  // Render Round 3
+  const container3 = document.getElementById('round3Questions');
+  container3.innerHTML = '';
+  round3Config.forEach(cfg => {
+    const domainDiv = document.createElement('div');
+    domainDiv.className = 'mb-4';
+    domainDiv.innerHTML = `<h4 class="font-semibold mb-2">${cfg.displayName}</h4>`;
+    const setsDiv = document.createElement('div');
+    setsDiv.className = 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2';
+    for (let i = 1; i <= cfg.sets; i++) {
+      const dz = document.createElement('div');
+      dz.className = 'border-2 border-dashed border-gray-300 rounded-lg p-2 drop-zone';
+      dz.setAttribute('data-round', '3');
+      dz.setAttribute('data-domain', cfg.domainKey);
+      dz.setAttribute('data-set-index', i);
+      dz.innerHTML = `<p class="text-center text-gray-500 text-sm">Đề ${i}</p><div class="min-h-16"></div>`;
+      setsDiv.appendChild(dz);
+    }
+    domainDiv.appendChild(setsDiv);
+    container3.appendChild(domainDiv);
+  });
+}
+
+// Initialize after DOM loaded
+document.addEventListener('DOMContentLoaded', () => {
+  renderRoundContainers();
+  initializeDragAndDrop();
+  console.log('Dynamic round containers rendered and drag-and-drop initialized');
+});
     </script>
 </body>
 </html>
