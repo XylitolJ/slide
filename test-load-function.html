@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Load Data Function</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+    <div class="container mx-auto p-4">
+        <h1 class="text-2xl font-bold mb-4">Test Load Data Function</h1>
+        
+        <div class="bg-white p-6 rounded-lg shadow-lg">
+            <button id="loadDataBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg">
+                Load Data Test
+            </button>
+            <input type="file" id="fileInput" accept=".json" multiple style="display: none;">
+            
+            <div id="result" class="mt-4 p-4 bg-gray-50 rounded-lg">
+                <p>No data loaded yet. Click the button above and select the test_load_data.json file to test.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Test the load data function
+        const loadDataBtn = document.getElementById('loadDataBtn');
+        const fileInput = document.getElementById('fileInput');
+        const result = document.getElementById('result');
+
+        loadDataBtn.addEventListener('click', () => {
+            fileInput.click();
+        });
+
+        fileInput.addEventListener('change', (event) => {
+            const files = event.target.files;
+            if (files.length > 0) {
+                const file = files[0];
+                const reader = new FileReader();
+                
+                reader.onload = (e) => {
+                    try {
+                        const data = JSON.parse(e.target.result);
+                        result.innerHTML = `
+                            <h3 class="font-bold text-green-600">✓ File loaded successfully!</h3>
+                            <p><strong>File:</strong> ${file.name}</p>
+                            <p><strong>Questions found:</strong> ${data.questions ? data.questions.length : 'Unknown structure'}</p>
+                            <pre class="bg-gray-100 p-2 mt-2 rounded text-sm overflow-auto">${JSON.stringify(data, null, 2)}</pre>
+                        `;
+                    } catch (error) {
+                        result.innerHTML = `
+                            <h3 class="font-bold text-red-600">✗ Error loading file</h3>
+                            <p>Error: ${error.message}</p>
+                        `;
+                    }
+                };
+                
+                reader.readAsText(file);
+            }
+        });
+    </script>
+</body>
+</html>

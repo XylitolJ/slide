@@ -87,13 +87,169 @@
         
         .question-set-item:hover {
             transform: translateY(-1px);
-        }
-          .line-clamp-2 {
+        }        .line-clamp-2 {
             display: -webkit-box;
             -webkit-line-clamp: 2;
             line-clamp: 2;
             -webkit-box-orient: vertical;
             overflow: hidden;
+        }
+        
+        /* Round tab styles */
+        .round-tab-button {
+            border-color: transparent;
+            color: #6b7280;
+            transition: all 0.2s ease;
+        }
+        .round-tab-button.active {
+            border-color: #3b82f6;
+            color: #3b82f6;
+        }
+        .round-tab-button:hover {
+            color: #374151;
+        }
+        .round-content {
+            display: none;
+        }
+        .round-content.active {
+            display: block;
+        }
+        
+        /* Question set container styles */
+        .question-set-container {
+            border: 2px dashed #d1d5db;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+        .question-set-container.drop-target {
+            border-color: #3b82f6;
+            background-color: #eff6ff;
+        }
+        .question-set-box {
+            min-height: 120px;
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
+            padding: 12px;
+            margin: 8px 0;
+        }
+        .question-set-box.has-questions {
+            background: #ecfccb;
+            border-color: #84cc16;
+        }
+
+        /* Progress indicators and enhanced visual feedback */
+        .progress-indicator {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            padding: 0.75rem;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            border-radius: 0.5rem;
+            border: 1px solid #cbd5e1;
+        }
+
+        .progress-bar {
+            flex: 1;
+            height: 0.5rem;
+            background: #e2e8f0;
+            border-radius: 0.25rem;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #10b981, #059669);
+            border-radius: 0.25rem;
+            transition: width 0.3s ease;
+        }
+
+        .validation-message {
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+            display: none;
+            animation: slideDown 0.3s ease;
+        }
+
+        .validation-message.success {
+            background: #d1fae5;
+            border: 1px solid #10b981;
+            color: #065f46;
+        }
+
+        .validation-message.warning {
+            background: #fef3c7;
+            border: 1px solid #f59e0b;
+            color: #92400e;
+        }
+
+        .validation-message.error {
+            background: #fee2e2;
+            border: 1px solid #ef4444;
+            color: #991b1b;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .question-counter {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+            color: #64748b;
+        }
+
+        .counter-badge {
+            background: #3b82f6;
+            color: white;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            font-weight: 600;
+            font-size: 0.75rem;
+        }
+
+        .set-validation-icon {
+            margin-left: 0.5rem;
+            font-size: 1rem;
+        }
+
+        .set-validation-icon.valid {
+            color: #10b981;
+        }
+
+        .set-validation-icon.invalid {
+            color: #ef4444;
+        }
+
+        .set-validation-icon.partial {
+            color: #f59e0b;
+        }
+
+        /* Enhanced drag feedback */
+        .drag-preview {
+            position: fixed;
+            pointer-events: none;
+            z-index: 9999;
+            background: white;
+            border: 2px solid #3b82f6;
+            border-radius: 0.5rem;
+            padding: 0.5rem;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+            transform: rotate(-5deg);
+        }
+
+        .drop-zone-highlight {
+            animation: pulseBlue 1s ease-in-out infinite;
+        }
+
+        @keyframes pulseBlue {
+            0%, 100% { border-color: #3b82f6; }
+            50% { border-color: #1d4ed8; }
         }
     </style>
 </head>
@@ -395,56 +551,7 @@
                                 </div>
                             </form>
                         </div>
-                    </div>
-                </div>
-                
-                <!-- Questions List -->
-                <div class="lg:col-span-2">
-                    <div class="bg-white rounded-lg shadow-lg">
-                        <div class="px-6 py-4 border-b border-gray-200">
-                            <div class="flex items-center justify-between">
-                                <h2 class="text-xl font-semibold text-gray-800">
-                                    <i class="fas fa-list mr-2"></i>Danh sách Câu hỏi
-                                </h2>
-                                <div class="flex items-center space-x-4">
-                                    <!-- Filter -->
-                                    <div class="flex items-center space-x-2">                                        <select id="filterCategory" class="border border-gray-300 rounded-lg px-3 py-1 text-sm">
-                                            <option value="">Tất cả danh mục</option>
-                                            <option value="CSPL">Chính sách pháp luật</option>
-                                            <option value="PCCC">Phòng cháy chữa cháy</option>
-                                            <option value="BV">Bảo vệ</option>
-                                            <option value="KTM">Khai thác mỏ</option>
-                                            <option value="BXVC">Bốc xếp vận chuyển</option>
-                                            <option value="YT">Y tế</option>
-                                        </select>
-                                        <select id="filterRound" class="border border-gray-300 rounded-lg px-3 py-1 text-sm">
-                                            <option value="">Tất cả vòng</option>
-                                            <option value="1">Vòng 1</option>
-                                            <option value="2">Vòng 2</option>
-                                            <option value="3">Vòng 3</option>
-                                        </select>
-                                    </div>
-                                    <!-- Search -->
-                                    <div class="relative">
-                                        <input type="text" id="searchQuestions" placeholder="Tìm kiếm câu hỏi..." 
-                                               class="border border-gray-300 rounded-lg px-3 py-1 pl-8 text-sm w-64">
-                                        <i class="fas fa-search absolute left-3 top-2 text-gray-400 text-sm"></i>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="p-6">
-                            <div id="questionsList" class="space-y-4">
-                                <!-- Questions will be displayed here -->
-                                <div class="text-center text-gray-500 py-8">
-                                    <i class="fas fa-question-circle text-4xl mb-4 opacity-50"></i>
-                                    <p>Chưa có câu hỏi nào. Hãy thêm câu hỏi đầu tiên!</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                    </div>                </div>
             </div>
         </div>
 
@@ -495,8 +602,10 @@
                             <div class="flex items-center justify-between">
                                 <h2 class="text-xl font-semibold text-gray-800">
                                     <i class="fas fa-layer-group mr-2"></i>Tạo bộ câu hỏi
-                                </h2>
-                                <div class="flex space-x-2">
+                                </h2>                                <div class="flex space-x-2">
+                                    <button id="exportRoundData" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg smooth-transition">
+                                        <i class="fas fa-download mr-2"></i>Xuất dữ liệu vòng
+                                    </button>
                                     <button id="saveQuestionSet" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg smooth-transition">
                                         <i class="fas fa-save mr-2"></i>Lưu bộ đề
                                     </button>
@@ -505,50 +614,245 @@
                                     </button>
                                 </div>
                             </div>
-                        </div>
-                          <div class="p-6">
-                            <!-- Current Question Set Summary -->
+                        </div>                        <div class="p-6">
+                            <!-- Round Selection Tabs -->
                             <div class="mb-6">
-                                <div class="bg-gray-50 rounded-lg p-4">
-                                    <h3 class="text-lg font-semibold text-gray-800 mb-3">
-                                        <i class="fas fa-list-check mr-2"></i>Bộ câu hỏi hiện tại
-                                        <span id="questionSetCount" class="text-sm bg-blue-100 text-blue-800 px-2 py-1 rounded-full ml-2">0</span>
+                                <div class="border-b border-gray-200">
+                                    <nav class="-mb-px flex space-x-8">
+                                        <button class="round-tab-button py-2 px-1 border-b-2 font-medium text-sm" data-round="1">
+                                            <i class="fas fa-trophy mr-2"></i>Vòng 1
+                                        </button>
+                                        <button class="round-tab-button py-2 px-1 border-b-2 font-medium text-sm" data-round="2">
+                                            <i class="fas fa-medal mr-2"></i>Vòng 2
+                                        </button>
+                                        <button class="round-tab-button py-2 px-1 border-b-2 font-medium text-sm" data-round="3">
+                                            <i class="fas fa-crown mr-2"></i>Vòng 3
+                                        </button>
+                                    </nav>
+                                </div>
+                            </div>
+
+                            <!-- Round Content Containers -->
+                            
+                            <!-- Vòng 1 Content -->
+                            <div id="round1-content" class="round-content">
+                                <!-- Progress Indicator for Round 1 -->
+                                <div class="progress-indicator">
+                                    <div class="flex items-center gap-2">
+                                        <i class="fas fa-trophy text-blue-600"></i>
+                                        <span class="font-medium text-gray-700">Tiến độ Vòng 1:</span>
+                                    </div>
+                                    <div class="progress-bar">
+                                        <div id="round1-progress-fill" class="progress-fill" style="width: 0%"></div>
+                                    </div>
+                                    <div class="question-counter">
+                                        <span class="counter-badge" id="round1-counter">0</span>
+                                        <span>câu hỏi đã chọn</span>
+                                    </div>
+                                </div>
+                                
+                                <!-- Validation Message -->
+                                <div id="round1-validation" class="validation-message">
+                                    <i class="fas fa-info-circle mr-2"></i>
+                                    <span id="round1-validation-text"></span>
+                                </div>
+                                
+                                <div class="bg-blue-50 rounded-lg p-4 mb-4">
+                                    <h3 class="text-lg font-semibold text-blue-800 mb-2">
+                                        <i class="fas fa-trophy mr-2"></i>Vòng 1 - Thi Trắc nghiệm
                                     </h3>
-                                    <div id="questionSetsList" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 max-h-64 overflow-y-auto">
-                                        <!-- Current question set will be displayed here -->
+                                    <p class="text-sm text-blue-600">Kéo thả câu hỏi vào khu vực bên dưới để tạo bộ đề cho Vòng 1</p>
+                                </div>
+                                
+                                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                    <!-- Available Questions for Round 1 -->
+                                    <div class="bg-white border border-gray-200 rounded-lg">
+                                        <div class="px-4 py-3 bg-gray-50 border-b">
+                                            <h4 class="font-medium text-gray-800">Câu hỏi có sẵn (Vòng 1)</h4>
+                                        </div>
+                                        <div id="round1-available" class="p-4 max-h-96 overflow-y-auto">
+                                            <!-- Questions will be loaded here -->
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Round 1 Question Set -->
+                                    <div class="bg-white border-2 border-dashed border-blue-300 rounded-lg drop-zone" data-round="1">
+                                        <div class="px-4 py-3 bg-blue-50 border-b">
+                                            <h4 class="font-medium text-blue-800">Bộ đề Vòng 1</h4>
+                                        </div>
+                                        <div id="round1Questions" class="p-4 min-h-64">
+                                            <p class="text-center text-gray-500 text-sm">Kéo thả câu hỏi vào đây</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>                            <!-- Vòng 2 Content -->
+                            <div id="round2-content" class="round-content hidden">
+                                <!-- Progress Indicator for Round 2 -->
+                                <div class="progress-indicator">
+                                    <div class="flex items-center gap-2">
+                                        <i class="fas fa-medal text-green-600"></i>
+                                        <span class="font-medium text-gray-700">Tiến độ Vòng 2:</span>
+                                    </div>
+                                    <div class="progress-bar">
+                                        <div id="round2-progress-fill" class="progress-fill" style="width: 0%"></div>
+                                    </div>
+                                    <div class="question-counter">
+                                        <span class="counter-badge" id="round2-counter">0/63</span>
+                                        <span>câu hỏi đã phân bổ</span>
+                                    </div>
+                                </div>
+                                
+                                <!-- Validation Message -->
+                                <div id="round2-validation" class="validation-message">
+                                    <i class="fas fa-info-circle mr-2"></i>
+                                    <span id="round2-validation-text"></span>
+                                </div>
+                                
+                                <div class="bg-green-50 rounded-lg p-4 mb-4">
+                                    <h3 class="text-lg font-semibold text-green-800 mb-2">
+                                        <i class="fas fa-medal mr-2"></i>Vòng 2 - Thi Lý thuyết chuyên môn
+                                    </h3>
+                                    <p class="text-sm text-green-600">Mỗi lĩnh vực có nhiều bộ đề, mỗi bộ đề có 3 câu (2 hình ảnh + 1 thường)</p>
+                                </div>
+
+                                <!-- Available Questions for Round 2 -->
+                                <div class="mb-6">
+                                    <div class="bg-white border border-gray-200 rounded-lg">
+                                        <div class="px-4 py-3 bg-gray-50 border-b">
+                                            <h4 class="font-medium text-gray-800">Câu hỏi có sẵn (Vòng 2)</h4>
+                                            <p class="text-sm text-gray-600">Kéo thả vào các bộ đề bên dưới</p>
+                                        </div>
+                                        <div id="round2-available" class="p-4 max-h-64 overflow-y-auto">
+                                            <!-- Round 2 questions will be loaded here -->
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Round 2 Categories -->
+                                <div class="space-y-6">
+                                    <!-- BXVC Category -->
+                                    <div class="border border-gray-200 rounded-lg">
+                                        <div class="px-4 py-3 bg-gray-50 border-b flex justify-between items-center">
+                                            <h4 class="font-medium text-gray-800">LÝ THUYẾT BẢO QUẢN, BỐC XẾP, VẬN CHUYỂN VLNCN</h4>
+                                            <div class="flex items-center space-x-2">
+                                                <span class="text-sm text-gray-600">Số bộ đề:</span>
+                                                <input type="number" id="bxvc-sets" value="5" min="1" max="20" class="w-16 px-2 py-1 border border-gray-300 rounded text-sm">
+                                                <button onclick="updateRound2Sets('bxvc')" class="bg-blue-500 text-white px-2 py-1 rounded text-xs">Cập nhật</button>
+                                            </div>
+                                        </div>
+                                        <div id="bxvc-container" class="p-4">
+                                            <!-- BXVC question sets will be generated here -->
+                                        </div>
+                                    </div>
+
+                                    <!-- BV Category -->
+                                    <div class="border border-gray-200 rounded-lg">
+                                        <div class="px-4 py-3 bg-gray-50 border-b flex justify-between items-center">
+                                            <h4 class="font-medium text-gray-800">LÝ THUYẾT BẢO VỆ</h4>
+                                            <div class="flex items-center space-x-2">
+                                                <span class="text-sm text-gray-600">Số bộ đề:</span>
+                                                <input type="number" id="bv-sets" value="8" min="1" max="20" class="w-16 px-2 py-1 border border-gray-300 rounded text-sm">
+                                                <button onclick="updateRound2Sets('bv')" class="bg-blue-500 text-white px-2 py-1 rounded text-xs">Cập nhật</button>
+                                            </div>
+                                        </div>
+                                        <div id="bv-container" class="p-4">
+                                            <!-- BV question sets will be generated here -->
+                                        </div>
+                                    </div>
+
+                                    <!-- KTM Category -->
+                                    <div class="border border-gray-200 rounded-lg">
+                                        <div class="px-4 py-3 bg-gray-50 border-b flex justify-between items-center">
+                                            <h4 class="font-medium text-gray-800">LÝ THUYẾT KHAI THÁC MỎ</h4>
+                                            <div class="flex items-center space-x-2">
+                                                <span class="text-sm text-gray-600">Số bộ đề:</span>
+                                                <input type="number" id="ktm-sets" value="8" min="1" max="20" class="w-16 px-2 py-1 border border-gray-300 rounded text-sm">
+                                                <button onclick="updateRound2Sets('ktm')" class="bg-blue-500 text-white px-2 py-1 rounded text-xs">Cập nhật</button>
+                                            </div>
+                                        </div>
+                                        <div id="ktm-container" class="p-4">
+                                            <!-- KTM question sets will be generated here -->
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                            
-                            <!-- Round containers -->
-                            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                                <!-- Vòng 1 -->
-                                <div class="border-2 border-dashed border-gray-300 rounded-lg p-4 drop-zone" data-round="1">
-                                    <h3 class="text-lg font-semibold text-center mb-4 text-blue-600">
-                                        <i class="fas fa-trophy mr-2"></i>Vòng 1
-                                    </h3>
-                                    <div id="round1Questions" class="space-y-2 min-h-32">
-                                        <p class="text-center text-gray-500 text-sm">Kéo thả câu hỏi vào đây</p>
+
+                            <!-- Vòng 3 Content -->
+                            <div id="round3-content" class="round-content hidden">
+                                <!-- Progress Indicator for Round 3 -->
+                                <div class="progress-indicator">
+                                    <div class="flex items-center gap-2">
+                                        <i class="fas fa-crown text-yellow-600"></i>
+                                        <span class="font-medium text-gray-700">Tiến độ Vòng 3:</span>
+                                    </div>
+                                    <div class="progress-bar">
+                                        <div id="round3-progress-fill" class="progress-fill" style="width: 0%"></div>
+                                    </div>
+                                    <div class="question-counter">
+                                        <span class="counter-badge" id="round3-counter">0/17</span>
+                                        <span>câu hỏi đã phân bổ</span>
                                     </div>
                                 </div>
                                 
-                                <!-- Vòng 2 -->
-                                <div class="border-2 border-dashed border-gray-300 rounded-lg p-4 drop-zone" data-round="2">
-                                    <h3 class="text-lg font-semibold text-center mb-4 text-green-600">
-                                        <i class="fas fa-medal mr-2"></i>Vòng 2
-                                    </h3>
-                                    <div id="round2Questions" class="space-y-2 min-h-32">
-                                        <p class="text-center text-gray-500 text-sm">Kéo thả câu hỏi vào đây</p>
-                                    </div>
+                                <!-- Validation Message -->
+                                <div id="round3-validation" class="validation-message">
+                                    <i class="fas fa-info-circle mr-2"></i>
+                                    <span id="round3-validation-text"></span>
                                 </div>
                                 
-                                <!-- Vòng 3 -->
-                                <div class="border-2 border-dashed border-gray-300 rounded-lg p-4 drop-zone" data-round="3">
-                                    <h3 class="text-lg font-semibold text-center mb-4 text-yellow-600">
-                                        <i class="fas fa-crown mr-2"></i>Vòng 3
+                                <div class="bg-yellow-50 rounded-lg p-4 mb-4">
+                                    <h3 class="text-lg font-semibold text-yellow-800 mb-2">
+                                        <i class="fas fa-crown mr-2"></i>Vòng 3 - Thi Thực hành
                                     </h3>
-                                    <div id="round3Questions" class="space-y-2 min-h-32">
-                                        <p class="text-center text-gray-500 text-sm">Kéo thả câu hỏi vào đây</p>
+                                    <p class="text-sm text-yellow-600">Mỗi đề là một câu thực hành từ ngân hàng câu hỏi</p>
+                                </div>
+
+                                <!-- Available Questions for Round 3 -->
+                                <div class="mb-6">
+                                    <div class="bg-white border border-gray-200 rounded-lg">
+                                        <div class="px-4 py-3 bg-gray-50 border-b">
+                                            <h4 class="font-medium text-gray-800">Câu hỏi có sẵn (Vòng 3)</h4>
+                                            <p class="text-sm text-gray-600">Kéo thả vào các bộ đề bên dưới</p>
+                                        </div>
+                                        <div id="round3-available" class="p-4 max-h-64 overflow-y-auto">
+                                            <!-- Round 3 questions will be loaded here -->
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Round 3 Categories -->
+                                <div class="space-y-6">
+                                    <!-- Y Tế Category -->
+                                    <div class="border border-gray-200 rounded-lg">
+                                        <div class="px-4 py-3 bg-gray-50 border-b flex justify-between items-center">
+                                            <h4 class="font-medium text-gray-800">THỰC HÀNH Y TẾ</h4>
+                                            <div class="flex items-center space-x-2">
+                                                <span class="text-sm text-gray-600">Số đề:</span>
+                                                <input type="number" id="yt-sets" value="6" min="1" max="20" class="w-16 px-2 py-1 border border-gray-300 rounded text-sm">
+                                                <button onclick="updateRound3Sets('yt')" class="bg-blue-500 text-white px-2 py-1 rounded text-xs">Cập nhật</button>
+                                            </div>
+                                        </div>
+                                        <div id="yt-container" class="p-4">
+                                            <!-- Y Tế question sets will be generated here -->
+                                        </div>
+                                    </div>
+
+                                    <!-- PCCC Category -->
+                                    <div class="border border-gray-200 rounded-lg">
+                                        <div class="px-4 py-3 bg-gray-50 border-b flex justify-between items-center">
+                                            <h4 class="font-medium text-gray-800">THỰC HÀNH PHÒNG CHÁY CHỮA CHÁY</h4>
+                                            <div class="flex items-center space-x-2">
+                                                <span class="text-sm text-gray-600">Số đề:</span>
+                                                <input type="number" id="pccc-sets" value="11" min="1" max="20" class="w-16 px-2 py-1 border border-gray-300 rounded text-sm">
+                                                <button onclick="updateRound3Sets('pccc')" class="bg-blue-500 text-white px-2 py-1 rounded text-xs">Cập nhật</button>
+                                            </div>
+                                        </div>
+                                        <div id="pccc-container" class="p-4">
+                                            <!-- PCCC question sets will be generated here -->
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                                     </div>
                                 </div>
                             </div>
@@ -620,11 +924,14 @@
                 // Trigger initial form state setup
                 handleQuestionTypeChange();
                 console.log('✓ Initial form state setup completed');
-                
-                // Initialize compose tab
+                  // Initialize compose tab
                 filterAvailableQuestions();
                 displayQuestionSets();
                 console.log('✓ Compose tab initialized');
+                
+                // Initialize round tabs and content
+                initRoundTabs();
+                console.log('✓ Round tabs initialized');
                 
                 // Run test function for debugging
                 testFileLoading();
@@ -814,14 +1121,20 @@
             }            // Question set operations
             const saveQuestionSetBtn = document.getElementById('saveQuestionSet');
             const clearQuestionSetBtn = document.getElementById('clearQuestionSet');
-            
-            if (saveQuestionSetBtn) {
+              if (saveQuestionSetBtn) {
                 saveQuestionSetBtn.addEventListener('click', saveQuestionSet);
                 console.log('Save question set event listener added');
             }
             if (clearQuestionSetBtn) {
                 clearQuestionSetBtn.addEventListener('click', clearQuestionSet);
                 console.log('Clear question set event listener added');
+            }
+            
+            // Export round data button
+            const exportRoundDataBtn = document.getElementById('exportRoundData');
+            if (exportRoundDataBtn) {
+                exportRoundDataBtn.addEventListener('click', exportRoundData);
+                console.log('Export round data event listener added');
             }
 
             // Add option button
@@ -831,9 +1144,7 @@
                 console.log('Add option button event listener added');
             } else {
                 console.error('Add option button not found');
-            }
-
-            // Setup drag and drop
+            }            // Setup drag and drop
             setupDragAndDrop();
             
             console.log('Event listeners setup completed');
@@ -879,21 +1190,184 @@
 
         // Update total questions count
         function updateTotalCount() {
-            document.getElementById('totalQuestions').textContent = questions.length;
+            const totalElement = document.getElementById('totalQuestions');
+            if (totalElement) {
+                totalElement.textContent = questions.length;
+            }
+        }
+
+        // Handle file loading
+        function handleFileLoad(event) {
+            console.log('File load event triggered');
+            const files = event.target.files;
+            
+            if (files.length === 0) {
+                console.log('No files selected');
+                return;
+            }
+            
+            // Process each selected file
+            Array.from(files).forEach((file, index) => {
+                console.log(`Processing file ${index + 1}:`, file.name);
+                
+                if (!file.name.endsWith('.json')) {
+                    showToast(`File ${file.name} không phải là file JSON!`, 'error');
+                    return;
+                }
+                
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    try {
+                        const jsonData = JSON.parse(e.target.result);
+                        console.log('JSON data loaded:', jsonData);
+                        
+                        // Handle different JSON structures
+                        let newQuestions = [];
+                        
+                        if (Array.isArray(jsonData)) {
+                            // Direct array of questions
+                            newQuestions = jsonData;
+                        } else if (jsonData.questions && Array.isArray(jsonData.questions)) {
+                            // Questions wrapped in an object
+                            newQuestions = jsonData.questions;
+                        } else if (jsonData.vong_1 || jsonData.vong_2 || jsonData.vong_3) {
+                            // Round-based structure
+                            Object.keys(jsonData).forEach(round => {
+                                const roundData = jsonData[round];
+                                if (Array.isArray(roundData)) {
+                                    newQuestions = newQuestions.concat(roundData);
+                                } else if (typeof roundData === 'object') {
+                                    Object.keys(roundData).forEach(category => {
+                                        const categoryData = roundData[category];
+                                        if (Array.isArray(categoryData)) {
+                                            newQuestions = newQuestions.concat(categoryData);
+                                        }
+                                    });
+                                }
+                            });
+                        } else {
+                            // Try to find questions in any property
+                            Object.keys(jsonData).forEach(key => {
+                                const value = jsonData[key];
+                                if (Array.isArray(value) && value.length > 0 && value[0].cau_hoi) {
+                                    newQuestions = newQuestions.concat(value);
+                                }
+                            });
+                        }
+                        
+                        if (newQuestions.length === 0) {
+                            showToast(`Không tìm thấy câu hỏi trong file ${file.name}!`, 'error');
+                            return;
+                        }
+                        
+                        // Validate and add questions
+                        let addedCount = 0;
+                        let skippedCount = 0;
+                        
+                        newQuestions.forEach(question => {
+                            // Basic validation
+                            if (question.id && question.cau_hoi) {
+                                // Check for duplicates
+                                const existingIndex = questions.findIndex(q => q.id === question.id);
+                                if (existingIndex === -1) {
+                                    questions.push(question);
+                                    addedCount++;
+                                } else {
+                                    // Replace existing question
+                                    questions[existingIndex] = question;
+                                    skippedCount++;
+                                }
+                            } else {
+                                skippedCount++;
+                            }
+                        });
+                        
+                        saveQuestions();
+                        filterAndDisplayQuestions();
+                        
+                        showToast(`Đã tải ${addedCount} câu hỏi từ ${file.name}! ${skippedCount > 0 ? `(Bỏ qua ${skippedCount} câu)` : ''}`, 'success');
+                        
+                    } catch (error) {
+                        console.error('Error parsing JSON:', error);
+                        showToast(`Lỗi đọc file ${file.name}: ${error.message}`, 'error');
+                    }
+                };
+                
+                reader.onerror = function() {
+                    showToast(`Lỗi đọc file ${file.name}!`, 'error');
+                };
+                
+                reader.readAsText(file);
+            });
+            
+            // Clear the file input
+            event.target.value = '';
+        }
+
+        // Export questions to JSON
+        function exportToJSON() {
+            try {
+                if (questions.length === 0) {
+                    showToast('Không có câu hỏi nào để xuất!', 'error');
+                    return;
+                }
+                
+                const exportData = {
+                    metadata: {
+                        title: 'Ngân hàng câu hỏi Hội thi An toàn Vệ sinh Viên Giỏi 2025',
+                        exportDate: new Date().toISOString(),
+                        totalQuestions: questions.length,
+                        version: '1.0'
+                    },
+                    questions: questions
+                };
+                
+                const dataBlob = new Blob([JSON.stringify(exportData, null, 2)], { 
+                    type: 'application/json' 
+                });
+                
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(dataBlob);
+                link.download = `questions_export_${new Date().toISOString().slice(0, 10)}.json`;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                
+                showToast(`Đã xuất ${questions.length} câu hỏi thành công!`, 'success');
+                
+            } catch (error) {
+                console.error('Export error:', error);
+                showToast('Lỗi khi xuất dữ liệu!', 'error');
+            }
         }
 
         // Show toast notification
         function showToast(message, type = 'success') {
-            const toast = document.getElementById('toast');
+            // Create toast element if it doesn't exist
+            let toast = document.getElementById('toast');
+            if (!toast) {
+                toast = document.createElement('div');
+                toast.id = 'toast';
+                toast.className = 'fixed top-4 right-4 z-50 transform translate-x-full transition-transform duration-300';
+                toast.innerHTML = `
+                    <div class="bg-green-600 text-white px-6 py-3 rounded-lg shadow-lg">
+                        <span id="toastMessage"></span>
+                    </div>
+                `;
+                document.body.appendChild(toast);
+            }
+            
             const toastMessage = document.getElementById('toastMessage');
+            const toastDiv = toast.firstElementChild;
             
             toastMessage.textContent = message;
             
-            const toastDiv = toast.firstElementChild;
             if (type === 'success') {
                 toastDiv.className = 'bg-green-600 text-white px-6 py-3 rounded-lg shadow-lg';
             } else if (type === 'error') {
                 toastDiv.className = 'bg-red-600 text-white px-6 py-3 rounded-lg shadow-lg';
+            } else if (type === 'warning') {
+                toastDiv.className = 'bg-yellow-600 text-white px-6 py-3 rounded-lg shadow-lg';
             }
             
             toast.style.transform = 'translateX(0)';
@@ -901,7 +1375,82 @@
             setTimeout(() => {
                 toast.style.transform = 'translateX(100%)';
             }, 3000);
-        }        // Handle form submission
+        }
+
+        // Delete question
+        function deleteQuestion(index) {
+            if (confirm('Bạn có chắc chắn muốn xóa câu hỏi này không?')) {
+                questions.splice(index, 1);
+                saveQuestions();
+                filterAndDisplayQuestions();
+                showToast('Đã xóa câu hỏi thành công!', 'success');
+            }
+        }
+
+        // Add option functionality
+        function addOption() {
+            const options = ['optionE', 'optionF', 'optionG', 'optionH'];
+            const speechOptions = ['speechIdE', 'speechIdF', 'speechIdG', 'speechIdH'];
+            
+            for (let i = 0; i < options.length; i++) {
+                const optionElement = document.getElementById(options[i]);
+                const speechElement = document.getElementById(speechOptions[i]);
+                
+                if (optionElement && optionElement.parentElement.style.display === 'none') {
+                    optionElement.parentElement.style.display = 'flex';
+                    speechElement.style.display = 'block';
+                    
+                    // Hide add button if all options are shown
+                    if (i === options.length - 1) {
+                        document.getElementById('addOptionBtn').style.display = 'none';
+                    }
+                    break;
+                }
+            }
+        }
+
+        // Update options display based on available data
+        function updateOptionsDisplay(phuongAn) {
+            const allOptions = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
+            let lastVisibleIndex = 3; // D is always visible initially
+            
+            // Find the last option that has data
+            allOptions.forEach((letter, index) => {
+                if (phuongAn[letter.toLowerCase()]) {
+                    lastVisibleIndex = index;
+                }
+            });
+            
+            // Show options up to the last one with data
+            allOptions.forEach((letter, index) => {
+                const optionElement = document.getElementById(`option${letter}`);
+                const speechElement = document.getElementById(`speechId${letter}`);
+                
+                if (optionElement) {
+                    if (index <= lastVisibleIndex || index < 4) { // Always show A-D
+                        optionElement.parentElement.style.display = 'flex';
+                        if (speechElement) speechElement.style.display = 'block';
+                    } else {
+                        optionElement.parentElement.style.display = 'none';
+                        if (speechElement) speechElement.style.display = 'none';
+                    }
+                }
+            });
+            
+            // Hide add button if all options are shown
+            const addOptionBtn = document.getElementById('addOptionBtn');
+            if (addOptionBtn) {
+                addOptionBtn.style.display = lastVisibleIndex >= 7 ? 'none' : 'block';
+            }
+        }
+
+        // Initialize when DOM is ready
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM Content Loaded');
+            init();
+        });
+
+        // Handle form submission
         function handleFormSubmit(e) {
             e.preventDefault();
             
@@ -939,7 +1488,8 @@
                     }
                 }
             });
-              // Use enhanced validation
+            
+            // Use enhanced validation
             if (!validateQuestionForm(question)) {
                 return;
             }
@@ -971,7 +1521,9 @@
                 title.textContent = 'Thêm câu hỏi mới';
                 submitBtn.textContent = 'Lưu câu hỏi';
             }
-        }        // Edit question
+        }
+
+        // Edit question
         function editQuestion(index) {
             const q = questions[index];
             editingIndex = index;
@@ -1009,7 +1561,9 @@
             
             // Scroll to form
             document.getElementById('questionForm').scrollIntoView({ behavior: 'smooth' });
-        }        // Clear form
+        }
+
+        // Clear form
         function clearForm() {
             document.getElementById('questionForm').reset();
             editingIndex = -1;
@@ -1083,16 +1637,17 @@
                 
                 // Clear option values when hidden to avoid validation issues
                 optionInputs.forEach(optionId => {
-                    const input = document.getElementById(optionId);
-                    if (input) {
-                        input.value = '';
-                        input.removeAttribute('required');
+                    const element = document.getElementById(optionId);
+                    if (element) {
+                        element.value = '';
+                        element.removeAttribute('required');
                     }
                 });
                 
                 // Clear correct answer selection
                 if (correctAnswerSelect) {
-                    correctAnswerSelect.value = 'a'; // Reset to default
+                    correctAnswerSelect.value = '';
+                    correctAnswerSelect.removeAttribute('required');
                 }
                 
             } else {
@@ -1111,23 +1666,19 @@
                 if (optionB) optionB.setAttribute('required', '');
             }
             
-            // Update placeholder text and time limit based on question type
+            // Update placeholder text based on question type
             const questionContent = document.getElementById('questionContent');
-            const timeLimit = document.getElementById('timeLimit');
             
             if (questionContent) {
                 switch (questionType) {
                     case 'Trắc nghiệm':
                         questionContent.placeholder = 'Nhập nội dung câu hỏi trắc nghiệm...';
-                        if (timeLimit) timeLimit.value = 30;
                         break;
                     case 'Thực hành':
-                        questionContent.placeholder = 'Nhập nội dung câu hỏi thực hành...';
-                        if (timeLimit) timeLimit.value = 300; // 5 minutes for practical questions
+                        questionContent.placeholder = 'Nhập mô tả bài tập thực hành...';
                         break;
                     case 'Lý thuyết tự luận':
-                        questionContent.placeholder = 'Nhập nội dung câu hỏi lý thuyết...';
-                        if (timeLimit) timeLimit.value = 120; // 2 minutes for theory questions
+                        questionContent.placeholder = 'Nhập câu hỏi lý thuyết tự luận...';
                         break;
                 }
             }
@@ -1146,20 +1697,19 @@
             // Validation specific to multiple choice questions
             if (questionType === 'Trắc nghiệm') {
                 if (Object.keys(question.phuong_an).length < 2) {
-                    showToast('Câu hỏi trắc nghiệm cần ít nhất 2 phương án trả lời!', 'error');
+                    showToast('Câu hỏi trắc nghiệm cần ít nhất 2 phương án!', 'error');
                     return false;
                 }
                 
                 // Check if correct answer exists in options
                 if (!question.phuong_an[question.dap_an_dung]) {
-                    showToast('Đáp án đúng phải có nội dung phương án tương ứng!', 'error');
+                    showToast('Đáp án đúng phải tồn tại trong các phương án!', 'error');
                     return false;
                 }
             } else {
                 // For practical and theory questions, options are not required
                 // Clear any remaining option data to keep the question clean
                 question.phuong_an = {};
-                question.dap_an_dung = ''; // No correct answer for non-multiple choice
             }
             
             // Check duplicate ID (except when editing)
@@ -1168,7 +1718,8 @@
                 showToast('ID câu hỏi đã tồn tại!', 'error');
                 return false;
             }
-              return true;
+            
+            return true;
         }
 
         // Filter and display questions
@@ -1180,8 +1731,10 @@
             const filteredQuestions = questions.filter(question => {
                 const matchesCategory = !categoryFilter || question.category === categoryFilter;
                 const matchesRound = !roundFilter || question.round === roundFilter;
-                const matchesSearch = !searchTerm ||                    (question.id || '').toLowerCase().includes(searchTerm) ||
-                    (question.cau_hoi || '').toLowerCase().includes(searchTerm);
+                const matchesSearch = !searchTerm || 
+                    question.cau_hoi.toLowerCase().includes(searchTerm) ||
+                    question.id.toLowerCase().includes(searchTerm);
+                
                 return matchesCategory && matchesRound && matchesSearch;
             });
 
@@ -1193,44 +1746,45 @@
             const questionsList = document.getElementById('questionsList');
             
             if (questionsToShow.length === 0) {
-                questionsList.innerHTML = '<div class="text-center py-8 text-gray-500">Không có câu hỏi nào</div>';
+                questionsList.innerHTML = `
+                    <div class="text-center text-gray-500 py-8">
+                        <i class="fas fa-search text-4xl mb-4 opacity-50"></i>
+                        <p>Không tìm thấy câu hỏi nào phù hợp với bộ lọc.</p>
+                    </div>
+                `;
                 return;
             }
 
             questionsList.innerHTML = questionsToShow.map((question, index) => {
-                const originalIndex = questions.indexOf(question);
-                const categoryClass = getCategoryClass(question.category);
-                
+                const actualIndex = questions.indexOf(question);
                 return `
-                    <div class="question-item border rounded-lg p-4 hover:shadow-md transition-shadow ${categoryClass}">
-                        <div class="flex justify-between items-start mb-2">
-                            <div class="flex items-center space-x-2">
-                                <span class="font-bold text-blue-600">${question.id}</span>
-                                <span class="px-2 py-1 rounded text-xs ${getTypeClass(question.type_question)}">${question.type_question}</span>
-                                <span class="px-2 py-1 rounded text-xs bg-gray-100">${question.category}</span>
-                                <span class="px-2 py-1 rounded text-xs bg-gray-100">Vòng ${question.round}</span>
+                    <div class="bg-white border rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow ${getCategoryClass(question.category)}">
+                        <div class="flex items-start justify-between">
+                            <div class="flex-1">
+                                <div class="flex items-center space-x-2 mb-2">
+                                    <span class="font-bold text-lg text-blue-600">${question.id}</span>
+                                    <span class="px-2 py-1 rounded text-xs ${getCategoryClass(question.category)}">${categoryLabels[question.category] || question.category}</span>
+                                    <span class="px-2 py-1 rounded text-xs ${getTypeClass(question.type_question)}">${question.type_question}</span>
+                                    <span class="px-2 py-1 rounded text-xs bg-gray-100 text-gray-800">Vòng ${question.round}</span>
+                                </div>
+                                <p class="text-gray-700 mb-2 line-clamp-2">${question.cau_hoi}</p>
+                                ${Object.keys(question.phuong_an).length > 0 ? 
+                                    `<div class="text-sm text-gray-600">
+                                        <span class="font-medium">Các phương án:</span> ${Object.keys(question.phuong_an).join(', ')} |
+                                        <span class="font-medium">Đáp án:</span> <span class="text-green-600 font-bold">${question.dap_an_dung}</span>
+                                    </div>` : ''
+                                }
                             </div>
-                            <div class="flex space-x-2">
-                                <button onclick="editQuestion(${originalIndex})" class="text-blue-600 hover:text-blue-800">
-                                    <i class="fas fa-edit"></i>
+                            <div class="flex space-x-2 ml-4">
+                                <button onclick="editQuestion(${actualIndex})" 
+                                        class="text-blue-600 hover:text-blue-800 px-3 py-1 rounded border border-blue-200 hover:bg-blue-50 text-sm">
+                                    <i class="fas fa-edit mr-1"></i>Sửa
                                 </button>
-                                <button onclick="deleteQuestion(${originalIndex})" class="text-red-600 hover:text-red-800">
-                                    <i class="fas fa-trash"></i>
+                                <button onclick="deleteQuestion(${actualIndex})" 
+                                        class="text-red-600 hover:text-red-800 px-3 py-1 rounded border border-red-200 hover:bg-red-50 text-sm">
+                                    <i class="fas fa-trash mr-1"></i>Xóa
                                 </button>
                             </div>
-                        </div>                        <p class="text-gray-700 mb-2">${question.cau_hoi}</p>
-                        ${Object.keys(question.phuong_an).length > 0 ? `
-                            <div class="text-sm text-gray-600">
-                                <strong>Phương án:</strong> ${Object.entries(question.phuong_an).map(([key, value]) => `${(key || '').toString().toUpperCase()}: ${value}`).join(', ')}
-                            </div>
-                            <div class="text-sm text-green-600">
-                                <strong>Đáp án:</strong> ${(question.dap_an_dung || '').toString().toUpperCase()}
-                            </div>
-                        ` : ''}
-                        <div class="text-sm text-gray-500 mt-2">
-                            ${question.use_image === 'Yes' ? `<i class="fas fa-image mr-1"></i>Có hình ảnh` : ''}
-                            ${question.question_image === 'Yes' ? `<i class="fas fa-camera ml-3 mr-1"></i>Câu hỏi hình ảnh` : ''}
-                            ${question.image_id ? `<span class="ml-3 text-xs">${question.image_id}</span>` : ''}
                         </div>
                     </div>
                 `;
@@ -1239,15 +1793,7 @@
 
         // Get category class for styling
         function getCategoryClass(category) {
-            const categoryClasses = {
-                'CSPL': 'category-cspl',
-                'PCCC': 'category-pccc', 
-                'BV': 'category-bv',
-                'KTM': 'category-ktm',
-                'BXVC': 'category-bxvc',
-                'YT': 'category-yt'
-            };
-            return categoryClasses[category] || '';
+            return categoryColors[category] || 'bg-gray-100 text-gray-800';
         }
 
         // Get question type class for styling
@@ -1257,641 +1803,20 @@
                 'Thực hành': 'bg-green-100 text-green-800',
                 'Lý thuyết tự luận': 'bg-purple-100 text-purple-800'
             };
-            return typeClasses[type] || 'bg-gray-100 text-gray-800';        }        // Compose tab functions
+            return typeClasses[type] || 'bg-gray-100 text-gray-800';
+        }
+
+        // Compose tab functions (placeholder)
         function filterAvailableQuestions() {
-            console.log('Filtering available questions for compose tab');
-            const filterRound = document.getElementById('composeFilterRound').value;
-            const filterCategory = document.getElementById('composeFilterCategory').value;
-            const searchTerm = document.getElementById('composeSearch').value.toLowerCase();
-            
-            const filteredQuestions = questions.filter(question => {
-                const matchesRound = !filterRound || question.round === filterRound;
-                const matchesCategory = !filterCategory || question.category === filterCategory;
-                const matchesSearch = !searchTerm || 
-                    (question.id || '').toLowerCase().includes(searchTerm) ||
-                    (question.cau_hoi || '').toLowerCase().includes(searchTerm);
-                return matchesRound && matchesCategory && matchesSearch;
-            });
-            
-            displayAvailableQuestions(filteredQuestions);
-        }        function displayAvailableQuestions(questionsToShow) {
-            const container = document.getElementById('availableQuestions');
-            
-            if (questionsToShow.length === 0) {
-                container.innerHTML = `
-                    <div class="text-center text-gray-500 py-4">
-                        <i class="fas fa-question-circle text-2xl mb-2 opacity-50"></i>
-                        <p class="text-sm">Không có câu hỏi nào</p>
-                    </div>
-                `;
-                return;
-            }
-            
-            container.innerHTML = questionsToShow.map((question, index) => {
-                const originalIndex = questions.indexOf(question);
-                const isInSet = currentQuestionSet.find(q => q.id === question.id);
-                return `
-                    <div class="question-item-compose border rounded-lg p-3 hover:shadow-md transition-all cursor-pointer ${getCategoryClass(question.category)} ${isInSet ? 'opacity-50 bg-gray-100' : 'drag-item hover:scale-105'}" 
-                         draggable="${!isInSet}" data-question-index="${originalIndex}" 
-                         onclick="${!isInSet ? `addToQuestionSet(${originalIndex})` : ''}">
-                        <div class="flex items-center justify-between mb-1">
-                            <span class="font-bold text-sm text-blue-600">${question.id}</span>
-                            <div class="flex items-center space-x-1">
-                                <span class="px-2 py-1 rounded text-xs ${getTypeClass(question.type_question)}">${question.type_question}</span>
-                                ${isInSet ? '<i class="fas fa-check text-green-600"></i>' : '<i class="fas fa-plus text-gray-400"></i>'}
-                            </div>
-                        </div>
-                        <p class="text-xs text-gray-700 mb-1 line-clamp-2">${question.cau_hoi.substring(0, 80)}${question.cau_hoi.length > 80 ? '...' : ''}</p>
-                        <div class="flex items-center justify-between text-xs text-gray-500">
-                            <span>${question.category}</span>
-                            <span>Vòng ${question.round}</span>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-            
-            // Re-add drag event listeners to new draggable elements
-            container.querySelectorAll('.drag-item').forEach(item => {
-                item.addEventListener('dragstart', handleDragStart);
-                item.addEventListener('dragend', handleDragEnd);
-            });
-        }// Question set management
-        let currentQuestionSet = [];
-          // Drag and drop functionality
-        function initializeDragAndDrop() {
-            const availableQuestions = document.getElementById('availableQuestions');
-            const questionSetsList = document.getElementById('questionSetsList');
-            
-            // Add drag event listeners to available questions container
-            if (availableQuestions) {
-                availableQuestions.addEventListener('dragstart', handleDragStart);
-                availableQuestions.addEventListener('dragend', handleDragEnd);
-            }
-            
-            // Add drop event listeners to question sets container
-            if (questionSetsList) {
-                questionSetsList.addEventListener('dragover', handleDragOver);
-                questionSetsList.addEventListener('drop', handleDrop);
-                questionSetsList.addEventListener('dragenter', handleDragEnter);
-                questionSetsList.addEventListener('dragleave', handleDragLeave);
-            }
-            
-            console.log('Drag and drop initialized');
-        }
-        
-        let draggedQuestionIndex = null;
-        
-        function handleDragStart(e) {
-            if (e.target.classList.contains('drag-item')) {
-                draggedQuestionIndex = parseInt(e.target.dataset.questionIndex);
-                e.target.style.opacity = '0.5';
-                e.dataTransfer.effectAllowed = 'copy';
-                e.dataTransfer.setData('text/html', e.target.outerHTML);
-            }
-        }
-        
-        function handleDragEnd(e) {
-            if (e.target.classList.contains('drag-item')) {
-                e.target.style.opacity = '1';
-            }
-            draggedQuestionIndex = null;
-        }
-        
-        function handleDragOver(e) {
-            e.preventDefault();
-            e.dataTransfer.dropEffect = 'copy';
-        }
-        
-        function handleDragEnter(e) {
-            e.preventDefault();
-            const container = document.getElementById('questionSetsList');
-            container.classList.add('drag-over');
-        }
-        
-        function handleDragLeave(e) {
-            // Only remove highlight if we're actually leaving the container
-            if (!e.currentTarget.contains(e.relatedTarget)) {
-                const container = document.getElementById('questionSetsList');
-                container.classList.remove('drag-over');
-            }
-        }
-          function handleDrop(e) {
-            e.preventDefault();
-            const container = document.getElementById('questionSetsList');
-            container.classList.remove('drag-over');
-            
-            if (draggedQuestionIndex !== null) {
-                addToQuestionSet(draggedQuestionIndex);
-            }
-        }
-          function displayQuestionSets() {
-            const container = document.getElementById('questionSetsList');
-            
-            if (currentQuestionSet.length === 0) {
-                container.innerHTML = `
-                    <div class="text-center text-gray-500 py-4">
-                        <i class="fas fa-list-alt text-2xl mb-2 opacity-50"></i>
-                        <p class="text-sm">Chưa có câu hỏi nào trong bộ</p>
-                        <p class="text-xs mt-1">Kéo thả câu hỏi từ danh sách bên trái</p>
-                    </div>
-                `;
-                return;
-            }
-            
-            container.innerHTML = currentQuestionSet.map((question, index) => `
-                <div class="question-set-item border rounded-lg p-3 hover:shadow-md transition-shadow ${getCategoryClass(question.category)}" 
-                     data-set-index="${index}">
-                    <div class="flex items-center justify-between mb-2">
-                        <div class="flex items-center space-x-2">
-                            <span class="font-bold text-sm text-blue-600">${question.id}</span>
-                            <span class="px-2 py-1 rounded text-xs ${getTypeClass(question.type_question)}">${question.type_question}</span>
-                        </div>
-                        <div class="flex items-center space-x-2">
-                            <span class="text-xs text-gray-500">${index + 1}</span>
-                            <button onclick="removeFromQuestionSet(${index})" class="text-red-600 hover:text-red-800">
-                                <i class="fas fa-times"></i>
-                            </button>
-                        </div>
-                    </div>
-                    <p class="text-xs text-gray-700 mb-1 line-clamp-2">${question.cau_hoi.substring(0, 100)}${question.cau_hoi.length > 100 ? '...' : ''}</p>
-                    <div class="flex items-center justify-between text-xs text-gray-500">
-                        <span>${question.category}</span>
-                        <span>Vòng ${question.round}</span>
-                    </div>
-                </div>
-            `).join('');
-            
-            // Update question count and stats
-            updateQuestionSetStats();
-        }
-        
-        function updateQuestionSetStats() {
-            const countElement = document.getElementById('questionSetCount');
-            if (countElement) {
-                countElement.textContent = currentQuestionSet.length;
-            }
-            
-            // Count by rounds
-            const roundCounts = { '1': 0, '2': 0, '3': 0 };
-            currentQuestionSet.forEach(q => {
-                if (roundCounts[q.round] !== undefined) {
-                    roundCounts[q.round]++;
-                }
-            });
-            
-            // Display round statistics in header or create a stats section
-            const statsHTML = `
-                <div class="flex space-x-4 text-xs text-gray-600 mt-2">
-                    <span>Vòng 1: ${roundCounts['1']}</span>
-                    <span>Vòng 2: ${roundCounts['2']}</span>
-                    <span>Vòng 3: ${roundCounts['3']}</span>
-                    <span>Tổng: ${currentQuestionSet.length}</span>
-                </div>
-            `;
-            
-            // Find or create stats container
-            let statsContainer = document.getElementById('questionSetStats');
-            if (!statsContainer) {
-                const header = document.querySelector('#questionSetsList').parentElement.previousElementSibling;
-                statsContainer = document.createElement('div');
-                statsContainer.id = 'questionSetStats';
-                header.appendChild(statsContainer);
-            }
-            statsContainer.innerHTML = statsHTML;
-        }
-          function addToQuestionSet(questionIndex) {
-            const question = questions[questionIndex];
-            if (!question) return;
-            
-            // Check if question is already in set
-            if (currentQuestionSet.find(q => q.id === question.id)) {
-                showToast('Câu hỏi này đã có trong bộ!', 'error');
-                return;
-            }
-            
-            currentQuestionSet.push(question);
-            displayQuestionSets();
-            filterAvailableQuestions(); // Refresh available questions to show updated state
-            showToast(`Đã thêm câu hỏi ${question.id} vào bộ!`);
-        }
-        
-        function removeFromQuestionSet(index) {
-            const question = currentQuestionSet[index];
-            currentQuestionSet.splice(index, 1);
-            displayQuestionSets();
-            filterAvailableQuestions(); // Refresh available questions to show updated state
-            showToast(`Đã xóa câu hỏi ${question.id} khỏi bộ!`);
-        }
-        
-        function saveQuestionSet() {
-            if (currentQuestionSet.length === 0) {
-                showToast('Bộ câu hỏi trống!', 'error');
-                return;
-            }
-            
-            const setName = prompt('Nhập tên bộ câu hỏi:', `Bo_cau_hoi_${new Date().toISOString().slice(0, 10)}`);
-            if (!setName) return;
-            
-            try {
-                const questionSetData = {
-                    name: setName,
-                    created: new Date().toISOString(),
-                    questions: currentQuestionSet,
-                    count: currentQuestionSet.length
-                };
-                
-                const dataStr = JSON.stringify(questionSetData, null, 2);
-                const dataBlob = new Blob([dataStr], { type: 'application/json' });
-                
-                const link = document.createElement('a');
-                link.href = URL.createObjectURL(dataBlob);
-                link.download = `${setName}.json`;
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-                
-                showToast(`Đã lưu bộ câu hỏi "${setName}" với ${currentQuestionSet.length} câu hỏi!`);
-                
-            } catch (error) {
-                console.error('Error saving question set:', error);
-                showToast('Lỗi khi lưu bộ câu hỏi!', 'error');
-            }
-        }
-          function clearQuestionSet() {
-            if (currentQuestionSet.length === 0) return;
-            
-            if (confirm('Bạn có chắc muốn xóa toàn bộ bộ câu hỏi hiện tại?')) {
-                currentQuestionSet = [];
-                displayQuestionSets();
-                filterAvailableQuestions(); // Refresh available questions
-                showToast('Đã xóa bộ câu hỏi!');
-            }
+            // This will be implemented with the compose functionality
         }
 
-        function setupDragAndDrop() {
-            // This is a placeholder for drag and drop functionality
-            console.log('Setting up drag and drop');
+        function displayQuestionSets() {
+            // This will be implemented with the compose functionality
         }
 
-        function saveQuestionSet() {
-            // This is a placeholder for saving question sets
-            console.log('Saving question set');
-        }
-
-        function clearQuestionSet() {
-            // This is a placeholder for clearing question sets
-            console.log('Clearing question set');
-        }        function handleFileLoad(event) {
-            console.log('handleFileLoad called', event);
-            const files = event.target.files;
-            
-            if (!files || files.length === 0) {
-                console.warn('No files selected');
-                showToast('Không có file nào được chọn!', 'error');
-                return;
-            }
-
-            console.log(`Selected ${files.length} file(s):`, Array.from(files).map(f => f.name));
-
-            // Process each selected file
-            Array.from(files).forEach((file, index) => {
-                console.log(`Processing file ${index + 1}:`, file.name);
-                
-                if (!file.name.endsWith('.json')) {
-                    console.warn(`File ${file.name} is not a JSON file`);
-                    showToast(`File ${file.name} không phải file JSON!`, 'error');
-                    return;
-                }
-
-                const reader = new FileReader();
-                
-                reader.onload = function(e) {
-                    console.log(`File ${file.name} read successfully`);
-                    try {
-                        const data = JSON.parse(e.target.result);
-                        console.log(`Parsed JSON data from ${file.name}:`, data);
-                        
-                        const loadedQuestions = processJSONData(data, file.name);
-                        console.log(`Processed ${loadedQuestions.length} questions from ${file.name}`);
-                        
-                        if (loadedQuestions.length > 0) {
-                            // Add to existing questions array
-                            const beforeCount = questions.length;
-                            questions.push(...loadedQuestions);
-                            const afterCount = questions.length;
-                            
-                            console.log(`Added ${afterCount - beforeCount} questions. Total: ${afterCount}`);
-                            
-                            saveQuestions();
-                            filterAndDisplayQuestions();
-                            updateTotalCount();
-                            
-                            showToast(`Đã tải thành công ${loadedQuestions.length} câu hỏi từ ${file.name}!`);
-                        } else {
-                            console.warn(`No questions found in ${file.name}`);
-                            showToast(`Không tìm thấy câu hỏi nào trong ${file.name}!`, 'error');
-                        }
-                        
-                    } catch (error) {
-                        console.error(`Error parsing JSON from ${file.name}:`, error);
-                        showToast(`Lỗi đọc file ${file.name}: ${error.message}`, 'error');
-                    }
-                };
-                
-                reader.onerror = function() {
-                    console.error(`Error reading file ${file.name}`);
-                    showToast(`Lỗi đọc file ${file.name}!`, 'error');
-                };
-                
-                reader.readAsText(file);
-            });
-
-            // Clear the file input to allow selecting the same file again
-            event.target.value = '';
-        }        // Process JSON data and convert to internal format
-        function processJSONData(data, fileName) {
-            console.log('processJSONData called with:', { data, fileName });
-            const processedQuestions = [];
-            
-            try {
-                // Handle different JSON structures
-                if (Array.isArray(data)) {
-                    // If data is an array of questions
-                    console.log('Data is an array');
-                    data.forEach((item, index) => {
-                        const question = convertToInternalFormat(item, fileName, index);
-                        if (question) {
-                            processedQuestions.push(question);
-                        }
-                    });
-                } else if (typeof data === 'object') {
-                    console.log('Data is an object, checking structure...');
-                    
-                    // Check if it has vong_X structure
-                    const roundKeys = Object.keys(data).filter(key => key.startsWith('vong_'));
-                    if (roundKeys.length > 0) {
-                        console.log('Found round structure:', roundKeys);
-                        roundKeys.forEach(roundKey => {
-                            const roundData = data[roundKey];
-                            console.log(`Processing round: ${roundKey}`, roundData);
-                            
-                            Object.keys(roundData).forEach(categoryKey => {
-                                console.log(`Processing category: ${categoryKey}`);
-                                const categoryData = roundData[categoryKey];
-                                
-                                if (typeof categoryData === 'object') {
-                                    Object.keys(categoryData).forEach(typeKey => {
-                                        console.log(`Processing type: ${typeKey}`);
-                                        const typeData = categoryData[typeKey];
-                                        
-                                        if (Array.isArray(typeData)) {
-                                            typeData.forEach((item, index) => {
-                                                const question = convertToInternalFormat(item, fileName, index, categoryKey, typeKey);
-                                                if (question) {
-                                                    processedQuestions.push(question);
-                                                }
-                                            });
-                                        }
-                                    });
-                                }
-                            });
-                        });
-                    } else {
-                        // Check if it's a nested structure without vong_X wrapper
-                        Object.keys(data).forEach(categoryKey => {
-                            console.log(`Processing category: ${categoryKey}`);
-                            const categoryData = data[categoryKey];
-                            
-                            if (typeof categoryData === 'object') {
-                                Object.keys(categoryData).forEach(typeKey => {
-                                    console.log(`Processing type: ${typeKey}`);
-                                    const typeData = categoryData[typeKey];
-                                    
-                                    if (Array.isArray(typeData)) {
-                                        typeData.forEach((item, index) => {
-                                            const question = convertToInternalFormat(item, fileName, index, categoryKey, typeKey);
-                                            if (question) {
-                                                processedQuestions.push(question);
-                                            }
-                                        });
-                                    }
-                                });
-                            }
-                        });
-                    }
-                }
-                
-                console.log(`Processed ${processedQuestions.length} questions from ${fileName}`);
-                return processedQuestions;
-                  } catch (error) {
-                console.error('Error processing JSON data:', error);
-                throw error;
-            }
-        }
-        
-        // Convert individual question to internal format
-        function convertToInternalFormat(item, fileName, index, categoryKey = null, typeKey = null) {
-            console.log('convertToInternalFormat called with:', { item, fileName, index, categoryKey, typeKey });
-            
-            try {
-                // Map category from JSON keys to UI codes
-                const categoryMapping = {
-                    'chinh_sach_phap_luat': 'CSPL',
-                    'chinh_sach_phap_luat_va_y_te': 'CSPL',
-                    'phong_chay_chua_chay': 'PCCC',
-                    'bao_ve': 'BV',
-                    'khai_thac_mo': 'KTM',
-                    'ly_thuyet_khai_thac_mo': 'KTM',
-                    'boc_xep_van_chuyen': 'BXVC',
-                    'y_te': 'YT'
-                };
-
-                // Map question types
-                const typeMapping = {
-                    'trac_nghiem': 'Trắc nghiệm',
-                    'thuc_hanh': 'Thực hành',
-                    'ly_thuyet': 'Lý thuyết tự luận',
-                    'ly_thuyet_thuc_hanh': 'Lý thuyết tự luận'
-                };                // Determine round from filename
-                let round = '1';
-                if (fileName.includes('vong2')) round = '2';
-                else if (fileName.includes('vong3')) round = '3';
-                
-                // Map category - use from item if available, otherwise from categoryKey
-                let category = 'CSPL'; // default
-                if (item.category) {
-                    // Extract category code from the category field if it contains recognizable text
-                    const categoryText = (item.category || '').toLowerCase();
-                    if (categoryText.includes('chính sách') || categoryText.includes('pháp luật')) category = 'CSPL';
-                    else if (categoryText.includes('phòng cháy') || categoryText.includes('chữa cháy')) category = 'PCCC';
-                    else if (categoryText.includes('bảo vệ')) category = 'BV';
-                    else if (categoryText.includes('khai thác') || categoryText.includes('mỏ')) category = 'KTM';
-                    else if (categoryText.includes('bốc xếp') || categoryText.includes('vận chuyển')) category = 'BXVC';
-                    else if (categoryText.includes('y tế')) category = 'YT';
-                } else if (categoryKey) {
-                    category = categoryMapping[categoryKey] || 'CSPL';
-                }
-                  // Map question type - use from item if available, otherwise from typeKey
-                let questionType = 'Trắc nghiệm'; // default
-                if (item.type_question) {
-                    if (item.type_question.toLowerCase().includes('trắc nghiệm')) questionType = 'Trắc nghiệm';
-                    else if (item.type_question.toLowerCase().includes('thực hành')) questionType = 'Thực hành';
-                    else if (item.type_question.toLowerCase().includes('lý thuyết')) questionType = 'Lý thuyết tự luận';
-                } else if (typeKey) {
-                    questionType = typeMapping[typeKey] || 'Trắc nghiệm';
-                }                const question = {
-                    id: item.id || `${category}_${index + 1}`,
-                    cau_hoi: item.cau_hoi || item.question || '',
-                    type_question: questionType,
-                    category: category,
-                    round: round,
-                    phuong_an: item.phuong_an || item.options || {},
-                    dap_an_dung: item.dap_an_dung || item.correct_answer || '',
-                    use_image: item.use_image || 'No',
-                    image_id: item.image_id || '',
-                    question_image: item.question_image || 'No',
-                    position_image: item.position_image || 'Right',
-                    bg_image: item.bg_image || '',
-                    speech_id_question: item.speech_id_question || '',
-                    speech_id_answer: item.speech_id_answer || '',
-                    speech_id_options_A: item.speech_id_options_A || '',
-                    speech_id_options_B: item.speech_id_options_B || '',
-                    speech_id_options_C: item.speech_id_options_C || '',
-                    speech_id_options_D: item.speech_id_options_D || '',
-                    speech_id_options_E: item.speech_id_options_E || '',
-                    speech_id_options_F: item.speech_id_options_F || '',
-                    speech_id_options_G: item.speech_id_options_G || '',
-                    speech_id_options_H: item.speech_id_options_H || ''
-                };
-
-                console.log('Converted question:', question);
-                return question;
-                  } catch (error) {
-                console.error('Error converting question:', error, item);
-                return null;
-            }
-        }
-        
-        function exportToJSON() {
-            console.log('exportToJSON called');
-            console.log('Current questions:', questions);
-            
-            if (questions.length === 0) {
-                showToast('Không có câu hỏi nào để xuất!', 'error');
-                return;
-            }
-
-            try {
-                // Create a downloadable JSON file
-                const dataStr = JSON.stringify(questions, null, 2);
-                const dataBlob = new Blob([dataStr], { type: 'application/json' });
-                
-                const link = document.createElement('a');
-                link.href = URL.createObjectURL(dataBlob);
-                link.download = `questions_export_${new Date().toISOString().slice(0, 10)}.json`;
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-                
-                showToast(`Đã xuất ${questions.length} câu hỏi thành công!`);
-                console.log('Export completed successfully');
-                
-            } catch (error) {
-                console.error('Error exporting JSON:', error);
-                showToast('Lỗi khi xuất file!', 'error');
-            }
-        }
-
-        // Delete question
-        function deleteQuestion(index) {
-            const question = questions[index];
-            if (confirm(`Bạn có chắc muốn xóa câu hỏi "${question.id}"?`)) {
-                questions.splice(index, 1);
-                saveQuestions();
-                filterAndDisplayQuestions();
-                showToast('Đã xóa câu hỏi thành công!');
-                
-                // Reset form if editing this question
-                if (editingIndex === index) {
-                    clearForm();
-                }
-            }
-        }
-
-        // Add option functionality
-        function addOption() {
-            const options = ['optionE', 'optionF', 'optionG', 'optionH'];
-            const speechOptions = ['speechIdE', 'speechIdF', 'speechIdG', 'speechIdH'];
-            
-            for (let i = 0; i < options.length; i++) {
-                const optionDiv = document.getElementById(options[i]).parentElement;
-                const speechInput = document.getElementById(speechOptions[i]);
-                
-                if (optionDiv.style.display === 'none' || !optionDiv.style.display) {
-                    optionDiv.style.display = 'flex';
-                    speechInput.style.display = 'block';
-                    break;
-                }
-            }
-            
-            // Hide add button if all options are shown
-            const allOptionsVisible = options.every(optionId => {
-                const div = document.getElementById(optionId).parentElement;
-                return div.style.display === 'flex';
-            });
-            
-            if (allOptionsVisible) {
-                document.getElementById('addOptionBtn').style.display = 'none';
-            }
-        }
-        
-        // Update options display based on question data
-        function updateOptionsDisplay(phuongAn) {
-            const allOptions = ['optionA', 'optionB', 'optionC', 'optionD', 'optionE', 'optionF', 'optionG', 'optionH'];
-            const allSpeechOptions = ['speechIdA', 'speechIdB', 'speechIdC', 'speechIdD', 'speechIdE', 'speechIdF', 'speechIdG', 'speechIdH'];
-            const optionKeys = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
-            
-            // First hide all options beyond D
-            for (let i = 4; i < allOptions.length; i++) {
-                const optionDiv = document.getElementById(allOptions[i]).parentElement;
-                const speechInput = document.getElementById(allSpeechOptions[i]);
-                
-                if (phuongAn[optionKeys[i]]) {
-                    optionDiv.style.display = 'flex';
-                    speechInput.style.display = 'block';
-                } else {
-                    optionDiv.style.display = 'none';
-                    speechInput.style.display = 'none';
-                }
-            }
-            
-            // Show/hide add button
-            const visibleOptions = allOptions.filter((optionId, index) => {
-                if (index < 4) return true; // A-D always visible            const div = document.getElementById(optionId).parentElement;
-                return div.style.display === 'flex';
-            });
-            
-            document.getElementById('addOptionBtn').style.display = visibleOptions.length < 8 ? 'block' : 'none';
-        }
-
-        // Initialize the application when DOM is loaded
-        document.addEventListener('DOMContentLoaded', init);
-        
-        // Development mode: Add feature validation
-        if (window.location.search.includes('test=true')) {
-            console.log('🧪 Development mode: Running feature validation...');
-            
-            // Load and run feature validation script
-            const script = document.createElement('script');
-            script.src = 'feature-validation.js';
-            script.onload = () => {
-                setTimeout(() => {
-                    if (typeof window.runFeatureValidation === 'function') {
-                        window.runFeatureValidation();
-                    }
-                }, 1000);
-            };
-            document.head.appendChild(script);
+        function initRoundTabs() {
+            // This will be implemented with the round system
         }
     </script>
 </body>
