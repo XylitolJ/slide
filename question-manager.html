@@ -3,67 +3,93 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quản lý Câu hỏi Hội thi An Toàn Vệ Sinh</title>
+    <title>Quản lý Câu hỏi Hội thi An toàn Vệ sinh Viên Giỏi 2025</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        * {
-            font-family: 'Inter', sans-serif;
+        .smooth-transition {
+            transition: all 0.2s ease;
         }
-        .question-form {
-            max-height: 85vh;
-            overflow-y: auto;
-        }
-        .question-item {
+        
+        /* Tab styles */
+        .tab-button {
+            border-bottom: 3px solid transparent;
             transition: all 0.3s ease;
         }
-        .question-item:hover {
+        .tab-button.active {
+            border-bottom-color: #3b82f6;
+            background-color: rgba(59, 130, 246, 0.1);
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        
+        /* Drag and drop styles */
+        .drag-item {
+            cursor: grab;
+            transition: all 0.2s ease;
+        }
+        .drag-item:active {
+            cursor: grabbing;
+        }
+        .drag-item:hover {
             transform: translateY(-2px);
             box-shadow: 0 4px 12px rgba(0,0,0,0.15);
         }
-        .status-indicator {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            display: inline-block;
-            margin-right: 8px;
+        .drag-over {
+            background-color: #dbeafe;
+            border: 2px dashed #3b82f6;
         }
-        .status-saved {
-            background-color: #10b981;
+        
+        /* Category colors for questions */
+        .category-cspl { border-left: 4px solid #3b82f6; }
+        .category-pccc { border-left: 4px solid #ef4444; }
+        .category-bv { border-left: 4px solid #10b981; }
+        .category-ktm { border-left: 4px solid #f59e0b; }
+        .category-bxvc { border-left: 4px solid #8b5cf6; }
+        
+        /* Question preview styles */
+        .question-preview {
+            max-height: 200px;
+            overflow-y: auto;
         }
-        .status-editing {
-            background-color: #f59e0b;
+        
+        /* Drop zone styles */
+        .drop-zone {
+            min-height: 150px;
+            transition: all 0.3s ease;
         }
-        .category-badge {
-            font-size: 0.75rem;
-            padding: 0.25rem 0.5rem;
-            border-radius: 0.375rem;
-            font-weight: 500;
-        }
-        .smooth-transition {
-            transition: all 0.2s ease;
+        .drop-zone.drag-over {
+            background-color: #f0f9ff;
+            border-color: #3b82f6;
+            transform: scale(1.02);
         }
     </style>
 </head>
 <body class="bg-gray-50">
     <!-- Header -->
-    <div class="bg-gradient-to-r from-blue-600 to-blue-800 text-white shadow-lg">
-        <div class="container mx-auto px-4 py-6">
+    <div class="bg-white shadow-sm border-b">
+        <div class="container mx-auto px-4 py-4">
             <div class="flex items-center justify-between">
                 <div class="flex items-center">
-                    <i class="fas fa-hard-hat text-3xl mr-4"></i>
+                    <i class="fas fa-hard-hat text-3xl mr-4 text-blue-600"></i>
                     <div>
-                        <h1 class="text-2xl font-bold">Quản lý Câu hỏi Hội thi</h1>
-                        <p class="text-blue-100">An Toàn Vệ Sinh Viên Giỏi 2025</p>
+                        <h1 class="text-2xl font-bold text-gray-800">Quản lý Câu hỏi Hội thi</h1>
+                        <p class="text-gray-600">An Toàn Vệ Sinh Viên Giỏi 2025</p>
                     </div>
                 </div>
                 <div class="flex items-center space-x-4">
                     <div class="text-right">
-                        <div class="text-sm text-blue-100">Tổng câu hỏi</div>
-                        <div id="totalQuestions" class="text-xl font-bold">0</div>
+                        <div class="text-sm text-gray-500">Tổng câu hỏi</div>
+                        <div id="totalQuestions" class="text-xl font-bold text-blue-600">0</div>
                     </div>
-                    <button id="exportAllBtn" class="bg-green-600 hover:bg-green-700 px-4 py-2 rounded-lg smooth-transition">
+                    <button id="loadDataBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg smooth-transition">
+                        <i class="fas fa-upload mr-2"></i>Tải dữ liệu
+                    </button>
+                    <button id="exportAllBtn" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg smooth-transition">
                         <i class="fas fa-download mr-2"></i>Xuất tất cả
                     </button>
                 </div>
@@ -71,199 +97,314 @@
         </div>
     </div>
 
-    <div class="container mx-auto px-4 py-8">
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <!-- Form thêm/sửa câu hỏi -->
-            <div class="lg:col-span-1">
-                <div class="bg-white rounded-lg shadow-lg question-form">
-                    <div class="bg-gray-50 px-6 py-4 border-b border-gray-200">
-                        <h2 class="text-xl font-semibold text-gray-800 flex items-center">
-                            <span id="formModeIndicator" class="status-indicator status-saved"></span>
-                            <span id="formTitle">Thêm câu hỏi mới</span>
-                        </h2>
-                    </div>
-                    
-                    <div class="p-6">
-                        <form id="questionForm">
-                            <!-- ID và Loại câu hỏi -->
-                            <div class="grid grid-cols-1 gap-4 mb-4">
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">
-                                        <i class="fas fa-tag mr-1"></i>ID Câu hỏi:
-                                    </label>
-                                    <input type="text" id="questionId" 
-                                           class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
-                                           placeholder="VD: CSPL_TN_1" required>
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">
-                                        <i class="fas fa-list mr-1"></i>Loại câu hỏi:
-                                    </label>
-                                    <select id="questionType" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                                        <option value="Trắc nghiệm">Trắc nghiệm</option>
-                                        <option value="Thực hành">Thực hành</option>
-                                        <option value="Lý thuyết tự luận">Lý thuyết tự luận</option>
-                                    </select>
-                                </div>
-                            </div>
-                            
-                            <!-- Nội dung câu hỏi -->
-                            <div class="mb-4">
-                                <label class="block text-sm font-medium text-gray-700 mb-2">
-                                    <i class="fas fa-question-circle mr-1"></i>Nội dung câu hỏi:
-                                </label>
-                                <textarea id="questionContent" rows="3" 
-                                          class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
-                                          placeholder="Nhập nội dung câu hỏi..." required></textarea>
-                            </div>
-                            
-                            <!-- Phương án trả lời -->
-                            <div class="mb-4">
-                                <label class="block text-sm font-medium text-gray-700 mb-2">
-                                    <i class="fas fa-list-ul mr-1"></i>Các phương án trả lời:
-                                </label>
-                                <div class="space-y-2">
-                                    <div class="flex items-center space-x-2">
-                                        <span class="w-6 h-6 bg-blue-500 text-white rounded-full flex items-center justify-center text-sm font-medium">A</span>
-                                        <input type="text" id="optionA" placeholder="Phương án A" 
-                                               class="flex-1 border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+    <!-- Tab Navigation -->
+    <div class="bg-white border-b">
+        <div class="container mx-auto px-4">
+            <nav class="flex space-x-8">
+                <button class="tab-button active px-4 py-3 text-blue-600 font-medium" data-tab="edit">
+                    <i class="fas fa-edit mr-2"></i>Chỉnh sửa câu hỏi
+                </button>
+                <button class="tab-button px-4 py-3 text-gray-600 font-medium hover:text-blue-600" data-tab="compose">
+                    <i class="fas fa-layer-group mr-2"></i>Tạo bộ câu hỏi
+                </button>
+            </nav>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container mx-auto px-4 py-6">
+        <!-- Tab 1: Edit Questions -->
+        <div id="editTab" class="tab-content active">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Question Form -->
+                <div class="lg:col-span-1">
+                    <div class="bg-white rounded-lg shadow-lg">
+                        <div class="px-6 py-4 border-b border-gray-200">
+                            <h2 class="text-xl font-semibold text-gray-800">
+                                <span id="formTitle">Thêm câu hỏi mới</span>
+                            </h2>
+                        </div>
+                        
+                        <div class="p-6">
+                            <form id="questionForm">
+                                <!-- ID và Loại câu hỏi -->
+                                <div class="grid grid-cols-1 gap-4 mb-4">
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                                            <i class="fas fa-tag mr-1"></i>ID Câu hỏi:
+                                        </label>
+                                        <input type="text" id="questionId" 
+                                               class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
+                                               placeholder="VD: CSPL_TN_1" required>
                                     </div>
-                                    <div class="flex items-center space-x-2">
-                                        <span class="w-6 h-6 bg-green-500 text-white rounded-full flex items-center justify-center text-sm font-medium">B</span>
-                                        <input type="text" id="optionB" placeholder="Phương án B" 
-                                               class="flex-1 border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                                    </div>
-                                    <div class="flex items-center space-x-2">
-                                        <span class="w-6 h-6 bg-yellow-500 text-white rounded-full flex items-center justify-center text-sm font-medium">C</span>
-                                        <input type="text" id="optionC" placeholder="Phương án C" 
-                                               class="flex-1 border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                                    </div>
-                                    <div class="flex items-center space-x-2">
-                                        <span class="w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center text-sm font-medium">D</span>
-                                        <input type="text" id="optionD" placeholder="Phương án D" 
-                                               class="flex-1 border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                                            <i class="fas fa-list mr-1"></i>Loại câu hỏi:
+                                        </label>
+                                        <select id="questionType" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                            <option value="Trắc nghiệm">Trắc nghiệm</option>
+                                            <option value="Thực hành">Thực hành</option>
+                                            <option value="Lý thuyết tự luận">Lý thuyết tự luận</option>
+                                        </select>
                                     </div>
                                 </div>
-                            </div>
-                            
-                            <!-- Cài đặt câu hỏi -->
-                            <div class="grid grid-cols-1 gap-4 mb-6">
-                                <div>
+                                
+                                <!-- Nội dung câu hỏi -->
+                                <div class="mb-4">
                                     <label class="block text-sm font-medium text-gray-700 mb-2">
-                                        <i class="fas fa-check-circle mr-1"></i>Đáp án đúng:
+                                        <i class="fas fa-question-circle mr-1"></i>Nội dung câu hỏi:
                                     </label>
-                                    <select id="correctAnswer" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                                        <option value="a">A</option>
-                                        <option value="b">B</option>
-                                        <option value="c">C</option>
-                                        <option value="d">D</option>
-                                    </select>
+                                    <textarea id="questionContent" rows="3" 
+                                              class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
+                                              placeholder="Nhập nội dung câu hỏi..." required></textarea>
                                 </div>
-                                <div>
+                                
+                                <!-- Phương án trả lời -->
+                                <div class="mb-4">
                                     <label class="block text-sm font-medium text-gray-700 mb-2">
-                                        <i class="fas fa-clock mr-1"></i>Thời gian (giây):
+                                        <i class="fas fa-list-ul mr-1"></i>Các phương án trả lời:
                                     </label>
-                                    <input type="number" id="timeLimit" value="30" min="10" max="300" 
-                                           class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">
-                                        <i class="fas fa-folder mr-1"></i>Danh mục:
-                                    </label>
-                                    <select id="category" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                                        <option value="CSPL_YT">Chính sách pháp luật & Y tế</option>
-                                        <option value="PCCC">Phòng cháy chữa cháy</option>
-                                        <option value="BV">Bảo vệ</option>
-                                        <option value="KTM">Khai thác mỏ</option>
-                                        <option value="BXVC">Bốc xếp vận chuyển</option>
-                                    </select>
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">
-                                        <i class="fas fa-layer-group mr-1"></i>Vòng thi:
-                                    </label>
-                                    <select id="round" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                                        <option value="1">Vòng 1</option>
-                                        <option value="2">Vòng 2</option>
-                                        <option value="3">Vòng 3</option>
-                                    </select>
-                                </div>
-                            </div>
-                            
-                            <!-- Tùy chọn bổ sung -->
-                            <div class="mb-6 p-4 bg-gray-50 rounded-lg">
-                                <h3 class="text-sm font-medium text-gray-700 mb-3">
-                                    <i class="fas fa-cog mr-1"></i>Tùy chọn bổ sung:
-                                </h3>
-                                <div class="space-y-3">
-                                    <div class="flex items-center">
-                                        <input type="checkbox" id="useImage" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
-                                        <label for="useImage" class="ml-2 text-sm text-gray-700">Có hình ảnh minh họa</label>
-                                    </div>
-                                    <div id="imageIdSection" class="hidden">
-                                        <input type="text" id="imageId" placeholder="Tên file hình ảnh (VD: image1.jpg)" 
-                                               class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                    <div class="space-y-2">
+                                        <div class="flex items-center space-x-2">
+                                            <span class="w-6 h-6 bg-blue-500 text-white rounded-full flex items-center justify-center text-sm font-medium">A</span>
+                                            <input type="text" id="optionA" placeholder="Phương án A" 
+                                                   class="flex-1 border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                        </div>
+                                        <div class="flex items-center space-x-2">
+                                            <span class="w-6 h-6 bg-green-500 text-white rounded-full flex items-center justify-center text-sm font-medium">B</span>
+                                            <input type="text" id="optionB" placeholder="Phương án B" 
+                                                   class="flex-1 border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                        </div>
+                                        <div class="flex items-center space-x-2">
+                                            <span class="w-6 h-6 bg-yellow-500 text-white rounded-full flex items-center justify-center text-sm font-medium">C</span>
+                                            <input type="text" id="optionC" placeholder="Phương án C" 
+                                                   class="flex-1 border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                        </div>
+                                        <div class="flex items-center space-x-2">
+                                            <span class="w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center text-sm font-medium">D</span>
+                                            <input type="text" id="optionD" placeholder="Phương án D" 
+                                                   class="flex-1 border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                            
-                            <!-- Buttons -->
-                            <div class="flex space-x-3">
-                                <button type="submit" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg smooth-transition">
-                                    <i class="fas fa-save mr-2"></i>
-                                    <span id="submitBtnText">Lưu câu hỏi</span>
-                                </button>
-                                <button type="button" id="clearForm" class="bg-gray-500 hover:bg-gray-600 text-white py-2 px-4 rounded-lg smooth-transition">
-                                    <i class="fas fa-times mr-2"></i>Hủy
-                                </button>
-                            </div>
-                        </form>
+                                
+                                <!-- Cài đặt câu hỏi -->
+                                <div class="grid grid-cols-1 gap-4 mb-6">
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                                            <i class="fas fa-check-circle mr-1"></i>Đáp án đúng:
+                                        </label>
+                                        <select id="correctAnswer" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                            <option value="a">A</option>
+                                            <option value="b">B</option>
+                                            <option value="c">C</option>
+                                            <option value="d">D</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                                            <i class="fas fa-clock mr-1"></i>Thời gian (giây):
+                                        </label>
+                                        <input type="number" id="timeLimit" value="30" min="10" max="300" 
+                                               class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                                            <i class="fas fa-folder mr-1"></i>Danh mục:
+                                        </label>                                        <select id="category" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                            <option value="CSPL">Chính sách pháp luật</option>
+                                            <option value="PCCC">Phòng cháy chữa cháy</option>
+                                            <option value="BV">Bảo vệ</option>
+                                            <option value="KTM">Khai thác mỏ</option>
+                                            <option value="BXVC">Bốc xếp vận chuyển</option>
+                                            <option value="YT">Y tế</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                                            <i class="fas fa-layer-group mr-1"></i>Vòng thi:
+                                        </label>
+                                        <select id="round" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                            <option value="1">Vòng 1</option>
+                                            <option value="2">Vòng 2</option>
+                                            <option value="3">Vòng 3</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                
+                                <!-- Tùy chọn bổ sung -->
+                                <div class="mb-6 p-4 bg-gray-50 rounded-lg">
+                                    <h3 class="text-sm font-medium text-gray-700 mb-3">
+                                        <i class="fas fa-cog mr-1"></i>Tùy chọn bổ sung:
+                                    </h3>
+                                    <div class="space-y-3">
+                                        <div class="flex items-center">
+                                            <input type="checkbox" id="useImage" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                                            <label for="useImage" class="ml-2 text-sm text-gray-700">Có hình ảnh minh họa</label>
+                                        </div>
+                                        <div id="imageIdSection" class="hidden">
+                                            <input type="text" id="imageId" placeholder="Tên file hình ảnh (VD: image1.jpg)" 
+                                                   class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Buttons -->
+                                <div class="flex space-x-3">
+                                    <button type="submit" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg smooth-transition">
+                                        <i class="fas fa-save mr-2"></i>
+                                        <span id="submitBtnText">Lưu câu hỏi</span>
+                                    </button>
+                                    <button type="button" id="clearForm" class="bg-gray-500 hover:bg-gray-600 text-white py-2 px-4 rounded-lg smooth-transition">
+                                        <i class="fas fa-times mr-2"></i>Hủy
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
                     </div>
                 </div>
-            </div>
-            
-            <!-- Danh sách câu hỏi -->
-            <div class="lg:col-span-2">
-                <div class="bg-white rounded-lg shadow-lg">
-                    <div class="bg-gray-50 px-6 py-4 border-b border-gray-200">
-                        <div class="flex items-center justify-between">
-                            <h2 class="text-xl font-semibold text-gray-800">
-                                <i class="fas fa-list mr-2"></i>Danh sách Câu hỏi
-                            </h2>
-                            <div class="flex items-center space-x-4">
-                                <!-- Filter -->
-                                <div class="flex items-center space-x-2">
-                                    <select id="filterCategory" class="border border-gray-300 rounded-lg px-3 py-1 text-sm">
-                                        <option value="">Tất cả danh mục</option>
-                                        <option value="CSPL_YT">Chính sách pháp luật & Y tế</option>
-                                        <option value="PCCC">Phòng cháy chữa cháy</option>
-                                        <option value="BV">Bảo vệ</option>
-                                        <option value="KTM">Khai thác mỏ</option>
-                                        <option value="BXVC">Bốc xếp vận chuyển</option>
-                                    </select>
-                                    <select id="filterRound" class="border border-gray-300 rounded-lg px-3 py-1 text-sm">
-                                        <option value="">Tất cả vòng</option>
-                                        <option value="1">Vòng 1</option>
-                                        <option value="2">Vòng 2</option>
-                                        <option value="3">Vòng 3</option>
-                                    </select>
+                
+                <!-- Questions List -->
+                <div class="lg:col-span-2">
+                    <div class="bg-white rounded-lg shadow-lg">
+                        <div class="px-6 py-4 border-b border-gray-200">
+                            <div class="flex items-center justify-between">
+                                <h2 class="text-xl font-semibold text-gray-800">
+                                    <i class="fas fa-list mr-2"></i>Danh sách Câu hỏi
+                                </h2>
+                                <div class="flex items-center space-x-4">
+                                    <!-- Filter -->
+                                    <div class="flex items-center space-x-2">                                        <select id="filterCategory" class="border border-gray-300 rounded-lg px-3 py-1 text-sm">
+                                            <option value="">Tất cả danh mục</option>
+                                            <option value="CSPL">Chính sách pháp luật</option>
+                                            <option value="PCCC">Phòng cháy chữa cháy</option>
+                                            <option value="BV">Bảo vệ</option>
+                                            <option value="KTM">Khai thác mỏ</option>
+                                            <option value="BXVC">Bốc xếp vận chuyển</option>
+                                            <option value="YT">Y tế</option>
+                                        </select>
+                                        <select id="filterRound" class="border border-gray-300 rounded-lg px-3 py-1 text-sm">
+                                            <option value="">Tất cả vòng</option>
+                                            <option value="1">Vòng 1</option>
+                                            <option value="2">Vòng 2</option>
+                                            <option value="3">Vòng 3</option>
+                                        </select>
+                                    </div>
+                                    <!-- Search -->
+                                    <div class="relative">
+                                        <input type="text" id="searchQuestions" placeholder="Tìm kiếm câu hỏi..." 
+                                               class="border border-gray-300 rounded-lg px-3 py-1 pl-8 text-sm w-64">
+                                        <i class="fas fa-search absolute left-3 top-2 text-gray-400 text-sm"></i>
+                                    </div>
                                 </div>
-                                <!-- Search -->
-                                <div class="relative">
-                                    <input type="text" id="searchQuestions" placeholder="Tìm kiếm câu hỏi..." 
-                                           class="border border-gray-300 rounded-lg px-3 py-1 pl-8 text-sm w-64">
-                                    <i class="fas fa-search absolute left-3 top-2 text-gray-400 text-sm"></i>
+                            </div>
+                        </div>
+                        
+                        <div class="p-6">
+                            <div id="questionsList" class="space-y-4">
+                                <!-- Questions will be displayed here -->
+                                <div class="text-center text-gray-500 py-8">
+                                    <i class="fas fa-question-circle text-4xl mb-4 opacity-50"></i>
+                                    <p>Chưa có câu hỏi nào. Hãy thêm câu hỏi đầu tiên!</p>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    
-                    <div class="p-6">
-                        <div id="questionsList" class="space-y-4">
-                            <!-- Câu hỏi sẽ được hiển thị ở đây -->
-                            <div class="text-center text-gray-500 py-8">
-                                <i class="fas fa-question-circle text-4xl mb-4 opacity-50"></i>
-                                <p>Chưa có câu hỏi nào. Hãy thêm câu hỏi đầu tiên!</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab 2: Compose Question Sets -->
+        <div id="composeTab" class="tab-content">
+            <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+                <!-- Available Questions -->
+                <div class="lg:col-span-1">
+                    <div class="bg-white rounded-lg shadow-lg">
+                        <div class="px-6 py-4 border-b border-gray-200">
+                            <h2 class="text-xl font-semibold text-gray-800">
+                                <i class="fas fa-database mr-2"></i>Câu hỏi có sẵn
+                            </h2>
+                        </div>
+                        
+                        <div class="p-4">
+                            <!-- Quick filters -->
+                            <div class="space-y-2 mb-4">
+                                <select id="composeFilterRound" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm">
+                                    <option value="">Tất cả vòng</option>
+                                    <option value="1">Vòng 1</option>
+                                    <option value="2">Vòng 2</option>
+                                    <option value="3">Vòng 3</option>
+                                </select>                                <select id="composeFilterCategory" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm">
+                                    <option value="">Tất cả danh mục</option>
+                                    <option value="CSPL">Chính sách pháp luật</option>
+                                    <option value="PCCC">Phòng cháy chữa cháy</option>
+                                    <option value="BV">Bảo vệ</option>
+                                    <option value="KTM">Khai thác mỏ</option>
+                                    <option value="BXVC">Bốc xếp vận chuyển</option>
+                                    <option value="YT">Y tế</option>
+                                </select>
+                                <input type="text" id="composeSearch" placeholder="Tìm kiếm..." 
+                                       class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm">
+                            </div>
+                            
+                            <div id="availableQuestions" class="space-y-2 max-h-96 overflow-y-auto">
+                                <!-- Available questions will be displayed here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Question Set Builder -->
+                <div class="lg:col-span-3">
+                    <div class="bg-white rounded-lg shadow-lg">
+                        <div class="px-6 py-4 border-b border-gray-200">
+                            <div class="flex items-center justify-between">
+                                <h2 class="text-xl font-semibold text-gray-800">
+                                    <i class="fas fa-layer-group mr-2"></i>Tạo bộ câu hỏi
+                                </h2>
+                                <div class="flex space-x-2">
+                                    <button id="saveQuestionSet" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg smooth-transition">
+                                        <i class="fas fa-save mr-2"></i>Lưu bộ đề
+                                    </button>
+                                    <button id="clearQuestionSet" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg smooth-transition">
+                                        <i class="fas fa-trash mr-2"></i>Xóa tất cả
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="p-6">
+                            <!-- Round containers -->
+                            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                                <!-- Vòng 1 -->
+                                <div class="border-2 border-dashed border-gray-300 rounded-lg p-4 drop-zone" data-round="1">
+                                    <h3 class="text-lg font-semibold text-center mb-4 text-blue-600">
+                                        <i class="fas fa-trophy mr-2"></i>Vòng 1
+                                    </h3>
+                                    <div id="round1Questions" class="space-y-2 min-h-32">
+                                        <p class="text-center text-gray-500 text-sm">Kéo thả câu hỏi vào đây</p>
+                                    </div>
+                                </div>
+                                
+                                <!-- Vòng 2 -->
+                                <div class="border-2 border-dashed border-gray-300 rounded-lg p-4 drop-zone" data-round="2">
+                                    <h3 class="text-lg font-semibold text-center mb-4 text-green-600">
+                                        <i class="fas fa-medal mr-2"></i>Vòng 2
+                                    </h3>
+                                    <div id="round2Questions" class="space-y-2 min-h-32">
+                                        <p class="text-center text-gray-500 text-sm">Kéo thả câu hỏi vào đây</p>
+                                    </div>
+                                </div>
+                                
+                                <!-- Vòng 3 -->
+                                <div class="border-2 border-dashed border-gray-300 rounded-lg p-4 drop-zone" data-round="3">
+                                    <h3 class="text-lg font-semibold text-center mb-4 text-yellow-600">
+                                        <i class="fas fa-crown mr-2"></i>Vòng 3
+                                    </h3>
+                                    <div id="round3Questions" class="space-y-2 min-h-32">
+                                        <p class="text-center text-gray-500 text-sm">Kéo thả câu hỏi vào đây</p>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -272,37 +413,108 @@
         </div>
     </div>
 
-    <!-- Toast notification -->
-    <div id="toast" class="fixed top-4 right-4 bg-green-600 text-white px-6 py-3 rounded-lg shadow-lg transform translate-x-full transition-transform duration-300 z-50">
-        <div class="flex items-center">
-            <i class="fas fa-check-circle mr-2"></i>
-            <span id="toastMessage">Thành công!</span>
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed top-4 right-4 z-50 transform translate-x-full transition-transform duration-300">
+        <div class="bg-green-600 text-white px-6 py-3 rounded-lg shadow-lg">
+            <div class="flex items-center">
+                <i class="fas fa-check-circle mr-2"></i>
+                <span id="toastMessage">Thành công!</span>
+            </div>
         </div>
     </div>
+
+    <!-- File Input (Hidden) -->
+    <input type="file" id="fileInput" accept=".json" multiple style="display: none;">
 
     <script>
+        // Global variables
         let questions = [];
+        let questionSets = {};
         let editingIndex = -1;
         let filteredQuestions = [];
-
-        // Categories mapping
+        let currentDraggedQuestion = null;        // Categories mapping
         const categoryLabels = {
-            'CSPL_YT': 'Chính sách pháp luật & Y tế',
+            'CSPL': 'Chính sách pháp luật',
             'PCCC': 'Phòng cháy chữa cháy',
             'BV': 'Bảo vệ',
             'KTM': 'Khai thác mỏ',
-            'BXVC': 'Bốc xếp vận chuyển'
+            'BXVC': 'Bốc xếp vận chuyển',
+            'YT': 'Y tế'
         };
 
         const categoryColors = {
-            'CSPL_YT': 'bg-blue-100 text-blue-800',
+            'CSPL': 'bg-blue-100 text-blue-800',
             'PCCC': 'bg-red-100 text-red-800',
             'BV': 'bg-green-100 text-green-800',
             'KTM': 'bg-yellow-100 text-yellow-800',
-            'BXVC': 'bg-purple-100 text-purple-800'
-        };
+            'BXVC': 'bg-purple-100 text-purple-800',
+            'YT': 'bg-pink-100 text-pink-800'
+        };        // Initialize the application
+        function init() {
+            setupEventListeners();
+            loadQuestions();
+            updateTotalCount();
+            // Trigger initial form state setup
+            handleQuestionTypeChange();
+        }// Setup event listeners
+        function setupEventListeners() {
+            // Tab switching
+            document.querySelectorAll('.tab-button').forEach(button => {
+                button.addEventListener('click', () => switchTab(button.dataset.tab));
+            });
 
-        // Load existing questions from localStorage
+            // Form submission
+            document.getElementById('questionForm').addEventListener('submit', handleFormSubmit);
+            document.getElementById('clearForm').addEventListener('click', clearForm);
+            document.getElementById('useImage').addEventListener('change', toggleImageSection);
+            document.getElementById('questionType').addEventListener('change', handleQuestionTypeChange);
+
+            // Filter and search
+            document.getElementById('filterCategory').addEventListener('change', filterAndDisplayQuestions);
+            document.getElementById('filterRound').addEventListener('change', filterAndDisplayQuestions);
+            document.getElementById('searchQuestions').addEventListener('input', filterAndDisplayQuestions);
+
+            // Compose tab filters
+            document.getElementById('composeFilterRound').addEventListener('change', filterAvailableQuestions);
+            document.getElementById('composeFilterCategory').addEventListener('change', filterAvailableQuestions);
+            document.getElementById('composeSearch').addEventListener('input', filterAvailableQuestions);
+
+            // File operations
+            document.getElementById('loadDataBtn').addEventListener('click', () => document.getElementById('fileInput').click());
+            document.getElementById('fileInput').addEventListener('change', handleFileLoad);
+            document.getElementById('exportAllBtn').addEventListener('click', exportToJSON);
+
+            // Question set operations
+            document.getElementById('saveQuestionSet').addEventListener('click', saveQuestionSet);
+            document.getElementById('clearQuestionSet').addEventListener('click', clearQuestionSet);
+
+            // Setup drag and drop
+            setupDragAndDrop();
+        }
+
+        // Tab switching
+        function switchTab(tabName) {
+            // Update tab buttons
+            document.querySelectorAll('.tab-button').forEach(btn => {
+                btn.classList.remove('active', 'text-blue-600');
+                btn.classList.add('text-gray-600');
+            });
+            document.querySelector(`[data-tab="${tabName}"]`).classList.add('active', 'text-blue-600');
+
+            // Update tab content
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            document.getElementById(tabName === 'edit' ? 'editTab' : 'composeTab').classList.add('active');
+
+            // Refresh compose tab content if switching to it
+            if (tabName === 'compose') {
+                filterAvailableQuestions();
+                displayQuestionSets();
+            }
+        }
+
+        // Load questions from localStorage
         function loadQuestions() {
             const saved = localStorage.getItem('hoi_thi_questions');
             if (saved) {
@@ -330,10 +542,11 @@
             
             toastMessage.textContent = message;
             
+            const toastDiv = toast.firstElementChild;
             if (type === 'success') {
-                toast.className = 'fixed top-4 right-4 bg-green-600 text-white px-6 py-3 rounded-lg shadow-lg transform transition-transform duration-300 z-50';
+                toastDiv.className = 'bg-green-600 text-white px-6 py-3 rounded-lg shadow-lg';
             } else if (type === 'error') {
-                toast.className = 'fixed top-4 right-4 bg-red-600 text-white px-6 py-3 rounded-lg shadow-lg transform transition-transform duration-300 z-50';
+                toastDiv.className = 'bg-red-600 text-white px-6 py-3 rounded-lg shadow-lg';
             }
             
             toast.style.transform = 'translateX(0)';
@@ -343,91 +556,8 @@
             }, 3000);
         }
 
-        // Filter and display questions
-        function filterAndDisplayQuestions() {
-            const categoryFilter = document.getElementById('filterCategory').value;
-            const roundFilter = document.getElementById('filterRound').value;
-            const searchTerm = document.getElementById('searchQuestions').value.toLowerCase();
-            
-            filteredQuestions = questions.filter(q => {
-                const matchCategory = !categoryFilter || q.category === categoryFilter;
-                const matchRound = !roundFilter || q.round === roundFilter;
-                const matchSearch = !searchTerm || 
-                    q.cau_hoi.toLowerCase().includes(searchTerm) || 
-                    q.id.toLowerCase().includes(searchTerm);
-                
-                return matchCategory && matchRound && matchSearch;
-            });
-            
-            displayQuestions();
-        }
-
-        // Display questions list
-        function displayQuestions() {
-            const list = document.getElementById('questionsList');
-            
-            if (filteredQuestions.length === 0) {
-                list.innerHTML = `
-                    <div class="text-center text-gray-500 py-8">
-                        <i class="fas fa-search text-4xl mb-4 opacity-50"></i>
-                        <p>Không tìm thấy câu hỏi nào phù hợp với bộ lọc.</p>
-                    </div>
-                `;
-                return;
-            }
-            
-            list.innerHTML = '';
-            
-            filteredQuestions.forEach((q, index) => {
-                const originalIndex = questions.indexOf(q);
-                const div = document.createElement('div');
-                div.className = 'question-item border border-gray-200 rounded-lg p-4 hover:shadow-md smooth-transition';
-                
-                const categoryLabel = categoryLabels[q.category] || q.category;
-                const categoryColor = categoryColors[q.category] || 'bg-gray-100 text-gray-800';
-                
-                div.innerHTML = `
-                    <div class="flex justify-between items-start">
-                        <div class="flex-1">
-                            <div class="flex items-center mb-2">
-                                <span class="font-semibold text-lg text-gray-800 mr-3">${q.id}</span>
-                                <span class="category-badge ${categoryColor}">${categoryLabel}</span>
-                                <span class="ml-2 text-xs bg-gray-200 text-gray-600 px-2 py-1 rounded">Vòng ${q.round}</span>
-                            </div>
-                            <p class="text-gray-700 mb-3 leading-relaxed">${q.cau_hoi}</p>
-                            <div class="grid grid-cols-2 gap-2 text-sm">
-                                ${Object.entries(q.phuong_an).map(([key, value]) => 
-                                    `<div class="flex items-center ${q.dap_an_dung === key ? 'text-green-600 font-medium' : 'text-gray-600'}">
-                                        <span class="w-5 h-5 rounded-full text-xs flex items-center justify-center mr-2 ${
-                                            q.dap_an_dung === key ? 'bg-green-100 text-green-600' : 'bg-gray-100 text-gray-600'
-                                        }">${key.toUpperCase()}</span>
-                                        ${value}
-                                    </div>`
-                                ).join('')}
-                            </div>
-                            <div class="mt-3 text-xs text-gray-500">
-                                <i class="fas fa-clock mr-1"></i>Thời gian: ${q.thoi_gian_tra_loi}s
-                                ${q.use_image === 'Yes' ? '<i class="fas fa-image ml-3 mr-1"></i>Có hình ảnh' : ''}
-                            </div>
-                        </div>
-                        <div class="flex space-x-2 ml-4">
-                            <button onclick="editQuestion(${originalIndex})" 
-                                    class="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded text-sm smooth-transition">
-                                <i class="fas fa-edit mr-1"></i>Sửa
-                            </button>
-                            <button onclick="deleteQuestion(${originalIndex})" 
-                                    class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm smooth-transition">
-                                <i class="fas fa-trash mr-1"></i>Xóa
-                            </button>
-                        </div>
-                    </div>
-                `;
-                list.appendChild(div);
-            });
-        }
-
-        // Add or update question
-        document.getElementById('questionForm').addEventListener('submit', function(e) {
+        // Handle form submission
+        function handleFormSubmit(e) {
             e.preventDefault();
             
             const question = {
@@ -453,28 +583,8 @@
                     question.phuong_an[optionKeys[index]] = value;
                 }
             });
-            
-            // Validation
-            if (!question.id || !question.cau_hoi) {
-                showToast('Vui lòng nhập đầy đủ ID câu hỏi và nội dung!', 'error');
-                return;
-            }
-            
-            if (Object.keys(question.phuong_an).length < 2) {
-                showToast('Vui lòng nhập ít nhất 2 phương án trả lời!', 'error');
-                return;
-            }
-            
-            // Check if answer key exists in options
-            if (!question.phuong_an[question.dap_an_dung]) {
-                showToast('Đáp án đúng phải có nội dung phương án tương ứng!', 'error');
-                return;
-            }
-            
-            // Check duplicate ID (except when editing)
-            const existingIndex = questions.findIndex(q => q.id === question.id);
-            if (existingIndex !== -1 && existingIndex !== editingIndex) {
-                showToast('ID câu hỏi đã tồn tại!', 'error');
+              // Use enhanced validation
+            if (!validateQuestionForm(question)) {
                 return;
             }
             
@@ -491,20 +601,17 @@
             saveQuestions();
             filterAndDisplayQuestions();
             clearForm();
-        });
+        }
 
         // Set form mode (add/edit)
         function setFormMode(mode) {
-            const indicator = document.getElementById('formModeIndicator');
             const title = document.getElementById('formTitle');
             const submitBtn = document.getElementById('submitBtnText');
             
             if (mode === 'edit') {
-                indicator.className = 'status-indicator status-editing';
                 title.textContent = 'Chỉnh sửa câu hỏi';
                 submitBtn.textContent = 'Cập nhật';
             } else {
-                indicator.className = 'status-indicator status-saved';
                 title.textContent = 'Thêm câu hỏi mới';
                 submitBtn.textContent = 'Lưu câu hỏi';
             }
@@ -533,8 +640,267 @@
             // Show/hide image section
             toggleImageSection();
             
+            // Trigger form updates based on question type
+            handleQuestionTypeChange();
+            
             // Scroll to form
-            document.querySelector('.question-form').scrollIntoView({ behavior: 'smooth' });
+            document.getElementById('questionForm').scrollIntoView({ behavior: 'smooth' });        }
+
+        // Clear form
+        function clearForm() {
+            document.getElementById('questionForm').reset();
+            document.getElementById('timeLimit').value = 30;
+            editingIndex = -1;
+            setFormMode('add');
+            toggleImageSection();
+            handleQuestionTypeChange(); // Reset form fields based on question type
+        }
+
+        // Toggle image section
+        function toggleImageSection() {
+            const useImage = document.getElementById('useImage').checked;
+            const imageSection = document.getElementById('imageIdSection');
+            
+            if (useImage) {
+                imageSection.classList.remove('hidden');
+            } else {
+                imageSection.classList.add('hidden');
+                document.getElementById('imageId').value = '';
+            }
+        }
+
+        // Handle question type change to show/hide relevant fields
+        function handleQuestionTypeChange() {
+            const questionType = document.getElementById('questionType').value;
+            const optionsSection = document.querySelector('.mb-4:has(#optionA)'); // The "Phương án trả lời" section
+            const correctAnswerDiv = document.querySelector('div:has(#correctAnswer)'); // The "Đáp án đúng" section
+            
+            // Get all option input elements and correct answer select
+            const optionInputs = ['optionA', 'optionB', 'optionC', 'optionD'];
+            const correctAnswerSelect = document.getElementById('correctAnswer');
+            
+            if (questionType === 'Thực hành' || questionType === 'Lý thuyết tự luận') {
+                // Hide multiple choice sections for practical and theory questions
+                if (optionsSection) {
+                    optionsSection.style.display = 'none';
+                }
+                if (correctAnswerDiv) {
+                    correctAnswerDiv.style.display = 'none';
+                }
+                
+                // Clear option values when hidden to avoid validation issues
+                optionInputs.forEach(optionId => {
+                    const input = document.getElementById(optionId);
+                    if (input) {
+                        input.value = '';
+                        input.removeAttribute('required');
+                    }
+                });
+                
+                // Clear correct answer selection
+                if (correctAnswerSelect) {
+                    correctAnswerSelect.value = 'a'; // Reset to default
+                }
+                
+            } else {
+                // Show multiple choice sections for multiple choice questions
+                if (optionsSection) {
+                    optionsSection.style.display = 'block';
+                }
+                if (correctAnswerDiv) {
+                    correctAnswerDiv.style.display = 'block';
+                }
+                
+                // Restore required attribute for option A and B (minimum required)
+                const optionA = document.getElementById('optionA');
+                const optionB = document.getElementById('optionB');
+                if (optionA) optionA.setAttribute('required', '');
+                if (optionB) optionB.setAttribute('required', '');
+            }
+            
+            // Update placeholder text and time limit based on question type
+            const questionContent = document.getElementById('questionContent');
+            const timeLimit = document.getElementById('timeLimit');
+            
+            if (questionContent) {
+                switch (questionType) {
+                    case 'Trắc nghiệm':
+                        questionContent.placeholder = 'Nhập nội dung câu hỏi trắc nghiệm...';
+                        if (timeLimit) timeLimit.value = 30;
+                        break;
+                    case 'Thực hành':
+                        questionContent.placeholder = 'Nhập nội dung câu hỏi thực hành...';
+                        if (timeLimit) timeLimit.value = 300; // 5 minutes for practical questions
+                        break;
+                    case 'Lý thuyết tự luận':
+                        questionContent.placeholder = 'Nhập nội dung câu hỏi lý thuyết...';
+                        if (timeLimit) timeLimit.value = 120; // 2 minutes for theory questions
+                        break;
+                }
+            }
+        }
+
+        // Enhanced form validation for different question types
+        function validateQuestionForm(question) {
+            const questionType = question.type_question;
+            
+            // Basic validation for all question types
+            if (!question.id || !question.cau_hoi) {
+                showToast('Vui lòng nhập đầy đủ ID câu hỏi và nội dung!', 'error');
+                return false;
+            }
+            
+            // Validation specific to multiple choice questions
+            if (questionType === 'Trắc nghiệm') {
+                if (Object.keys(question.phuong_an).length < 2) {
+                    showToast('Câu hỏi trắc nghiệm cần ít nhất 2 phương án trả lời!', 'error');
+                    return false;
+                }
+                
+                // Check if correct answer exists in options
+                if (!question.phuong_an[question.dap_an_dung]) {
+                    showToast('Đáp án đúng phải có nội dung phương án tương ứng!', 'error');
+                    return false;
+                }
+            } else {
+                // For practical and theory questions, options are not required
+                // Clear any remaining option data to keep the question clean
+                question.phuong_an = {};
+                question.dap_an_dung = ''; // No correct answer for non-multiple choice
+            }
+            
+            // Check duplicate ID (except when editing)
+            const existingIndex = questions.findIndex(q => q.id === question.id);
+            if (existingIndex !== -1 && existingIndex !== editingIndex) {
+                showToast('ID câu hỏi đã tồn tại!', 'error');
+                return false;
+            }
+              return true;
+        }
+
+        // Filter and display questions
+        function filterAndDisplayQuestions() {
+            const categoryFilter = document.getElementById('filterCategory').value;
+            const roundFilter = document.getElementById('filterRound').value;
+            const searchTerm = document.getElementById('searchQuestions').value.toLowerCase();
+
+            const filteredQuestions = questions.filter(question => {
+                const matchesCategory = !categoryFilter || question.category === categoryFilter;
+                const matchesRound = !roundFilter || question.round === roundFilter;
+                const matchesSearch = !searchTerm || 
+                    question.id.toLowerCase().includes(searchTerm) ||
+                    question.cau_hoi.toLowerCase().includes(searchTerm);
+                return matchesCategory && matchesRound && matchesSearch;
+            });
+
+            displayQuestions(filteredQuestions);
+        }
+
+        // Display questions in the list
+        function displayQuestions(questionsToShow) {
+            const questionsList = document.getElementById('questionsList');
+            
+            if (questionsToShow.length === 0) {
+                questionsList.innerHTML = '<div class="text-center py-8 text-gray-500">Không có câu hỏi nào</div>';
+                return;
+            }
+
+            questionsList.innerHTML = questionsToShow.map((question, index) => {
+                const originalIndex = questions.indexOf(question);
+                const categoryClass = getCategoryClass(question.category);
+                
+                return `
+                    <div class="question-item border rounded-lg p-4 hover:shadow-md transition-shadow ${categoryClass}">
+                        <div class="flex justify-between items-start mb-2">
+                            <div class="flex items-center space-x-2">
+                                <span class="font-bold text-blue-600">${question.id}</span>
+                                <span class="px-2 py-1 rounded text-xs ${getTypeClass(question.type_question)}">${question.type_question}</span>
+                                <span class="px-2 py-1 rounded text-xs bg-gray-100">${question.category}</span>
+                                <span class="px-2 py-1 rounded text-xs bg-gray-100">Vòng ${question.round}</span>
+                            </div>
+                            <div class="flex space-x-2">
+                                <button onclick="editQuestion(${originalIndex})" class="text-blue-600 hover:text-blue-800">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button onclick="deleteQuestion(${originalIndex})" class="text-red-600 hover:text-red-800">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <p class="text-gray-700 mb-2">${question.cau_hoi}</p>
+                        ${Object.keys(question.phuong_an).length > 0 ? `
+                            <div class="text-sm text-gray-600">
+                                <strong>Phương án:</strong> ${Object.entries(question.phuong_an).map(([key, value]) => `${key.toUpperCase()}: ${value}`).join(', ')}
+                            </div>
+                            <div class="text-sm text-green-600">
+                                <strong>Đáp án:</strong> ${question.dap_an_dung.toUpperCase()}
+                            </div>
+                        ` : ''}
+                        <div class="text-sm text-gray-500 mt-2">
+                            <i class="fas fa-clock mr-1"></i>Thời gian: ${question.thoi_gian_tra_loi}s
+                            ${question.use_image === 'Yes' ? `<i class="fas fa-image ml-3 mr-1"></i>Có hình ảnh` : ''}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Get category class for styling
+        function getCategoryClass(category) {
+            const categoryClasses = {
+                'CSPL': 'category-cspl',
+                'PCCC': 'category-pccc', 
+                'BV': 'category-bv',
+                'KTM': 'category-ktm',
+                'BXVC': 'category-bxvc',
+                'YT': 'category-yt'
+            };
+            return categoryClasses[category] || '';
+        }
+
+        // Get question type class for styling
+        function getTypeClass(type) {
+            const typeClasses = {
+                'Trắc nghiệm': 'bg-blue-100 text-blue-800',
+                'Thực hành': 'bg-green-100 text-green-800',
+                'Lý thuyết tự luận': 'bg-purple-100 text-purple-800'
+            };
+            return typeClasses[type] || 'bg-gray-100 text-gray-800';        }
+
+        // Compose tab functions
+        function filterAvailableQuestions() {
+            // This is a placeholder for compose tab functionality
+            console.log('Filtering available questions for compose tab');
+        }
+
+        function displayQuestionSets() {
+            // This is a placeholder for displaying question sets
+            console.log('Displaying question sets');
+        }
+
+        function setupDragAndDrop() {
+            // This is a placeholder for drag and drop functionality
+            console.log('Setting up drag and drop');
+        }
+
+        function saveQuestionSet() {
+            // This is a placeholder for saving question sets
+            console.log('Saving question set');
+        }
+
+        function clearQuestionSet() {
+            // This is a placeholder for clearing question sets
+            console.log('Clearing question set');
+        }
+
+        function handleFileLoad() {
+            // This is a placeholder for file loading
+            console.log('Loading file');
+        }
+
+        function exportToJSON() {
+            // This is a placeholder for exporting to JSON
+            console.log('Exporting to JSON');
         }
 
         // Delete question
@@ -553,100 +919,8 @@
             }
         }
 
-        // Clear form
-        function clearForm() {
-            document.getElementById('questionForm').reset();
-            document.getElementById('timeLimit').value = 30;
-            editingIndex = -1;
-            setFormMode('add');
-            toggleImageSection();
-        }
-
-        // Toggle image section
-        function toggleImageSection() {
-            const useImage = document.getElementById('useImage').checked;
-            const imageSection = document.getElementById('imageIdSection');
-            
-            if (useImage) {
-                imageSection.classList.remove('hidden');
-            } else {
-                imageSection.classList.add('hidden');
-                document.getElementById('imageId').value = '';
-            }
-        }
-
-        // Export to JSON files
-        function exportToJSON() {
-            if (questions.length === 0) {
-                showToast('Không có câu hỏi nào để xuất!', 'error');
-                return;
-            }
-            
-            // Group questions by round and category
-            const rounds = {
-                '1': {},
-                '2': {},
-                '3': {}
-            };
-            
-            questions.forEach(q => {
-                const round = q.round;
-                const category = q.category;
-                
-                if (!rounds[round][category]) {
-                    rounds[round][category] = {
-                        trac_nghiem: []
-                    };
-                }
-                
-                // Create question object in the expected format
-                const questionObj = {
-                    id: q.id,
-                    cau_hoi: q.cau_hoi,
-                    type_question: q.type_question,
-                    category: q.category,
-                    phuong_an: q.phuong_an,
-                    dap_an_dung: q.dap_an_dung,
-                    thoi_gian_tra_loi: q.thoi_gian_tra_loi,
-                    use_image: q.use_image,
-                    image_id: q.image_id || ""
-                };
-                
-                rounds[round][category].trac_nghiem.push(questionObj);
-            });
-            
-            // Export each round
-            Object.keys(rounds).forEach(roundNum => {
-                if (Object.keys(rounds[roundNum]).length > 0) {
-                    const output = {
-                        [`vong_${roundNum}`]: rounds[roundNum]
-                    };
-                    
-                    const blob = new Blob([JSON.stringify(output, null, 2)], { type: 'application/json' });
-                    const url = URL.createObjectURL(blob);
-                    const a = document.createElement('a');
-                    a.href = url;
-                    a.download = `vong${roundNum}.json`;
-                    a.click();
-                    URL.revokeObjectURL(url);
-                }
-            });
-            
-            showToast('Đã xuất file JSON thành công!');
-        }
-
-        // Event listeners
-        document.getElementById('clearForm').addEventListener('click', clearForm);
-        document.getElementById('exportAllBtn').addEventListener('click', exportToJSON);
-        document.getElementById('useImage').addEventListener('change', toggleImageSection);
-
-        // Filter event listeners
-        document.getElementById('filterCategory').addEventListener('change', filterAndDisplayQuestions);
-        document.getElementById('filterRound').addEventListener('change', filterAndDisplayQuestions);
-        document.getElementById('searchQuestions').addEventListener('input', filterAndDisplayQuestions);
-
-        // Initialize
-        loadQuestions();
+        // Initialize the application when DOM is loaded
+        document.addEventListener('DOMContentLoaded', init);
     </script>
 </body>
 </html>
