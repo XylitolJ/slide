@@ -1,5 +1,6 @@
 // npx http-server -o --no-cache
 document.addEventListener('DOMContentLoaded', () => {
+    applyFontSettings();
     // DOM Elements
     const slideContainer = document.getElementById('slideContainer');
     // Header elements
@@ -30,12 +31,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Configuration ---
     const DEBUG_MODE = false; // Set to true to enable debug mode
-    const USE_SPEECH = true; // Set to false to disable all speech synthesis & audio file playback
+    const USE_SPEECH = localStorage.getItem("useSpeech") !== "false";
     const SHOW_IMAGE_PLACEHOLDER_ON_ERROR = true; // If true, shows a placeholder if an image fails to load
     const IMAGE_PLACEHOLDER_SVG = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23cbd5e1'%3E%3Cpath d='M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z'/%3E%3C/svg%3E"; // Simple image icon
     const DELAY_NO_SPEECH_QUESTION = 1000; // ms to wait after showing question if no speech
     const DELAY_NO_SPEECH_OPTION = 500;  // ms to wait after showing an option if no speech
     const DELAY_NO_SPEECH_ANSWER = 1000; // ms to wait after showing answer if no speech
+
+    function applyFontSettings(){
+        const qSize = localStorage.getItem("fontSizeQuestion");
+        const oSize = localStorage.getItem("fontSizeOption");
+        if(qSize) document.documentElement.style.setProperty("--question-font-size", qSize+"px");
+        if(oSize) document.documentElement.style.setProperty("--option-font-size", oSize+"px");
+    }
 
     // State variables
     let allQuestions = [];
