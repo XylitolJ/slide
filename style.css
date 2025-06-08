@@ -759,3 +759,9 @@ body, html {
     color: #1f2937 !important; /* Ensure text is dark and readable on light background */
     font-weight: 500 !important;
 }
+/* User customizable styles */
+:root { --question-font-size: 1.5rem; --option-font-size: 1.25rem; }
+.question-text { font-size: var(--question-font-size); }
+.option-text { font-size: var(--option-font-size); }
+.audio-highlight { background: rgba(255,235,59,0.25) !important; border-color: #fbbf24 !important; border-width: 3px !important; transform: scale(1.02) !important; transition: all 0.3s ease !important; box-shadow: 0 0 20px rgba(251,191,36,0.4) !important; }
+
