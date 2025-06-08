@@ -912,9 +912,8 @@
             const filteredQuestions = questions.filter(question => {
                 const matchesCategory = !categoryFilter || question.category === categoryFilter;
                 const matchesRound = !roundFilter || question.round === roundFilter;
-                const matchesSearch = !searchTerm || 
-                    question.id.toLowerCase().includes(searchTerm) ||
-                    question.cau_hoi.toLowerCase().includes(searchTerm);
+                const matchesSearch = !searchTerm ||                    (question.id || '').toLowerCase().includes(searchTerm) ||
+                    (question.cau_hoi || '').toLowerCase().includes(searchTerm);
                 return matchesCategory && matchesRound && matchesSearch;
             });
 
@@ -953,12 +952,11 @@
                             </div>
                         </div>
                         <p class="text-gray-700 mb-2">${question.cau_hoi}</p>
-                        ${Object.keys(question.phuong_an).length > 0 ? `
-                            <div class="text-sm text-gray-600">
-                                <strong>Phương án:</strong> ${Object.entries(question.phuong_an).map(([key, value]) => `${key.toUpperCase()}: ${value}`).join(', ')}
+                        ${Object.keys(question.phuong_an).length > 0 ? `                            <div class="text-sm text-gray-600">
+                                <strong>Phương án:</strong> ${Object.entries(question.phuong_an).map(([key, value]) => `${(key || '').toString().toUpperCase()}: ${value}`).join(', ')}
                             </div>
                             <div class="text-sm text-green-600">
-                                <strong>Đáp án:</strong> ${question.dap_an_dung.toUpperCase()}
+                                <strong>Đáp án:</strong> ${(question.dap_an_dung || '').toString().toUpperCase()}
                             </div>
                         ` : ''}
                         <div class="text-sm text-gray-500 mt-2">
@@ -1158,12 +1156,13 @@
                 
                 console.log(`Processed ${processedQuestions.length} questions from ${fileName}`);
                 return processedQuestions;
-                
-            } catch (error) {
+                  } catch (error) {
                 console.error('Error processing JSON data:', error);
                 throw error;
             }
-        }        // Convert individual question to internal format
+        }
+        
+        // Convert individual question to internal format
         function convertToInternalFormat(item, fileName, index, categoryKey = null, typeKey = null) {
             console.log('convertToInternalFormat called with:', { item, fileName, index, categoryKey, typeKey });
             
@@ -1186,18 +1185,16 @@
                     'thuc_hanh': 'Thực hành',
                     'ly_thuyet': 'Lý thuyết tự luận',
                     'ly_thuyet_thuc_hanh': 'Lý thuyết tự luận'
-                };
-
-                // Determine round from filename
+                };                // Determine round from filename
                 let round = '1';
                 if (fileName.includes('vong2')) round = '2';
                 else if (fileName.includes('vong3')) round = '3';
-
+                
                 // Map category - use from item if available, otherwise from categoryKey
                 let category = 'CSPL'; // default
                 if (item.category) {
                     // Extract category code from the category field if it contains recognizable text
-                    const categoryText = item.category.toLowerCase();
+                    const categoryText = (item.category || '').toLowerCase();
                     if (categoryText.includes('chính sách') || categoryText.includes('pháp luật')) category = 'CSPL';
                     else if (categoryText.includes('phòng cháy') || categoryText.includes('chữa cháy')) category = 'PCCC';
                     else if (categoryText.includes('bảo vệ')) category = 'BV';
@@ -1207,8 +1204,7 @@
                 } else if (categoryKey) {
                     category = categoryMapping[categoryKey] || 'CSPL';
                 }
-                
-                // Map question type - use from item if available, otherwise from typeKey
+                  // Map question type - use from item if available, otherwise from typeKey
                 let questionType = 'Trắc nghiệm'; // default
                 if (item.type_question) {
                     if (item.type_question.toLowerCase().includes('trắc nghiệm')) questionType = 'Trắc nghiệm';
@@ -1226,19 +1222,19 @@
                     round: round,
                     phuong_an: item.phuong_an || item.options || {},
                     dap_an_dung: item.dap_an_dung || item.correct_answer || '',
-                    thoi_gian_tra_loi: item.thoi_gian_tra_loi || item.time_limit || 30,
-                    use_image: item.use_image || 'No',
+                    thoi_gian_tra_loi: item.thoi_gian_tra_loi || item.time_limit || 30,                    use_image: item.use_image || 'No',
                     image_id: item.image_id || ''
                 };
 
                 console.log('Converted question:', question);
                 return question;
-                
-            } catch (error) {
+                  } catch (error) {
                 console.error('Error converting question:', error, item);
                 return null;
             }
-        }function exportToJSON() {
+        }
+        
+        function exportToJSON() {
             console.log('exportToJSON called');
             console.log('Current questions:', questions);
             
