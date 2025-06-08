@@ -451,45 +451,170 @@
             'YT': 'bg-pink-100 text-pink-800'
         };        // Initialize the application
         function init() {
-            setupEventListeners();
-            loadQuestions();
-            updateTotalCount();
-            // Trigger initial form state setup
-            handleQuestionTypeChange();
-        }// Setup event listeners
+            console.log('=== Application Initialization Started ===');
+            console.log('DOM ready state:', document.readyState);
+            console.log('User agent:', navigator.userAgent);
+            
+            try {
+                setupEventListeners();
+                console.log('✓ Event listeners setup completed');
+                
+                loadQuestions();
+                console.log('✓ Questions loaded from localStorage');
+                
+                updateTotalCount();
+                console.log('✓ Total count updated');
+                
+                // Trigger initial form state setup
+                handleQuestionTypeChange();
+                console.log('✓ Initial form state setup completed');
+                
+                // Run test function for debugging
+                testFileLoading();
+                
+                console.log('=== Application initialized successfully ===');
+            } catch (error) {
+                console.error('❌ Error during initialization:', error);
+                showToast('Lỗi khởi tạo ứng dụng!', 'error');
+            }
+        }
+
+        // Test function to verify file loading (for debugging)
+        function testFileLoading() {
+            console.log('=== Testing File Loading ===');
+            console.log('Load data button:', document.getElementById('loadDataBtn'));
+            console.log('File input:', document.getElementById('fileInput'));
+            console.log('Current questions count:', questions.length);
+            console.log('Event listeners check completed');
+        }
+
+        // Setup event listeners
         function setupEventListeners() {
+            console.log('Setting up event listeners...');
+            
             // Tab switching
             document.querySelectorAll('.tab-button').forEach(button => {
                 button.addEventListener('click', () => switchTab(button.dataset.tab));
-            });
-
-            // Form submission
-            document.getElementById('questionForm').addEventListener('submit', handleFormSubmit);
-            document.getElementById('clearForm').addEventListener('click', clearForm);
-            document.getElementById('useImage').addEventListener('change', toggleImageSection);
-            document.getElementById('questionType').addEventListener('change', handleQuestionTypeChange);
+            });            // Form submission
+            const questionForm = document.getElementById('questionForm');
+            const clearFormBtn = document.getElementById('clearForm');
+            const useImage = document.getElementById('useImage');
+            const questionType = document.getElementById('questionType');
+            
+            if (questionForm) {
+                questionForm.addEventListener('submit', handleFormSubmit);
+                console.log('Question form event listener added');
+            } else {
+                console.error('Question form not found');
+            }
+            
+            if (clearFormBtn) {
+                clearFormBtn.addEventListener('click', clearForm);
+                console.log('Clear form event listener added');
+            } else {
+                console.error('Clear form button not found');
+            }
+            
+            if (useImage) {
+                useImage.addEventListener('change', toggleImageSection);
+                console.log('Use image event listener added');
+            } else {
+                console.error('Use image checkbox not found');
+            }
+            
+            if (questionType) {
+                questionType.addEventListener('change', handleQuestionTypeChange);
+                console.log('Question type event listener added');
+            } else {
+                console.error('Question type select not found');
+            }
 
             // Filter and search
-            document.getElementById('filterCategory').addEventListener('change', filterAndDisplayQuestions);
-            document.getElementById('filterRound').addEventListener('change', filterAndDisplayQuestions);
-            document.getElementById('searchQuestions').addEventListener('input', filterAndDisplayQuestions);
+            const filterCategory = document.getElementById('filterCategory');
+            const filterRound = document.getElementById('filterRound');
+            const searchQuestions = document.getElementById('searchQuestions');
+            
+            if (filterCategory) {
+                filterCategory.addEventListener('change', filterAndDisplayQuestions);
+                console.log('Filter category event listener added');
+            }
+            if (filterRound) {
+                filterRound.addEventListener('change', filterAndDisplayQuestions);
+                console.log('Filter round event listener added');
+            }
+            if (searchQuestions) {
+                searchQuestions.addEventListener('input', filterAndDisplayQuestions);
+                console.log('Search questions event listener added');
+            }
 
             // Compose tab filters
-            document.getElementById('composeFilterRound').addEventListener('change', filterAvailableQuestions);
-            document.getElementById('composeFilterCategory').addEventListener('change', filterAvailableQuestions);
-            document.getElementById('composeSearch').addEventListener('input', filterAvailableQuestions);
+            const composeFilterRound = document.getElementById('composeFilterRound');
+            const composeFilterCategory = document.getElementById('composeFilterCategory');
+            const composeSearch = document.getElementById('composeSearch');
+            
+            if (composeFilterRound) {
+                composeFilterRound.addEventListener('change', filterAvailableQuestions);
+                console.log('Compose filter round event listener added');
+            }
+            if (composeFilterCategory) {
+                composeFilterCategory.addEventListener('change', filterAvailableQuestions);
+                console.log('Compose filter category event listener added');
+            }
+            if (composeSearch) {
+                composeSearch.addEventListener('input', filterAvailableQuestions);
+                console.log('Compose search event listener added');
+            }
 
             // File operations
-            document.getElementById('loadDataBtn').addEventListener('click', () => document.getElementById('fileInput').click());
-            document.getElementById('fileInput').addEventListener('change', handleFileLoad);
-            document.getElementById('exportAllBtn').addEventListener('click', exportToJSON);
-
-            // Question set operations
-            document.getElementById('saveQuestionSet').addEventListener('click', saveQuestionSet);
-            document.getElementById('clearQuestionSet').addEventListener('click', clearQuestionSet);
+            const loadDataBtn = document.getElementById('loadDataBtn');
+            const fileInput = document.getElementById('fileInput');
+            const exportAllBtn = document.getElementById('exportAllBtn');
+            
+            if (loadDataBtn) {
+                loadDataBtn.addEventListener('click', () => {
+                    console.log('Load data button clicked');
+                    const fileInput = document.getElementById('fileInput');
+                    if (fileInput) {
+                        console.log('Triggering file input click');
+                        fileInput.click();
+                    } else {
+                        console.error('File input not found when load button clicked');
+                    }
+                });
+                console.log('Load data button event listener added');
+            } else {
+                console.error('Load data button not found');
+            }
+            
+            if (fileInput) {
+                fileInput.addEventListener('change', handleFileLoad);
+                console.log('File input event listener added');
+            } else {
+                console.error('File input not found');
+            }
+            
+            if (exportAllBtn) {
+                exportAllBtn.addEventListener('click', exportToJSON);
+                console.log('Export all button event listener added');
+            } else {
+                console.error('Export all button not found');
+            }            // Question set operations
+            const saveQuestionSetBtn = document.getElementById('saveQuestionSet');
+            const clearQuestionSetBtn = document.getElementById('clearQuestionSet');
+            
+            if (saveQuestionSetBtn) {
+                saveQuestionSetBtn.addEventListener('click', saveQuestionSet);
+                console.log('Save question set event listener added');
+            }
+            if (clearQuestionSetBtn) {
+                clearQuestionSetBtn.addEventListener('click', clearQuestionSet);
+                console.log('Clear question set event listener added');
+            }
 
             // Setup drag and drop
             setupDragAndDrop();
+            
+            console.log('Event listeners setup completed');
         }
 
         // Tab switching
@@ -891,16 +1016,256 @@
         function clearQuestionSet() {
             // This is a placeholder for clearing question sets
             console.log('Clearing question set');
-        }
+        }        function handleFileLoad(event) {
+            console.log('handleFileLoad called', event);
+            const files = event.target.files;
+            
+            if (!files || files.length === 0) {
+                console.warn('No files selected');
+                showToast('Không có file nào được chọn!', 'error');
+                return;
+            }
 
-        function handleFileLoad() {
-            // This is a placeholder for file loading
-            console.log('Loading file');
-        }
+            console.log(`Selected ${files.length} file(s):`, Array.from(files).map(f => f.name));
 
-        function exportToJSON() {
-            // This is a placeholder for exporting to JSON
-            console.log('Exporting to JSON');
+            // Process each selected file
+            Array.from(files).forEach((file, index) => {
+                console.log(`Processing file ${index + 1}:`, file.name);
+                
+                if (!file.name.endsWith('.json')) {
+                    console.warn(`File ${file.name} is not a JSON file`);
+                    showToast(`File ${file.name} không phải file JSON!`, 'error');
+                    return;
+                }
+
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    console.log(`File ${file.name} read successfully`);
+                    try {
+                        const data = JSON.parse(e.target.result);
+                        console.log(`Parsed JSON data from ${file.name}:`, data);
+                        
+                        const loadedQuestions = processJSONData(data, file.name);
+                        console.log(`Processed ${loadedQuestions.length} questions from ${file.name}`);
+                        
+                        if (loadedQuestions.length > 0) {
+                            // Add to existing questions array
+                            const beforeCount = questions.length;
+                            questions.push(...loadedQuestions);
+                            const afterCount = questions.length;
+                            
+                            console.log(`Added ${afterCount - beforeCount} questions. Total: ${afterCount}`);
+                            
+                            saveQuestions();
+                            filterAndDisplayQuestions();
+                            updateTotalCount();
+                            
+                            showToast(`Đã tải thành công ${loadedQuestions.length} câu hỏi từ ${file.name}!`);
+                        } else {
+                            console.warn(`No questions found in ${file.name}`);
+                            showToast(`Không tìm thấy câu hỏi nào trong ${file.name}!`, 'error');
+                        }
+                        
+                    } catch (error) {
+                        console.error(`Error parsing JSON from ${file.name}:`, error);
+                        showToast(`Lỗi đọc file ${file.name}: ${error.message}`, 'error');
+                    }
+                };
+                
+                reader.onerror = function() {
+                    console.error(`Error reading file ${file.name}`);
+                    showToast(`Lỗi đọc file ${file.name}!`, 'error');
+                };
+                
+                reader.readAsText(file);
+            });
+
+            // Clear the file input to allow selecting the same file again
+            event.target.value = '';
+        }        // Process JSON data and convert to internal format
+        function processJSONData(data, fileName) {
+            console.log('processJSONData called with:', { data, fileName });
+            const processedQuestions = [];
+            
+            try {
+                // Handle different JSON structures
+                if (Array.isArray(data)) {
+                    // If data is an array of questions
+                    console.log('Data is an array');
+                    data.forEach((item, index) => {
+                        const question = convertToInternalFormat(item, fileName, index);
+                        if (question) {
+                            processedQuestions.push(question);
+                        }
+                    });
+                } else if (typeof data === 'object') {
+                    console.log('Data is an object, checking structure...');
+                    
+                    // Check if it has vong_X structure
+                    const roundKeys = Object.keys(data).filter(key => key.startsWith('vong_'));
+                    if (roundKeys.length > 0) {
+                        console.log('Found round structure:', roundKeys);
+                        roundKeys.forEach(roundKey => {
+                            const roundData = data[roundKey];
+                            console.log(`Processing round: ${roundKey}`, roundData);
+                            
+                            Object.keys(roundData).forEach(categoryKey => {
+                                console.log(`Processing category: ${categoryKey}`);
+                                const categoryData = roundData[categoryKey];
+                                
+                                if (typeof categoryData === 'object') {
+                                    Object.keys(categoryData).forEach(typeKey => {
+                                        console.log(`Processing type: ${typeKey}`);
+                                        const typeData = categoryData[typeKey];
+                                        
+                                        if (Array.isArray(typeData)) {
+                                            typeData.forEach((item, index) => {
+                                                const question = convertToInternalFormat(item, fileName, index, categoryKey, typeKey);
+                                                if (question) {
+                                                    processedQuestions.push(question);
+                                                }
+                                            });
+                                        }
+                                    });
+                                }
+                            });
+                        });
+                    } else {
+                        // Check if it's a nested structure without vong_X wrapper
+                        Object.keys(data).forEach(categoryKey => {
+                            console.log(`Processing category: ${categoryKey}`);
+                            const categoryData = data[categoryKey];
+                            
+                            if (typeof categoryData === 'object') {
+                                Object.keys(categoryData).forEach(typeKey => {
+                                    console.log(`Processing type: ${typeKey}`);
+                                    const typeData = categoryData[typeKey];
+                                    
+                                    if (Array.isArray(typeData)) {
+                                        typeData.forEach((item, index) => {
+                                            const question = convertToInternalFormat(item, fileName, index, categoryKey, typeKey);
+                                            if (question) {
+                                                processedQuestions.push(question);
+                                            }
+                                        });
+                                    }
+                                });
+                            }
+                        });
+                    }
+                }
+                
+                console.log(`Processed ${processedQuestions.length} questions from ${fileName}`);
+                return processedQuestions;
+                
+            } catch (error) {
+                console.error('Error processing JSON data:', error);
+                throw error;
+            }
+        }        // Convert individual question to internal format
+        function convertToInternalFormat(item, fileName, index, categoryKey = null, typeKey = null) {
+            console.log('convertToInternalFormat called with:', { item, fileName, index, categoryKey, typeKey });
+            
+            try {
+                // Map category from JSON keys to UI codes
+                const categoryMapping = {
+                    'chinh_sach_phap_luat': 'CSPL',
+                    'chinh_sach_phap_luat_va_y_te': 'CSPL',
+                    'phong_chay_chua_chay': 'PCCC',
+                    'bao_ve': 'BV',
+                    'khai_thac_mo': 'KTM',
+                    'ly_thuyet_khai_thac_mo': 'KTM',
+                    'boc_xep_van_chuyen': 'BXVC',
+                    'y_te': 'YT'
+                };
+
+                // Map question types
+                const typeMapping = {
+                    'trac_nghiem': 'Trắc nghiệm',
+                    'thuc_hanh': 'Thực hành',
+                    'ly_thuyet': 'Lý thuyết tự luận',
+                    'ly_thuyet_thuc_hanh': 'Lý thuyết tự luận'
+                };
+
+                // Determine round from filename
+                let round = '1';
+                if (fileName.includes('vong2')) round = '2';
+                else if (fileName.includes('vong3')) round = '3';
+
+                // Map category - use from item if available, otherwise from categoryKey
+                let category = 'CSPL'; // default
+                if (item.category) {
+                    // Extract category code from the category field if it contains recognizable text
+                    const categoryText = item.category.toLowerCase();
+                    if (categoryText.includes('chính sách') || categoryText.includes('pháp luật')) category = 'CSPL';
+                    else if (categoryText.includes('phòng cháy') || categoryText.includes('chữa cháy')) category = 'PCCC';
+                    else if (categoryText.includes('bảo vệ')) category = 'BV';
+                    else if (categoryText.includes('khai thác') || categoryText.includes('mỏ')) category = 'KTM';
+                    else if (categoryText.includes('bốc xếp') || categoryText.includes('vận chuyển')) category = 'BXVC';
+                    else if (categoryText.includes('y tế')) category = 'YT';
+                } else if (categoryKey) {
+                    category = categoryMapping[categoryKey] || 'CSPL';
+                }
+                
+                // Map question type - use from item if available, otherwise from typeKey
+                let questionType = 'Trắc nghiệm'; // default
+                if (item.type_question) {
+                    if (item.type_question.toLowerCase().includes('trắc nghiệm')) questionType = 'Trắc nghiệm';
+                    else if (item.type_question.toLowerCase().includes('thực hành')) questionType = 'Thực hành';
+                    else if (item.type_question.toLowerCase().includes('lý thuyết')) questionType = 'Lý thuyết tự luận';
+                } else if (typeKey) {
+                    questionType = typeMapping[typeKey] || 'Trắc nghiệm';
+                }
+
+                const question = {
+                    id: item.id || `${category}_${index + 1}`,
+                    cau_hoi: item.cau_hoi || item.question || '',
+                    type_question: questionType,
+                    category: category,
+                    round: round,
+                    phuong_an: item.phuong_an || item.options || {},
+                    dap_an_dung: item.dap_an_dung || item.correct_answer || '',
+                    thoi_gian_tra_loi: item.thoi_gian_tra_loi || item.time_limit || 30,
+                    use_image: item.use_image || 'No',
+                    image_id: item.image_id || ''
+                };
+
+                console.log('Converted question:', question);
+                return question;
+                
+            } catch (error) {
+                console.error('Error converting question:', error, item);
+                return null;
+            }
+        }function exportToJSON() {
+            console.log('exportToJSON called');
+            console.log('Current questions:', questions);
+            
+            if (questions.length === 0) {
+                showToast('Không có câu hỏi nào để xuất!', 'error');
+                return;
+            }
+
+            try {
+                // Create a downloadable JSON file
+                const dataStr = JSON.stringify(questions, null, 2);
+                const dataBlob = new Blob([dataStr], { type: 'application/json' });
+                
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(dataBlob);
+                link.download = `questions_export_${new Date().toISOString().slice(0, 10)}.json`;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                
+                showToast(`Đã xuất ${questions.length} câu hỏi thành công!`);
+                console.log('Export completed successfully');
+                
+            } catch (error) {
+                console.error('Error exporting JSON:', error);
+                showToast('Lỗi khi xuất file!', 'error');
+            }
         }
 
         // Delete question
