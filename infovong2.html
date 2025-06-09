@@ -192,22 +192,7 @@
 
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .navigation-hint {
-            position: fixed;
-            bottom: 2rem;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(0, 0, 0, 0.8);
-            color: white;
-            padding: 1rem 2rem;
-            border-radius: 50px;
-            font-size: 0.9rem;
-            z-index: 100;
-            backdrop-filter: blur(10px);
-        }
+            to { opacity: 1; transform: translateY(0); }        }
 
         .loading-text {
             color: #dc2626;
@@ -402,16 +387,8 @@
                             </ul>
                         </div>
                     </div>
-                </div>
-            </main>
+                </div>        </main>
         </div>
-    </div>
-
-    <div class="navigation-hint">
-        <i class="fas fa-keyboard mr-2"></i>
-        <kbd>←</kbd> Quay lại danh sách vòng thi
-        <span class="mx-4">|</span>
-        <kbd>→</kbd> Bắt đầu thi Vòng 2
     </div>
 
     <script>
@@ -455,11 +432,9 @@
             document.getElementById('ktanToanCount').textContent = ktanToanCount;
             document.getElementById('csplAnToanCount').textContent = csplAnToanCount;
             document.getElementById('totalQuestions').textContent = totalCount;
-        }
-
-        // Keyboard navigation
+        }        // Keyboard navigation
         document.addEventListener('keydown', (e) => {
-            if (e.key === 'ArrowLeft') {
+            if (e.key === 'ArrowLeft' || e.key.toLowerCase() === 'q') {
                 // Navigate back to page3.html
                 window.location.href = 'page3.html';
             } else if (e.key === 'ArrowRight') {

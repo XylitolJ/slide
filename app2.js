@@ -939,10 +939,12 @@ async function displayAnswer() {
             // This is a simple way to toggle, for a real app, you might want a UI element
             // For now, this requires manual change of DEBUG_MODE constant and reload.
             // Or, we can make DEBUG_MODE a let and toggle it here, then re-render.
-            console.log("Debug mode toggle attempted. Reload page if DEBUG_MODE constant was changed.");
-        } else if (e.key.toLowerCase() === 'q') { // Q key for emergency exit
+            console.log("Debug mode toggle attempted. Reload page if DEBUG_MODE constant was changed.");        } else if (e.key.toLowerCase() === 'q') { // Q key for emergency exit
             e.preventDefault();
             emergencyExitToPage3();
+        } else if (e.key === '2') { // Number 2 key to go to info page for round 2
+            e.preventDefault();
+            window.location.href = 'infovong2.html';
         }
     });
 

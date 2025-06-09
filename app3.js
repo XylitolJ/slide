@@ -678,6 +678,9 @@ document.addEventListener('DOMContentLoaded', () => {    // URL Parameter handli
             e.preventDefault();
             console.log('Q key pressed - Emergency exit activated');
             emergencyExitToPage3();
+        } else if (e.key === '3') { // Number 3 key to go to info page for round 3
+            e.preventDefault();
+            window.location.href = 'infovong3.html';
         }
     });
 

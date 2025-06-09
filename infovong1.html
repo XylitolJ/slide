@@ -135,24 +135,9 @@
         .fade-in {
             animation: fadeIn 0.8s ease-in-out;
         }
-        
-        @keyframes fadeIn {
+          @keyframes fadeIn {
             from { opacity: 0; transform: translateY(30px); }
             to { opacity: 1; transform: translateY(0); }
-        }
-        
-        .navigation-hint {
-            position: fixed;
-            bottom: 2rem;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(0, 0, 0, 0.8);
-            color: white;
-            padding: 1rem 2rem;
-            border-radius: 50px;
-            font-size: 0.9rem;
-            z-index: 100;
-            opacity: 0.9;
         }
     </style>
 </head>
@@ -317,15 +302,7 @@
                         </div>
                     </div>
 
-                </div>
-            </main>
-        </div>
-        
-        <!-- Navigation hint -->
-        <div class="navigation-hint">
-            <i class="fas fa-arrow-left mr-2"></i>Trở về danh sách vòng thi
-            <span class="mx-4">|</span>
-            <i class="fas fa-arrow-right mr-2"></i>Bắt đầu trình chiếu
+                </div>        </main>
         </div>
     </div>
 
@@ -367,11 +344,9 @@
                 document.getElementById('total-count').textContent = '20';
                 document.getElementById('max-score').textContent = '200';
             }
-        }
-
-        // Keyboard navigation
+        }        // Keyboard navigation
         document.addEventListener('keydown', (e) => {
-            if (e.key === 'ArrowLeft') {
+            if (e.key === 'ArrowLeft' || e.key.toLowerCase() === 'q') {
                 // Navigate back to page3.html
                 window.location.href = 'page3.html';
             } else if (e.key === 'ArrowRight') {
