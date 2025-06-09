@@ -71,19 +71,23 @@
             display: flex;
             flex-direction: column;
         }
-        
-        .round-card {
+          .round-card {
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(10px);
             border-radius: 24px;
-            padding: 2.5rem;
+            padding: 3rem;
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
             border: 1px solid rgba(255, 255, 255, 0.3);
             transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             cursor: pointer;
             position: relative;
             overflow: hidden;
-            min-height: 500px;
+            min-height: 300px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
         }
           .round-card:hover {
             box-shadow: 0 30px 60px rgba(0, 0, 0, 0.15);
@@ -134,31 +138,7 @@
         .round-1 .round-indicator { background: linear-gradient(135deg, #059669, #10b981); }
         .round-2 .round-indicator { background: linear-gradient(135deg, #dc2626, #ef4444); }
         .round-3 .round-indicator { background: linear-gradient(135deg, #7c3aed, #a855f7); }
-        
-        .question-list {
-            max-height: 60vh;
-            overflow-y: auto;
-            background: rgba(255, 255, 255, 0.9);
-            border-radius: 16px;
-            padding: 1.5rem;
-            margin-top: 1rem;
-        }
-        
-        .question-item {
-            background: white;
-            border-radius: 12px;
-            padding: 1rem;
-            margin-bottom: 0.75rem;
-            border-left: 4px solid #3b82f6;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-            transition: all 0.3s ease;
-            cursor: pointer;
-        }
-        
-        .question-item:hover {
-            transform: translateX(8px);
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-        }
+  
         
         .pulse-animation {
             animation: pulse 2s infinite;
@@ -251,67 +231,6 @@
                 opacity: 1; 
                 transform: translateX(0) scale(1); 
             }
-        }
-
-        .scoring-section {
-            background: rgba(248, 250, 252, 0.8);
-            border-radius: 12px;
-            padding: 1.5rem;
-            margin: 1rem 0;
-        }
-
-        .scoring-rule {
-            display: flex;
-            align-items: flex-start;
-            margin-bottom: 0.75rem;
-            font-size: 0.9rem;
-            line-height: 1.4;
-        }
-
-        .scoring-rule:last-child {
-            margin-bottom: 0;
-        }
-
-        .scoring-rule .bullet {
-            width: 6px;
-            height: 6px;
-            border-radius: 50%;
-            background: #3b82f6;
-            margin-right: 0.75rem;
-            margin-top: 0.5rem;
-            flex-shrink: 0;
-        }
-
-        .category-list {
-            background: rgba(255, 255, 255, 0.9);
-            border-radius: 8px;
-            padding: 1rem;
-            margin: 0.75rem 0;
-        }
-
-        .category-item {
-            display: flex;
-            align-items: center;
-            padding: 0.5rem 0;
-            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-            font-size: 0.9rem;
-        }
-
-        .category-item:last-child {
-            border-bottom: none;
-        }
-
-        .category-item .icon {
-            width: 20px;
-            height: 20px;
-            border-radius: 4px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-right: 0.75rem;
-            font-size: 0.8rem;
-            color: white;
-            font-weight: bold;
         }
     </style>
 </head>
@@ -467,132 +386,23 @@
             const icon = getRoundIcon(roundNumber);
             const color = getRoundColor(roundNumber);
             
-            // Define detailed information for each round
-            const roundDetails = {
-                1: {
-                    title: "Thi hiểu biết kiến thức về chính sách pháp luật, PCCC và Y tế",
-                    questionCount: "10 câu",
-                    categories: [
-                        { name: "Chính sách pháp luật", questions: "5 câu", color: "#10b981" },
-                        { name: "Phòng cháy chữa cháy", questions: "3 câu", color: "#f59e0b" },
-                        { name: "Y tế", questions: "2 câu", color: "#ef4444" }
-                    ],
-                    scoringRules: [
-                        "Câu trả lời đúng theo đáp án của câu hỏi thì đạt thang điểm 10",
-                        "Câu trả lời thiếu, sai theo đáp án của câu hỏi thì không được tính điểm"
-                    ]
-                },
-                2: {
-                    title: "Thi hiểu biết về ngành nghề",
-                    questionCount: "9 câu",
-                    categories: [
-                        { name: "Bảo quản, bốc xếp, vận chuyển VLNCN", questions: "3 câu", color: "#8b5cf6" },
-                        { name: "Khai thác mỏ", questions: "3 câu", color: "#06b6d4" },
-                        { name: "Công tác bảo vệ", questions: "3 câu", color: "#84cc16" }
-                    ],
-                    scoringRules: [
-                        "Câu trả lời đúng theo đáp án của câu hỏi thì đạt thang điểm 10",
-                        "Câu ghi thiếu ý đúng theo đáp án thì chấm theo thang điểm của từng ý",
-                        "Câu ghi ý sai thì mỗi ý sai sẽ bị trừ điểm tương đương là 1 ý đúng",
-                        "Lưu ý: Không có điểm âm, điểm tối thiểu là 0 điểm"
-                    ]
-                },
-                3: {
-                    title: "Thi thực hành về PCCC và Y tế",
-                    questionCount: "2 câu",
-                    categories: [
-                        { name: "Phòng cháy chữa cháy", questions: "1 câu", color: "#f59e0b" },
-                        { name: "Y tế", questions: "1 câu", color: "#ef4444" }
-                    ],
-                    scoringRules: [
-                        "Căn cứ vào kết quả thi của từng đội, Ban giám khảo chấm điểm",
-                        "Mỗi câu chấm theo thang điểm 10"
-                    ]
-                }
+            // Define round titles
+            const roundTitles = {
+                1: 'Thi hiểu biết kiến thức về chính sách pháp luật, PCCC và Y tế',
+                2: 'Thi hiểu biết về kỹ thuật an toàn trong khai thác mỏ',
+                3: 'Thi thực hành kỹ năng an toàn, sơ cấp cứu và PCCC'
             };
-
-            const details = roundDetails[roundNumber];
             
             card.innerHTML = `
                 <div class="round-indicator" data-round="${roundNumber}">${roundNumber}</div>
-                <button class="view-questions-btn absolute top-1 left-1 bg-gradient-to-r ${getGradientColor(roundNumber)} text-white px-3 py-1 rounded-full text-xs font-semibold hover:shadow-md transform hover:scale-105">
-                    <i class="fas fa-eye"></i>
-                </button>
-                <div class="mb-4">
-                    <div class="text-4xl ${color} mb-3">${icon}</div>
-                    <h3 class="text-xl font-bold text-gray-800 mb-2">Vòng ${roundNumber}</h3>
-                    <p class="text-gray-700 font-medium text-sm leading-relaxed">${details.title}</p>
-                </div>
-                
-                <div class="mb-4">
-                    <div class="flex items-center justify-center mb-3">
-                        <div class="text-center">
-                            <div class="text-3xl font-bold ${color}">${details.questionCount}</div>
-                            <div class="text-xs text-gray-600 font-medium">Tổng số câu hỏi</div>
-                        </div>
-                    </div>
-                    
-                    <div class="category-list">
-                        <div class="text-sm font-semibold text-gray-700 mb-2">Phân bổ câu hỏi:</div>
-                        ${details.categories.map((category, index) => `
-                            <div class="category-item">
-                                <div class="icon" style="background-color: ${category.color}">
-                                    ${index + 1}
-                                </div>
-                                <div class="flex-1">
-                                    <div class="font-medium text-gray-800">${category.name}</div>
-                                </div>
-                                <div class="text-sm font-semibold ${color}">
-                                    ${category.questions}
-                                </div>
-                            </div>
-                        `).join('')}
-                    </div>
-                </div>
-                
-                <div class="scoring-section">
-                    <div class="text-sm font-bold text-gray-800 mb-3">
-                        <i class="fas fa-calculator mr-2 ${color}"></i>Cách tính điểm:
-                    </div>
-                    ${details.scoringRules.map(rule => `
-                        <div class="scoring-rule">
-                            <div class="bullet"></div>
-                            <span class="text-gray-700">${rule}</span>
-                        </div>
-                    `).join('')}
-                </div>
-                
+                <div class="text-6xl ${color} mb-6">${icon}</div>
+                <h3 class="text-2xl font-bold text-gray-800 mb-4">Vòng ${roundNumber}</h3>
+                <p class="text-gray-700 font-medium text-lg leading-relaxed">${roundTitles[roundNumber]}</p>
             `;
 
-            // Add click event for round indicator (number) to navigate to respective HTML file
-            const roundIndicator = card.querySelector('.round-indicator');
-            roundIndicator.addEventListener('click', (e) => {
-                e.stopPropagation(); // Prevent triggering the card click event
-                window.location.href = `vong${roundNumber}.html`;
-            });
-
-            // Add click event for "Xem chi tiết" button with correct routing per round
-            const viewQuestionsBtn = card.querySelector('.view-questions-btn');
-            viewQuestionsBtn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                if (roundNumber === 1) {
-                    loadQuestions(roundNumber);
-                } else if (roundNumber === 2) {
-                    window.location.href = 'vong2.html';
-                } else if (roundNumber === 3) {
-                    window.location.href = 'vong3.html';
-                }
-            });
-
-            // Click on card area navigates to appropriate page
+            // Click on card navigates to info page
             card.addEventListener('click', () => {
-                if (roundNumber === 1) {
-                    window.location.href = 'vong1.html';
-                } else if (roundNumber === 2) {
-                    window.location.href = 'lythuyet.html';
-                } else if (roundNumber === 3) {
-                    window.location.href = 'thuchanh.html';
-                }
+                window.location.href = `infovong${roundNumber}.html`;
             });
 
             return card;

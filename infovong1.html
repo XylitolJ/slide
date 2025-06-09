@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thông tin Vòng 1 - ATVSV 2025</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        html, body {
+            height: 100vh;
+            overflow: hidden;
+        }
+        
+        .slide-container {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, #059669 0%, #10b981 30%, #34d399 70%, #a7f3d0 100%);
+        }
+        
+        .floating-particles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 1;
+        }
+        
+        .particle {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            animation: float 8s infinite linear;
+        }
+        
+        .particle:nth-child(1) { width: 8px; height: 8px; left: 10%; animation-delay: 0s; }
+        .particle:nth-child(2) { width: 12px; height: 12px; left: 20%; animation-delay: 1s; }
+        .particle:nth-child(3) { width: 6px; height: 6px; left: 30%; animation-delay: 2s; }
+        .particle:nth-child(4) { width: 10px; height: 10px; left: 40%; animation-delay: 3s; }
+        .particle:nth-child(5) { width: 14px; height: 14px; left: 50%; animation-delay: 4s; }
+        .particle:nth-child(6) { width: 8px; height: 8px; left: 60%; animation-delay: 5s; }
+        .particle:nth-child(7) { width: 12px; height: 12px; left: 70%; animation-delay: 6s; }
+        .particle:nth-child(8) { width: 6px; height: 6px; left: 80%; animation-delay: 7s; }
+        
+        @keyframes float {
+            0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(-100px) rotate(360deg); opacity: 0; }
+        }
+        
+        .content-layer {
+            position: relative;
+            z-index: 10;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .info-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 24px;
+            padding: 2rem;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            margin-bottom: 1.5rem;
+        }
+        
+        .category-item {
+            display: flex;
+            align-items: center;
+            padding: 1rem;
+            margin-bottom: 0.75rem;
+            background: white;
+            border-radius: 12px;
+            border-left: 4px solid #10b981;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+        
+        .category-item:hover {
+            transform: translateX(8px);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .category-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+            margin-right: 1rem;
+            font-weight: bold;
+        }
+        
+        .scoring-rule {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+            padding: 0.75rem;
+            background: rgba(16, 185, 129, 0.1);
+            border-radius: 8px;
+            border-left: 3px solid #10b981;
+        }
+        
+        .scoring-rule .bullet {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #10b981;
+            margin-right: 0.75rem;
+            margin-top: 0.5rem;
+            flex-shrink: 0;
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.8s ease-in-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .navigation-hint {
+            position: fixed;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            z-index: 100;
+            opacity: 0.9;
+        }
+    </style>
+</head>
+<body>
+    <div class="slide-container gradient-bg">
+        <!-- Floating particles background -->
+        <div class="floating-particles">
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+        </div>
+
+        <div class="content-layer">
+            <!-- Header -->
+            <header class="text-center py-6 text-white">
+                <div class="flex items-center justify-center mb-4">
+                    <div class="w-16 h-16 bg-white bg-opacity-20 rounded-full flex items-center justify-center mr-4">
+                        <i class="fas fa-gavel text-3xl"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-4xl font-bold drop-shadow-lg">Vòng 1</h1>
+                        <p class="text-lg opacity-90">Thi hiểu biết kiến thức</p>
+                    </div>
+                </div>
+                <p class="text-xl opacity-75">Chính sách pháp luật, PCCC và Y tế</p>
+            </header>
+
+            <!-- Main Content -->
+            <main class="flex-1 px-8 pb-8 overflow-y-auto">
+                <div class="max-w-5xl mx-auto">
+                    
+                    <!-- Question Distribution -->
+                    <div class="info-card fade-in">
+                        <h2 class="text-2xl font-bold text-gray-800 mb-4">
+                            <i class="fas fa-chart-pie text-green-600 mr-3"></i>
+                            Phân bổ câu hỏi
+                        </h2>
+                        
+                        <div class="category-item">
+                            <div class="category-icon" style="background: linear-gradient(135deg, #10b981, #34d399);">
+                                <i class="fas fa-balance-scale"></i>
+                            </div>
+                            <div class="flex-1">
+                                <h3 class="text-lg font-semibold text-gray-800">Chính sách pháp luật và Y tế</h3>
+                                <p class="text-gray-600">Kiến thức về luật pháp, quy định an toàn lao động và y tế công nghiệp</p>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-2xl font-bold text-green-600" id="cspl-count">-</div>
+                                <div class="text-sm text-gray-500">câu hỏi</div>
+                            </div>
+                        </div>
+                        
+                        <div class="category-item">
+                            <div class="category-icon" style="background: linear-gradient(135deg, #f59e0b, #fbbf24);">
+                                <i class="fas fa-fire-extinguisher"></i>
+                            </div>
+                            <div class="flex-1">
+                                <h3 class="text-lg font-semibold text-gray-800">Phòng cháy chữa cháy</h3>
+                                <p class="text-gray-600">Kiến thức về PCCC, sử dụng thiết bị chữa cháy và xử lý tình huống</p>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-2xl font-bold text-amber-600" id="pccc-count">-</div>
+                                <div class="text-sm text-gray-500">câu hỏi</div>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-4 p-4 bg-gradient-to-r from-green-50 to-green-100 rounded-lg border border-green-200">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center">
+                                    <i class="fas fa-calculator text-green-600 text-xl mr-3"></i>
+                                    <span class="font-semibold text-gray-800">Tổng số câu hỏi:</span>
+                                </div>
+                                <div class="text-3xl font-bold text-green-600" id="total-count">-</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Scoring Rules -->
+                    <div class="info-card fade-in">
+                        <h2 class="text-2xl font-bold text-gray-800 mb-4">
+                            <i class="fas fa-trophy text-green-600 mr-3"></i>
+                            Quy tắc tính điểm
+                        </h2>
+                        
+                        <div class="scoring-rule">
+                            <div class="bullet"></div>
+                            <div>
+                                <div class="font-semibold text-gray-800 mb-1">Thang điểm chuẩn</div>
+                                <div class="text-gray-700">Mỗi câu trả lời đúng được <strong>10 điểm</strong></div>
+                            </div>
+                        </div>
+                        
+                        <div class="scoring-rule">
+                            <div class="bullet"></div>
+                            <div>
+                                <div class="font-semibold text-gray-800 mb-1">Thời gian trả lời</div>
+                                <div class="text-gray-700">Mỗi câu hỏi có thời gian trả lời tối đa <strong>30 giây</strong></div>
+                            </div>
+                        </div>
+                        
+                        <div class="scoring-rule">
+                            <div class="bullet"></div>
+                            <div>
+                                <div class="font-semibold text-gray-800 mb-1">Xử lý câu trả lời sai</div>
+                                <div class="text-gray-700">Không bị trừ điểm khi trả lời sai hoặc không trả lời</div>
+                            </div>
+                        </div>
+                        
+                        <div class="scoring-rule">
+                            <div class="bullet"></div>
+                            <div>
+                                <div class="font-semibold text-gray-800 mb-1">Điểm tối đa</div>
+                                <div class="text-gray-700">Tổng điểm tối đa có thể đạt được: <strong id="max-score">-</strong> điểm</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Competition Format -->
+                    <div class="info-card fade-in">
+                        <h2 class="text-2xl font-bold text-gray-800 mb-4">
+                            <i class="fas fa-clipboard-list text-green-600 mr-3"></i>
+                            Hình thức thi
+                        </h2>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="p-4 bg-gradient-to-br from-green-50 to-green-100 rounded-lg border border-green-200">
+                                <div class="flex items-center mb-2">
+                                    <i class="fas fa-question-circle text-green-600 mr-2"></i>
+                                    <span class="font-semibold text-gray-800">Loại câu hỏi</span>
+                                </div>
+                                <p class="text-gray-700">Trắc nghiệm nhiều lựa chọn (A, B, C, D)</p>
+                            </div>
+                            
+                            <div class="p-4 bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg border border-blue-200">
+                                <div class="flex items-center mb-2">
+                                    <i class="fas fa-clock text-blue-600 mr-2"></i>
+                                    <span class="font-semibold text-gray-800">Thời gian thi</span>
+                                </div>
+                                <p class="text-gray-700">30 giây cho mỗi câu hỏi</p>
+                            </div>
+                            
+                            <div class="p-4 bg-gradient-to-br from-purple-50 to-purple-100 rounded-lg border border-purple-200">
+                                <div class="flex items-center mb-2">
+                                    <i class="fas fa-users text-purple-600 mr-2"></i>
+                                    <span class="font-semibold text-gray-800">Đối tượng</span>
+                                </div>
+                                <p class="text-gray-700">Tất cả các đội tham gia</p>
+                            </div>
+                            
+                            <div class="p-4 bg-gradient-to-br from-amber-50 to-amber-100 rounded-lg border border-amber-200">
+                                <div class="flex items-center mb-2">
+                                    <i class="fas fa-medal text-amber-600 mr-2"></i>
+                                    <span class="font-semibold text-gray-800">Mục tiêu</span>
+                                </div>
+                                <p class="text-gray-700">Đánh giá kiến thức cơ bản</p>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </main>
+        </div>
+        
+        <!-- Navigation hint -->
+        <div class="navigation-hint">
+            <i class="fas fa-arrow-left mr-2"></i>Trở về danh sách vòng thi
+            <span class="mx-4">|</span>
+            <i class="fas fa-arrow-right mr-2"></i>Bắt đầu trình chiếu
+        </div>
+    </div>
+
+    <script>
+        let questionData = null;
+
+        // Load question data to get accurate counts
+        async function loadQuestionData() {
+            try {
+                const response = await fetch('vong1.json');
+                const data = await response.json();
+                questionData = data;
+                
+                // Calculate question counts
+                let csplCount = 0;
+                let pcccCount = 0;
+                
+                if (data.vong_1?.chinh_sach_phap_luat_va_y_te?.trac_nghiem) {
+                    csplCount = data.vong_1.chinh_sach_phap_luat_va_y_te.trac_nghiem.length;
+                }
+                if (data.vong_1?.phong_chay_chua_chay?.trac_nghiem) {
+                    pcccCount = data.vong_1.phong_chay_chua_chay.trac_nghiem.length;
+                }
+                
+                const totalCount = csplCount + pcccCount;
+                const maxScore = totalCount * 10;
+                
+                // Update UI
+                document.getElementById('cspl-count').textContent = csplCount;
+                document.getElementById('pccc-count').textContent = pcccCount;
+                document.getElementById('total-count').textContent = totalCount;
+                document.getElementById('max-score').textContent = maxScore;
+                
+            } catch (error) {
+                console.error('Error loading question data:', error);
+                // Set fallback values
+                document.getElementById('cspl-count').textContent = '10';
+                document.getElementById('pccc-count').textContent = '10';
+                document.getElementById('total-count').textContent = '20';
+                document.getElementById('max-score').textContent = '200';
+            }
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowLeft') {
+                // Navigate back to page3.html
+                window.location.href = 'page3.html';
+            } else if (e.key === 'ArrowRight') {
+                // Navigate to vong1.html (start slideshow)
+                window.location.href = 'vong1.html';
+            } else if (e.key === 'Escape') {
+                // Navigate back to page3.html
+                window.location.href = 'page3.html';
+            }
+        });
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', loadQuestionData);
+    </script>
+</body>
+</html>

@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vòng 3 - Thi thực hành về kỹ thuật an toàn trong khai thác mỏ</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        html, body {
+            height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        .slide-container {
+            width: 100vw;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, #581c87 0%, #7c3aed 30%, #8b5cf6 70%, #ddd6fe 100%);
+        }
+        
+        .floating-particles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 1;
+        }
+        
+        .particle {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            animation: float 8s infinite linear;
+        }
+        
+        .particle:nth-child(1) { width: 8px; height: 8px; left: 10%; animation-delay: 0s; }
+        .particle:nth-child(2) { width: 12px; height: 12px; left: 20%; animation-delay: 1s; }
+        .particle:nth-child(3) { width: 6px; height: 6px; left: 30%; animation-delay: 2s; }
+        .particle:nth-child(4) { width: 10px; height: 10px; left: 40%; animation-delay: 3s; }
+        .particle:nth-child(5) { width: 14px; height: 14px; left: 50%; animation-delay: 4s; }
+        .particle:nth-child(6) { width: 8px; height: 8px; left: 60%; animation-delay: 5s; }
+        .particle:nth-child(7) { width: 12px; height: 12px; left: 70%; animation-delay: 6s; }
+        .particle:nth-child(8) { width: 6px; height: 6px; left: 80%; animation-delay: 7s; }
+        
+        @keyframes float {
+            0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(-100px) rotate(360deg); opacity: 0; }
+        }
+        
+        .content-layer {
+            position: relative;
+            z-index: 10;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .info-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 24px;
+            padding: 2rem;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            margin-bottom: 2rem;
+            transition: all 0.3s ease;
+        }
+
+        .info-card:hover {
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.2);
+            transform: translateY(-5px);
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #8b5cf6;
+        }
+
+        .section-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, #7c3aed, #8b5cf6);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            margin-right: 1rem;
+            box-shadow: 0 4px 15px rgba(124, 58, 237, 0.3);
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1rem;
+        }
+
+        .info-item {
+            background: rgba(248, 250, 252, 0.8);
+            padding: 1.5rem;
+            border-radius: 12px;
+            border-left: 4px solid #8b5cf6;
+            transition: all 0.3s ease;
+        }
+
+        .info-item:hover {
+            background: rgba(250, 245, 255, 0.9);
+            transform: translateX(5px);
+        }
+
+        .info-item h4 {
+            color: #581c87;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .info-item h4 i {
+            margin-right: 0.5rem;
+            color: #7c3aed;
+        }
+
+        .score-item {
+            background: linear-gradient(135deg, rgba(124, 58, 237, 0.1), rgba(139, 92, 246, 0.05));
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 0.75rem;
+            border: 1px solid rgba(124, 58, 237, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .score-item:hover {
+            background: linear-gradient(135deg, rgba(124, 58, 237, 0.15), rgba(139, 92, 246, 0.1));
+            transform: scale(1.02);
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, #faf5ff, #ede9fe);
+            border: 2px solid #ddd6fe;
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .highlight-box::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #7c3aed, #8b5cf6, #a78bfa);
+        }
+
+        .pulse-animation {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .navigation-hint {
+            position: fixed;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+        }
+
+        .loading-text {
+            color: #7c3aed;
+            font-weight: 600;
+        }
+
+        .question-count {
+            display: inline-flex;
+            align-items: center;
+            background: linear-gradient(135deg, #7c3aed, #8b5cf6);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            box-shadow: 0 4px 15px rgba(124, 58, 237, 0.3);
+        }
+
+        .category-badge {
+            display: inline-block;
+            background: rgba(124, 58, 237, 0.1);
+            color: #581c87;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin: 0.25rem 0.25rem 0.25rem 0;
+            border: 1px solid rgba(124, 58, 237, 0.3);
+        }
+
+        .practical-stage {
+            background: rgba(124, 58, 237, 0.05);
+            border: 2px solid rgba(124, 58, 237, 0.2);
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+            transition: all 0.3s ease;
+        }
+
+        .practical-stage:hover {
+            background: rgba(124, 58, 237, 0.1);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(124, 58, 237, 0.2);
+        }
+
+        .stage-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, #7c3aed, #8b5cf6);
+            color: white;
+            border-radius: 50%;
+            font-weight: bold;
+            margin-right: 1rem;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="slide-container gradient-bg">
+        <!-- Floating particles background -->
+        <div class="floating-particles">
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+        </div>
+
+        <div class="content-layer">
+            <!-- Header -->
+            <header class="text-center py-8 text-white">
+                <div class="text-6xl mb-4">
+                    <i class="fas fa-tools text-yellow-300"></i>
+                </div>
+                <h1 class="text-4xl font-bold mb-4 drop-shadow-lg">VÒNG 3</h1>
+                <h2 class="text-2xl font-semibold mb-2 opacity-90">Thi thực hành về kỹ thuật an toàn trong khai thác mỏ</h2>
+                <p class="text-lg opacity-75">
+                    <i class="fas fa-medal mr-2"></i>Dành cho 3 thí sinh xuất sắc nhất từ Vòng 2
+                </p>
+            </header>
+
+            <!-- Main Content -->
+            <main class="flex-1 px-8 pb-8">
+                <div class="max-w-6xl mx-auto">
+                    <!-- Competition Format Section -->
+                    <div class="info-card fade-in">
+                        <div class="section-header">
+                            <div class="section-icon">
+                                <i class="fas fa-cogs"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-2xl font-bold text-gray-800">Thể Thức Thi Thực Hành</h3>
+                                <p class="text-gray-600">Quy trình thi và đánh giá</p>
+                            </div>
+                        </div>
+
+                        <div class="info-grid">
+                            <div class="info-item">
+                                <h4><i class="fas fa-users"></i>Số lượng thí sinh</h4>
+                                <p class="text-gray-700">3 thí sinh xuất sắc nhất từ Vòng 2</p>
+                            </div>
+
+                            <div class="info-item">
+                                <h4><i class="fas fa-clock"></i>Thời gian thi</h4>
+                                <p class="text-gray-700">Tối đa 20 phút cho mỗi thí sinh</p>
+                            </div>
+
+                            <div class="info-item">
+                                <h4><i class="fas fa-hand-paper"></i>Hình thức thi</h4>
+                                <p class="text-gray-700">Thực hành trực tiếp với thiết bị thật</p>
+                            </div>
+
+                            <div class="info-item">
+                                <h4><i class="fas fa-trophy"></i>Kết quả</h4>
+                                <p class="text-gray-700">Xếp hạng từ cao đến thấp theo điểm số</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Practical Content Section -->
+                    <div class="info-card fade-in">
+                        <div class="section-header">
+                            <div class="section-icon">
+                                <i class="fas fa-tasks"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-2xl font-bold text-gray-800">Nội Dung Thực Hành</h3>
+                                <p class="text-gray-600">Các kỹ năng cần thực hiện</p>
+                            </div>
+                        </div>
+
+                        <div class="practical-stage">
+                            <h4 class="text-lg font-bold text-purple-800 mb-3 flex items-center">
+                                <span class="stage-number">1</span>
+                                Kiểm tra và sử dụng thiết bị bảo hộ cá nhân (PPE)
+                            </h4>
+                            <ul class="list-disc list-inside text-gray-700 space-y-2 ml-12">
+                                <li>Kiểm tra tình trạng và tính năng của mũ bảo hiểm</li>
+                                <li>Đeo đúng cách và điều chỉnh dây đai an toàn</li>
+                                <li>Kiểm tra và sử dụng giày bảo hộ lao động</li>
+                                <li>Sử dụng găng tay và kính bảo hộ phù hợp</li>
+                            </ul>
+                        </div>
+
+                        <div class="practical-stage">
+                            <h4 class="text-lg font-bold text-purple-800 mb-3 flex items-center">
+                                <span class="stage-number">2</span>
+                                Đo đạc và kiểm tra các thông số an toàn
+                            </h4>
+                            <ul class="list-disc list-inside text-gray-700 space-y-2 ml-12">
+                                <li>Sử dụng máy đo khí độc để kiểm tra môi trường làm việc</li>
+                                <li>Đo độ ẩm và nhiệt độ trong hầm lò</li>
+                                <li>Kiểm tra áp suất khí nén và hệ thống thông gió</li>
+                                <li>Ghi chép và báo cáo kết quả đo đạc</li>
+                            </ul>
+                        </div>
+
+                        <div class="practical-stage">
+                            <h4 class="text-lg font-bold text-purple-800 mb-3 flex items-center">
+                                <span class="stage-number">3</span>
+                                Xử lý tình huống khẩn cấp
+                            </h4>
+                            <ul class="list-disc list-inside text-gray-700 space-y-2 ml-12">
+                                <li>Nhận biết và xử lý rò rỉ khí độc</li>
+                                <li>Sơ cứu cơ bản cho người bị nạn</li>
+                                <li>Sử dụng thiết bị chữa cháy và báo động</li>
+                                <li>Tổ chức di tản an toàn</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Scoring Criteria Section -->
+                    <div class="info-card fade-in">
+                        <div class="section-header">
+                            <div class="section-icon">
+                                <i class="fas fa-star"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-2xl font-bold text-gray-800">Tiêu Chí Chấm Điểm</h3>
+                                <p class="text-gray-600">Hệ thống đánh giá chi tiết</p>
+                            </div>
+                        </div>
+
+                        <div class="info-grid">
+                            <div class="score-item">
+                                <h4 class="text-purple-700 font-bold mb-1">
+                                    <i class="fas fa-check-double mr-2"></i>Tính chính xác (40%)
+                                </h4>
+                                <p class="text-gray-700">Thực hiện đúng quy trình và đạt kết quả chính xác</p>
+                            </div>
+
+                            <div class="score-item">
+                                <h4 class="text-purple-700 font-bold mb-1">
+                                    <i class="fas fa-tachometer-alt mr-2"></i>Tốc độ thực hiện (25%)
+                                </h4>
+                                <p class="text-gray-700">Hoàn thành các nhiệm vụ trong thời gian quy định</p>
+                            </div>
+
+                            <div class="score-item">
+                                <h4 class="text-purple-700 font-bold mb-1">
+                                    <i class="fas fa-shield-alt mr-2"></i>An toàn lao động (25%)
+                                </h4>
+                                <p class="text-gray-700">Tuân thủ các quy tắc an toàn trong quá trình thực hiện</p>
+                            </div>
+
+                            <div class="score-item">
+                                <h4 class="text-purple-700 font-bold mb-1">
+                                    <i class="fas fa-user-tie mr-2"></i>Thái độ và kỹ năng (10%)</h4>
+                                <p class="text-gray-700">Thể hiện tinh thần trách nhiệm và kỹ năng nghề nghiệp</p>
+                            </div>
+                        </div>
+
+                        <div class="highlight-box">
+                            <h4 class="text-lg font-bold text-purple-800 mb-2">
+                                <i class="fas fa-calculator mr-2"></i>
+                                Thang điểm
+                            </h4>
+                            <p class="text-gray-700 mb-2">Tổng điểm tối đa: <strong>100 điểm</strong></p>
+                            <div class="category-badge">Điểm được tính theo thang 100</div>
+                            <div class="category-badge">Làm tròn đến 2 chữ số thập phân</div>
+                        </div>
+                    </div>
+
+                    <!-- Equipment and Tools Section -->
+                    <div class="info-card fade-in">
+                        <div class="section-header">
+                            <div class="section-icon">
+                                <i class="fas fa-toolbox"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-2xl font-bold text-gray-800">Thiết Bị và Dụng Cụ</h3>
+                                <p class="text-gray-600">Các công cụ được cung cấp</p>
+                            </div>
+                        </div>
+
+                        <div class="info-grid">
+                            <div class="info-item">
+                                <h4><i class="fas fa-hard-hat"></i>Thiết bị bảo hộ</h4>
+                                <p class="text-gray-700">Mũ bảo hiểm, dây đai an toàn, giày bảo hộ, găng tay, kính bảo hộ</p>
+                            </div>
+
+                            <div class="info-item">
+                                <h4><i class="fas fa-thermometer-half"></i>Thiết bị đo lường</h4>
+                                <p class="text-gray-700">Máy đo khí, đồng hồ đo áp suất, nhiệt kế, ẩm kế</p>
+                            </div>
+
+                            <div class="info-item">
+                                <h4><i class="fas fa-fire-extinguisher"></i>Thiết bị an toàn</h4>
+                                <p class="text-gray-700">Bình chữa cháy, đèn báo động, hộp sơ cứu, mặt nạ phòng độc</p>
+                            </div>
+
+                            <div class="info-item">
+                                <h4><i class="fas fa-clipboard-list"></i>Tài liệu hướng dẫn</h4>
+                                <p class="text-gray-700">Quy trình vận hành, bảng tra cứu, biểu mẫu ghi chép</p>
+                            </div>
+                        </div>
+
+                        <div class="highlight-box pulse-animation">
+                            <h4 class="text-lg font-bold text-purple-800 mb-2">
+                                <i class="fas fa-exclamation-triangle mr-2"></i>
+                                Lưu ý quan trọng
+                            </h4>
+                            <ul class="list-disc list-inside text-gray-700 space-y-1">
+                                <li>Đọc kỹ hướng dẫn sử dụng trước khi thao tác với thiết bị</li>
+                                <li>Luôn đảm bảo an toàn cho bản thân và người khác</li>
+                                <li>Thông báo ngay cho giám khảo khi có sự cố bất thường</li>
+                                <li>Hoàn thành đầy đủ các bước theo đúng trình tự</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <div class="navigation-hint">
+        <i class="fas fa-keyboard mr-2"></i>
+        <kbd>←</kbd> Quay lại danh sách vòng thi
+        <span class="mx-4">|</span>
+        <kbd>→</kbd> Bắt đầu thi Vòng 3
+    </div>
+
+    <script>
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowLeft') {
+                // Navigate back to page3.html
+                window.location.href = 'page3.html';
+            } else if (e.key === 'ArrowRight') {
+                // Navigate to thuchanh.html to start the practical round
+                window.location.href = 'thuchanh.html';
+            }
+        });
+
+        // Add fade-in animation to cards
+        function addFadeInAnimation() {
+            const cards = document.querySelectorAll('.info-card');
+            cards.forEach((card, index) => {
+                setTimeout(() => {
+                    card.style.opacity = '0';
+                    card.style.transform = 'translateY(30px)';
+                    card.style.transition = 'all 0.8s ease-out';
+                    
+                    setTimeout(() => {
+                        card.style.opacity = '1';
+                        card.style.transform = 'translateY(0)';
+                    }, 100);
+                }, index * 200);
+            });
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            addFadeInAnimation();
+        });
+    </script>
+</body>
+</html>

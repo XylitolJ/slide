@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vòng 2 - Thi hiểu biết về kỹ thuật an toàn trong khai thác mỏ</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        html, body {
+            height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        .slide-container {
+            width: 100vw;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, #7f1d1d 0%, #dc2626 30%, #ef4444 70%, #fecaca 100%);
+        }
+        
+        .floating-particles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 1;
+        }
+        
+        .particle {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            animation: float 8s infinite linear;
+        }
+        
+        .particle:nth-child(1) { width: 8px; height: 8px; left: 10%; animation-delay: 0s; }
+        .particle:nth-child(2) { width: 12px; height: 12px; left: 20%; animation-delay: 1s; }
+        .particle:nth-child(3) { width: 6px; height: 6px; left: 30%; animation-delay: 2s; }
+        .particle:nth-child(4) { width: 10px; height: 10px; left: 40%; animation-delay: 3s; }
+        .particle:nth-child(5) { width: 14px; height: 14px; left: 50%; animation-delay: 4s; }
+        .particle:nth-child(6) { width: 8px; height: 8px; left: 60%; animation-delay: 5s; }
+        .particle:nth-child(7) { width: 12px; height: 12px; left: 70%; animation-delay: 6s; }
+        .particle:nth-child(8) { width: 6px; height: 6px; left: 80%; animation-delay: 7s; }
+        
+        @keyframes float {
+            0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(-100px) rotate(360deg); opacity: 0; }
+        }
+        
+        .content-layer {
+            position: relative;
+            z-index: 10;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .info-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 24px;
+            padding: 2rem;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            margin-bottom: 2rem;
+            transition: all 0.3s ease;
+        }
+
+        .info-card:hover {
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.2);
+            transform: translateY(-5px);
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #ef4444;
+        }
+
+        .section-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, #dc2626, #ef4444);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            margin-right: 1rem;
+            box-shadow: 0 4px 15px rgba(220, 38, 38, 0.3);
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1rem;
+        }
+
+        .info-item {
+            background: rgba(248, 250, 252, 0.8);
+            padding: 1.5rem;
+            border-radius: 12px;
+            border-left: 4px solid #ef4444;
+            transition: all 0.3s ease;
+        }
+
+        .info-item:hover {
+            background: rgba(254, 242, 242, 0.9);
+            transform: translateX(5px);
+        }
+
+        .info-item h4 {
+            color: #7f1d1d;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .info-item h4 i {
+            margin-right: 0.5rem;
+            color: #dc2626;
+        }
+
+        .score-item {
+            background: linear-gradient(135deg, rgba(220, 38, 38, 0.1), rgba(239, 68, 68, 0.05));
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 0.75rem;
+            border: 1px solid rgba(220, 38, 38, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .score-item:hover {
+            background: linear-gradient(135deg, rgba(220, 38, 38, 0.15), rgba(239, 68, 68, 0.1));
+            transform: scale(1.02);
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, #fef2f2, #fee2e2);
+            border: 2px solid #fecaca;
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .highlight-box::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #dc2626, #ef4444, #f87171);
+        }
+
+        .pulse-animation {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .navigation-hint {
+            position: fixed;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+        }
+
+        .loading-text {
+            color: #dc2626;
+            font-weight: 600;
+        }
+
+        .question-count {
+            display: inline-flex;
+            align-items: center;
+            background: linear-gradient(135deg, #dc2626, #ef4444);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            box-shadow: 0 4px 15px rgba(220, 38, 38, 0.3);
+        }
+
+        .category-badge {
+            display: inline-block;
+            background: rgba(220, 38, 38, 0.1);
+            color: #7f1d1d;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin: 0.25rem 0.25rem 0.25rem 0;
+            border: 1px solid rgba(220, 38, 38, 0.3);
+        }
+    </style>
+</head>
+<body>
+    <div class="slide-container gradient-bg">
+        <!-- Floating particles background -->
+        <div class="floating-particles">
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+        </div>
+
+        <div class="content-layer">
+            <!-- Header -->
+            <header class="text-center py-8 text-white">
+                <div class="text-6xl mb-4">
+                    <i class="fas fa-hard-hat text-yellow-300"></i>
+                </div>
+                <h1 class="text-4xl font-bold mb-4 drop-shadow-lg">VÒNG 2</h1>
+                <h2 class="text-2xl font-semibold mb-2 opacity-90">Thi hiểu biết về kỹ thuật an toàn trong khai thác mỏ</h2>
+                <p class="text-lg opacity-75">
+                    <i class="fas fa-users mr-2"></i>Dành cho 6 thí sinh xuất sắc nhất từ Vòng 1
+                </p>
+            </header>
+
+            <!-- Main Content -->
+            <main class="flex-1 px-8 pb-8">
+                <div class="max-w-6xl mx-auto">
+                    <!-- Question Distribution Section -->
+                    <div class="info-card fade-in">
+                        <div class="section-header">
+                            <div class="section-icon">
+                                <i class="fas fa-chart-pie"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-2xl font-bold text-gray-800">Phân Bổ Câu Hỏi</h3>
+                                <p class="text-gray-600">Cấu trúc và nội dung chi tiết</p>
+                            </div>
+                        </div>
+
+                        <div class="info-grid">
+                            <div class="info-item">
+                                <h4><i class="fas fa-cogs"></i>Kỹ thuật An toàn</h4>
+                                <p class="text-gray-700 mb-2">Kiến thức chuyên môn về kỹ thuật khai thác mỏ an toàn</p>
+                                <div class="question-count">
+                                    <i class="fas fa-question-circle mr-2"></i>
+                                    <span id="ktanToanCount" class="loading-text">Đang tải...</span> câu hỏi
+                                </div>
+                            </div>
+
+                            <div class="info-item">
+                                <h4><i class="fas fa-balance-scale"></i>Chính sách - Pháp luật An toàn</h4>
+                                <p class="text-gray-700 mb-2">Quy định pháp lý về an toàn lao động trong khai thác mỏ</p>
+                                <div class="question-count">
+                                    <i class="fas fa-question-circle mr-2"></i>
+                                    <span id="csplAnToanCount" class="loading-text">Đang tải...</span> câu hỏi
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="highlight-box">
+                            <h4 class="text-lg font-bold text-red-800 mb-2">
+                                <i class="fas fa-exclamation-triangle mr-2"></i>
+                                Tổng số câu hỏi: <span id="totalQuestions" class="loading-text">Đang tải...</span>
+                            </h4>
+                            <p class="text-gray-700">Tất cả câu hỏi đều ở dạng trắc nghiệm với 4 lựa chọn (A, B, C, D)</p>
+                        </div>
+                    </div>
+
+                    <!-- Scoring Rules Section -->
+                    <div class="info-card fade-in">
+                        <div class="section-header">
+                            <div class="section-icon">
+                                <i class="fas fa-calculator"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-2xl font-bold text-gray-800">Quy Tắc Tính Điểm</h3>
+                                <p class="text-gray-600">Hệ thống chấm điểm chi tiết</p>
+                            </div>
+                        </div>
+
+                        <div class="info-grid">
+                            <div class="score-item">
+                                <h4 class="text-green-700 font-bold mb-1">
+                                    <i class="fas fa-check-circle mr-2"></i>Trả lời đúng
+                                </h4>
+                                <p class="text-gray-700"><strong>+1 điểm</strong> cho mỗi câu trả lời chính xác</p>
+                            </div>
+
+                            <div class="score-item">
+                                <h4 class="text-red-700 font-bold mb-1">
+                                    <i class="fas fa-times-circle mr-2"></i>Trả lời sai
+                                </h4>
+                                <p class="text-gray-700"><strong>-0.25 điểm</strong> cho mỗi câu trả lời sai</p>
+                            </div>
+
+                            <div class="score-item">
+                                <h4 class="text-gray-700 font-bold mb-1">
+                                    <i class="fas fa-minus-circle mr-2"></i>Không trả lời
+                                </h4>
+                                <p class="text-gray-700"><strong>0 điểm</strong> cho câu bỏ trống</p>
+                            </div>
+                        </div>
+
+                        <div class="highlight-box">
+                            <h4 class="text-lg font-bold text-red-800 mb-2">
+                                <i class="fas fa-trophy mr-2"></i>
+                                Kết quả
+                            </h4>
+                            <p class="text-gray-700 mb-2">3 thí sinh có điểm số cao nhất sẽ được chọn vào Vòng 3</p>
+                            <div class="category-badge">Top 3 thí sinh xuất sắc nhất</div>
+                        </div>
+                    </div>
+
+                    <!-- Competition Format Section -->
+                    <div class="info-card fade-in">
+                        <div class="section-header">
+                            <div class="section-icon">
+                                <i class="fas fa-stopwatch"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-2xl font-bold text-gray-800">Thể Thức Thi</h3>
+                                <p class="text-gray-600">Quy trình và thời gian thi</p>
+                            </div>
+                        </div>
+
+                        <div class="info-grid">
+                            <div class="info-item">
+                                <h4><i class="fas fa-clock"></i>Thời gian làm bài</h4>
+                                <p class="text-gray-700">60 phút để hoàn thành toàn bộ bài thi</p>
+                            </div>
+
+                            <div class="info-item">
+                                <h4><i class="fas fa-users"></i>Số lượng thí sinh</h4>
+                                <p class="text-gray-700">6 thí sinh xuất sắc nhất từ Vòng 1</p>
+                            </div>
+
+                            <div class="info-item">
+                                <h4><i class="fas fa-desktop"></i>Hình thức thi</h4>
+                                <p class="text-gray-700">Trắc nghiệm điện tử trên máy tính</p>
+                            </div>
+
+                            <div class="info-item">
+                                <h4><i class="fas fa-medal"></i>Kết quả</h4>
+                                <p class="text-gray-700">3 thí sinh cao điểm nhất vào Vòng 3</p>
+                            </div>
+                        </div>
+
+                        <div class="highlight-box pulse-animation">
+                            <h4 class="text-lg font-bold text-red-800 mb-2">
+                                <i class="fas fa-lightbulb mr-2"></i>
+                                Lưu ý quan trọng
+                            </h4>
+                            <ul class="list-disc list-inside text-gray-700 space-y-1">
+                                <li>Đọc kỹ đề bài trước khi chọn đáp án</li>
+                                <li>Có thể xem lại và sửa đổi câu trả lời trong thời gian cho phép</li>
+                                <li>Hệ thống sẽ tự động nộp bài khi hết giờ</li>
+                                <li>Tập trung cao độ để đạt kết quả tốt nhất</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <div class="navigation-hint">
+        <i class="fas fa-keyboard mr-2"></i>
+        <kbd>←</kbd> Quay lại danh sách vòng thi
+        <span class="mx-4">|</span>
+        <kbd>→</kbd> Bắt đầu thi Vòng 2
+    </div>
+
+    <script>
+        let questionData = null;
+
+        // Load question data on page load
+        async function loadQuestionData() {
+            try {
+                const response = await fetch('vong2.json');
+                const data = await response.json();
+                questionData = data;
+                updateQuestionCounts();
+            } catch (error) {
+                console.error('Error loading question data:', error);
+                document.getElementById('ktanToanCount').textContent = 'N/A';
+                document.getElementById('csplAnToanCount').textContent = 'N/A';
+                document.getElementById('totalQuestions').textContent = 'N/A';
+            }
+        }
+
+        // Update question counts in the UI
+        function updateQuestionCounts() {
+            if (!questionData) return;
+
+            let ktanToanCount = 0;
+            let csplAnToanCount = 0;
+
+            // Count Kỹ thuật An toàn questions
+            if (questionData.vong_2?.ky_thuat_an_toan?.trac_nghiem) {
+                ktanToanCount = questionData.vong_2.ky_thuat_an_toan.trac_nghiem.length;
+            }
+
+            // Count Chính sách Pháp luật An toàn questions
+            if (questionData.vong_2?.chinh_sach_phap_luat_an_toan?.trac_nghiem) {
+                csplAnToanCount = questionData.vong_2.chinh_sach_phap_luat_an_toan.trac_nghiem.length;
+            }
+
+            const totalCount = ktanToanCount + csplAnToanCount;
+
+            // Update UI
+            document.getElementById('ktanToanCount').textContent = ktanToanCount;
+            document.getElementById('csplAnToanCount').textContent = csplAnToanCount;
+            document.getElementById('totalQuestions').textContent = totalCount;
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowLeft') {
+                // Navigate back to page3.html
+                window.location.href = 'page3.html';
+            } else if (e.key === 'ArrowRight') {
+                // Navigate to vong2.html to start the round
+                window.location.href = 'vong2.html';
+            }
+        });
+
+        // Add fade-in animation to cards
+        function addFadeInAnimation() {
+            const cards = document.querySelectorAll('.info-card');
+            cards.forEach((card, index) => {
+                setTimeout(() => {
+                    card.style.opacity = '0';
+                    card.style.transform = 'translateY(30px)';
+                    card.style.transition = 'all 0.8s ease-out';
+                    
+                    setTimeout(() => {
+                        card.style.opacity = '1';
+                        card.style.transform = 'translateY(0)';
+                    }, 100);
+                }, index * 200);
+            });
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            loadQuestionData();
+            addFadeInAnimation();
+        });
+    </script>
+</body>
+</html>
