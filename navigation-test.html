@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Navigation Test Suite</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script src="navigation.js"></script>
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: white;
+            font-family: 'Inter', sans-serif;
+        }
+        .test-section {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .status-pass { color: #10b981; }
+        .status-fail { color: #ef4444; }
+        .status-pending { color: #f59e0b; }
+    </style>
+</head>
+<body class="p-8">
+    <div class="max-w-4xl mx-auto">
+        <h1 class="text-3xl font-bold mb-8 text-center">🔍 Navigation Test Suite</h1>
+        
+        <div class="test-section">
+            <h2 class="text-xl font-semibold mb-4">📋 Test Overview</h2>
+            <p class="mb-4">This test suite verifies that keyboard shortcuts work correctly across all themes:</p>
+            <ul class="list-disc list-inside space-y-2">
+                <li><strong>Classic Theme:</strong> Original pages (index.html, page3.html, etc.)</li>
+                <li><strong>Modern Theme:</strong> v2 pages (indexv2.html, page3v2.html, etc.)</li>
+                <li><strong>Elegant Theme:</strong> v3 pages (indexv3.html, page3v3.html, etc.)</li>
+            </ul>
+        </div>
+
+        <div class="test-section">
+            <h2 class="text-xl font-semibold mb-4">🎯 Keyboard Navigation Tests</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                
+                <!-- Classic Theme Tests -->
+                <div class="bg-blue-600 bg-opacity-30 p-4 rounded">
+                    <h3 class="font-semibold mb-3">🔵 Classic Theme Tests</h3>
+                    <div class="space-y-2 text-sm">
+                        <div id="classic-index" class="test-item">
+                            <span class="status-pending">⏳</span> index.html → page3.html (Arrow Right)
+                        </div>
+                        <div id="classic-page3" class="test-item">
+                            <span class="status-pending">⏳</span> page3.html → vong navigation (1,2,3)
+                        </div>
+                        <div id="classic-info" class="test-item">
+                            <span class="status-pending">⏳</span> infovong*.html → navigation (Q, Enter)
+                        </div>
+                        <div id="classic-quiz" class="test-item">
+                            <span class="status-pending">⏳</span> vong*.html → quiz navigation
+                        </div>
+                        <div id="classic-showquiz" class="test-item">
+                            <span class="status-pending">⏳</span> showquiz.html → prev/next (Q, arrows)
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Modern Theme Tests -->
+                <div class="bg-green-600 bg-opacity-30 p-4 rounded">
+                    <h3 class="font-semibold mb-3">🟢 Modern Theme Tests</h3>
+                    <div class="space-y-2 text-sm">
+                        <div id="modern-index" class="test-item">
+                            <span class="status-pending">⏳</span> indexv2.html → page3v2.html (Arrow Right)
+                        </div>
+                        <div id="modern-page3" class="test-item">
+                            <span class="status-pending">⏳</span> page3v2.html → vong navigation (1,2,3)
+                        </div>
+                        <div id="modern-info" class="test-item">
+                            <span class="status-pending">⏳</span> infovong*v2.html → navigation (Q, Enter)
+                        </div>
+                        <div id="modern-quiz" class="test-item">
+                            <span class="status-pending">⏳</span> vong*.html → quiz navigation (themed)
+                        </div>
+                        <div id="modern-showquiz" class="test-item">
+                            <span class="status-pending">⏳</span> showquiz.html → themed navigation
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Elegant Theme Tests -->
+                <div class="bg-purple-600 bg-opacity-30 p-4 rounded">
+                    <h3 class="font-semibold mb-3">🟣 Elegant Theme Tests</h3>
+                    <div class="space-y-2 text-sm">
+                        <div id="elegant-index" class="test-item">
+                            <span class="status-pending">⏳</span> indexv3.html → page3v3.html (Arrow Right)
+                        </div>
+                        <div id="elegant-page3" class="test-item">
+                            <span class="status-pending">⏳</span> page3v3.html → vong navigation (1,2,3)
+                        </div>
+                        <div id="elegant-info" class="test-item">
+                            <span class="status-pending">⏳</span> infovong*v3.html → navigation (Q, Enter)
+                        </div>
+                        <div id="elegant-quiz" class="test-item">
+                            <span class="status-pending">⏳</span> vong*.html → quiz navigation (themed)
+                        </div>
+                        <div id="elegant-showquiz" class="test-item">
+                            <span class="status-pending">⏳</span> showquiz.html → themed navigation
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h2 class="text-xl font-semibold mb-4">🧪 Manual Test Instructions</h2>
+            <div class="space-y-4">
+                <div class="bg-gray-800 bg-opacity-50 p-4 rounded">
+                    <h3 class="font-semibold mb-2">Step 1: Test Classic Theme</h3>
+                    <ol class="list-decimal list-inside space-y-1 text-sm">
+                        <li>Go to <code>index.html</code> → Press <strong>Arrow Right</strong> → Should go to <code>page3.html</code></li>
+                        <li>On <code>page3.html</code> → Press <strong>1,2,3</strong> → Should go to <code>infovong1.html</code>, etc.</li>
+                        <li>On info pages → Press <strong>Q</strong> (back) and <strong>Enter</strong> (forward)</li>
+                        <li>Test quiz navigation with arrows and Q key</li>
+                    </ol>
+                </div>
+                
+                <div class="bg-gray-800 bg-opacity-50 p-4 rounded">
+                    <h3 class="font-semibold mb-2">Step 2: Test Modern Theme</h3>
+                    <ol class="list-decimal list-inside space-y-1 text-sm">
+                        <li>Go to <code>control.html</code> → Select <strong>Modern</strong> theme</li>
+                        <li>Navigate to <code>indexv2.html</code> → Test same keyboard shortcuts</li>
+                        <li>Verify navigation goes to v2 pages (page3v2.html, infovong1v2.html, etc.)</li>
+                        <li>Test that all shortcuts work identically to Classic theme</li>
+                    </ol>
+                </div>
+                
+                <div class="bg-gray-800 bg-opacity-50 p-4 rounded">
+                    <h3 class="font-semibold mb-2">Step 3: Test Elegant Theme</h3>
+                    <ol class="list-decimal list-inside space-y-1 text-sm">
+                        <li>Go to <code>control.html</code> → Select <strong>Elegant</strong> theme</li>
+                        <li>Navigate to <code>indexv3.html</code> → Test same keyboard shortcuts</li>
+                        <li>Verify navigation goes to v3 pages (page3v3.html, infovong1v3.html, etc.)</li>
+                        <li>Test that all shortcuts work identically to other themes</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h2 class="text-xl font-semibold mb-4">🔧 Key Navigation Functions</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="bg-gray-800 bg-opacity-50 p-4 rounded">
+                    <h3 class="font-semibold mb-2">Universal Shortcuts</h3>
+                    <ul class="text-sm space-y-1">
+                        <li><strong>Q / Arrow Left:</strong> Go back</li>
+                        <li><strong>Enter / Space / Arrow Right:</strong> Go forward</li>
+                        <li><strong>1,2,3:</strong> Navigate to vongs (on main page)</li>
+                        <li><strong>Arrow Keys:</strong> Quiz navigation</li>
+                    </ul>
+                </div>
+                <div class="bg-gray-800 bg-opacity-50 p-4 rounded">
+                    <h3 class="font-semibold mb-2">Theme-Aware Functions</h3>
+                    <ul class="text-sm space-y-1">
+                        <li><code>navigateToPage()</code> - Theme-aware navigation</li>
+                        <li><code>navigateToParent()</code> - Go back with theme</li>
+                        <li><code>navigateToVong()</code> - Vong navigation with theme</li>
+                        <li><code>navigateToVongInfo()</code> - Info page with theme</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="test-section text-center">
+            <h2 class="text-xl font-semibold mb-4">🚀 Quick Test Links</h2>
+            <div class="flex flex-wrap justify-center gap-4">
+                <button onclick="window.location.href='index.html'" class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded">
+                    Test Classic
+                </button>
+                <button onclick="window.location.href='indexv2.html'" class="bg-green-600 hover:bg-green-700 px-4 py-2 rounded">
+                    Test Modern
+                </button>
+                <button onclick="window.location.href='indexv3.html'" class="bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded">
+                    Test Elegant
+                </button>
+                <button onclick="window.location.href='control.html'" class="bg-gray-600 hover:bg-gray-700 px-4 py-2 rounded">
+                    Theme Control
+                </button>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h2 class="text-xl font-semibold mb-4">✅ Expected Results</h2>
+            <div class="bg-green-900 bg-opacity-30 p-4 rounded">
+                <p class="mb-2"><strong>Success Criteria:</strong></p>
+                <ul class="list-disc list-inside space-y-1 text-sm">
+                    <li>All keyboard shortcuts work identically across all three themes</li>
+                    <li>Theme-aware navigation correctly routes to themed pages (v2, v3)</li>
+                    <li>Fallback navigation works when theme system is unavailable</li>
+                    <li>No hardcoded navigation bypasses the theme system</li>
+                    <li>Quiz navigation works correctly with theme-aware back buttons</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Auto-run some basic tests
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('🔍 Navigation Test Suite Loaded');
+            console.log('Navigation functions available:', typeof navigateToPage === 'function' ? '✅' : '❌');
+            
+            // Test theme detection
+            const currentTheme = getCurrentTheme();
+            console.log('Current theme detected:', currentTheme);
+            
+            // Test navigation mapping
+            if (typeof THEMES !== 'undefined') {
+                console.log('Theme mappings loaded:', Object.keys(THEMES));
+            }
+        });
+
+        // Helper to check navigation functions
+        function checkNavigationHealth() {
+            const tests = [
+                { name: 'navigateToPage', func: typeof navigateToPage === 'function' },
+                { name: 'navigateToParent', func: typeof navigateToParent === 'function' },
+                { name: 'navigateToVong', func: typeof navigateToVong === 'function' },
+                { name: 'navigateToVongInfo', func: typeof navigateToVongInfo === 'function' },
+                { name: 'getCurrentTheme', func: typeof getCurrentTheme === 'function' },
+                { name: 'THEMES object', func: typeof THEMES !== 'undefined' }
+            ];
+            
+            console.log('🔧 Navigation Health Check:');
+            tests.forEach(test => {
+                console.log(`${test.func ? '✅' : '❌'} ${test.name}`);
+            });
+        }
+        
+        // Run health check
+        setTimeout(checkNavigationHealth, 1000);
+    </script>
+</body>
+</html>

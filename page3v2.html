@@ -402,7 +402,7 @@
                     navigateToRound(roundNumber);
                 });
             });
-        }        // Navigate to round
+        }        // Navigate to round (direct to vong pages when using number keys)
         function navigateToRound(roundNumber) {
             const roundPages = {
                 1: 'vong1.html',
@@ -411,7 +411,11 @@
             };
             
             if (roundPages[roundNumber]) {
-                navigateToPage(roundPages[roundNumber]);
+                if (typeof navigateToPage === 'function') {
+                    navigateToPage(roundPages[roundNumber]);
+                } else {
+                    window.location.href = roundPages[roundNumber];
+                }
             }
         }
 
@@ -426,18 +430,28 @@
                     break;
                 case '3':
                     navigateToRound(3);
-                    break;
-                case 'q':
+                    break;                case 'q':
                 case 'Q':
-                    navigateToPage('index.html');
+                    if (typeof navigateToPage === 'function') {
+                        navigateToPage('index.html');
+                    } else {
+                        window.location.href = 'index.html';
+                    }
                     break;
                 case 'ArrowLeft':
                     // Navigate to index page
-                    navigateToPage('index.html');
-                    break;
-                case 'ArrowRight':
+                    if (typeof navigateToPage === 'function') {
+                        navigateToPage('index.html');
+                    } else {
+                        window.location.href = 'index.html';
+                    }
+                    break;                case 'ArrowRight':
                     // Navigate to vong1 (optional, can be disabled)
-                    navigateToPage('vong1.html');
+                    if (typeof navigateToPage === 'function') {
+                        navigateToPage('vong1.html');
+                    } else {
+                        window.location.href = 'vong1.html';
+                    }
                     break;
             }
         });

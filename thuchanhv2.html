@@ -28,8 +28,36 @@
             </button>
             <button onclick="navigateToMainPage()" class="bg-gray-600 hover:bg-gray-700 text-white px-6 py-3 rounded-lg">
                 Quay lại
-            </button>
-        </div>
+            </button>        </div>
     </div>
+    <script>
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            switch(e.key) {
+                case 'ArrowLeft':
+                case 'q':
+                case 'Q':
+                    // Navigate back to main page (page3.html) using theme-aware navigation
+                    if (typeof navigateToMainPage === 'function') {
+                        navigateToMainPage();
+                    } else if (typeof navigateToPage === 'function') {
+                        navigateToPage('page3.html');
+                    } else {
+                        window.location.href = 'page3v2.html';
+                    }
+                    break;
+                case 'ArrowRight':
+                case 'Enter':
+                case ' ':
+                    // Navigate to showquiz.html
+                    if (typeof navigateToPage === 'function') {
+                        navigateToPage('showquiz.html');
+                    } else {
+                        window.location.href = 'showquiz.html';
+                    }
+                    break;
+            }
+        });
+    </script>
 </body>
 </html>

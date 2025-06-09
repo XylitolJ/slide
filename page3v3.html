@@ -36,8 +36,57 @@
             <button onclick="navigateToPage('control.html')" class="bg-gray-600 hover:bg-gray-700 text-white px-6 py-3 rounded-lg">
                 Cài đặt
             </button>
-        </div>
-    </div>
+        </div>    </div>
     <script src="navigation.js"></script>
+    <script>
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            switch(e.key) {                case '1':
+                    if (typeof navigateToPage === 'function') {
+                        navigateToPage('vong1.html');
+                    } else {
+                        window.location.href = 'vong1.html';
+                    }
+                    break;
+                case '2':
+                    if (typeof navigateToPage === 'function') {
+                        navigateToPage('vong2.html');
+                    } else {
+                        window.location.href = 'vong2.html';
+                    }
+                    break;
+                case '3':
+                    if (typeof navigateToPage === 'function') {
+                        navigateToPage('vong3.html');
+                    } else {
+                        window.location.href = 'vong3.html';
+                    }
+                    break;
+                case 'q':
+                case 'Q':
+                    if (typeof navigateToPage === 'function') {
+                        navigateToPage('index.html');
+                    } else {
+                        window.location.href = 'indexv3.html';
+                    }
+                    break;
+                case 'ArrowLeft':
+                    // Navigate to index page
+                    if (typeof navigateToPage === 'function') {
+                        navigateToPage('index.html');
+                    } else {
+                        window.location.href = 'indexv3.html';
+                    }
+                    break;                case 'ArrowRight':
+                    // Navigate to vong1 (optional)
+                    if (typeof navigateToPage === 'function') {
+                        navigateToPage('vong1.html');
+                    } else {
+                        window.location.href = 'vong1.html';
+                    }
+                    break;
+            }
+        });
+    </script>
 </body>
 </html>

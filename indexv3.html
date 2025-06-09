@@ -31,5 +31,32 @@
             </button>
         </div>
     </div>
+
+    <script>
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            switch(e.key) {
+                case 'ArrowRight':
+                case 'Enter':
+                case ' ': // Spacebar
+                    // Navigate to main page (page3.html)
+                    if (typeof navigateToPage === 'function') {
+                        navigateToPage('page3.html');
+                    } else {
+                        window.location.href = 'page3v3.html'; // Fallback to elegant theme page
+                    }
+                    break;
+                case 'c':
+                case 'C':
+                    // Navigate to control page
+                    if (typeof navigateToPage === 'function') {
+                        navigateToPage('control.html');
+                    } else {
+                        window.location.href = 'control.html';
+                    }
+                    break;
+            }
+        });
+    </script>
 </body>
 </html>

@@ -4,7 +4,7 @@
  */
 
 /**
- * Theme configuration mapping
+ * Theme configuration mapping with complete page hierarchy
  */
 const THEMES = {
     classic: {
@@ -13,7 +13,12 @@ const THEMES = {
         'infovong1.html': 'infovong1.html',
         'infovong2.html': 'infovong2.html',
         'infovong3.html': 'infovong3.html',
-        'thuchanh.html': 'thuchanh.html'
+        'thuchanh.html': 'thuchanh.html',
+        'lythuyet.html': 'lythuyet.html',
+        'showquiz.html': 'showquiz.html',
+        'vong1.html': 'vong1.html',
+        'vong2.html': 'vong2.html',
+        'vong3.html': 'vong3.html'
     },
     modern: {
         'index.html': 'indexv2.html',
@@ -21,7 +26,12 @@ const THEMES = {
         'infovong1.html': 'infovong1v2.html',
         'infovong2.html': 'infovong2v2.html',
         'infovong3.html': 'infovong3v2.html',
-        'thuchanh.html': 'thuchanhv2.html'
+        'thuchanh.html': 'thuchanhv2.html',
+        'lythuyet.html': 'lythuyet.html',
+        'showquiz.html': 'showquiz.html',
+        'vong1.html': 'vong1.html',
+        'vong2.html': 'vong2.html',
+        'vong3.html': 'vong3.html'
     },
     elegant: {
         'index.html': 'indexv3.html',
@@ -29,7 +39,54 @@ const THEMES = {
         'infovong1.html': 'infovong1v3.html',
         'infovong2.html': 'infovong2v3.html',
         'infovong3.html': 'infovong3v3.html',
-        'thuchanh.html': 'thuchanhv3.html'
+        'thuchanh.html': 'thuchanhv3.html',
+        'lythuyet.html': 'lythuyet.html',
+        'showquiz.html': 'showquiz.html',
+        'vong1.html': 'vong1.html',
+        'vong2.html': 'vong2.html',
+        'vong3.html': 'vong3.html'
+    }
+};
+
+/**
+ * Navigation hierarchy - defines parent-child relationships
+ */
+const NAVIGATION_HIERARCHY = {
+    classic: {
+        'page3.html': 'index.html',
+        'infovong1.html': 'page3.html',
+        'infovong2.html': 'page3.html',
+        'infovong3.html': 'page3.html',
+        'thuchanh.html': 'page3.html',
+        'vong1.html': 'infovong1.html',
+        'vong2.html': 'infovong2.html',
+        'vong3.html': 'infovong3.html',
+        'lythuyet.html': 'page3.html',
+        'showquiz.html': 'lythuyet.html'
+    },
+    modern: {
+        'page3v2.html': 'indexv2.html',
+        'infovong1v2.html': 'page3v2.html',
+        'infovong2v2.html': 'page3v2.html',
+        'infovong3v2.html': 'page3v2.html',
+        'thuchanhv2.html': 'page3v2.html',
+        'vong1.html': 'infovong1v2.html',
+        'vong2.html': 'infovong2v2.html',
+        'vong3.html': 'infovong3v2.html',
+        'lythuyet.html': 'page3v2.html',
+        'showquiz.html': 'lythuyet.html'
+    },
+    elegant: {
+        'page3v3.html': 'indexv3.html',
+        'infovong1v3.html': 'page3v3.html',
+        'infovong2v3.html': 'page3v3.html',
+        'infovong3v3.html': 'page3v3.html',
+        'thuchanhv3.html': 'page3v3.html',
+        'vong1.html': 'infovong1v3.html',
+        'vong2.html': 'infovong2v3.html',
+        'vong3.html': 'infovong3v3.html',
+        'lythuyet.html': 'page3v3.html',
+        'showquiz.html': 'lythuyet.html'
     }
 };
 
@@ -65,6 +122,42 @@ function navigateToPage(page) {
  */
 function navigateToMainPage() {
     navigateToPage('page3.html');
+}
+
+/**
+ * Navigate to parent page based on current page and theme
+ */
+function navigateToParent() {
+    const theme = getSelectedTheme();
+    const currentPage = window.location.pathname.split('/').pop();
+    
+    // Find parent page in navigation hierarchy
+    const hierarchy = NAVIGATION_HIERARCHY[theme];
+    const parentPage = hierarchy[currentPage];
+    
+    if (parentPage) {
+        window.location.href = parentPage;
+    } else {
+        // Fallback to main page
+        navigateToMainPage();
+    }
+}
+
+/**
+ * Navigate to specific vong info page based on current theme
+ * @param {number} vongNumber - The vong number (1, 2, or 3)
+ */
+function navigateToVongInfo(vongNumber) {
+    const infoPage = `infovong${vongNumber}.html`;
+    navigateToPage(infoPage);
+}
+
+/**
+ * Navigate to specific vong quiz page
+ * @param {number} vongNumber - The vong number (1, 2, or 3)
+ */
+function navigateToVong(vongNumber) {
+    window.location.href = `vong${vongNumber}.html`;
 }
 
 /**
