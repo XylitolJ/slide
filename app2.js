@@ -24,14 +24,17 @@ document.addEventListener('DOMContentLoaded', () => {
     // const footerContestInfoEl = document.getElementById('footerContestInfo')?.querySelector('span'); // This element might not exist in the new footer structure or needs re-evaluation
     // const footerTimeScoreEl = document.getElementById('footerTimeScore')?.querySelector('span'); // This element might not exist
     const footerProgressBarEl = document.getElementById('footerProgressBar');
-    const roundInfoDisplayEl = document.getElementById('roundInfoDisplay'); // New element for round info
- 
-    // Parse query parameters for selected question IDs
+    const roundInfoDisplayEl = document.getElementById('roundInfoDisplay'); // New element for round info    // Parse query parameters for selected question IDs from question_sets.json
     function getSelectedIds() {
         const params = new URLSearchParams(window.location.search);
-        const idsParam = params.get('ids');
-        if (!idsParam) return [];
-        return idsParam.split(',').map(id => id.trim()).filter(Boolean);
+        const categoryParam = params.get('category');
+        const setParam = params.get('set');
+        
+        // If no parameters, return empty array (will load all questions)
+        if (!categoryParam || !setParam) return [];
+        
+        // Return parameters for later use in loadQuestions
+        return { category: categoryParam, set: setParam };
     }
  
     // Popup
@@ -778,11 +781,17 @@ async function displayAnswer() {
                 `;
             }
         }
-    }
-
-    // --- Load Data ---
+    }    // --- Load Data ---
     async function loadQuestions() {
         try {
+            // Load question sets configuration first
+            const questionSetsResponse = await fetch('question_sets.json');
+            if (!questionSetsResponse.ok) {
+                throw new Error(`HTTP error loading question_sets.json! status: ${questionSetsResponse.status}`);
+            }
+            const questionSetsData = await questionSetsResponse.json();
+            console.log('Loaded question_sets.json:', questionSetsData);
+
             // Load Round 2 questions from vong2.json
             const response = await fetch('vong2.json');
             if (!response.ok) {
@@ -805,34 +814,68 @@ async function displayAnswer() {
                 console.warn("Could not load contest rules:", rulesError);
             }
             
-            // Extract questions from vong2.json structure
+            // Extract all questions from vong2.json structure first
             const vong2Data = data.vong_2;
-            allQuestions = [];
+            let allAvailableQuestions = [];
             
             for (const categoryKey in vong2Data) {
                 const category = vong2Data[categoryKey];
                 for (const typeKey in category) {
                     if (Array.isArray(category[typeKey])) {
-                        allQuestions = allQuestions.concat(category[typeKey]);
+                        allAvailableQuestions = allAvailableQuestions.concat(category[typeKey]);
                     }
                 }
             }
-            selectedIds = getSelectedIds();
-            if (selectedIds.length > 0) {
-                allQuestions = allQuestions.filter(q => selectedIds.includes(q.id));
+
+            // Get selected category and set from URL parameters
+            const selectedParams = getSelectedIds();
+            console.log('Selected parameters:', selectedParams);
+            
+            // Filter questions based on question_sets.json configuration
+            allQuestions = [];
+            
+            if (selectedParams && selectedParams.category && selectedParams.set) {
+                // Load specific category and set from question_sets.json
+                const categoryConfig = questionSetsData.vong2?.[selectedParams.category];
+                if (categoryConfig) {
+                    const questionIds = categoryConfig[selectedParams.set];
+                    if (questionIds && Array.isArray(questionIds)) {
+                        console.log(`Loading questions for category "${selectedParams.category}", set "${selectedParams.set}":`, questionIds);
+                        
+                        // Filter questions based on IDs from question_sets.json
+                        questionIds.forEach(questionId => {
+                            const question = allAvailableQuestions.find(q => q.id === questionId);
+                            if (question) {
+                                allQuestions.push(question);
+                            } else {
+                                console.warn(`Question with ID "${questionId}" not found in vong2.json`);
+                            }
+                        });
+                    } else {
+                        console.error(`Set "${selectedParams.set}" not found in category "${selectedParams.category}"`);
+                    }
+                } else {
+                    console.error(`Category "${selectedParams.category}" not found in question_sets.json`);
+                }
+            } else {
+                // No specific selection, load all questions (fallback behavior)
+                console.log('No specific category/set selected, loading all questions');
+                allQuestions = allAvailableQuestions;
             }
 
             if (allQuestions.length > 0) {
+                console.log(`Loaded ${allQuestions.length} questions for vong2 based on question_sets.json configuration`);
                 // Update round info display
                 updateRoundInfoDisplay();
                 renderSlide(allQuestions[currentQuestionIndex]);
             } else {
-                progressTextEl.textContent = "Không tìm thấy câu hỏi phù hợp.";
+                progressTextEl.textContent = "Không tìm thấy câu hỏi phù hợp theo cấu hình trong question_sets.json.";
             }
         } catch (error) {
             console.error("Could not load questions:", error);
-            progressTextEl.textContent = "Lỗi tải dữ liệu câu hỏi. Vui lòng kiểm tra file vong2.json và console.";
-        }    }
+            progressTextEl.textContent = "Lỗi tải dữ liệu câu hỏi. Vui lòng kiểm tra file vong2.json, question_sets.json và console.";
+        }
+    }
 
     // --- Emergency Exit Function ---
     function emergencyExitToPage3() {

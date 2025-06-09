@@ -7,7 +7,18 @@ document.addEventListener('DOMContentLoaded', () => {    // URL Parameter handli
             subcategory: urlParams.get('subcategory'),
             autoStart: urlParams.get('autoStart') === 'true'
         };
-    }// Function to find question by ID and category
+    }
+
+    // Parse URL parameters for selected question set from question_sets.json
+    function getSelectedSet() {
+        const params = new URLSearchParams(window.location.search);
+        const setParam = params.get('set');
+        
+        // If no set parameter, return null (will load all questions)
+        return setParam;
+    }
+
+    // Function to find question by ID and category
     function findQuestionById(questionId, category, subcategory) {
         if (!allQuestions || !questionId) return null;
         
@@ -61,9 +72,7 @@ document.addEventListener('DOMContentLoaded', () => {    // URL Parameter handli
     let navigationInProgress = false; // Add flag to prevent audio restart during navigation// Background styles for cleanup purposes only
     const backgroundStyles = [
         'bg-default', 'bg-abstract', 'bg-wave', 'bg-svg-pattern-1', 'bg-svg-pattern-2', 'bg-svg-pattern-3'
-    ];
-
-    // Initialize AudioContext
+    ];    // Initialize AudioContext
     function initAudio() {
         if (!audioContext) {
             try {
@@ -72,7 +81,8 @@ document.addEventListener('DOMContentLoaded', () => {    // URL Parameter handli
                 console.error("Web Audio API is not supported in this browser.", e);
                 progressTextEl.textContent = "Lỗi: Trình duyệt không hỗ trợ âm thanh.";
             }
-        }    }
+        }
+    }
 
     // --- Emergency Exit Function ---
     function emergencyExitToPage3() {
@@ -83,8 +93,7 @@ document.addEventListener('DOMContentLoaded', () => {    // URL Parameter handli
             currentAudio.source.disconnect();
             currentAudio = null;
         }
-        
-        // Clear all timers
+          // Clear all timers
         if (timerInterval) {
             clearInterval(timerInterval);
             timerInterval = null;
@@ -97,7 +106,9 @@ document.addEventListener('DOMContentLoaded', () => {    // URL Parameter handli
         // Navigate to page3.html
         console.log('Navigating to page3.html');
         window.location.href = 'page3.html';
-    }    // Utility to stop all ongoing timers and audio without navigating away
+    }
+
+    // Utility to stop all ongoing timers and audio without navigating away
     function stopAllEvents() {
         console.log('%c[STOP ALL EVENTS] Starting stopAllEvents() in app3.js', 'color: red; font-weight: bold;');
         
@@ -492,9 +503,17 @@ document.addEventListener('DOMContentLoaded', () => {    // URL Parameter handli
                 `;
             }
         }
-    }// --- Load Data ---
+    }    // --- Load Data ---
     async function loadQuestions() {
         try {
+            // Load question sets configuration first
+            const questionSetsResponse = await fetch('question_sets.json');
+            if (!questionSetsResponse.ok) {
+                throw new Error(`HTTP error loading question_sets.json! status: ${questionSetsResponse.status}`);
+            }
+            const questionSetsData = await questionSetsResponse.json();
+            console.log('Loaded question_sets.json:', questionSetsData);
+
             // Load Round 3 questions from vong3.json
             const response = await fetch('vong3.json');
             if (!response.ok) {
@@ -511,21 +530,62 @@ document.addEventListener('DOMContentLoaded', () => {    // URL Parameter handli
                     contestRulesData = rulesData.quy_che_thi;
                     if (contestRulesData && Array.isArray(contestRulesData.cac_vong_thi)) {
                         contestRoundsData = contestRulesData.cac_vong_thi;
-                    }                }
+                    }
+                }
             } catch (rulesError) {
                 console.warn("Could not load contest rules:", rulesError);
-            }            // Extract questions from vong3.json structure
+            }
+
+            // Extract all questions from vong3.json structure first
             const vong3Data = data.vong_3;
-            allQuestions = [];
+            let allAvailableQuestions = [];
             
             for (const categoryKey in vong3Data) {
                 const category = vong3Data[categoryKey];
                 for (const typeKey in category) {
                     if (Array.isArray(category[typeKey])) {
-                        allQuestions = allQuestions.concat(category[typeKey]);
+                        allAvailableQuestions = allAvailableQuestions.concat(category[typeKey]);
                     }
                 }
-            }            if (allQuestions.length > 0) {                // Check if we need to load a specific question from URL parameters
+            }
+
+            // Get selected set from URL parameters
+            const selectedSet = getSelectedSet();
+            console.log('Selected set:', selectedSet);
+            
+            // Filter questions based on question_sets.json configuration
+            allQuestions = [];
+            
+            if (selectedSet) {
+                // Load specific set from question_sets.json
+                const questionIds = questionSetsData.vong3?.[selectedSet];
+                if (questionIds && Array.isArray(questionIds)) {
+                    console.log(`Loading questions for set "${selectedSet}":`, questionIds);
+                    
+                    // Filter questions based on IDs from question_sets.json
+                    questionIds.forEach(questionId => {
+                        const question = allAvailableQuestions.find(q => q.id === questionId);
+                        if (question) {
+                            allQuestions.push(question);
+                        } else {
+                            console.warn(`Question with ID "${questionId}" not found in vong3.json`);
+                        }
+                    });
+                } else {
+                    console.error(`Set "${selectedSet}" not found in question_sets.json for vong3`);
+                    // Fallback to all questions if set not found
+                    allQuestions = allAvailableQuestions;
+                }
+            } else {
+                // No specific set selected, load all questions (fallback behavior)
+                console.log('No specific set selected, loading all questions');
+                allQuestions = allAvailableQuestions;
+            }
+
+            if (allQuestions.length > 0) {
+                console.log(`Loaded ${allQuestions.length} questions for vong3 based on question_sets.json configuration`);
+                
+                // Check if we need to load a specific question from URL parameters
                 const urlParams = getUrlParameters();
                 if (urlParams.questionId) {
                     // Show back button when coming from thuchanh.html
@@ -559,7 +619,8 @@ document.addEventListener('DOMContentLoaded', () => {    // URL Parameter handli
                         progressTextEl.textContent = `Không tìm thấy câu hỏi ${urlParams.questionId}. Hiển thị câu hỏi đầu tiên.`;
                     }
                 } else {
-                    progressTextEl.textContent = `Đã tải ${allQuestions.length} câu hỏi thực hành. Nhấn "Bắt đầu" để bắt đầu.`;
+                    const setInfo = selectedSet ? ` cho bộ ${selectedSet}` : '';
+                    progressTextEl.textContent = `Đã tải ${allQuestions.length} câu hỏi thực hành${setInfo}. Nhấn "Bắt đầu" để bắt đầu.`;
                 }
                 
                 // Update round info display
@@ -570,21 +631,26 @@ document.addEventListener('DOMContentLoaded', () => {    // URL Parameter handli
                     questionSectionEl.style.display = 'block';
                     questionSectionEl.style.opacity = '1';
                     questionSectionEl.style.visibility = 'visible';
-                }        } else {
-            progressTextEl.textContent = "Không tìm thấy câu hỏi nào trong file vong3.json.";
+                }
+            } else {
+                progressTextEl.textContent = "Không tìm thấy câu hỏi phù hợp theo cấu hình trong question_sets.json.";
+            }
+        } catch (error) {
+            console.error("Could not load questions:", error);
+            progressTextEl.textContent = "Lỗi tải dữ liệu câu hỏi. Vui lòng kiểm tra file vong3.json, question_sets.json và console.";
         }
-    } catch (error) {
-        console.error("Could not load questions:", error);
-        progressTextEl.textContent = "Lỗi tải dữ liệu câu hỏi. Vui lòng kiểm tra file vong3.json và console.";    }
+    }
     
     startSequenceBtn.addEventListener('click', startQuestionSequence);
     nextQuestionBtn.addEventListener('click', nextQuestion);
-    
-    // Back to thuchanh.html button functionality    if (backToThuchanhBtn) {
+      // Back to thuchanh.html button functionality
+    if (backToThuchanhBtn) {
         backToThuchanhBtn.addEventListener('click', () => {
             window.location.href = 'thuchanh.html';
         });
-    }    document.addEventListener('keydown', (e) => {
+    }
+
+    document.addEventListener('keydown', (e) => {
         console.log('Key pressed in app3.js:', e.key); // Debug log
         if (e.key === 'ArrowRight') {
             e.preventDefault();
