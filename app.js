@@ -220,12 +220,28 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         };
 
-        // Apply background based on bg_image property
+        // Apply background based on bg_image and bg_image_overlay properties
         if (slideContainer) {
             if (questionData.bg_image) {
-                // Use bg_image from JSON data and alternate between gradient and stripes
-                const imageStyle = currentQuestionIndex % 2 === 0 ? 'gradient' : 'stripes';
-                applyBgImage(questionData.bg_image, imageStyle);
+                let imageStyle = null;
+
+                if (questionData.bg_image_overlay === 'gradient') {
+                    imageStyle = 'gradient';
+                } else if (questionData.bg_image_overlay === 'stripes') {
+                    imageStyle = 'stripes';
+                }
+
+                if (imageStyle) {
+                    applyBgImage(questionData.bg_image, imageStyle);
+                } else {
+                    // Apply only the bg_image if no overlay is specified
+                    const webPath = questionData.bg_image.replace(/\\/g, '/');
+                    slideContainer.style.backgroundImage = `url('${webPath}')`;
+                    slideContainer.style.backgroundSize = 'cover';
+                    slideContainer.style.backgroundPosition = 'center';
+                    slideContainer.style.backgroundRepeat = 'no-repeat';
+                    slideContainer.classList.remove(...backgroundStyles);
+                }
             } else {
                 // Fallback to default background if no bg_image is specified
                 slideContainer.classList.remove(...backgroundStyles);
