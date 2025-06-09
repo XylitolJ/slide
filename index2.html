@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hội thi ATVSV giỏi năm 2025</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Anton:wght@400&family=Bebas+Neue&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            height: 100vh;
+            background: linear-gradient(135deg, #0a192f 0%, #1e3a8a 50%, #1e40af 100%);
+            background-size: 400% 400%;
+            animation: gradientShift 8s ease-in-out infinite;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        @keyframes gradientShift {
+            0%, 100% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+        }
+
+        .container {
+            text-align: center;
+            padding: 2rem;
+            max-width: 1200px;
+            width: 100%;
+            position: relative;
+            z-index: 2;
+        }
+
+        .decorative-line {
+            width: 200px;
+            height: 4px;
+            background: linear-gradient(90deg, transparent, #ff6900, transparent);
+            margin: 0 auto;
+            opacity: 0;
+            transform: scaleX(0);
+            animation: lineGrow 1.5s ease-out 0.5s forwards;
+        }
+
+        @keyframes lineGrow {
+            to {
+                opacity: 1;
+                transform: scaleX(1);
+            }
+        }
+
+        .main-title {
+            font-family: 'Bebas Neue', cursive;
+            font-size: clamp(2.5rem, 6vw, 5rem);
+            color: #ff6900;
+            line-height: 1.1;
+            margin: 2rem 0;
+            opacity: 0;
+            transform: translateY(50px);
+            animation: slideUpFade 1.2s ease-out 1s forwards;
+            text-shadow: 3px 3px 10px rgba(0, 0, 0, 0.5);
+            letter-spacing: 2px;
+        }
+
+        @keyframes slideUpFade {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .subtitle {
+            font-size: clamp(1.2rem, 3vw, 1.8rem);
+            color: #e2e8f0;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            opacity: 0;
+            animation: fadeIn 1s ease-out 2s forwards;
+        }
+
+        .organization {
+            font-size: clamp(1rem, 2.5vw, 1.4rem);
+            color: #cbd5e1;
+            font-weight: 500;
+            margin-bottom: 3rem;
+            opacity: 0;
+            animation: fadeIn 1s ease-out 2.5s forwards;
+        }
+
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+            }
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .info-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 105, 0, 0.3);
+            border-radius: 15px;
+            padding: 2rem;
+            opacity: 0;
+            transform: translateY(30px);
+            animation: cardSlideUp 1s ease-out forwards;
+        }
+
+        .info-card:nth-child(1) {
+            animation-delay: 3s;
+        }
+
+        .info-card:nth-child(2) {
+            animation-delay: 3.3s;
+        }
+
+        @keyframes cardSlideUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .info-icon {
+            font-size: 2.5rem;
+            color: #ff6900;
+            margin-bottom: 1rem;
+            opacity: 0;
+            transform: scale(0);
+            animation: iconBounce 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+        }
+
+        .info-card:nth-child(1) .info-icon {
+            animation-delay: 3.5s;
+        }
+
+        .info-card:nth-child(2) .info-icon {
+            animation-delay: 3.8s;
+        }
+
+        @keyframes iconBounce {
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .info-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #ff6900;
+            margin-bottom: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .info-content {
+            font-size: 1rem;
+            color: #e2e8f0;
+            line-height: 1.6;
+        }
+
+        .floating-elements {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .floating-circle {
+            position: absolute;
+            border: 2px solid rgba(255, 105, 0, 0.2);
+            border-radius: 50%;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .floating-circle:nth-child(1) {
+            width: 60px;
+            height: 60px;
+            top: 20%;
+            left: 10%;
+            animation-delay: 0s;
+        }
+
+        .floating-circle:nth-child(2) {
+            width: 80px;
+            height: 80px;
+            top: 60%;
+            right: 15%;
+            animation-delay: 2s;
+        }
+
+        .floating-circle:nth-child(3) {
+            width: 40px;
+            height: 40px;
+            top: 30%;
+            right: 25%;
+            animation-delay: 4s;
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0px) rotate(0deg);
+                opacity: 0.3;
+            }
+            50% {
+                transform: translateY(-20px) rotate(180deg);
+                opacity: 0.8;
+            }
+        }
+
+        .year-badge {
+            position: absolute;
+            top: 2rem;
+            right: 2rem;
+            background: linear-gradient(135deg, #ff6900, #ff8500);
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 50px;
+            font-family: 'Bebas Neue', cursive;
+            font-size: 1.5rem;
+            letter-spacing: 2px;
+            box-shadow: 0 10px 30px rgba(255, 105, 0, 0.3);
+            opacity: 0;
+            transform: translateX(50px);
+            animation: slideInRight 1s ease-out 4s forwards;
+        }
+
+        @keyframes slideInRight {
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .pulse-dot {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: #ff6900;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        .pulse-dot:nth-child(1) {
+            top: 15%;
+            left: 5%;
+            animation-delay: 0.5s;
+        }
+
+        .pulse-dot:nth-child(2) {
+            bottom: 20%;
+            left: 8%;
+            animation-delay: 1.5s;
+        }
+
+        .pulse-dot:nth-child(3) {
+            top: 25%;
+            right: 10%;
+            animation-delay: 2.5s;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(1.5);
+                opacity: 0.7;
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+            
+            .info-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+            
+            .info-card {
+                padding: 1.5rem;
+            }
+            
+            .year-badge {
+                top: 1rem;
+                right: 1rem;
+                padding: 0.8rem 1.5rem;
+                font-size: 1.2rem;
+            }
+        }
+
+        /* Loading overlay */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #0a192f;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            animation: fadeOut 1s ease-out 0.5s forwards;
+        }
+
+        .loading-text {
+            color: #ff6900;
+            font-family: 'Bebas Neue', cursive;
+            font-size: 2rem;
+            letter-spacing: 3px;
+            animation: loadingPulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes loadingPulse {
+            0%, 100% {
+                opacity: 0.6;
+            }
+            50% {
+                opacity: 1;
+            }
+        }
+
+        @keyframes fadeOut {
+            to {
+                opacity: 0;
+                visibility: hidden;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading Overlay -->
+    <div class="loading-overlay">
+        <div class="loading-text">ĐANG TẢI...</div>
+    </div>
+
+    <!-- Floating Background Elements -->
+    <div class="floating-elements">
+        <div class="floating-circle"></div>
+        <div class="floating-circle"></div>
+        <div class="floating-circle"></div>
+        <div class="pulse-dot"></div>
+        <div class="pulse-dot"></div>
+        <div class="pulse-dot"></div>
+    </div>
+
+    <!-- Year Badge -->
+    <div class="year-badge">2025</div>
+
+    <!-- Main Content -->
+    <div class="container">
+        <div class="decorative-line"></div>
+        
+        <h1 class="main-title">
+            HỘI THI ATVSV GIỎI
+        </h1>
+        
+        <p class="subtitle">
+            CẤP CÔNG TY CÔNG NGHIỆP HÓA CHẤT MỎ THÁI NGUYÊN
+        </p>
+        
+        <p class="organization">
+            Công ty Công nghiệp Hóa chất mỏ Thái Nguyên
+        </p>
+
+        <div class="info-grid">
+            <div class="info-card">
+                <div class="info-icon">📅</div>
+                <div class="info-title">Thời gian</div>
+                <div class="info-content">25/06/2025</div>
+            </div>
+            
+            <div class="info-card">
+                <div class="info-icon">📍</div>
+                <div class="info-title">Địa điểm</div>
+                <div class="info-content">
+                    Hội trường tầng 5 - Văn phòng Công ty<br>
+                    Số 9A, Đường Phan Đình Phùng<br>
+                    Phường Đồng Quang, Thành phố Thái Nguyên
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Additional JavaScript for enhanced interactions
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add subtle mouse movement effect to floating elements
+            document.addEventListener('mousemove', function(e) {
+                const circles = document.querySelectorAll('.floating-circle');
+                const dots = document.querySelectorAll('.pulse-dot');
+                
+                const mouseX = e.clientX / window.innerWidth;
+                const mouseY = e.clientY / window.innerHeight;
+                
+                circles.forEach((circle, index) => {
+                    const speed = (index + 1) * 0.02;
+                    const x = (mouseX - 0.5) * speed * 100;
+                    const y = (mouseY - 0.5) * speed * 100;
+                    
+                    circle.style.transform = `translate(${x}px, ${y}px)`;
+                });
+                
+                dots.forEach((dot, index) => {
+                    const speed = (index + 1) * 0.01;
+                    const x = (mouseX - 0.5) * speed * 50;
+                    const y = (mouseY - 0.5) * speed * 50;
+                    
+                    dot.style.transform = `translate(${x}px, ${y}px)`;
+                });
+            });
+
+            // Add hover effects to info cards
+            const infoCards = document.querySelectorAll('.info-card');
+            infoCards.forEach(card => {
+                card.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-5px) scale(1.02)';
+                    this.style.boxShadow = '0 15px 40px rgba(255, 105, 0, 0.2)';
+                    this.style.transition = 'all 0.3s ease';
+                });
+                
+                card.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateY(0) scale(1)';
+                    this.style.boxShadow = 'none';
+                });
+            });
+
+            // Add click effect to year badge
+            const yearBadge = document.querySelector('.year-badge');
+            yearBadge.addEventListener('click', function() {
+                this.style.animation = 'none';
+                setTimeout(() => {
+                    this.style.animation = 'pulse 0.6s ease-out';
+                }, 10);
+            });
+
+            // Preload animation completion
+            setTimeout(() => {
+                document.body.classList.add('loaded');
+            }, 1000);
+        });
+
+        // Add some dynamic color cycling for extra visual appeal
+        setInterval(() => {
+            const decorativeLine = document.querySelector('.decorative-line');
+            const currentHue = Math.floor(Math.random() * 60) + 20; // Orange to red range
+            decorativeLine.style.background = `linear-gradient(90deg, transparent, hsl(${currentHue}, 100%, 55%), transparent)`;
+        }, 5000);
+    </script>
+</body>
+</html>

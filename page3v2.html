@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản Lý Vòng Thi - ATVSV 2025 V2</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        html, body {
+            height: 100vh;
+            overflow: hidden;
+        }
+        
+        .slide-container {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 30%, #16213e 70%, #0f3460 100%);
+        }
+        
+        .floating-particles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 1;
+        }
+        
+        .particle {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            animation: float 8s infinite linear;
+        }
+        
+        .particle:nth-child(1) { width: 8px; height: 8px; left: 10%; animation-delay: 0s; }
+        .particle:nth-child(2) { width: 12px; height: 12px; left: 20%; animation-delay: 1s; }
+        .particle:nth-child(3) { width: 6px; height: 6px; left: 30%; animation-delay: 2s; }
+        .particle:nth-child(4) { width: 10px; height: 10px; left: 40%; animation-delay: 3s; }
+        .particle:nth-child(5) { width: 14px; height: 14px; left: 50%; animation-delay: 4s; }
+        .particle:nth-child(6) { width: 8px; height: 8px; left: 60%; animation-delay: 5s; }
+        .particle:nth-child(7) { width: 12px; height: 12px; left: 70%; animation-delay: 6s; }
+        .particle:nth-child(8) { width: 6px; height: 6px; left: 80%; animation-delay: 7s; }
+        
+        @keyframes float {
+            0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(-100px) rotate(360deg); opacity: 0; }
+        }
+        
+        .content-layer {
+            position: relative;
+            z-index: 10;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+          /* Circular Round Cards */
+        .rounds-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 6rem;
+            flex: 1;
+            padding: 2rem;
+        }
+        
+        .round-circle {
+            position: relative;
+            width: 380px;
+            height: 380px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            overflow: hidden;
+            border: 6px solid rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 12px 48px rgba(0, 0, 0, 0.3);
+        }
+        
+        .round-circle::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            z-index: -1;
+            animation: rotate 3s linear infinite;
+        }
+        
+        @keyframes rotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+          .round-circle:hover {
+            transform: scale(1.05) translateY(-15px);
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.4);
+        }
+        
+        .round-1 {
+            background: linear-gradient(135deg, #059669, #10b981, #34d399);
+        }
+        
+        .round-2 {
+            background: linear-gradient(135deg, #dc2626, #ef4444, #f87171);
+        }
+        
+        .round-3 {
+            background: linear-gradient(135deg, #7c3aed, #a855f7, #c084fc);
+        }
+        
+        .round-icon {
+            font-size: 5.5rem;
+            color: white;
+            margin-bottom: 1.5rem;
+            text-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+        
+        .round-title {
+            color: white;
+            font-size: 2.2rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            text-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
+            letter-spacing: 0.5px;
+        }
+        
+        .round-description {
+            color: rgba(255, 255, 255, 0.95);
+            font-size: 1.4rem;
+            font-weight: 600;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            line-height: 1.3;
+            padding: 0 1rem;
+        }
+          /* Arrow Connectors */
+        .arrow-connector {
+            position: relative;
+            z-index: 5;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 4rem;
+            animation: pulse-arrow 2s infinite;
+            margin: 0 2rem;
+        }
+        
+        @keyframes pulse-arrow {
+            0%, 100% { opacity: 0.7; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.3); }
+        }
+        
+        /* Enhanced animations */
+        .slide-in-left {
+            animation: slideInLeft 1s ease-out;
+        }
+        
+        .slide-in-center {
+            animation: slideInCenter 1s ease-out;
+        }
+        
+        .slide-in-right {
+            animation: slideInRight 1s ease-out;
+        }
+        
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-100px) rotate(-180deg) scale(0.5);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0) rotate(0deg) scale(1);
+            }
+        }
+        
+        @keyframes slideInCenter {
+            from {
+                opacity: 0;
+                transform: translateY(-100px) scale(0.3);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+        
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(100px) rotate(180deg) scale(0.5);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0) rotate(0deg) scale(1);
+            }
+        }
+        
+        .navigation-hint {
+            position: fixed;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            z-index: 100;
+            opacity: 0.9;
+        }
+        
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #f3f3f3;
+            border-top: 2px solid #3b82f6;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .fade-in {
+            animation: fadeIn 1s ease-in-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }        /* Main title styling */
+        .main-title {
+            background: linear-gradient(45deg, #60a5fa, #a78bfa, #f472b6);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-align: center;
+            font-size: 4rem;
+            font-weight: 800;
+            margin-bottom: 2rem;
+            text-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            line-height: 1.1;
+        }
+
+        /* Question list styling */
+        .question-list {
+            max-height: 60vh;
+            overflow-y: auto;
+        }
+
+        .question-item {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            border: 1px solid #e5e7eb;
+            transition: all 0.3s ease;
+        }
+
+        .question-item:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <div class="slide-container gradient-bg">
+        <!-- Floating particles background -->
+        <div class="floating-particles">
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+        </div>        <div class="content-layer">            <!-- Header -->
+            <header class="text-center py-6 text-white">
+                <h1 class="main-title fade-in">
+                    <i class="fas fa-trophy mr-4 text-yellow-300"></i>
+                    HỘI THI ATVSV GIỎI 2025
+                </h1>
+                <p class="text-2xl text-gray-300 fade-in mb-2 font-semibold">Công ty Công nghiệp Hóa chất mỏ Thái Nguyên</p>
+                <p class="text-xl text-gray-400 fade-in font-medium">
+                    <i class="fas fa-calendar-alt mr-2"></i>25/06/2025
+                    <span class="mx-4">|</span>
+                    <i class="fas fa-map-marker-alt mr-2"></i>Hội trường tầng 5
+                </p>
+            </header>
+
+            <!-- Main Content -->
+            <main class="flex-1">
+                <!-- Round Selection -->
+                <div class="rounds-container" id="roundSelection">
+                    <!-- Round cards will be injected here -->
+                </div>
+
+                <!-- Question Container -->
+                <div id="questionContainer" class="fade-in px-8" style="display: none;">
+                    <div class="max-w-7xl mx-auto">
+                        <div class="bg-white bg-opacity-90 rounded-2xl p-6 backdrop-filter backdrop-blur-sm">
+                            <div class="flex items-center justify-between mb-6">
+                                <button id="backToRounds" class="flex items-center text-blue-600 hover:text-blue-800 font-semibold transition-colors">
+                                    <i class="fas fa-arrow-left mr-2"></i>Quay lại danh sách vòng thi
+                                </button>
+                                <div id="questionStats" class="text-gray-600 font-medium">
+                                    <!-- Question statistics will be displayed here -->
+                                </div>
+                            </div>
+                            <div id="questionList" class="question-list">
+                                <!-- Questions will be listed here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+          <!-- Navigation hint -->
+        <div class="navigation-hint">
+            <i class="fas fa-keyboard mr-2"></i>
+            Phím số 1, 2, 3 để chọn vòng thi | Q để quay lại | ← Trang chủ
+        </div>
+    </div>    <script>
+        let roundsData = null;
+        let questionsData = {};
+
+        // Load rounds data on page load
+        async function loadRounds() {
+            try {
+                const roundSelection = document.getElementById('roundSelection');
+                roundSelection.innerHTML = '<div class="text-center text-white"><div class="loading-spinner mx-auto mb-4"></div><p>Đang tải dữ liệu...</p></div>';
+
+                const response = await fetch('quyche.json');
+                const data = await response.json();
+                roundsData = data.quy_che_thi.cac_vong_thi;
+
+                // Pre-load question data for accurate counts
+                await loadQuestionCounts();
+
+                // Create round cards
+                roundSelection.innerHTML = '';
+                
+                // Create the rounds container with arrows
+                const roundsContainer = document.createElement('div');
+                roundsContainer.className = 'rounds-container';
+                
+                roundsData.forEach((round, index) => {
+                    const roundNumber = index + 1;
+                    const roundCard = createRoundCard(round, roundNumber);
+                    roundsContainer.appendChild(roundCard);
+                    
+                    // Add arrow connector (except after the last round)
+                    if (index < roundsData.length - 1) {
+                        const arrow = document.createElement('div');
+                        arrow.className = 'arrow-connector';
+                        arrow.innerHTML = '<i class="fas fa-chevron-right"></i>';
+                        roundsContainer.appendChild(arrow);
+                    }
+                });
+                
+                roundSelection.appendChild(roundsContainer);
+
+                // Add enhanced slide-in animation for cards
+                const cards = roundSelection.querySelectorAll('.round-circle');
+                const animationClasses = ['slide-in-left', 'slide-in-center', 'slide-in-right'];
+                cards.forEach((card, index) => {
+                    setTimeout(() => {
+                        card.classList.add(animationClasses[index] || 'slide-in-center');
+                    }, index * 300);
+                });
+
+            } catch (error) {
+                console.error('Error loading rounds:', error);
+                const roundSelection = document.getElementById('roundSelection');
+                roundSelection.innerHTML = '<div class="text-center text-red-600"><i class="fas fa-exclamation-triangle text-4xl mb-4"></i><p>Không thể tải dữ liệu. Vui lòng thử lại.</p></div>';
+            }
+        }
+
+        // Pre-load question data to get accurate counts
+        async function loadQuestionCounts() {
+            const files = ['vong1.json', 'vong2.json', 'vong3.json'];
+            
+            for (let i = 0; i < files.length; i++) {
+                try {
+                    const response = await fetch(files[i]);
+                    const data = await response.json();
+                    questionsData[i + 1] = data;
+                } catch (error) {
+                    console.error(`Error loading ${files[i]}:`, error);
+                    questionsData[i + 1] = null;
+                }
+            }
+        }
+
+        // Get actual question count for each round
+        function getQuestionCount(roundNumber) {
+            const data = questionsData[roundNumber];
+            if (!data) return 0;
+
+            let count = 0;
+            if (roundNumber === 1) {
+                if (data.vong_1?.chinh_sach_phap_luat_va_y_te?.trac_nghiem) {
+                    count += data.vong_1.chinh_sach_phap_luat_va_y_te.trac_nghiem.length;
+                }
+                if (data.vong_1?.phong_chay_chua_chay?.trac_nghiem) {
+                    count += data.vong_1.phong_chay_chua_chay.trac_nghiem.length;
+                }
+            } else if (roundNumber === 2) {
+                if (data.vong_2?.ky_thuat_an_toan?.trac_nghiem) {
+                    count += data.vong_2.ky_thuat_an_toan.trac_nghiem.length;
+                }
+                if (data.vong_2?.chinh_sach_phap_luat_an_toan?.trac_nghiem) {
+                    count += data.vong_2.chinh_sach_phap_luat_an_toan.trac_nghiem.length;
+                }
+            } else if (roundNumber === 3) {
+                if (data.vong_3?.y_te?.so_cap_cuu?.thuc_hanh) {
+                    count += data.vong_3.y_te.so_cap_cuu.thuc_hanh.length;
+                }
+                if (data.vong_3?.y_te?.so_cap_cuu?.ly_thuyet) {
+                    count += data.vong_3.y_te.so_cap_cuu.ly_thuyet.length;
+                }
+                if (data.vong_3?.phong_chay_chua_chay?.ly_thuyet_thuc_hanh) {
+                    count += data.vong_3.phong_chay_chua_chay.ly_thuyet_thuc_hanh.length;
+                }
+            }
+            return count;
+        }
+
+        // Create round card element with circular design
+        function createRoundCard(round, roundNumber) {
+            const card = document.createElement('div');
+            card.className = `round-circle round-${roundNumber}`;
+            card.dataset.round = roundNumber;
+            
+            const icon = getRoundIcon(roundNumber);
+            
+            // Define round titles
+            const roundTitles = {
+                1: 'Thi hiểu biết kiến thức về chính sách pháp luật, PCCC và Y tế',
+                2: 'Thi hiểu biết về kỹ thuật an toàn trong khai thác mỏ',
+                3: 'Thi thực hành kỹ năng an toàn, sơ cấp cứu và PCCC'
+            };
+
+            const roundShortTitles = {
+                1: 'Chính sách & Pháp luật',
+                2: 'Kỹ thuật An toàn',
+                3: 'Thực hành & Kỹ năng'
+            };
+            
+            card.innerHTML = `
+                <i class="${icon} round-icon"></i>
+                <div class="round-title">VÒNG ${roundNumber}</div>
+                <div class="round-description">${roundShortTitles[roundNumber]}</div>
+            `;
+
+            // Add click handler for round indicator navigation
+            card.addEventListener('click', (e) => {
+                // Check if click is on the main card area for info page
+                window.location.href = `infovong${roundNumber}.html`;
+            });
+
+            return card;
+        }
+
+        // Get icon for each round
+        function getRoundIcon(roundNumber) {
+            const icons = {
+                1: 'fas fa-gavel',
+                2: 'fas fa-hard-hat', 
+                3: 'fas fa-hands-helping'
+            };
+            return icons[roundNumber] || 'fas fa-question';
+        }
+
+        // Load and display questions for selected round
+        async function loadQuestions(roundNumber) {
+            try {
+                // Special handling for round 3 - redirect to thuchanh.html
+                if (roundNumber === 3) {
+                    window.location.href = 'thuchanh.html';
+                    return;
+                }
+                
+                const questionContainer = document.getElementById('questionContainer');
+                const roundSelection = document.getElementById('roundSelection');
+                
+                // Show loading state
+                questionContainer.style.display = 'block';
+                document.getElementById('questionList').innerHTML = '<div class="text-center py-8"><div class="loading-spinner mx-auto mb-4"></div><p class="text-gray-600">Đang tải câu hỏi...</p></div>';
+                
+                // Hide round selection
+                roundSelection.style.display = 'none';
+
+                const data = questionsData[roundNumber];
+                if (!data) {
+                    throw new Error('Không thể tải dữ liệu câu hỏi');
+                }
+
+                // Collect all questions for the round
+                let allQuestions = [];
+                let roundInfo = roundsData.find(r => r.vong === roundNumber);
+
+                if (roundNumber === 1) {
+                    if (data.vong_1?.chinh_sach_phap_luat_va_y_te?.trac_nghiem) {
+                        allQuestions = allQuestions.concat(data.vong_1.chinh_sach_phap_luat_va_y_te.trac_nghiem);
+                    }
+                    if (data.vong_1?.phong_chay_chua_chay?.trac_nghiem) {
+                        allQuestions = allQuestions.concat(data.vong_1.phong_chay_chua_chay.trac_nghiem);
+                    }
+                } else if (roundNumber === 2) {
+                    if (data.vong_2?.ky_thuat_an_toan?.trac_nghiem) {
+                        allQuestions = allQuestions.concat(data.vong_2.ky_thuat_an_toan.trac_nghiem);
+                    }
+                    if (data.vong_2?.chinh_sach_phap_luat_an_toan?.trac_nghiem) {
+                        allQuestions = allQuestions.concat(data.vong_2.chinh_sach_phap_luat_an_toan.trac_nghiem);
+                    }
+                } else if (roundNumber === 3) {
+                    if (data.vong_3?.y_te?.so_cap_cuu?.thuc_hanh) {
+                        allQuestions = allQuestions.concat(data.vong_3.y_te.so_cap_cuu.thuc_hanh);
+                    }
+                    if (data.vong_3?.y_te?.so_cap_cuu?.ly_thuyet) {
+                        allQuestions = allQuestions.concat(data.vong_3.y_te.so_cap_cuu.ly_thuyet);
+                    }
+                    if (data.vong_3?.phong_chay_chua_chay?.ly_thuyet_thuc_hanh) {
+                        allQuestions = allQuestions.concat(data.vong_3.phong_chay_chua_chay.ly_thuyet_thuc_hanh);
+                    }
+                }
+
+                // Update question stats
+                document.getElementById('questionStats').innerHTML = `
+                    <span class="inline-flex items-center px-4 py-2 rounded-full bg-blue-100 text-blue-800">
+                        <i class="fas fa-list-ol mr-2"></i>
+                        ${allQuestions.length} câu hỏi
+                    </span>
+                `;
+
+                // Display questions
+                const questionList = document.getElementById('questionList');
+                if (allQuestions.length > 0) {
+                    questionList.innerHTML = allQuestions.map((question, index) => `
+                        <div class="question-item" data-question-id="${question.id}">
+                            <div class="flex items-start justify-between">
+                                <div class="flex-1">
+                                    <div class="flex items-center mb-2">
+                                        <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-blue-100 text-blue-800 text-sm font-semibold mr-3">
+                                            ${index + 1}
+                                        </span>
+                                        <div class="text-sm text-gray-500">
+                                            ID: ${question.id} | ${question.category}
+                                        </div>
+                                    </div>
+                                    <p class="text-gray-800 font-medium leading-relaxed">${question.cau_hoi}</p>
+                                    ${question.subcategory ? `
+                                        <div class="mt-2">
+                                            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs bg-gray-100 text-gray-700">
+                                                ${question.subcategory}
+                                            </span>
+                                        </div>
+                                    ` : ''}
+                                </div>
+                                <div class="ml-4 flex items-center space-x-2">
+                                    ${question.use_image === 'Yes' ? '<i class="fas fa-image text-green-600" title="Có hình ảnh"></i>' : ''}
+                                    ${question.speech_id_question ? '<i class="fas fa-volume-up text-blue-600" title="Có âm thanh"></i>' : ''}
+                                </div>
+                            </div>
+                        </div>
+                    `).join('');
+                } else {
+                    questionList.innerHTML = '<div class="text-center py-8 text-gray-500"><i class="fas fa-exclamation-circle text-4xl mb-4"></i><p>Không tìm thấy câu hỏi cho vòng thi này.</p></div>';
+                }
+
+            } catch (error) {
+                console.error('Error loading questions:', error);
+                document.getElementById('questionList').innerHTML = '<div class="text-center py-8 text-red-600"><i class="fas fa-exclamation-triangle text-4xl mb-4"></i><p>Không thể tải câu hỏi. Vui lòng thử lại.</p></div>';
+            }
+        }
+
+        // Back to rounds button handler
+        document.getElementById('backToRounds').addEventListener('click', () => {
+            document.getElementById('questionContainer').style.display = 'none';
+            document.getElementById('roundSelection').style.display = 'flex';
+        });
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowLeft') {
+                // Navigate to index.html
+                window.location.href = 'index.html';
+            } 
+            // Right arrow key disabled to prevent accidental navigation to vong1.html
+            // else if (e.key === 'ArrowRight') {
+            //     // Navigate to vong1.html
+            //     window.location.href = 'vong1.html';
+            // } 
+            else if (e.key === 'Escape') {
+                // Back to rounds if viewing questions
+                const questionContainer = document.getElementById('questionContainer');
+                if (questionContainer.style.display !== 'none') {
+                    document.getElementById('backToRounds').click();
+                }
+            } else if (e.key.toLowerCase() === 'q') {
+                // Navigate to index.html (same as arrow left)
+                window.location.href = 'index.html';
+            } else if (e.key === '1') {
+                // Navigate to vong1.html (equivalent to clicking round 1 indicator)
+                window.location.href = 'vong1.html';
+            } else if (e.key === '2') {
+                // Navigate to vong2.html (equivalent to clicking round 2 indicator)
+                window.location.href = 'vong2.html';
+            } else if (e.key === '3') {
+                // Navigate to vong3.html (equivalent to clicking round 3 indicator)
+                window.location.href = 'vong3.html';
+            }
+        });
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', loadRounds);
+    </script>    <a href="control.html" id="openSettings" class="fixed bottom-4 left-4 text-gray-600 opacity-60 hover:opacity-100 z-50"><i class="fas fa-cog fa-lg"></i></a>
+</body>
+</html>
