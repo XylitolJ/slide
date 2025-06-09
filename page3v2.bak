@@ -343,10 +343,10 @@
             </main>
         </div>
           <!-- Navigation hint -->
-        <!-- <div class="navigation-hint">
+        <div class="navigation-hint">
             <i class="fas fa-keyboard mr-2"></i>
             Phím số 1, 2, 3 để chọn vòng thi | Q để quay lại | ← Trang chủ
-        </div> -->
+        </div>
     </div>    <script>
         let roundsData = null;
         let questionsData = {};
