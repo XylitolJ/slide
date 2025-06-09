@@ -465,8 +465,8 @@ document.addEventListener('DOMContentLoaded', () => {    // URL Parameter handli
             currentQuestionIndex++;
             renderSlide(allQuestions[currentQuestionIndex]);
         } else {
-            // If we're at the last question, navigate back to page3.html
-            window.location.href = 'page3.html';
+            // If we're at the last question, navigate back to thuchanh.html
+            window.location.href = 'thuchanh.html';
         }
         
         // Clear navigation flag after a short delay to allow page rendering
@@ -483,15 +483,15 @@ document.addEventListener('DOMContentLoaded', () => {    // URL Parameter handli
             currentQuestionIndex--;
             renderSlide(allQuestions[currentQuestionIndex]);
         } else {
-            // If we're at the first question, navigate back to page3.html
-            window.location.href = 'page3.html';
+            // If we're at the first question, navigate back to thuchanh.html
+            window.location.href = 'thuchanh.html';
         }
         
         // Clear navigation flag after a short delay to allow page rendering
         setTimeout(() => {
             navigationInProgress = false;
         }, 100);
-    }    // --- Update Round Info Display ---
+    }// --- Update Round Info Display ---
     function updateRoundInfoDisplay() {
         if (roundInfoDisplayEl && contestRoundsData.length > 0) {
             // For Round 3
@@ -648,20 +648,18 @@ document.addEventListener('DOMContentLoaded', () => {    // URL Parameter handli
         backToThuchanhBtn.addEventListener('click', () => {
             window.location.href = 'thuchanh.html';
         });
-    }
-
-    document.addEventListener('keydown', (e) => {
+    }    document.addEventListener('keydown', (e) => {
         console.log('Key pressed in app3.js:', e.key); // Debug log
         if (e.key === 'ArrowRight') {
             e.preventDefault();
-            console.log('Arrow Right pressed - calling nextQuestion()');
+            console.log('Arrow Right pressed - navigating to thuchanh.html');
             stopAllEvents();
-            nextQuestion();
+            window.location.href = 'thuchanh.html';
         } else if (e.key === 'ArrowLeft') {
             e.preventDefault();
-            console.log('Arrow Left pressed - calling previousQuestion()');
+            console.log('Arrow Left pressed - navigating to thuchanh.html');
             stopAllEvents();
-            previousQuestion();
+            window.location.href = 'thuchanh.html';
         } else if (e.key === ' ' || e.key === 'Spacebar') {
             e.preventDefault();
             if (!startSequenceBtn.disabled) {
