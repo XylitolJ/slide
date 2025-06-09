@@ -402,9 +402,7 @@
                     navigateToRound(roundNumber);
                 });
             });
-        }
-
-        // Navigate to round
+        }        // Navigate to round
         function navigateToRound(roundNumber) {
             const roundPages = {
                 1: 'vong1.html',
@@ -413,7 +411,7 @@
             };
             
             if (roundPages[roundNumber]) {
-                window.location.href = roundPages[roundNumber];
+                navigateToPage(roundPages[roundNumber]);
             }
         }
 
@@ -431,14 +429,23 @@
                     break;
                 case 'q':
                 case 'Q':
-                    window.location.href = 'index.html';
+                    navigateToPage('index.html');
+                    break;
+                case 'ArrowLeft':
+                    // Navigate to index page
+                    navigateToPage('index.html');
+                    break;
+                case 'ArrowRight':
+                    // Navigate to vong1 (optional, can be disabled)
+                    navigateToPage('vong1.html');
                     break;
             }
         });
 
         // Initialize on page load
         document.addEventListener('DOMContentLoaded', loadRounds);
-    </script>    
+    </script>
+    <script src="navigation.js"></script>
     <a href="control.html" id="openSettings" class="fixed bottom-4 left-4 text-white opacity-60 hover:opacity-100 z-50">
         <i class="fas fa-cog fa-lg"></i>
     </a>

@@ -680,13 +680,15 @@ async function displayAnswer() {
     }    // --- Navigation ---
     function nextQuestion() {
         navigationInProgress = true; // Set flag to prevent audio restart
-        stopAllEvents();
-
-        if (currentQuestionIndex < allQuestions.length - 1) {
+        stopAllEvents();        if (currentQuestionIndex < allQuestions.length - 1) {
             currentQuestionIndex++;
             renderSlide(allQuestions[currentQuestionIndex]);
         } else {
-            window.location.href = 'page3.html';
+            if (typeof navigateToPage === 'function') {
+                navigateToPage('page3.html');
+            } else {
+                window.location.href = 'page3.html';
+            }
         }
         
         // Clear navigation flag after a short delay to allow page rendering
@@ -697,14 +699,17 @@ async function displayAnswer() {
 
     function previousQuestion() {
         navigationInProgress = true; // Set flag to prevent audio restart
-        stopAllEvents();
-
-        if (currentQuestionIndex > 0) {
+        stopAllEvents();        if (currentQuestionIndex > 0) {
             currentQuestionIndex--;
             renderSlide(allQuestions[currentQuestionIndex]);
         } else {
             // If we're at the first question, navigate back to page3.html
-            window.location.href = 'page3.html';        }
+            if (typeof navigateToPage === 'function') {
+                navigateToPage('page3.html');
+            } else {
+                window.location.href = 'page3.html';
+            }
+        }
     }
 
     // --- Update Round Info Display ---
@@ -816,10 +821,13 @@ async function displayAnswer() {
         // Reset all flags
         sequenceInProgress = false;
         answerShown = false;
-        
-        // Navigate to page3.html
-        window.location.href = 'page3.html';
-    }    // Utility to stop all ongoing timers and audio without navigating away
+          // Navigate to page3.html
+        if (typeof navigateToPage === 'function') {
+            navigateToPage('page3.html');
+        } else {
+            window.location.href = 'page3.html';
+        }
+    }// Utility to stop all ongoing timers and audio without navigating away
     function stopAllEvents() {
         console.log('%c[STOP ALL EVENTS] Starting stopAllEvents()', 'color: red; font-weight: bold;');
         
@@ -914,10 +922,13 @@ async function displayAnswer() {
             // Or, we can make DEBUG_MODE a let and toggle it here, then re-render.
             console.log("Debug mode toggle attempted. Reload page if DEBUG_MODE constant was changed.");        } else if (e.key.toLowerCase() === 'q') { // Q key for emergency exit
             e.preventDefault();
-            emergencyExitToPage3();
-        } else if (e.key === '1') { // Number 1 key to go to info page for round 1
+            emergencyExitToPage3();        } else if (e.key === '1') { // Number 1 key to go to info page for round 1
             e.preventDefault();
-            window.location.href = 'infovong1.html';
+            if (typeof navigateToPage === 'function') {
+                navigateToPage('infovong1.html');
+            } else {
+                window.location.href = 'infovong1.html';
+            }
         }
     });
 

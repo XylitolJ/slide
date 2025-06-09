@@ -1219,9 +1219,12 @@
             if (currentQuestionIndex > 0) {
                 currentQuestionIndex--;
                 displayQuestion();
-            } else {
-                // If at first question, go back to theory selection
-                window.location.href = 'lythuyet.html';
+            } else {                // If at first question, go back to theory selection
+                if (typeof navigateToPage === 'function') {
+                    navigateToPage('lythuyet.html');
+                } else {
+                    window.location.href = 'lythuyet.html';
+                }
             }
         }
 
@@ -1230,15 +1233,20 @@
             if (currentQuestionIndex < questions.length - 1) {
                 currentQuestionIndex++;
                 displayQuestion();
+            } else {                // If at last question, go back to theory selection
+                if (typeof navigateToPage === 'function') {
+                    navigateToPage('lythuyet.html');
+                } else {
+                    window.location.href = 'lythuyet.html';
+                }
+            }
+        }        function goBack() {
+            stopAllAudio();
+            if (typeof navigateToPage === 'function') {
+                navigateToPage('lythuyet.html');
             } else {
-                // If at last question, go back to theory selection
                 window.location.href = 'lythuyet.html';
             }
-        }
-
-        function goBack() {
-            stopAllAudio();
-            window.location.href = 'lythuyet.html';
         }// Restart audio for current question
         function restartAudio() {
             if (questions[currentQuestionIndex]) {
@@ -1292,13 +1300,7 @@
             
             // Restore body scroll
             document.body.style.overflow = '';
-        }
-
-        // Removed unused functions: calculateScore, showResults, closeResults, retakeQuiz, goToTheoryList
-
-        function goBack() {
-            window.location.href = 'lythuyet.html';
-        }
+        }        // Removed unused functions: calculateScore, showResults, closeResults, retakeQuiz, goToTheoryList
 
         // Initialize when page loads
         document.addEventListener("DOMContentLoaded", async () => {
@@ -1313,11 +1315,14 @@
                 previousQuestion(); // stopAllAudio() đã được gọi trong hàm này
             } else if (e.key === 'ArrowRight') {
                 e.preventDefault();
-                nextQuestion(); // stopAllAudio() đã được gọi trong hàm này
-            } else if (e.key.toLowerCase() === 'q') {
+                nextQuestion(); // stopAllAudio() đã được gọi trong hàm này            } else if (e.key.toLowerCase() === 'q') {
                 e.preventDefault();
                 stopAllAudio(); // Dừng audio trước khi thoát
-                window.location.href = 'page3.html';
+                if (typeof navigateToPage === 'function') {
+                    navigateToPage('page3.html');
+                } else {
+                    window.location.href = 'page3.html';
+                }
             } else if (e.key === ' ' || e.key === 'Spacebar') {
                 e.preventDefault();
                 // Toggle audio playback
@@ -1700,8 +1705,8 @@
             <i class="fas fa-clock mr-3"></i>HẾT GIỜ!
             <div class="subtitle">
                 Các đội vui lòng giơ bảng đáp án
-            </div>
-        </div>
+            </div>        </div>
     </div>
+    <script src="navigation.js"></script>
 </body>
 </html>

@@ -366,14 +366,20 @@
             // Store the selected category and set number in localStorage
             localStorage.setItem('selectedCategory', category);
             localStorage.setItem('selectedSet', setNumber);
-            
-
-            if (detailMode) {
-                window.location.href = 'showquiz.html';
+                if (detailMode) {
+                if (typeof navigateToPage === 'function') {
+                    navigateToPage('showquiz.html');
+                } else {
+                    window.location.href = 'showquiz.html';
+                }
             } else {
                 const ids = (quizSets[category][setNumber] || []).join(',');
                 const params = new URLSearchParams({ ids });
-                window.location.href = `vong2.html?${params.toString()}`;
+                if (typeof navigateToPage === 'function') {
+                    navigateToPage(`vong2.html?${params.toString()}`);
+                } else {
+                    window.location.href = `vong2.html?${params.toString()}`;
+                }
             }
         }
 

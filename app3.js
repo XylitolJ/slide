@@ -102,10 +102,13 @@ document.addEventListener('DOMContentLoaded', () => {    // URL Parameter handli
         // Reset all flags
         sequenceInProgress = false;
         answerShown = false;
-        
-        // Navigate to page3.html
+          // Navigate to page3.html
         console.log('Navigating to page3.html');
-        window.location.href = 'page3.html';
+        if (typeof navigateToPage === 'function') {
+            navigateToPage('page3.html');
+        } else {
+            window.location.href = 'page3.html';
+        }
     }
 
     // Utility to stop all ongoing timers and audio without navigating away
@@ -460,13 +463,16 @@ document.addEventListener('DOMContentLoaded', () => {    // URL Parameter handli
     }    // --- Navigation ---
     function nextQuestion() {
         navigationInProgress = true; // Set flag to prevent audio restart
-        stopAllEvents();
-        if (currentQuestionIndex < allQuestions.length - 1) {
+        stopAllEvents();        if (currentQuestionIndex < allQuestions.length - 1) {
             currentQuestionIndex++;
             renderSlide(allQuestions[currentQuestionIndex]);
         } else {
             // If we're at the last question, navigate back to thuchanh.html
-            window.location.href = 'thuchanh.html';
+            if (typeof navigateToPage === 'function') {
+                navigateToPage('thuchanh.html');
+            } else {
+                window.location.href = 'thuchanh.html';
+            }
         }
         
         // Clear navigation flag after a short delay to allow page rendering
@@ -477,14 +483,16 @@ document.addEventListener('DOMContentLoaded', () => {    // URL Parameter handli
 
     function previousQuestion() {
         navigationInProgress = true; // Set flag to prevent audio restart
-        stopAllEvents();
-
-        if (currentQuestionIndex > 0) {
+        stopAllEvents();        if (currentQuestionIndex > 0) {
             currentQuestionIndex--;
             renderSlide(allQuestions[currentQuestionIndex]);
         } else {
             // If we're at the first question, navigate back to thuchanh.html
-            window.location.href = 'thuchanh.html';
+            if (typeof navigateToPage === 'function') {
+                navigateToPage('thuchanh.html');
+            } else {
+                window.location.href = 'thuchanh.html';
+            }
         }
         
         // Clear navigation flag after a short delay to allow page rendering
@@ -675,10 +683,13 @@ document.addEventListener('DOMContentLoaded', () => {    // URL Parameter handli
             console.log("Debug mode toggle attempted. Reload page if DEBUG_MODE constant was changed.");        } else if (e.key.toLowerCase() === 'q') { // Q key for emergency exit
             e.preventDefault();
             console.log('Q key pressed - Emergency exit activated');
-            emergencyExitToPage3();
-        } else if (e.key === '3') { // Number 3 key to go to info page for round 3
+            emergencyExitToPage3();        } else if (e.key === '3') { // Number 3 key to go to info page for round 3
             e.preventDefault();
-            window.location.href = 'infovong3.html';
+            if (typeof navigateToPage === 'function') {
+                navigateToPage('infovong3.html');
+            } else {
+                window.location.href = 'infovong3.html';
+            }
         }
     });
 

@@ -731,13 +731,15 @@ async function displayAnswer() {
     }    // --- Navigation ---
     function nextQuestion() {
         navigationInProgress = true; // Set flag to prevent audio restart
-        stopAllEvents();
-
-        if (currentQuestionIndex < allQuestions.length - 1) {
+        stopAllEvents();        if (currentQuestionIndex < allQuestions.length - 1) {
             currentQuestionIndex++;
             renderSlide(allQuestions[currentQuestionIndex]);
         } else {
-            window.location.href = 'page3.html';
+            if (typeof navigateToPage === 'function') {
+                navigateToPage('page3.html');
+            } else {
+                window.location.href = 'page3.html';
+            }
         }
         
         // Clear navigation flag after a short delay to allow page rendering
@@ -748,14 +750,17 @@ async function displayAnswer() {
 
     function previousQuestion() {
         navigationInProgress = true; // Set flag to prevent audio restart
-        stopAllEvents();
-
-        if (currentQuestionIndex > 0) {
+        stopAllEvents();        if (currentQuestionIndex > 0) {
             currentQuestionIndex--;
             renderSlide(allQuestions[currentQuestionIndex]);
         } else {
             // If we're at the first question, navigate back to page3.html
-            window.location.href = 'page3.html';        }
+            if (typeof navigateToPage === 'function') {
+                navigateToPage('page3.html');
+            } else {
+                window.location.href = 'page3.html';
+            }
+        }
         
         // Clear navigation flag after a short delay to allow page rendering
         setTimeout(() => {
@@ -895,9 +900,12 @@ async function displayAnswer() {
         // Reset all flags
         sequenceInProgress = false;
         answerShown = false;
-        
-        // Navigate to page3.html
-        window.location.href = 'page3.html';
+          // Navigate to page3.html
+        if (typeof navigateToPage === 'function') {
+            navigateToPage('page3.html');
+        } else {
+            window.location.href = 'page3.html';
+        }
     }
 
     // --- Event Listeners ---
@@ -941,10 +949,13 @@ async function displayAnswer() {
             // Or, we can make DEBUG_MODE a let and toggle it here, then re-render.
             console.log("Debug mode toggle attempted. Reload page if DEBUG_MODE constant was changed.");        } else if (e.key.toLowerCase() === 'q') { // Q key for emergency exit
             e.preventDefault();
-            emergencyExitToPage3();
-        } else if (e.key === '2') { // Number 2 key to go to info page for round 2
+            emergencyExitToPage3();        } else if (e.key === '2') { // Number 2 key to go to info page for round 2
             e.preventDefault();
-            window.location.href = 'infovong2.html';
+            if (typeof navigateToPage === 'function') {
+                navigateToPage('infovong2.html');
+            } else {
+                window.location.href = 'infovong2.html';
+            }
         }
     });
 
