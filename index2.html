@@ -6,7 +6,7 @@
     <title>Hội thi ATVSV giỏi năm 2025</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Anton:wght@400&family=Bebas+Neue&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Roboto+Condensed:wght@400;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -19,7 +19,7 @@
             height: 100vh;
             background: linear-gradient(135deg, #0a192f 0%, #1e3a8a 50%, #1e40af 100%);
             background-size: 400% 400%;
-            animation: gradientShift 8s ease-in-out infinite;
+            animation: gradientShift 4s ease-in-out infinite;
             overflow: hidden;
             display: flex;
             align-items: center;
@@ -43,16 +43,14 @@
             width: 100%;
             position: relative;
             z-index: 2;
-        }
-
-        .decorative-line {
+        }        .decorative-line {
             width: 200px;
             height: 4px;
             background: linear-gradient(90deg, transparent, #ff6900, transparent);
-            margin: 0 auto;
+            margin: 0 auto 2rem auto;
             opacity: 0;
             transform: scaleX(0);
-            animation: lineGrow 1.5s ease-out 0.5s forwards;
+            animation: lineGrow 1.5s ease-out 2.3s forwards;
         }
 
         @keyframes lineGrow {
@@ -60,19 +58,18 @@
                 opacity: 1;
                 transform: scaleX(1);
             }
-        }
-
-        .main-title {
-            font-family: 'Bebas Neue', cursive;
+        }        .main-title {
+            font-family: 'Oswald', sans-serif;
             font-size: clamp(2.5rem, 6vw, 5rem);
             color: #ff6900;
-            line-height: 1.1;
-            margin: 2rem 0;
+            line-height: 2.0;
+            margin: 2rem 0 1rem 0;
             opacity: 0;
             transform: translateY(50px);
             animation: slideUpFade 1.2s ease-out 1s forwards;
             text-shadow: 3px 3px 10px rgba(0, 0, 0, 0.5);
             letter-spacing: 2px;
+            font-weight: 600;
         }
 
         @keyframes slideUpFade {
@@ -193,9 +190,7 @@
             border: 2px solid rgba(255, 105, 0, 0.2);
             border-radius: 50%;
             animation: float 6s ease-in-out infinite;
-        }
-
-        .floating-circle:nth-child(1) {
+        }        .floating-circle:nth-child(1) {
             width: 60px;
             height: 60px;
             top: 20%;
@@ -219,6 +214,30 @@
             animation-delay: 4s;
         }
 
+        .floating-circle:nth-child(4) {
+            width: 50px;
+            height: 50px;
+            top: 70%;
+            left: 20%;
+            animation-delay: 1s;
+        }
+
+        .floating-circle:nth-child(5) {
+            width: 35px;
+            height: 35px;
+            top: 10%;
+            right: 40%;
+            animation-delay: 3s;
+        }
+
+        .floating-circle:nth-child(6) {
+            width: 65px;
+            height: 65px;
+            bottom: 15%;
+            right: 5%;
+            animation-delay: 5s;
+        }
+
         @keyframes float {
             0%, 100% {
                 transform: translateY(0px) rotate(0deg);
@@ -228,9 +247,7 @@
                 transform: translateY(-20px) rotate(180deg);
                 opacity: 0.8;
             }
-        }
-
-        .year-badge {
+        }        .year-badge {
             position: absolute;
             top: 2rem;
             right: 2rem;
@@ -238,7 +255,7 @@
             color: white;
             padding: 1rem 2rem;
             border-radius: 50px;
-            font-family: 'Bebas Neue', cursive;
+            font-family: 'Oswald', sans-serif;
             font-size: 1.5rem;
             letter-spacing: 2px;
             box-shadow: 0 10px 30px rgba(255, 105, 0, 0.3);
@@ -261,9 +278,7 @@
             background: #ff6900;
             border-radius: 50%;
             animation: pulse 2s infinite;
-        }
-
-        .pulse-dot:nth-child(1) {
+        }        .pulse-dot:nth-child(1) {
             top: 15%;
             left: 5%;
             animation-delay: 0.5s;
@@ -279,6 +294,36 @@
             top: 25%;
             right: 10%;
             animation-delay: 2.5s;
+        }
+
+        .pulse-dot:nth-child(4) {
+            top: 45%;
+            left: 15%;
+            animation-delay: 3.5s;
+        }
+
+        .pulse-dot:nth-child(5) {
+            bottom: 30%;
+            right: 20%;
+            animation-delay: 4.5s;
+        }
+
+        .pulse-dot:nth-child(6) {
+            top: 5%;
+            left: 30%;
+            animation-delay: 5.5s;
+        }
+
+        .pulse-dot:nth-child(7) {
+            bottom: 10%;
+            right: 35%;
+            animation-delay: 6.5s;
+        }
+
+        .pulse-dot:nth-child(8) {
+            top: 35%;
+            left: 45%;
+            animation-delay: 7.5s;
         }
 
         @keyframes pulse {
@@ -332,11 +377,9 @@
             justify-content: center;
             z-index: 1000;
             animation: fadeOut 1s ease-out 0.5s forwards;
-        }
-
-        .loading-text {
+        }        .loading-text {
             color: #ff6900;
-            font-family: 'Bebas Neue', cursive;
+            font-family: 'Oswald', sans-serif;
             font-size: 2rem;
             letter-spacing: 3px;
             animation: loadingPulse 1.5s ease-in-out infinite;
@@ -363,37 +406,37 @@
     <!-- Loading Overlay -->
     <div class="loading-overlay">
         <div class="loading-text">ĐANG TẢI...</div>
-    </div>
-
-    <!-- Floating Background Elements -->
+    </div>    <!-- Floating Background Elements -->
     <div class="floating-elements">
         <div class="floating-circle"></div>
         <div class="floating-circle"></div>
         <div class="floating-circle"></div>
+        <div class="floating-circle"></div>
+        <div class="floating-circle"></div>
+        <div class="floating-circle"></div>
+        <div class="pulse-dot"></div>
+        <div class="pulse-dot"></div>
+        <div class="pulse-dot"></div>
+        <div class="pulse-dot"></div>
+        <div class="pulse-dot"></div>
         <div class="pulse-dot"></div>
         <div class="pulse-dot"></div>
         <div class="pulse-dot"></div>
     </div>
 
     <!-- Year Badge -->
-    <div class="year-badge">2025</div>
-
-    <!-- Main Content -->
+    <div class="year-badge">2025</div>    <!-- Main Content -->
     <div class="container">
-        <div class="decorative-line"></div>
-        
         <h1 class="main-title">
-            HỘI THI ATVSV GIỎI
+            HỘI THI AN TOÀN VỆ SINH VIÊN GIỎI NĂM 2025
         </h1>
         
+        <div class="decorative-line"></div>
+        
         <p class="subtitle">
-            CẤP CÔNG TY CÔNG NGHIỆP HÓA CHẤT MỎ THÁI NGUYÊN
+        CÔNG TY CÔNG NGHIỆP HÓA CHẤT MỎ THÁI NGUYÊN
         </p>
         
-        <p class="organization">
-            Công ty Công nghiệp Hóa chất mỏ Thái Nguyên
-        </p>
-
         <div class="info-grid">
             <div class="info-card">
                 <div class="info-icon">📅</div>
