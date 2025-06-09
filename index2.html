@@ -616,7 +616,7 @@
 <body>
     <!-- Loading Overlay -->
     <div class="loading-overlay">
-        <div class="loading-text">ĐANG TẢI...</div>
+        <div class="loading-text">...</div>
     </div>    <!-- Floating Background Elements -->
     <div class="floating-elements">
         <div class="floating-circle"></div>
@@ -740,6 +740,15 @@
             const currentHue = Math.floor(Math.random() * 60) + 20; // Orange to red range
             decorativeLine.style.background = `linear-gradient(90deg, transparent, hsl(${currentHue}, 100%, 55%), transparent)`;
         }, 1500);
+
+        // Add keyboard navigation
+        document.addEventListener('keydown', function(event) {
+            // Check if right arrow key is pressed
+            if (event.key === 'ArrowRight' || event.keyCode === 39) {
+                // Navigate to page3.html
+                window.location.href = 'page3.html';
+            }
+        });
     </script>
 </body>
 </html>
