@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản Lý Vòng Thi - ATVSV 2025 V2</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        html, body {
+            height: 100vh;
+            overflow: hidden;
+        }
+        
+        .slide-container {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 30%, #16213e 70%, #0f3460 100%);
+        }
+        
+        .floating-particles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 1;
+        }
+        
+        .particle {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            animation: float 8s infinite linear;
+        }
+        
+        .particle:nth-child(1) { width: 8px; height: 8px; left: 10%; animation-delay: 0s; }
+        .particle:nth-child(2) { width: 12px; height: 12px; left: 20%; animation-delay: 1s; }
+        .particle:nth-child(3) { width: 6px; height: 6px; left: 30%; animation-delay: 2s; }
+        .particle:nth-child(4) { width: 10px; height: 10px; left: 40%; animation-delay: 3s; }
+        .particle:nth-child(5) { width: 14px; height: 14px; left: 50%; animation-delay: 4s; }
+        .particle:nth-child(6) { width: 8px; height: 8px; left: 60%; animation-delay: 5s; }
+        .particle:nth-child(7) { width: 12px; height: 12px; left: 70%; animation-delay: 6s; }
+        .particle:nth-child(8) { width: 6px; height: 6px; left: 80%; animation-delay: 7s; }
+        
+        @keyframes float {
+            0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(-100px) rotate(360deg); opacity: 0; }
+        }
+        
+        .content-layer {
+            position: relative;
+            z-index: 10;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        /* Circular Round Cards */
+        .rounds-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 4rem;
+            flex: 1;
+            padding: 2rem;
+        }
+        
+        .round-circle {
+            position: relative;
+            width: 280px;
+            height: 280px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            overflow: hidden;
+            border: 4px solid rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+        
+        .round-circle::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            z-index: -1;
+            animation: rotate 3s linear infinite;
+        }
+        
+        @keyframes rotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .round-circle:hover {
+            transform: scale(1.1) translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+        }
+        
+        .round-1 {
+            background: linear-gradient(135deg, #059669, #10b981, #34d399);
+        }
+        
+        .round-2 {
+            background: linear-gradient(135deg, #dc2626, #ef4444, #f87171);
+        }
+        
+        .round-3 {
+            background: linear-gradient(135deg, #7c3aed, #a855f7, #c084fc);
+        }
+        
+        .round-icon {
+            font-size: 4rem;
+            color: white;
+            margin-bottom: 1rem;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        
+        .round-title {
+            color: white;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        
+        .round-description {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1rem;
+            font-weight: 500;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+        }
+        
+        /* Arrow Connectors */
+        .arrow-connector {
+            position: relative;
+            z-index: 5;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 3rem;
+            animation: pulse-arrow 2s infinite;
+        }
+        
+        @keyframes pulse-arrow {
+            0%, 100% { opacity: 0.6; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.2); }
+        }
+        
+        /* Enhanced animations */
+        .slide-in-left {
+            animation: slideInLeft 1s ease-out;
+        }
+        
+        .slide-in-center {
+            animation: slideInCenter 1s ease-out;
+        }
+        
+        .slide-in-right {
+            animation: slideInRight 1s ease-out;
+        }
+        
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-100px) rotate(-180deg) scale(0.5);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0) rotate(0deg) scale(1);
+            }
+        }
+        
+        @keyframes slideInCenter {
+            from {
+                opacity: 0;
+                transform: translateY(-100px) scale(0.3);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+        
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(100px) rotate(180deg) scale(0.5);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0) rotate(0deg) scale(1);
+            }
+        }
+        
+        .navigation-hint {
+            position: fixed;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            z-index: 100;
+            opacity: 0.9;
+        }
+        
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #f3f3f3;
+            border-top: 2px solid #3b82f6;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .fade-in {
+            animation: fadeIn 1s ease-in-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Main title styling */
+        .main-title {
+            background: linear-gradient(45deg, #60a5fa, #a78bfa, #f472b6);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-align: center;
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 2rem;
+            text-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+    </style>
+</head>
+<body>
+    <div class="slide-container gradient-bg">
+        <!-- Floating particles background -->
+        <div class="floating-particles">
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+        </div>
+
+        <div class="content-layer">
+            <!-- Header -->
+            <header class="text-center py-8 text-white">
+                <h1 class="main-title fade-in">CUỘC THI AN TOÀN VỆ SINH VIÊN 2025</h1>
+                <p class="text-xl text-gray-300 fade-in">Chọn vòng thi để bắt đầu</p>
+            </header>
+
+            <!-- Main Content -->
+            <main class="flex-1">
+                <div class="rounds-container" id="roundSelection">
+                    <!-- Round 1 -->
+                    <div class="round-circle round-1 slide-in-left" data-round="1">
+                        <i class="fas fa-lightbulb round-icon"></i>
+                        <div class="round-title">VÒNG 1</div>
+                        <div class="round-description">Lý Thuyết</div>
+                    </div>
+                    
+                    <!-- Arrow 1 -->
+                    <div class="arrow-connector">
+                        <i class="fas fa-chevron-right"></i>
+                    </div>
+                    
+                    <!-- Round 2 -->
+                    <div class="round-circle round-2 slide-in-center" data-round="2">
+                        <i class="fas fa-tools round-icon"></i>
+                        <div class="round-title">VÒNG 2</div>
+                        <div class="round-description">Thực Hành</div>
+                    </div>
+                    
+                    <!-- Arrow 2 -->
+                    <div class="arrow-connector">
+                        <i class="fas fa-chevron-right"></i>
+                    </div>
+                    
+                    <!-- Round 3 -->
+                    <div class="round-circle round-3 slide-in-right" data-round="3">
+                        <i class="fas fa-trophy round-icon"></i>
+                        <div class="round-title">VÒNG 3</div>
+                        <div class="round-description">Tăng Tốc</div>
+                    </div>
+                </div>
+            </main>
+        </div>
+        
+        <!-- Navigation hint -->
+        <div class="navigation-hint">
+            <i class="fas fa-keyboard mr-2"></i>
+            Phím số 1, 2, 3 để chọn vòng thi | Q để quay lại
+        </div>
+    </div>
+
+    <script>
+        let roundsData = null;
+        let questionsData = {};
+
+        // Load rounds data on page load
+        async function loadRounds() {
+            try {
+                const response = await fetch('question_sets.json');
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                
+                roundsData = await response.json();
+                console.log('Rounds data loaded:', roundsData);
+                
+                await loadQuestionCounts();
+                displayRounds();
+            } catch (error) {
+                console.error('Error loading rounds:', error);
+                document.getElementById('roundSelection').innerHTML = `
+                    <div class="text-center text-red-500 text-xl">
+                        <i class="fas fa-exclamation-triangle text-4xl mb-4"></i>
+                        <p>Không thể tải dữ liệu vòng thi</p>
+                        <p class="text-sm mt-2">Lỗi: ${error.message}</p>
+                    </div>
+                `;
+            }
+        }
+
+        // Pre-load question data to get accurate counts
+        async function loadQuestionCounts() {
+            const files = ['vong1.json', 'vong2.json', 'vong3.json'];
+            
+            for (let i = 0; i < files.length; i++) {
+                try {
+                    const response = await fetch(files[i]);
+                    if (response.ok) {
+                        questionsData[i + 1] = await response.json();
+                    }
+                } catch (error) {
+                    console.error(`Error loading ${files[i]}:`, error);
+                }
+            }
+        }
+
+        // Get actual question count for each round
+        function getQuestionCount(roundNumber) {
+            const data = questionsData[roundNumber];
+            if (!data) return 0;
+
+            let count = 0;
+            if (roundNumber === 1) {
+                count = (data.lythuyet || []).length;
+            } else if (roundNumber === 2) {
+                count = (data.thuchanh || []).length;
+            } else if (roundNumber === 3) {
+                count = (data.tangtoc || []).length;
+            }
+            return count;
+        }
+
+        // Display rounds
+        function displayRounds() {
+            // Add click listeners to existing round circles
+            document.querySelectorAll('.round-circle').forEach(circle => {
+                circle.addEventListener('click', function() {
+                    const roundNumber = parseInt(this.dataset.round);
+                    navigateToRound(roundNumber);
+                });
+            });
+        }
+
+        // Navigate to round
+        function navigateToRound(roundNumber) {
+            const roundPages = {
+                1: 'vong1.html',
+                2: 'vong2.html', 
+                3: 'vong3.html'
+            };
+            
+            if (roundPages[roundNumber]) {
+                window.location.href = roundPages[roundNumber];
+            }
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            switch(e.key) {
+                case '1':
+                    navigateToRound(1);
+                    break;
+                case '2':
+                    navigateToRound(2);
+                    break;
+                case '3':
+                    navigateToRound(3);
+                    break;
+                case 'q':
+                case 'Q':
+                    window.location.href = 'index.html';
+                    break;
+            }
+        });
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', loadRounds);
+    </script>    
+    <a href="control.html" id="openSettings" class="fixed bottom-4 left-4 text-white opacity-60 hover:opacity-100 z-50">
+        <i class="fas fa-cog fa-lg"></i>
+    </a>
+</body>
+</html>

@@ -33,10 +33,16 @@
             <div class="flex items-center justify-between">
                 <label for="questionFont" class="font-semibold">Cỡ chữ câu hỏi</label>
                 <input id="questionFont" type="number" min="16" max="60" class="border rounded px-2 py-1 w-24">
-            </div>
-            <div class="flex items-center justify-between">
+            </div>            <div class="flex items-center justify-between">
                 <label for="optionFont" class="font-semibold">Cỡ chữ đáp án</label>
                 <input id="optionFont" type="number" min="14" max="60" class="border rounded px-2 py-1 w-24">
+            </div>
+            <div class="flex items-center justify-between">
+                <label for="pageDesign" class="font-semibold">Thiết kế trang chính</label>
+                <select id="pageDesign" class="border rounded px-2 py-1">
+                    <option value="page3.html">Thiết kế cơ bản</option>
+                    <option value="page3v2.html">Thiết kế hình tròn</option>
+                </select>
             </div>
         </div>
         <div class="flex justify-between pt-4">
@@ -52,18 +58,27 @@ function loadSettings() {
     document.getElementById('autoStart').checked = localStorage.getItem('autoStart') === 'true';
     document.getElementById('questionFont').value = localStorage.getItem('fontSizeQuestion') || 24;
     document.getElementById('optionFont').value = localStorage.getItem('fontSizeOption') || 20;
+    document.getElementById('pageDesign').value = localStorage.getItem('pageDesign') || 'page3.html';
 }
 function saveSetting(key, value) { localStorage.setItem(key, value); }
 
 window.addEventListener('DOMContentLoaded', () => {
     loadSettings();
     document.getElementById('displayMode').addEventListener('change', e => saveSetting('displayMode', e.target.value));
-    document.getElementById('useSpeech').addEventListener('change', e => saveSetting('useSpeech', e.target.checked));
-    document.getElementById('autoStart').addEventListener('change', e => saveSetting('autoStart', e.target.checked));
+    document.getElementById('useSpeech').addEventListener('change', e => saveSetting('useSpeech', e.target.checked));    document.getElementById('autoStart').addEventListener('change', e => saveSetting('autoStart', e.target.checked));
     document.getElementById('questionFont').addEventListener('change', e => saveSetting('fontSizeQuestion', e.target.value));
     document.getElementById('optionFont').addEventListener('change', e => saveSetting('fontSizeOption', e.target.value));
-    document.getElementById('backBtn').addEventListener('click', () => { window.location.href = 'page3.html'; });
-    document.addEventListener('keydown', e => { if (e.key.toLowerCase() === 'q') window.location.href = 'page3.html'; });
+    document.getElementById('pageDesign').addEventListener('change', e => saveSetting('pageDesign', e.target.value));
+    document.getElementById('backBtn').addEventListener('click', () => { 
+        const selectedPage = localStorage.getItem('pageDesign') || 'page3.html';
+        window.location.href = selectedPage; 
+    });
+    document.addEventListener('keydown', e => { 
+        if (e.key.toLowerCase() === 'q') {
+            const selectedPage = localStorage.getItem('pageDesign') || 'page3.html';
+            window.location.href = selectedPage; 
+        }
+    });
 });
 </script>
 </body>

@@ -290,16 +290,17 @@
         
         // Start bubble animation immediately when page loads
         window.addEventListener('DOMContentLoaded', function() {
-            initializeBubbles();
-        });
-        
+            initializeBubbles();        });
+    </script>
+    <script src="navigation.js"></script>
+    <script>
         // Keyboard navigation
         document.addEventListener('keydown', function(event) {
             if (event.key === 'ArrowRight') {
-                window.location.href = 'page3.html';
+                navigateToMainPage();
             } else if (event.key.toLowerCase() === 'q') {
-                // Emergency exit to page3.html
-                window.location.href = 'page3.html';
+                // Emergency exit to main page
+                navigateToMainPage();
             }
         });
     </script>

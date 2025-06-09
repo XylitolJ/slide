@@ -153,11 +153,10 @@
                     <div class="bg-white/90 backdrop-blur-sm rounded-full p-1 flex items-center space-x-1 shadow-lg border border-blue-200 text-sm">
                         <button id="detailModeBtn" class="px-3 py-1 rounded-full font-semibold transition-all duration-300 bg-blue-600 text-white shadow-md">
                             Mode 1
-                        </button>
-                        <button id="slideModeBtn" class="px-3 py-1 rounded-full font-semibold transition-all duration-300 text-blue-700 hover:bg-blue-50">
+                        </button>                        <button id="slideModeBtn" class="px-3 py-1 rounded-full font-semibold transition-all duration-300 text-blue-700 hover:bg-blue-50">
                             Mode 2
                         </button>
-                        <a href="page3.html" class="ml-3 text-blue-700 hover:text-blue-900">
+                        <a href="#" id="homeLink" class="ml-3 text-blue-700 hover:text-blue-900">
                             <i class="fas fa-home"></i>
                         </a>
                     </div>
@@ -383,14 +382,19 @@
             await loadQuizSets();
             initializeModeToggle();
             setDisplayMode(detailMode);
-        });
-
-        // Add keyboard navigation
+        });        // Add keyboard navigation
         document.addEventListener('keydown', function(e) {
             if (e.key === 'q' || e.key === 'Q') {
-                window.location.href = 'page3.html';
+                navigateToMainPage();
             }
         });
+        
+        // Add click handler for home link
+        document.getElementById('homeLink').addEventListener('click', function(e) {
+            e.preventDefault();
+            navigateToMainPage();
+        });
     </script>
+    <script src="navigation.js"></script>
 </body>
 </html>

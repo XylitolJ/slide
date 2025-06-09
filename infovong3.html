@@ -473,11 +473,11 @@
             </main>
         </div>    </div>
 
-    <script>// Keyboard navigation
+    <script>        // Keyboard navigation
         document.addEventListener('keydown', (e) => {
             if (e.key === 'ArrowLeft' || e.key.toLowerCase() === 'q') {
-                // Navigate back to page3.html
-                window.location.href = 'page3.html';
+                // Navigate back to main page
+                navigateToMainPage();
             } else if (e.key === 'ArrowRight') {
                 // Navigate to thuchanh.html to start the practical round
                 window.location.href = 'thuchanh.html';
@@ -502,9 +502,9 @@
         }
 
         // Initialize on page load
-        document.addEventListener('DOMContentLoaded', () => {
-            addFadeInAnimation();
+        document.addEventListener('DOMContentLoaded', () => {        addFadeInAnimation();
         });
     </script>
+    <script src="navigation.js"></script>
 </body>
 </html>
