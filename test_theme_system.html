@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Theme System Test</title>
+    <script src="navigation.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f0f0f0;
+            padding: 20px;
+        }
+        .test-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        button {
+            margin: 5px;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            background: #007bff;
+            color: white;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        .theme-button {
+            background: #28a745;
+        }
+        .theme-button:hover {
+            background: #1e7e34;
+        }
+        .info {
+            padding: 10px;
+            background: #e9ecef;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>Theme System Test Page</h1>
+        
+        <div class="test-section">
+            <h2>Current Theme Status</h2>
+            <div class="info">
+                <p><strong>Selected Theme:</strong> <span id="currentTheme">Loading...</span></p>
+                <p><strong>Current Page Base:</strong> <span id="currentPage">Loading...</span></p>
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h2>Theme Selection Test</h2>
+            <p>Click these buttons to set different themes:</p>
+            <button class="theme-button" onclick="setAndTestTheme('classic')">Set Classic Theme</button>
+            <button class="theme-button" onclick="setAndTestTheme('modern')">Set Modern Theme</button>
+            <button class="theme-button" onclick="setAndTestTheme('elegant')">Set Elegant Theme</button>
+        </div>
+        
+        <div class="test-section">
+            <h2>Navigation Test</h2>
+            <p>These buttons will navigate using the current theme:</p>
+            <button onclick="navigateToPage('index.html')">Go to Index</button>
+            <button onclick="navigateToPage('page3.html')">Go to Main Page</button>
+            <button onclick="navigateToPage('infovong1.html')">Go to Info Round 1</button>
+            <button onclick="navigateToPage('thuchanh.html')">Go to Practice</button>
+        </div>
+        
+        <div class="test-section">
+            <h2>Theme Mapping Test</h2>
+            <p>Test theme mapping for different pages:</p>
+            <div id="mappingTest"></div>
+            <button onclick="testThemeMapping()">Test All Theme Mappings</button>
+        </div>
+        
+        <div class="test-section">
+            <h2>Quick Access</h2>
+            <button onclick="window.location.href='control.html'">Open Theme Manager</button>
+            <button onclick="window.location.href='index.html'">Go to Original Index</button>
+        </div>
+    </div>
+
+    <script>
+        function updateStatus() {
+            document.getElementById('currentTheme').textContent = getSelectedTheme();
+            document.getElementById('currentPage').textContent = getCurrentBasePage();
+        }
+        
+        function setAndTestTheme(theme) {
+            localStorage.setItem('selectedTheme', theme);
+            alert(`Theme set to: ${theme}`);
+            updateStatus();
+            updateNavigationLinks();
+        }
+        
+        function testThemeMapping() {
+            const themes = ['classic', 'modern', 'elegant'];
+            const pages = ['index.html', 'page3.html', 'infovong1.html', 'infovong2.html', 'infovong3.html', 'thuchanh.html'];
+            let html = '<h3>Theme Mapping Results:</h3>';
+            
+            themes.forEach(theme => {
+                html += `<h4>${theme.charAt(0).toUpperCase() + theme.slice(1)} Theme:</h4><ul>`;
+                pages.forEach(page => {
+                    const originalTheme = getSelectedTheme();
+                    localStorage.setItem('selectedTheme', theme);
+                    const themedPage = getThemedPage(page);
+                    localStorage.setItem('selectedTheme', originalTheme);
+                    html += `<li>${page} → ${themedPage}</li>`;
+                });
+                html += '</ul>';
+            });
+            
+            document.getElementById('mappingTest').innerHTML = html;
+        }
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            updateStatus();
+        });
+    </script>
+</body>
+</html>

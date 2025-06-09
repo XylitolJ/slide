@@ -398,11 +398,9 @@
                 <div class="text-6xl ${color} mb-6">${icon}</div>
                 <h3 class="text-2xl font-bold text-gray-800 mb-4">Vòng ${roundNumber}</h3>
                 <p class="text-gray-700 font-medium text-lg leading-relaxed">${roundTitles[roundNumber]}</p>
-            `;
-
-            // Click on card navigates to info page
+            `;            // Click on card navigates to info page
             card.addEventListener('click', () => {
-                window.location.href = `infovong${roundNumber}.html`;
+                navigateToPage(`infovong${roundNumber}.html`);
             });
 
             return card;
@@ -436,12 +434,14 @@
                 3: 'from-purple-500 to-purple-600'
             };
             return gradients[roundNumber] || 'from-blue-500 to-blue-600';
-        }        // Load and display questions for selected round
+        }
+        
+        // Load and display questions for selected round
         async function loadQuestions(roundNumber) {
             try {
                 // Special handling for round 3 - redirect to thuchanh.html
                 if (roundNumber === 3) {
-                    window.location.href = 'thuchanh.html';
+                    navigateToPage('thuchanh.html');
                     return;
                 }
                 
@@ -547,13 +547,13 @@
         document.addEventListener('keydown', (e) => {
             if (e.key === 'ArrowLeft') {
                 // Navigate to index.html
-                window.location.href = 'index.html';
+                navigateToPage('index.html');
             } 
             // Right arrow key disabled to prevent accidental navigation to vong1.html
             // else if (e.key === 'ArrowRight') {
             //     // Navigate to vong1.html
-            //     window.location.href = 'vong1.html';
-            // } 
+            //     navigateToPage('vong1.html');
+            // }
             else if (e.key === 'Escape') {
                 // Back to rounds if viewing questions
                 const questionContainer = document.getElementById('questionContainer');
@@ -562,21 +562,20 @@
                 }
             } else if (e.key.toLowerCase() === 'q') {
                 // Stay on page3.html (already here)
-                console.log('Already on page3.html');
-            } else if (e.key === '1') {
+                console.log('Already on page3.html');            } else if (e.key === '1') {
                 // Navigate to vong1.html (equivalent to clicking round 1 indicator)
-                window.location.href = 'vong1.html';
+                navigateToPage('vong1.html');
             } else if (e.key === '2') {
                 // Navigate to vong2.html (equivalent to clicking round 2 indicator)
-                window.location.href = 'vong2.html';
+                navigateToPage('vong2.html');
             } else if (e.key === '3') {
                 // Navigate to vong3.html (equivalent to clicking round 3 indicator)
-                window.location.href = 'vong3.html';
+                navigateToPage('vong3.html');
             }
         });
         // Initialize on page load
-        document.addEventListener('DOMContentLoaded', loadRounds);
-    </script>
+        document.addEventListener('DOMContentLoaded', loadRounds);    </script>
+    <script src="navigation.js"></script>
     <a href="control.html" id="openSettings" class="fixed bottom-4 left-4 text-gray-600 opacity-60 hover:opacity-100 z-50"><i class="fas fa-cog fa-lg"></i></a>
 </body>
 </html>

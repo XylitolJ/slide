@@ -301,11 +301,10 @@
                     modal.remove();
                 }            } else if (e.key.toLowerCase() === 'q') {
                 // Emergency exit to main page
-                navigateToMainPage();
-            } else if (e.key === 'ArrowLeft') {
+                navigateToMainPage();            } else if (e.key === 'ArrowLeft') {
                 // Left arrow key to go back to infovong3.html
                 e.preventDefault();
-                window.location.href = 'infovong3.html';
+                navigateToPage('infovong3.html');
             }
         });    </script>
     <script src="navigation.js"></script>

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thi Trắc Nghiệm - Elegant Theme</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script src="navigation.js"></script>
+    <style>
+        body {
+            background: linear-gradient(135deg, #4c1d95, #7c3aed, #a855f7, #c084fc);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
+</head>
+<body>
+    <div class="text-center">
+        <h1 class="text-4xl font-bold mb-4">Elegant Theme - Index Page</h1>
+        <p class="text-xl mb-8">Đây là placeholder cho trang chính với Elegant Theme</p>
+        <div class="space-x-4">
+            <button onclick="navigateToPage('page3.html')" class="bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-lg">
+                Tiếp tục
+            </button>
+            <button onclick="navigateToPage('control.html')" class="bg-gray-600 hover:bg-gray-700 text-white px-6 py-3 rounded-lg">
+                Cài đặt
+            </button>
+        </div>
+    </div>
+</body>
+</html>

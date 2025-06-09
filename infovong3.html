@@ -477,10 +477,9 @@
         document.addEventListener('keydown', (e) => {
             if (e.key === 'ArrowLeft' || e.key.toLowerCase() === 'q') {
                 // Navigate back to main page
-                navigateToMainPage();
-            } else if (e.key === 'ArrowRight') {
+                navigateToMainPage();            } else if (e.key === 'ArrowRight') {
                 // Navigate to thuchanh.html to start the practical round
-                window.location.href = 'thuchanh.html';
+                navigateToPage('thuchanh.html');
             }
         });
 
