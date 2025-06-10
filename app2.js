@@ -178,11 +178,18 @@ document.addEventListener('DOMContentLoaded', () => {
         if (timesUpPopupEl) {
             timesUpPopupEl.style.display = 'none';
             timesUpPopupEl.style.opacity = '0';
-            timesUpPopupEl.style.animation = 'none';
-        }
+            timesUpPopupEl.style.animation = 'none';        }
         sequenceInProgress = false;
         answerShown = false;
         navigationInProgress = false; // Reset navigation flag
+        
+        // Clean up ResizeObserver if it exists
+        const questionOptionsSection = document.getElementById('questionOptionsArea');
+        if (questionOptionsSection && questionOptionsSection._resizeObserver) {
+            questionOptionsSection._resizeObserver.disconnect();
+            questionOptionsSection._resizeObserver = null;
+            console.log('%c[STOP ALL EVENTS] Cleaned up ResizeObserver', 'color: orange;');
+        }
         
         console.log('%c[STOP ALL EVENTS] stopAllEvents() completed in app2.js', 'color: green; font-weight: bold;');
     }
@@ -218,7 +225,41 @@ document.addEventListener('DOMContentLoaded', () => {
                 console.log(`animateElement: Animation ENDED for ${elementName}, final opacity: ${getComputedStyle(element).opacity}, visibility: ${getComputedStyle(element).visibility}`);
             }, { once: true });
         } else {
-            console.warn('animateElement: Called with null or undefined element for animationClass:', animationClass);
+            console.warn('animateElement: Called with null or undefined element for animationClass:', animationClass);        }
+    }    // Function to dynamically adjust layout based on content overflow
+    function adjustLayoutForOverflow() {
+        const questionOptionsSection = document.getElementById('questionOptionsArea');
+        const imageAreaEl = document.getElementById('imageArea');
+        const mainContentFlexContainer = document.querySelector('.px-8.py-4.flex-grow.flex.overflow-hidden');
+        
+        if (!questionOptionsSection || !imageAreaEl || !mainContentFlexContainer || !currentQuestionData) return;
+        
+        // Check if questionOptionsArea has scroll
+        const hasVerticalScroll = questionOptionsSection.scrollHeight > questionOptionsSection.clientHeight;
+        
+        if (hasVerticalScroll && !imageAreaEl.classList.contains('hidden')) {
+            // Adjust to give more space to questions/options
+            questionOptionsSection.classList.remove('w-3/5', 'w-2/5');
+            questionOptionsSection.classList.add('w-4/5');
+            imageAreaEl.classList.remove('w-2/5', 'w-3/5');
+            imageAreaEl.classList.add('w-1/5');
+            console.log('Layout adjusted: Questions area expanded due to overflow');
+        } else if (!hasVerticalScroll && !imageAreaEl.classList.contains('hidden')) {
+            // Restore original layout when no overflow
+            const isQuestionImage = currentQuestionData && currentQuestionData.question_image === 'Yes';
+            
+            if (isQuestionImage) {
+                questionOptionsSection.classList.remove('w-4/5');
+                questionOptionsSection.classList.add('w-2/5');
+                imageAreaEl.classList.remove('w-1/5');
+                imageAreaEl.classList.add('w-3/5');
+            } else {
+                questionOptionsSection.classList.remove('w-4/5');
+                questionOptionsSection.classList.add('w-3/5');
+                imageAreaEl.classList.remove('w-1/5');
+                imageAreaEl.classList.add('w-2/5');
+            }
+            console.log('Layout restored: Original proportions due to no overflow');
         }
     }
 
@@ -453,27 +494,40 @@ document.addEventListener('DOMContentLoaded', () => {
             if(imageAreaEl) imageAreaEl.classList.add('hidden');
             if(questionOptionsSection) questionOptionsSection.classList.add('w-full');
             if(mainContentFlexContainer) mainContentFlexContainer.classList.add('flex-row');
-        }
-
-        if (questionData.phuong_an) {
+        }        if (questionData.phuong_an) {
             Object.entries(questionData.phuong_an).forEach(([key, value]) => {
                 if (value) {
-                    const optionKeyUpper = key.toUpperCase();
-                    const optionEl = document.createElement('div');                    optionEl.id = `option${optionKeyUpper}`;
-                    optionEl.dataset.optionKey = key;
-                    // Add classes for card styling without white background
-                    optionEl.classList.add('option-card', 'rounded-lg', 'p-4', 'border-l-4', 'border-gray-400');
-                    optionEl.style.opacity = '0';
+                    // Check if this is a Note (section header)
+                    if (key.toLowerCase().startsWith('note')) {
+                        const noteEl = document.createElement('div');
+                        noteEl.classList.add('note-section', 'mt-4', 'mb-2', 'px-4', 'py-2', 'bg-blue-50', 'border-l-4', 'border-blue-400', 'rounded-r-lg');
+                        noteEl.innerHTML = `
+                            <div class="flex items-center space-x-2">
+                                <i class="fas fa-info-circle text-blue-600"></i>
+                                <span class="text-blue-800 font-bold text-lg">${value}</span>
+                            </div>
+                        `;
+                        optionsContainerEl.appendChild(noteEl);
+                    } else {
+                        // Regular option
+                        const optionKeyUpper = key.toUpperCase();
+                        const optionEl = document.createElement('div');
+                        optionEl.id = `option${optionKeyUpper}`;
+                        optionEl.dataset.optionKey = key;
+                        // Add classes for card styling without white background
+                        optionEl.classList.add('option-card', 'rounded-lg', 'p-4', 'border-l-4', 'border-gray-400');
+                        optionEl.style.opacity = '0';
 
-                    const optionCharClass = `option-char-${key.toLowerCase()}`;
-                    // Ensure correct inner structure for flex layout and char styling
-                    optionEl.innerHTML = `
-                        <div class="flex items-center space-x-3">
-                            <div class="option-char ${optionCharClass} text-white rounded-full w-8 h-8 flex items-center justify-center font-bold">${optionKeyUpper}</div>
-                            <span class="text-gray-800 font-medium">${value}</span>
-                        </div>
-                    `;
-                    optionsContainerEl.appendChild(optionEl);
+                        const optionCharClass = `option-char-${key.toLowerCase()}`;
+                        // Ensure correct inner structure for flex layout and char styling
+                        optionEl.innerHTML = `
+                            <div class="flex items-center space-x-3">
+                                <div class="option-char ${optionCharClass} text-white rounded-full w-8 h-8 flex items-center justify-center font-bold">${optionKeyUpper}</div>
+                                <span class="text-gray-800 font-medium">${value}</span>
+                            </div>
+                        `;
+                        optionsContainerEl.appendChild(optionEl);
+                    }
                 }
             });
         }
@@ -483,12 +537,27 @@ document.addEventListener('DOMContentLoaded', () => {
         if (questionData.type_question === "Thực hành") {
              timeLeft = parseInt(questionData.thoi_gian_chuan_bi) * 60 || 300;
         }
-        timerTextEl.textContent = timeLeft;
-        timerCircleEl.style.strokeDashoffset = '226'; // Reset to full circumference for new timer
+        timerTextEl.textContent = timeLeft;        timerCircleEl.style.strokeDashoffset = '226'; // Reset to full circumference for new timer
         timerCircleEl.classList.remove('warning', 'danger'); // Reset colors
         timerTextEl.classList.remove('warning', 'danger');   // Reset colors
         timerCircleEl.style.stroke = '#fff'; // Default stroke color from Test1.html CSS
         timerTextEl.style.color = '#fff'; // Default text color
+
+        // Set up ResizeObserver to monitor content overflow and adjust layout
+        if (questionOptionsSection && 'ResizeObserver' in window) {
+            // Clear any existing observer
+            if (questionOptionsSection._resizeObserver) {
+                questionOptionsSection._resizeObserver.disconnect();
+            }
+            
+            // Create new observer
+            questionOptionsSection._resizeObserver = new ResizeObserver(() => {
+                // Use a small delay to ensure all DOM changes are complete
+                setTimeout(adjustLayoutForOverflow, 50);
+            });
+            
+            questionOptionsSection._resizeObserver.observe(questionOptionsSection);
+        }
     }
 
     // --- Timer Logic ---
@@ -671,11 +740,26 @@ document.addEventListener('DOMContentLoaded', () => {
                                ? currentQuestionData.dap_an_dung 
                                : [currentQuestionData.dap_an_dung];
 
+        // Calculate points per correct answer for Round 2
+        // If 4 correct answers: 2.5 points each
+        // If 5 correct answers: 2 points each
+        const totalCorrectAnswers = correctAnswers.length;
+        const pointsPerAnswer = totalCorrectAnswers === 4 ? 2.5 : 2;
+
         correctAnswers.forEach(correctKey => {
             const correctOptionEl = optionsContainerEl.querySelector(`[data-option-key="${correctKey.toLowerCase()}"]`);
             if (correctOptionEl) {
                 // Add the correct-answer class which handles all styling
                 correctOptionEl.classList.add('correct-answer');
+                  // Add score badge to the option
+                const scoreBadge = document.createElement('div');
+                scoreBadge.classList.add('score-badge', 'ml-2', 'px-2', 'py-1', 'bg-green-500', 'text-white', 'rounded-full', 'text-sm', 'font-bold', 'inline-flex', 'items-center');
+                scoreBadge.innerHTML = `<i class="fas fa-star mr-1"></i>+${pointsPerAnswer}đ`;
+                  // Find the option content and append the score badge
+                const optionContent = correctOptionEl.querySelector('.flex.items-center.space-x-3');
+                if (optionContent) {
+                    optionContent.appendChild(scoreBadge);
+                }
                 
                 // Ensure the option is visible and smoothly animated
                 correctOptionEl.style.transition = 'all 0.5s ease';
@@ -706,14 +790,19 @@ async function displayAnswer() {
 
         showAnswerBtn.disabled = true;
         showAnswerBtn.classList.add('opacity-50', 'cursor-not-allowed');
-        
-        let answerDisplayString = "";
+          let answerDisplayString = "";
         if (currentQuestionData.type_question === "Trắc nghiệm" || currentQuestionData.type_question === "Trắc nghiệm Hình ảnh") {
             if (currentQuestionData.dap_an_dung) {
                 const correctKeys = Array.isArray(currentQuestionData.dap_an_dung) 
                                     ? currentQuestionData.dap_an_dung 
                                     : [currentQuestionData.dap_an_dung];
-                answerDisplayString = "Đáp án: " + correctKeys.map(k => k.toUpperCase()).join(', ');
+                
+                // Calculate scoring info for Round 2
+                const totalCorrectAnswers = correctKeys.length;
+                const pointsPerAnswer = totalCorrectAnswers === 4 ? 2.5 : 2;
+                const maxPoints = totalCorrectAnswers * pointsPerAnswer;
+                
+                answerDisplayString = `Đáp án: ${correctKeys.map(k => k.toUpperCase()).join(', ')} | Điểm tối đa: ${maxPoints} điểm (${pointsPerAnswer}đ/câu)`;
                 highlightCorrectAnswer();
             } else {
                 answerDisplayString = "Không có đáp án cho câu này.";

@@ -764,3 +764,103 @@ body, html {
 .question-text { font-size: var(--question-font-size); }
 .option-text { font-size: var(--option-font-size); }
 .audio-highlight { background: rgba(255,235,59,0.25) !important; border-color: #fbbf24 !important; border-width: 3px !important; transform: scale(1.02) !important; transition: all 0.3s ease !important; box-shadow: 0 0 20px rgba(251,191,36,0.4) !important; }
+
+/* Note sections styling for Round 2 */
+.note-section {
+    margin: 1rem 0;
+    padding: 0.75rem 1rem;
+    background: linear-gradient(135deg, rgba(219, 234, 254, 0.9), rgba(191, 219, 254, 0.8));
+    border-left: 4px solid #3b82f6;
+    border-radius: 0 0.5rem 0.5rem 0;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(4px);
+}
+
+.note-section i {
+    color: #2563eb;
+    font-size: 1.1rem;
+}
+
+.note-section span {
+    color: #1e40af;
+    font-weight: 700;
+    font-size: 1.1rem;
+    letter-spacing: 0.025em;
+}
+
+/* Score badge styling */
+.score-badge {
+    background: linear-gradient(135deg, #10b981, #059669) !important;
+    color: white !important;
+    font-weight: 700 !important;
+    font-size: 0.875rem !important;
+    padding: 0.25rem 0.5rem !important;
+    border-radius: 9999px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 0.25rem !important;
+    box-shadow: 0 2px 4px rgba(16, 185, 129, 0.3) !important;
+    animation: scoreAppear 0.5s ease-out forwards !important;
+    margin-left: 0.5rem !important;
+}
+
+.score-badge i {
+    color: #fbbf24 !important;
+    font-size: 0.75rem !important;
+}
+
+@keyframes scoreAppear {
+    0% {
+        opacity: 0;
+        transform: scale(0.8) translateY(-10px);
+    }
+    50% {
+        transform: scale(1.1) translateY(-2px);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+/* Enhanced correct answer highlighting with score */
+.option-card.correct-answer {
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(5, 150, 105, 0.1)) !important;
+    border-color: #10b981 !important;
+    border-width: 3px !important;
+    transform: scale(1.02) !important;
+    box-shadow: 0 4px 20px rgba(16, 185, 129, 0.25) !important;
+}
+
+.option-card.correct-answer .option-char {
+    background: linear-gradient(135deg, #10b981, #059669) !important;
+    box-shadow: 0 2px 8px rgba(16, 185, 129, 0.4) !important;
+}
+
+/* Improved layout for long content with scroll adjustments */
+#questionOptionsArea {
+    transition: width 0.3s ease !important;
+}
+
+#imageArea {
+    transition: width 0.3s ease !important;
+}
+
+/* Custom scrollbar for questionOptionsArea when overflow occurs */
+#questionOptionsArea::-webkit-scrollbar {
+    width: 8px;
+}
+
+#questionOptionsArea::-webkit-scrollbar-track {
+    background: rgba(156, 163, 175, 0.2);
+    border-radius: 4px;
+}
+
+#questionOptionsArea::-webkit-scrollbar-thumb {
+    background: rgba(107, 114, 128, 0.5);
+    border-radius: 4px;
+}
+
+#questionOptionsArea::-webkit-scrollbar-thumb:hover {
+    background: rgba(107, 114, 128, 0.7);
+}
