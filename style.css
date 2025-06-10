@@ -788,9 +788,9 @@ body, html {
     letter-spacing: 0.025em;
 }
 
-/* Score badge styling */
+/* Score badge styling - Updated with orange/gold theme to contrast with green background */
 .score-badge {
-    background: linear-gradient(135deg, #10b981, #059669) !important;
+    background: linear-gradient(135deg, #f59e0b, #d97706) !important;
     color: white !important;
     font-weight: 700 !important;
     font-size: 0.875rem !important;
@@ -799,14 +799,16 @@ body, html {
     display: inline-flex !important;
     align-items: center !important;
     gap: 0.25rem !important;
-    box-shadow: 0 2px 4px rgba(16, 185, 129, 0.3) !important;
+    box-shadow: 0 2px 6px rgba(245, 158, 11, 0.4) !important;
     animation: scoreAppear 0.5s ease-out forwards !important;
     margin-left: 0.5rem !important;
+    border: 2px solid #fbbf24 !important;
 }
 
 .score-badge i {
-    color: #fbbf24 !important;
+    color: #fef3c7 !important;
     font-size: 0.75rem !important;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2) !important;
 }
 
 @keyframes scoreAppear {
@@ -823,18 +825,23 @@ body, html {
     }
 }
 
-/* Enhanced correct answer highlighting with score */
+/* Enhanced correct answer highlighting with better readability */
 .option-card.correct-answer {
-    background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(5, 150, 105, 0.1)) !important;
-    border-color: #10b981 !important;
+    background: linear-gradient(135deg, rgb(186, 252, 230), rgb(142, 250, 216)) !important;
+    border-color: #02ac73 !important;
     border-width: 3px !important;
-    transform: scale(1.02) !important;
     box-shadow: 0 4px 20px rgba(16, 185, 129, 0.25) !important;
 }
 
 .option-card.correct-answer .option-char {
     background: linear-gradient(135deg, #10b981, #059669) !important;
     box-shadow: 0 2px 8px rgba(16, 185, 129, 0.4) !important;
+}
+
+/* Ensure text remains readable on green background */
+.option-card.correct-answer .text-gray-800 {
+    color: #1f2937 !important;
+    /* font-weight: 600 !important; */
 }
 
 /* Improved layout for long content with scroll adjustments */

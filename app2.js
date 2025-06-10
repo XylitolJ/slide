@@ -781,10 +781,9 @@ document.addEventListener('DOMContentLoaded', () => {
             const correctOptionEl = optionsContainerEl.querySelector(`[data-option-key="${correctKey.toLowerCase()}"]`);
             if (correctOptionEl) {
                 // Add the correct-answer class which handles all styling
-                correctOptionEl.classList.add('correct-answer');
-                  // Add score badge to the option
+                correctOptionEl.classList.add('correct-answer');                // Add score badge to the option
                 const scoreBadge = document.createElement('div');
-                scoreBadge.classList.add('score-badge', 'ml-2', 'px-2', 'py-1', 'bg-green-500', 'text-white', 'rounded-full', 'text-sm', 'font-bold', 'inline-flex', 'items-center');
+                scoreBadge.classList.add('score-badge', 'ml-2', 'px-2', 'py-1', 'bg-amber-500', 'text-white', 'rounded-full', 'text-sm', 'font-bold', 'inline-flex', 'items-center');
                 scoreBadge.innerHTML = `<i class="fas fa-star mr-1"></i>+${pointsPerAnswer}đ`;
                   // Find the option content and append the score badge
                 const optionContent = correctOptionEl.querySelector('.flex.items-center.space-x-3');
