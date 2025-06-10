@@ -181,14 +181,25 @@ document.addEventListener('DOMContentLoaded', () => {
             timesUpPopupEl.style.animation = 'none';        }
         sequenceInProgress = false;
         answerShown = false;
-        navigationInProgress = false; // Reset navigation flag
-        
-        // Clean up ResizeObserver if it exists
+        navigationInProgress = false; // Reset navigation flag        // Clean up ResizeObserver and timers if they exist
         const questionOptionsSection = document.getElementById('questionOptionsArea');
-        if (questionOptionsSection && questionOptionsSection._resizeObserver) {
-            questionOptionsSection._resizeObserver.disconnect();
-            questionOptionsSection._resizeObserver = null;
-            console.log('%c[STOP ALL EVENTS] Cleaned up ResizeObserver', 'color: orange;');
+        if (questionOptionsSection) {
+            if (questionOptionsSection._resizeObserver) {
+                questionOptionsSection._resizeObserver.disconnect();
+                questionOptionsSection._resizeObserver = null;
+                console.log('%c[STOP ALL EVENTS] Cleaned up ResizeObserver', 'color: orange;');
+            }
+            if (questionOptionsSection._debounceTimer) {
+                clearTimeout(questionOptionsSection._debounceTimer);
+                questionOptionsSection._debounceTimer = null;
+                console.log('%c[STOP ALL EVENTS] Cleaned up debounce timer', 'color: orange;');
+            }
+            if (questionOptionsSection._layoutCheckTimer) {
+                clearTimeout(questionOptionsSection._layoutCheckTimer);
+                questionOptionsSection._layoutCheckTimer = null;
+                console.log('%c[STOP ALL EVENTS] Cleaned up layout check timer', 'color: orange;');
+            }
+            questionOptionsSection._isAdjusting = false;
         }
         
         console.log('%c[STOP ALL EVENTS] stopAllEvents() completed in app2.js', 'color: green; font-weight: bold;');
@@ -234,17 +245,24 @@ document.addEventListener('DOMContentLoaded', () => {
         
         if (!questionOptionsSection || !imageAreaEl || !mainContentFlexContainer || !currentQuestionData) return;
         
+        // Prevent recursive calls by checking if we're already adjusting
+        if (questionOptionsSection._isAdjusting) return;
+        questionOptionsSection._isAdjusting = true;
+        
         // Check if questionOptionsArea has scroll
         const hasVerticalScroll = questionOptionsSection.scrollHeight > questionOptionsSection.clientHeight;
+        const currentWidth = questionOptionsSection.classList.contains('w-4/5') ? '4/5' : 
+                            questionOptionsSection.classList.contains('w-3/5') ? '3/5' : 
+                            questionOptionsSection.classList.contains('w-2/5') ? '2/5' : 'unknown';
         
-        if (hasVerticalScroll && !imageAreaEl.classList.contains('hidden')) {
+        if (hasVerticalScroll && !imageAreaEl.classList.contains('hidden') && currentWidth !== '4/5') {
             // Adjust to give more space to questions/options
             questionOptionsSection.classList.remove('w-3/5', 'w-2/5');
             questionOptionsSection.classList.add('w-4/5');
             imageAreaEl.classList.remove('w-2/5', 'w-3/5');
             imageAreaEl.classList.add('w-1/5');
             console.log('Layout adjusted: Questions area expanded due to overflow');
-        } else if (!hasVerticalScroll && !imageAreaEl.classList.contains('hidden')) {
+        } else if (!hasVerticalScroll && !imageAreaEl.classList.contains('hidden') && currentWidth === '4/5') {
             // Restore original layout when no overflow
             const isQuestionImage = currentQuestionData && currentQuestionData.question_image === 'Yes';
             
@@ -261,6 +279,11 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             console.log('Layout restored: Original proportions due to no overflow');
         }
+        
+        // Reset the flag after a short delay
+        setTimeout(() => {
+            questionOptionsSection._isAdjusting = false;
+        }, 100);
     }
 
     function getThemeClass(category) {
@@ -541,22 +564,27 @@ document.addEventListener('DOMContentLoaded', () => {
         timerCircleEl.classList.remove('warning', 'danger'); // Reset colors
         timerTextEl.classList.remove('warning', 'danger');   // Reset colors
         timerCircleEl.style.stroke = '#fff'; // Default stroke color from Test1.html CSS
-        timerTextEl.style.color = '#fff'; // Default text color
-
-        // Set up ResizeObserver to monitor content overflow and adjust layout
-        if (questionOptionsSection && 'ResizeObserver' in window) {
-            // Clear any existing observer
+        timerTextEl.style.color = '#fff'; // Default text color        // Set up a simple check for overflow after animations complete
+        if (questionOptionsSection) {
+            // Clear any existing timers and observers
             if (questionOptionsSection._resizeObserver) {
                 questionOptionsSection._resizeObserver.disconnect();
+                questionOptionsSection._resizeObserver = null;
+            }
+            if (questionOptionsSection._debounceTimer) {
+                clearTimeout(questionOptionsSection._debounceTimer);
+                questionOptionsSection._debounceTimer = null;
+            }
+            if (questionOptionsSection._layoutCheckTimer) {
+                clearTimeout(questionOptionsSection._layoutCheckTimer);
             }
             
-            // Create new observer
-            questionOptionsSection._resizeObserver = new ResizeObserver(() => {
-                // Use a small delay to ensure all DOM changes are complete
-                setTimeout(adjustLayoutForOverflow, 50);
-            });
+            questionOptionsSection._isAdjusting = false;
             
-            questionOptionsSection._resizeObserver.observe(questionOptionsSection);
+            // Schedule a single layout check after content is fully rendered
+            questionOptionsSection._layoutCheckTimer = setTimeout(() => {
+                adjustLayoutForOverflow();
+            }, 1000); // Wait for animations to complete
         }
     }
 
@@ -720,9 +748,7 @@ document.addEventListener('DOMContentLoaded', () => {
         } else if (currentQuestionData.type_question === "Thực hành") {
             // No options to show/speak for practical questions
             console.log('startQuestionSequence: Thực hành question - no options to show');
-        }
-
-        // 4. Start Timer
+        }        // 4. Start Timer
         if (DEBUG_MODE || timeLeft > 0) {
             startTimer();
         } else if (!DEBUG_MODE && timeLeft <= 0) { 
@@ -730,6 +756,11 @@ document.addEventListener('DOMContentLoaded', () => {
             showAnswerBtn.disabled = false;
             showAnswerBtn.classList.remove('opacity-50', 'cursor-not-allowed');
         }
+        
+        // Check layout after all animations complete
+        setTimeout(() => {
+            adjustLayoutForOverflow();
+        }, 1500);
         
         startSequenceBtn.classList.remove('speaking-indicator');
         sequenceInProgress = false;
