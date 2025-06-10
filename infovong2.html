@@ -432,14 +432,16 @@
             document.getElementById('ktanToanCount').textContent = ktanToanCount;
             document.getElementById('csplAnToanCount').textContent = csplAnToanCount;
             document.getElementById('totalQuestions').textContent = totalCount;
-        }        // Keyboard navigation
+        }
+
+        // Keyboard navigation
         document.addEventListener('keydown', (e) => {
             if (e.key === 'ArrowLeft' || e.key.toLowerCase() === 'q') {
                 // Navigate back to main page
                 navigateToMainPage();
             } else if (e.key === 'ArrowRight') {
-                // Navigate to vong2.html to start the round
-                window.location.href = 'vong2.html';
+                // Navigate to vong2.html with set=1 parameter to load questions in correct order
+                window.location.href = 'vong2.html?set=1';
             }
         });
 
@@ -462,7 +464,8 @@
 
         // Initialize on page load
         document.addEventListener('DOMContentLoaded', () => {
-            loadQuestionData();        addFadeInAnimation();
+            loadQuestionData();
+            addFadeInAnimation();
         });
     </script>
     <script src="navigation.js"></script>
