@@ -889,6 +889,11 @@ body, html {
     padding-left: 0 !important;
 }
 
+/* Single column layout for 3-column questions without images */
+.three-columns-layout.single-column {
+    grid-template-columns: 1fr !important;
+}
+
 #threeColumnsContainer {
     display: none;
 }

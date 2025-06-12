@@ -522,11 +522,10 @@ document.addEventListener('DOMContentLoaded', () => {
         
         const questionOptionsSection = document.getElementById('questionOptionsArea');
         // The main content container is the one with class 'px-8.py-4.flex-grow.flex.overflow-hidden'
-        const mainContentFlexContainer = document.querySelector('.px-8.py-4.flex-grow.flex.overflow-hidden');
-
-        // Reset layout classes first
+        const mainContentFlexContainer = document.querySelector('.px-8.py-4.flex-grow.flex.overflow-hidden');        // Reset layout classes first
         if (mainContentFlexContainer) {
             mainContentFlexContainer.classList.remove('flex-col', 'flex-row'); // Remove old direction
+            mainContentFlexContainer.classList.remove('three-columns-layout', 'single-column'); // Remove 3-column layout classes
         }
         if (questionOptionsSection) {
             questionOptionsSection.classList.remove('w-full', 'w-3/5', 'w-2/5', 'pr-6', 'pl-6');
@@ -601,14 +600,25 @@ document.addEventListener('DOMContentLoaded', () => {
             if(imageAreaEl) imageAreaEl.classList.add('hidden');
             if(questionOptionsSection) questionOptionsSection.classList.add('w-full');
             if(mainContentFlexContainer) mainContentFlexContainer.classList.add('flex-row');
-        }
-
-        // Handle layout-specific styling for 3-column layout
+        }        // Handle layout-specific styling for 3-column layout
         if (isThreeColumnLayout) {
             // Apply 3-column layout styling to main container
             if (mainContentFlexContainer) {
                 mainContentFlexContainer.classList.add('three-columns-layout');
             }
+            
+            // For 3-column layout, check if image should be hidden
+            if (!questionData.image_id || questionData.image_id === null) {
+                // Hide image area for 3-column questions without images
+                if (imageAreaEl) {
+                    imageAreaEl.classList.add('hidden');
+                }
+                // Adjust grid to single column
+                if (mainContentFlexContainer) {
+                    mainContentFlexContainer.classList.add('single-column');
+                }
+            }
+            
             console.log('Applied 3-column layout styling');
         }
 
@@ -956,11 +966,28 @@ document.addEventListener('DOMContentLoaded', () => {
         const totalCorrectAnswers = correctAnswers.length;
         const pointsPerAnswer = totalCorrectAnswers === 4 ? 2.5 : 2;
 
+        // Check if this is a 3-column layout question
+        const isThreeColumnLayout = currentQuestionData.layout === '3columns';
+        
         correctAnswers.forEach(correctKey => {
-            const correctOptionEl = optionsContainerEl.querySelector(`[data-option-key="${correctKey.toLowerCase()}"]`);
+            let correctOptionEl;
+            
+            if (isThreeColumnLayout) {
+                // For 3-column layout, search in both column containers
+                const threeColumnsContainer = document.getElementById('threeColumnsContainer');
+                if (threeColumnsContainer) {
+                    correctOptionEl = threeColumnsContainer.querySelector(`[data-option-key="${correctKey.toLowerCase()}"]`);
+                }
+            } else {
+                // For regular layout, search in optionsContainer
+                correctOptionEl = optionsContainerEl.querySelector(`[data-option-key="${correctKey.toLowerCase()}"]`);
+            }
+            
             if (correctOptionEl) {
                 // Add the correct-answer class which handles all styling
-                correctOptionEl.classList.add('correct-answer');                // Add score badge to the option
+                correctOptionEl.classList.add('correct-answer');
+
+                // Add score badge to the option
                 const scoreBadge = document.createElement('div');
                 scoreBadge.classList.add('score-badge', 'ml-2', 'px-2', 'py-1', 'bg-amber-500', 'text-white', 'rounded-full', 'text-sm', 'font-bold', 'inline-flex', 'items-center');
                 scoreBadge.innerHTML = `<i class="fas fa-star mr-1"></i>+${pointsPerAnswer}đ`;
