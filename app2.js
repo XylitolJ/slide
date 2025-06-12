@@ -333,11 +333,11 @@ document.addEventListener('DOMContentLoaded', () => {
         
         if (questionData.phuong_an) {
             Object.entries(questionData.phuong_an).forEach(([key, value]) => {
-                if (value) {
-                    if (key.toLowerCase() === 'note1') {
+                if (value) {                    if (key.toLowerCase() === 'note1') {
                         // Add Note1 header to column 1
                         const headerEl = document.createElement('div');
-                        headerEl.classList.add('column-header');
+                        headerEl.classList.add('column-header', 'errors');
+                        headerEl.id = 'note1Header';
                         headerEl.innerHTML = `<i class="fas fa-exclamation-triangle"></i>${value}`;
                         column1Container.appendChild(headerEl);
                         note1Added = true;
@@ -345,7 +345,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     } else if (key.toLowerCase() === 'note2') {
                         // Add Note2 header to column 2
                         const headerEl = document.createElement('div');
-                        headerEl.classList.add('column-header');
+                        headerEl.classList.add('column-header', 'solutions');
+                        headerEl.id = 'note2Header';
                         headerEl.innerHTML = `<i class="fas fa-tools"></i>${value}`;
                         column2Container.appendChild(headerEl);
                         note2Added = true;
@@ -848,8 +849,13 @@ document.addEventListener('DOMContentLoaded', () => {
             if (isThreeColumnLayout) {
                 // Handle 3-column layout sequence: question > Note1 > a,b,c,d > Note2 > e,f,g
                 console.log('startQuestionSequence: Using 3-column audio sequence');
+                  // Step 1: Show Note1 header and play Note1 audio if available
+                const note1Header = document.getElementById('note1Header');
+                if (note1Header) {
+                    console.log('startQuestionSequence: Showing Note1 header');
+                    note1Header.classList.add('show');
+                }
                 
-                // Step 1: Play Note1 audio if available
                 if (USE_SPEECH && currentQuestionData.speech_id_note1) {
                     await playAudio(`speech/${currentQuestionData.speech_id_note1}`);
                 } else {
@@ -876,8 +882,13 @@ document.addEventListener('DOMContentLoaded', () => {
                         }
                     }
                 }
+                  // Step 3: Show Note2 header and play Note2 audio if available
+                const note2Header = document.getElementById('note2Header');
+                if (note2Header) {
+                    console.log('startQuestionSequence: Showing Note2 header');
+                    note2Header.classList.add('show');
+                }
                 
-                // Step 3: Play Note2 audio if available
                 if (USE_SPEECH && currentQuestionData.speech_id_note2) {
                     await playAudio(`speech/${currentQuestionData.speech_id_note2}`);
                 } else {
