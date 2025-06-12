@@ -6,11 +6,8 @@
     "1": ["V2_BV_LT_2","V2_BXV_HA_22","V2_KTM_HA_4","V2_BV_HA_9","V2_KTM_HA_10","V2_BXV_LT_11","V2_BXV_HA_15","V2_KTM_LT_11","V2_BV_HA_4"]
   },
   "vong3": {
-    "1": ["V3_YT_SC_TH_1","V3_PCCC_TL_1"],
-    "2": ["V3_YT_SC_TH_2","V3_PCCC_TL_2"],
-    "3": ["V3_YT_SC_TH_3","V3_PCCC_TL_3"],
-    "4": ["V3_YT_SC_TH_4","V3_PCCC_TL_4"],
-    "5": ["V3_YT_SC_TH_5","V3_PCCC_TL_5"],
-    "6": ["V3_YT_SC_TH_6","V3_PCCC_TL_6"]
-  }
+    "y_te": ["V3_YT_SC_TH_1","V3_YT_SC_TH_2", "V3_YT_SC_TH_3","V3_YT_SC_TH_4","V3_YT_SC_TH_5","V3_YT_SC_TH_6"],
+    "pccc": ["V3_PCCC_TL_1","V3_PCCC_TL_2","V3_PCCC_TL_3","V3_PCCC_TL_4","V3_PCCC_TL_5","V3_PCCC_TL_6",
+             "V3_PCCC_TL_7","V3_PCCC_TL_8","V3_PCCC_TL_9","V3_PCCC_TL_10","V3_PCCC_TL_11"]
+    }
 }
