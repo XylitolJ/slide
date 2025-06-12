@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hội thi ATVSV giỏi - 2025</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.7.0/p5.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Roboto+Condensed:wght@400;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         body {
             margin: 0;
@@ -27,9 +27,13 @@
         let maxPhase = 6;
         let phaseTimer = 0;
         let phaseDuration = 80;
-        let img;
-        
-        // Animation states
+        let images = [];
+        let currentImageIndex = 0;
+        let imageTimer = 0;
+        let imageDuration = 180; // 3 seconds at 60fps
+        let imageLoadCount = 0;
+        let totalImagesToLoad = 5;
+          // Animation states
         let logoOpacity = 0;
         let mainTitleOpacity = 0;
         let companyOpacity = 0;
@@ -41,9 +45,35 @@
         let floatingDots = [];
         let decorativeShapes = [];
         
+        // Pre-created mask to avoid memory leaks
+        let circleMask;
+        
         function preload() {
-            // Using a placeholder image - you can replace this URL
-            img = loadImage('https://picsum.photos/400/300?random=1');
+            // Load specific images that exist
+            let imageFiles = [
+                'images/index_images/1.jpg',
+                'images/index_images/2.png',
+                'images/index_images/3.jpg',
+                'images/index_images/5.jpg',
+                'images/index_images/6.jpg',
+                'images/index_images/8.jpg',
+                'images/index_images/9.jpg'
+
+            ];
+            
+            imageFiles.forEach((imgPath, index) => {
+                loadImage(imgPath, 
+                    (img) => { 
+                        images.push(img);
+                        imageLoadCount++;
+                        console.log(`Loaded image ${index + 1}: ${imgPath}`);
+                    },                    (error) => { 
+                        console.log(`Failed to load: ${imgPath}`);
+                        // Skip failed loads instead of creating graphics objects
+                        imageLoadCount++;
+                    }
+                );
+            });
         }
         
         function setup() {
@@ -68,15 +98,35 @@
                     size: random(20, 60),
                     rotation: 0,
                     rotSpeed: random(-0.02, 0.02)
-                });
-            }
+                });            }
+            
+            // Wait a bit for images to load
+            setTimeout(() => {
+                console.log(`Loaded ${images.length} images`);
+                if (images.length === 0) {
+                    // Create default placeholder if no images loaded
+                    let defaultImg = createGraphics(400, 300);
+                    defaultImg.background(220);
+                    defaultImg.fill(100);
+                    defaultImg.textAlign(CENTER, CENTER);
+                    defaultImg.textSize(24);
+                    defaultImg.text('No Images Found', 200, 150);
+                    images.push(defaultImg);
+                }
+                
+                // Create circle mask once to avoid memory leaks
+                circleMask = createGraphics(370, 370);
+                circleMask.fill(255);
+                circleMask.noStroke();
+                circleMask.ellipse(185, 185, 370, 370);
+            }, 1000);
         }
         
         function draw() {
-            // Gradient background
+            // Create subtle gradient background similar to the image
             for (let i = 0; i <= height; i++) {
                 let inter = map(i, 0, height, 0, 1);
-                let c = lerpColor(color(245, 245, 250), color(230, 230, 240), inter);
+                let c = lerpColor(color(248, 248, 252), color(240, 242, 250), inter);
                 stroke(c);
                 line(0, i, width, i);
             }
@@ -101,6 +151,13 @@
             
             // Draw main content
             drawContent();
+            
+            // Update image slideshow timer
+            imageTimer++;
+            if (imageTimer >= imageDuration && images.length > 1) {
+                currentImageIndex = (currentImageIndex + 1) % images.length;
+                imageTimer = 0;
+            }
         }
         
         function updateOpacities() {
@@ -136,54 +193,55 @@
                 venueOpacity = min(255, venueOpacity + fadeSpeed);
             }
         }
-        
-        function drawGeometricElements() {
+          function drawGeometricElements() {
             push();
             tint(255, geometryOpacity);
             
-            // Main concentric circles with image
+            // Main concentric circles with image - enlarged
             push();
-            translate(400, height/2);
+            translate(280, height/2 + 30); // Dịch trái (350->280) và xuống (height/2-50 -> height/2+30)
             
-            // Outer rotating ring
+            // Outer rotating ring - increased size
             push();
             rotate(rotationAngle);
             noFill();
-            strokeWeight(40);
+            strokeWeight(45);
             stroke(255, 100, 50, geometryOpacity * 0.8);
-            arc(0, 0, 400, 400, 0, PI * 1.5);
+            arc(0, 0, 580, 580, 0, PI * 1.5); // Tăng kích thước (500->580)
             pop();
             
-            // Middle rotating ring
+            // Middle rotating ring - increased size
             push();
             rotate(-rotationAngle * 1.5);
-            strokeWeight(30);
+            strokeWeight(35);
             stroke(255, 180, 50, geometryOpacity * 0.9);
-            arc(0, 0, 320, 320, PI * 0.3, PI * 1.8);
-            pop();
+            arc(0, 0, 460, 460, PI * 0.3, PI * 1.8); // Tăng kích thước (400->460)
+            pop();            // Inner image circle with slideshow - enlarged
+            if (images.length > 0 && circleMask) {
+                push();
+                let currentImg = images[currentImageIndex];
+                
+                // Only use images that are already loaded, avoid creating new graphics
+                if (currentImg && currentImg.width && currentImg.height) {
+                    // Create a temporary copy only when needed
+                    let tempImg = currentImg.get();
+                    tempImg.resize(370, 370);
+                    tempImg.mask(circleMask);
+                    
+                    imageMode(CENTER);
+                    image(tempImg, 0, 0, 370, 370);
+                }
+                
+                pop();
+            }
             
-            // Inner image circle
-            push();
-            // Mask for circular image
-            let mask = createGraphics(250, 250);
-            mask.fill(255);
-            mask.noStroke();
-            mask.ellipse(125, 125, 250, 250);
-            
-            let maskedImg = img.get();
-            maskedImg.mask(mask);
-            
-            imageMode(CENTER);
-            image(maskedImg, 0, 0, 250, 250);
-            pop();
-            
-            // Inner rotating ring
+            // Inner rotating ring - increased size
             push();
             rotate(rotationAngle * 0.8);
             noFill();
-            strokeWeight(8);
+            strokeWeight(10);
             stroke(255, 150, 0, geometryOpacity);
-            ellipse(0, 0, 280, 280);
+            ellipse(0, 0, 420, 420); // Tăng kích thước (360->420)
             pop();
             
             pop();
@@ -198,11 +256,11 @@
             
             // Yellow accent elements
             fill(255, 200, 0, geometryOpacity * 0.7);
-            ellipse(650, 100, 150, 150);
+            ellipse(950, 500, 150, 150);
             ellipse(1800, 600, 60, 60);
             
             // Dotted patterns
-            drawDottedPattern(650, 150, geometryOpacity);
+            drawDottedPattern(800, 550, geometryOpacity);
             drawDottedPattern(1650, 650, geometryOpacity);
             
             pop();
@@ -251,82 +309,148 @@
         }
         
         function drawContent() {
-            // Logo/Company identifier (top right)
+            // Logo/Company identifier (top left)
+            // push();
+            // fill(50, 50, 50, logoOpacity);
+            // textAlign(LEFT, TOP);
+            // textSize(22);
+            // textStyle(BOLD);
+            // textFont('Oswald');
+            // text("THÁI NGUYÊN CHEMICAL", 60, 60);
+            // pop();
+            
+            // Main title - prominently displayed
             push();
-            tint(255, logoOpacity);
-            fill(50, 50, 50, logoOpacity);
-            textAlign(RIGHT, TOP);
-            textSize(24);
+            fill(41, 84, 144, mainTitleOpacity); // Dark blue color from image
+            textAlign(CENTER, CENTER);
+            textSize(80);
             textStyle(BOLD);
-            text("Thái Nguyên Chemical", width - 60, 60);
+            textFont('Oswald');
+            let titleY = 150;
+            text("HỘI THI AN TOÀN VỆ SINH VIÊN GIỎI", width/2, titleY);
             
-            // Add logo symbol
+            // Year highlight
             push();
-            translate(width - 40, 85);
-            rotate(rotationAngle * 2);
-            stroke(255, 100, 50, logoOpacity);
-            strokeWeight(3);
-            noFill();
-            ellipse(0, 0, 25, 25);
-            fill(255, 100, 50, logoOpacity);
-            noStroke();
-            ellipse(0, 0, 8, 8);
-            pop();
-            pop();
-            
-            // Main title
-            push();
-            fill(30, 30, 30, mainTitleOpacity);
-            textAlign(LEFT, CENTER);
+            fill(255, 119, 51, mainTitleOpacity); // Orange color from image
             textSize(72);
             textStyle(BOLD);
-            let titleY = height/2 - 100;
-            text("HỘI THI AN TOÀN VỆ SINH VIÊN GIỎI", width/2 + 100, titleY);
-            text("cấp Công ty", width/2 + 100, titleY + 90);
+            textFont('Oswald');
+            text("NĂM 2025", width/2, titleY + 100);
+            
+            // Underline for year
+            stroke(255, 119, 51, mainTitleOpacity);
+            strokeWeight(4);
+            line(width/2 - 120, titleY + 125, width/2 + 120, titleY + 125);
             pop();
             
             // Company name
-            push();
-            fill(60, 60, 60, companyOpacity);
-            textAlign(LEFT, CENTER);
-            textSize(36);
-            textStyle(NORMAL);
-            text("Công ty Công nghiệp Hóa chất mỏ Thái Nguyên", width/2 + 100, height/2 + 80);
+            fill(41, 84, 144, companyOpacity);
+            textSize(38);
+            textStyle(BOLD);
+            textFont('Roboto Condensed');
+            text("CÔNG TY CÔNG NGHIỆP HÓA CHẤT MỎ THÁI NGUYÊN", width/2, titleY + 180);
             pop();
             
-            // Date badge
-            push();
-            fill(255, 80, 50, dateOpacity);
-            noStroke();
-            rect(width/2 + 100, height/2 + 150, 280, 60, 30);
+            // Information cards section - larger cards
+            let cardY = height - 360; // Moved up to accommodate larger cards
+            let card1X = width/2 - 380; // Wider spacing
+            let card2X = width/2 + 50;
+            let cardWidth = 380; // Increased width
+            let cardHeight = 240; // Increased height
             
+            // Time card (left) - larger
+            push();
+            // Card background with shadow effect
+            fill(0, 0, 0, dateOpacity * 0.1);
+            noStroke();
+            rect(card1X + 5, cardY + 5, cardWidth, cardHeight, 20); // Shadow
+            
+            fill(255, 255, 255, dateOpacity * 0.95);
+            stroke(220, 220, 220, dateOpacity);
+            strokeWeight(1);
+            rect(card1X, cardY, cardWidth, cardHeight, 20);
+            
+            // Calendar icon - slightly larger
+            push();
+            translate(card1X + cardWidth/2, cardY + 60);
+            // Icon background
+            fill(91, 152, 229, dateOpacity);
+            noStroke();
+            rect(-25, -20, 50, 40, 8);
+            // Icon details
             fill(255, dateOpacity);
-            textAlign(LEFT, CENTER);
+            rect(-20, -15, 40, 30, 3);
+            fill(91, 152, 229, dateOpacity);
+            rect(-17, -12, 8, 5);
+            rect(-5, -12, 8, 5);
+            rect(7, -12, 8, 5);
+            rect(-17, -5, 8, 5);
+            rect(-5, -5, 8, 5);
+            rect(7, -5, 8, 5);
+            pop();
+            
+            // Time card content
+            fill(255, 119, 51, dateOpacity); // Orange for "THỜI GIAN"
+            textAlign(CENTER, CENTER);
             textSize(28);
             textStyle(BOLD);
-            text("25/06/2025", width/2 + 130, height/2 + 180);
+            textFont('Oswald');
+            text("THỜI GIAN", card1X + cardWidth/2, cardY + 120);
+            
+            fill(80, 80, 80, dateOpacity);
+            textSize(32);
+            textStyle(BOLD);
+            textFont('Inter');
+            text("25/06/2025", card1X + cardWidth/2, cardY + 170);
             pop();
             
-            // Venue information
+            // Location card (right) - larger
             push();
-            fill(80, 80, 80, venueOpacity);
-            textAlign(LEFT, TOP);
-            textSize(20);
-            textStyle(NORMAL);
-            let venueText = "Hội trường tầng 5 - Văn phòng Công ty\nSố 9A, Đường Phan Đình Phùng\nPhường Đồng Quang, Thành phố Thái Nguyên";
-            text(venueText, width/2 + 100, height/2 + 240);
-            
-            // Add location icon
-            push();
-            translate(width/2 + 70, height/2 + 250);
-            stroke(255, 100, 50, venueOpacity);
-            strokeWeight(2);
-            noFill();
-            ellipse(0, 0, 16, 16);
-            fill(255, 100, 50, venueOpacity);
+            // Card background with shadow effect
+            fill(0, 0, 0, venueOpacity * 0.1);
             noStroke();
-            ellipse(0, -2, 6, 6);
+            rect(card2X + 5, cardY + 5, cardWidth, cardHeight, 20); // Shadow
+            
+            fill(255, 255, 255, venueOpacity * 0.95);
+            stroke(220, 220, 220, venueOpacity);
+            strokeWeight(1);
+            rect(card2X, cardY, cardWidth, cardHeight, 20);
+            
+            // Location pin icon - slightly larger
+            push();
+            translate(card2X + cardWidth/2, cardY + 60);
+            fill(229, 91, 152, venueOpacity); // Pink color for location
+            noStroke();
+            ellipse(0, 0, 35, 35);
+            fill(255, venueOpacity);
+            ellipse(0, -4, 15, 15);
+            // Pin bottom
+            fill(229, 91, 152, venueOpacity);
+            triangle(-4, 12, 4, 12, 0, 22);
             pop();
+            
+            // Location card content
+            fill(255, 119, 51, venueOpacity); // Orange for "ĐỊA ĐIỂM"
+            textAlign(CENTER, CENTER);
+            textSize(28);
+            textStyle(BOLD);
+            textFont('Oswald');
+            text("ĐỊA ĐIỂM", card2X + cardWidth/2, cardY + 120);
+            
+            fill(80, 80, 80, venueOpacity);
+            textAlign(CENTER, TOP);
+            textSize(18); // Increased font size for better readability
+            textStyle(NORMAL);
+            textFont('Inter');
+            let venueLines = [
+                "Hội trường tầng 5 - Văn phòng Công ty",
+                "Số 9A, Đường Phan Đình Phùng",
+                "Phường Đồng Quang, TP Thái Nguyên"
+            ];
+            
+            for (let i = 0; i < venueLines.length; i++) {
+                text(venueLines[i], card2X + cardWidth/2, cardY + 145 + i * 25); // Increased line spacing
+            }
             pop();
         }
         
