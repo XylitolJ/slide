@@ -50,9 +50,8 @@ document.addEventListener('DOMContentLoaded', () => {    // URL Parameter handli
     const nextQuestionBtn = document.getElementById('nextQuestionBtn');
     const backToThuchanhBtn = document.getElementById('backToThuchanhBtn');
     const footerProgressBarEl = document.getElementById('footerProgressBar');
-    const roundInfoDisplayEl = document.getElementById('roundInfoDisplay');
-    const DELAY_NO_SPEECH_ANSWER = 1000; // ms to wait after showing answer if no speech
-    const USE_SPEECH = true; // Enable speech functionality
+    const roundInfoDisplayEl = document.getElementById('roundInfoDisplay');    const DELAY_NO_SPEECH_ANSWER = 1000; // ms to wait after showing answer if no speech
+    const USE_SPEECH = false; // Disable speech functionality for Round 3
     const DEBUG_MODE = false; // Set to true to disable timer and auto-progression
     const DELAY_NO_SPEECH_QUESTION = 500; // ms to wait if no speech for question
 
@@ -65,35 +64,17 @@ document.addEventListener('DOMContentLoaded', () => {    // URL Parameter handli
     let currentQuestionIndex = 0;
     let currentQuestionData = null;
     let timerInterval;
-    let timeLeft = 0; // Will be set per question
-    const DEFAULT_TIME_PER_QUESTION = 300; // Default 5 minutes for Round 3 practical exams
-    let audioContext;    let currentAudio = null;
+    let timeLeft = 0; // Will be set per question    const DEFAULT_TIME_PER_QUESTION = 300; // Default 5 minutes for Round 3 practical exams
     let sequenceInProgress = false;
     let navigationInProgress = false; // Add flag to prevent audio restart during navigation// Background styles for cleanup purposes only
     const backgroundStyles = [
         'bg-default', 'bg-abstract', 'bg-wave', 'bg-svg-pattern-1', 'bg-svg-pattern-2', 'bg-svg-pattern-3'
-    ];    // Initialize AudioContext
-    function initAudio() {
-        if (!audioContext) {
-            try {
-                audioContext = new (window.AudioContext || window.webkitAudioContext)();
-            } catch (e) {
-                console.error("Web Audio API is not supported in this browser.", e);
-                progressTextEl.textContent = "Lỗi: Trình duyệt không hỗ trợ âm thanh.";
-            }
-        }
-    }
-
-    // --- Emergency Exit Function ---
+    ];    // --- Audio functions removed for Round 3 ---
+    // No audio functionality needed for practical examination round    // --- Emergency Exit Function ---
     function emergencyExitToPage3() {
         console.log('Emergency exit function called');
-        // Stop all audio
-        if (currentAudio && currentAudio.source) {
-            currentAudio.source.stop();
-            currentAudio.source.disconnect();
-            currentAudio = null;
-        }
-          // Clear all timers
+        
+        // Clear all timers
         if (timerInterval) {
             clearInterval(timerInterval);
             timerInterval = null;
@@ -101,58 +82,13 @@ document.addEventListener('DOMContentLoaded', () => {    // URL Parameter handli
         
         // Reset all flags
         sequenceInProgress = false;
-        answerShown = false;
         
         // Navigate to page3.html
         console.log('Navigating to page3.html');
         window.location.href = 'page3.html';
-    }
-
-    // Utility to stop all ongoing timers and audio without navigating away
+    }// Utility to stop all ongoing timers without audio (Round 3 doesn't use audio)
     function stopAllEvents() {
         console.log('%c[STOP ALL EVENTS] Starting stopAllEvents() in app3.js', 'color: red; font-weight: bold;');
-        
-        // Stop Web Audio API audio
-        if (currentAudio && currentAudio.source) {
-            console.log('%c[STOP ALL EVENTS] Stopping Web Audio API audio', 'color: red;');
-            try {
-                currentAudio.source.stop();
-                currentAudio.source.disconnect();
-                currentAudio = null;
-                console.log('%c[STOP ALL EVENTS] Web Audio API audio stopped successfully', 'color: green;');
-            } catch (e) {
-                console.error('[STOP ALL EVENTS] Error stopping Web Audio API:', e);
-            }
-        }
-        
-    // Stop HTML5 Audio elements
-    if (currentAudio) {
-        try {
-            currentAudio.pause();
-            // Hủy bỏ callbacks
-            currentAudio.oncanplaythrough = null;
-            currentAudio.onended        = null;
-            currentAudio.onerror        = null;
-            // Reset src và abort request
-            currentAudio.src = '';
-            currentAudio.load();
-        } catch (e) {
-            console.error('Error fully stopping audio:', e);
-        }
-        currentAudio = null;
-        console.log('[STOP ALL EVENTS] Fully stopped audio element');
-    }
-        
-        // Stop all audio elements on the page (failsafe)
-        const allAudioElements = document.querySelectorAll('audio');
-        console.log(`%c[STOP ALL EVENTS] Found ${allAudioElements.length} audio elements on page`, 'color: orange;');
-        allAudioElements.forEach((audio, index) => {
-            if (!audio.paused) {
-                console.log(`%c[STOP ALL EVENTS] Stopping audio element ${index + 1}: ${audio.src}`, 'color: red;');
-                audio.pause();
-                audio.currentTime = 0;
-            }
-        });
         
         if (timerInterval) {
             console.log('%c[STOP ALL EVENTS] Clearing timer interval', 'color: red;');
@@ -166,57 +102,9 @@ document.addEventListener('DOMContentLoaded', () => {    // URL Parameter handli
             timesUpPopupEl.style.animation = 'none';
         }
         sequenceInProgress = false;
-        answerShown = false;
         navigationInProgress = false; // Reset navigation flag
         
-        console.log('%c[STOP ALL EVENTS] stopAllEvents() completed in app3.js', 'color: green; font-weight: bold;');
-    }// --- Audio Playback ---
-    async function playAudio(filePath, onEndCallback) {
-        if (!USE_SPEECH || !audioContext || !filePath || navigationInProgress) { // Check navigation flag
-            if (onEndCallback) onEndCallback();
-            return Promise.resolve();
-        }
-
-        // Stop any currently playing audio
-        if (currentAudio && currentAudio.source) {
-            currentAudio.source.stop();
-            currentAudio.source.disconnect();
-        }
-        
-        // Create a new audio object for each playback to handle 'ended' event correctly
-        const audio = new Audio(filePath);
-        currentAudio = audio; // Keep track of the current audio for potential interruption
-
-        return new Promise((resolve, reject) => {
-            audio.oncanplaythrough = () => {
-                audio.play().catch(e => {
-                    console.error(`Error playing audio ${filePath}:`, e);
-                    if (onEndCallback) onEndCallback();
-                    resolve(); // Resolve even on error to not block sequence
-                });
-            };
-            audio.onended = () => {
-                if (onEndCallback) onEndCallback();
-                if (currentAudio === audio) currentAudio = null; // Clear if it's the one that ended
-                resolve();
-            };
-            audio.onerror = (e) => {
-                console.error(`Error loading audio ${filePath}:`, e);
-                progressTextEl.textContent = `Lỗi tải file âm thanh: ${filePath.split('/').pop()}`;
-                if (onEndCallback) onEndCallback();
-                if (currentAudio === audio) currentAudio = null;
-                resolve(); // Resolve to not block sequence
-            };
-            // Handle cases where oncanplaythrough might not fire (e.g. cached files)
-            if (audio.readyState >= 3) { // HAVE_FUTURE_DATA or HAVE_ENOUGH_DATA
-                 audio.play().catch(e => {
-                    console.error(`Error playing audio ${filePath} (readyState >=3):`, e);
-                    if (onEndCallback) onEndCallback();
-                    resolve();
-                });
-            }
-        });
-    }
+        console.log('%c[STOP ALL EVENTS] stopAllEvents() completed in app3.js', 'color: green; font-weight: bold;');    }
 
     // --- UI Updates & Animations ---
     function animateElement(element, animationClass) {
@@ -437,9 +325,7 @@ document.addEventListener('DOMContentLoaded', () => {    // URL Parameter handli
                 nextQuestionBtn.classList.remove('opacity-50', 'cursor-not-allowed');
             }
         }, 1000);
-    }
-
-    // --- Main Sequence Logic ---
+    }    // --- Main Sequence Logic ---
     async function startQuestionSequence() {
         console.log('--- startQuestionSequence START ---');
         if (sequenceInProgress) {
@@ -447,23 +333,15 @@ document.addEventListener('DOMContentLoaded', () => {    // URL Parameter handli
             return;
         }
         sequenceInProgress = true;
-        initAudio();
 
         startSequenceBtn.disabled = true;
-        startSequenceBtn.classList.add('opacity-50', 'cursor-not-allowed', 'speaking-indicator');
+        startSequenceBtn.classList.add('opacity-50', 'cursor-not-allowed');
 
-        // 1. Show Question
+        // 1. Show Question (no audio for Round 3)
         if (questionSectionEl) questionSectionEl.classList.remove('u-hidden-initially');
         animateElement(questionSectionEl, 'question-appear');
 
-        // 2. Speak Question if audio available
-        if (USE_SPEECH && currentQuestionData.speech_id_question) {
-            await playAudio(`speech/${currentQuestionData.speech_id_question}`);
-        } else {
-            await new Promise(r => setTimeout(r, DELAY_NO_SPEECH_QUESTION));
-        }
-
-        // 3. Start Timer (for practical questions, this is the time to complete the task)
+        // 2. Start Timer immediately (for practical questions, this is the time to complete the task)
         if (DEBUG_MODE || timeLeft > 0) {
             startTimer();
         } else if (!DEBUG_MODE && timeLeft <= 0) { 
@@ -474,7 +352,7 @@ document.addEventListener('DOMContentLoaded', () => {    // URL Parameter handli
         
         startSequenceBtn.classList.remove('speaking-indicator');
         sequenceInProgress = false;
-    }    // --- Navigation ---
+    }// --- Navigation ---
     function nextQuestion() {
         navigationInProgress = true; // Set flag to prevent audio restart
         stopAllEvents();
