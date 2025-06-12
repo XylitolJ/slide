@@ -32,14 +32,26 @@
         let imageTimer = 0;
         let imageDuration = 180; // 3 seconds at 60fps
         let imageLoadCount = 0;
-        let totalImagesToLoad = 5;
-          // Animation states
+        let totalImagesToLoad = 5;        // Animation states
         let logoOpacity = 0;
         let mainTitleOpacity = 0;
         let companyOpacity = 0;
         let dateOpacity = 0;
         let venueOpacity = 0;
         let geometryOpacity = 0;
+          // Advanced animation properties
+        let titleScale = 0;
+        let titleRotation = 0;
+        let yearOffset = 0;
+        let companyWave = 0;
+        let cardSlideX = 0;
+        let cardBounce = 0;
+        
+        // Animation timers
+        let titleGlowTimer = 0;
+        let yearPulseTimer = 0;
+        let companyAnimTimer = 0;
+        let cardAnimTimer = 0;
         
         // Floating elements
         let floatingDots = [];
@@ -47,33 +59,61 @@
         
         // Pre-created mask to avoid memory leaks
         let circleMask;
-        
-        function preload() {
-            // Load specific images that exist
-            let imageFiles = [
-                'images/index_images/1.jpg',
-                'images/index_images/2.png',
-                'images/index_images/3.jpg',
-                'images/index_images/5.jpg',
-                'images/index_images/6.jpg',
-                'images/index_images/8.jpg',
-                'images/index_images/9.jpg'
-
-            ];
+          function preload() {
+            // Auto-discover and load all images from the folder
+            let commonImageExtensions = ['jpg', 'jpeg', 'png'];
+            let imageFolderPath = 'images/index_images/';
             
-            imageFiles.forEach((imgPath, index) => {
+            // Generate potential filenames to test
+            let potentialFiles = [];
+            
+            // Try numbered files with different extensions
+            for (let i = 1; i <= 20; i++) {
+                commonImageExtensions.forEach(ext => {
+                    potentialFiles.push(`${imageFolderPath}${i}.${ext}`);
+                });
+            }
+            
+            // Try common filename patterns
+            let commonNames = ['img'];
+            for (let i = 1; i <= 10; i++) {
+                commonNames.forEach(name => {
+                    commonImageExtensions.forEach(ext => {
+                        potentialFiles.push(`${imageFolderPath}${name}${i}.${ext}`);
+                        potentialFiles.push(`${imageFolderPath}${name}_${i}.${ext}`);
+                    });
+                });
+            }
+            
+            // Try files without numbers
+            commonNames.forEach(name => {
+                commonImageExtensions.forEach(ext => {
+                    potentialFiles.push(`${imageFolderPath}${name}.${ext}`);
+                });
+            });
+            
+            let loadedCount = 0;
+            let totalAttempts = potentialFiles.length;
+            
+            console.log(`Attempting to load images from ${imageFolderPath}...`);
+            
+            potentialFiles.forEach((imgPath, index) => {
                 loadImage(imgPath, 
                     (img) => { 
                         images.push(img);
-                        imageLoadCount++;
-                        console.log(`Loaded image ${index + 1}: ${imgPath}`);
-                    },                    (error) => { 
-                        console.log(`Failed to load: ${imgPath}`);
-                        // Skip failed loads instead of creating graphics objects
-                        imageLoadCount++;
+                        loadedCount++;
+                        console.log(`✓ Loaded: ${imgPath}`);
+                    },
+                    (error) => { 
+                        // Silently skip failed loads - this is expected for auto-discovery
                     }
                 );
             });
+            
+            // Check loading progress after a delay
+            setTimeout(() => {
+                console.log(`Auto-discovery complete: Found ${images.length} images in ${imageFolderPath}`);
+            }, 2000);
         }
         
         function setup() {
@@ -158,9 +198,7 @@
                 currentImageIndex = (currentImageIndex + 1) % images.length;
                 imageTimer = 0;
             }
-        }
-        
-        function updateOpacities() {
+        }        function updateOpacities() {
             let fadeSpeed = 8;
             
             // Phase 0: Geometric elements appear
@@ -172,25 +210,55 @@
             if (animationPhase >= 1) {
                 logoOpacity = min(255, logoOpacity + fadeSpeed);
             }
-            
-            // Phase 2: Main title appears
+              // Phase 2: Main title appears with scale and rotation effects
             if (animationPhase >= 2) {
-                mainTitleOpacity = min(255, mainTitleOpacity + fadeSpeed);
+                mainTitleOpacity = min(255, mainTitleOpacity + fadeSpeed * 0.3); // Much slower appearance
+                titleScale = min(1.0, titleScale + 0.015); // Much slower scale
+                titleRotation = max(0, titleRotation - 0.01); // Much slower rotation
+                titleGlowTimer++;
+            } else {
+                titleScale = 0.3;
+                titleRotation = 0.2;
             }
             
-            // Phase 3: Company name appears
+            // Phase 3: Company name appears with shooting effect
             if (animationPhase >= 3) {
                 companyOpacity = min(255, companyOpacity + fadeSpeed);
+                companyAnimTimer++;
             }
             
-            // Phase 4: Date appears
+            // Phase 4: Date appears with slide and bounce
             if (animationPhase >= 4) {
                 dateOpacity = min(255, dateOpacity + fadeSpeed);
+                cardSlideX = min(0, cardSlideX + 15);
+                cardAnimTimer++;
+                
+                // Bounce effect that gradually stops after 5 seconds
+                if (cardAnimTimer < 300) { // 5 seconds at 60fps
+                    let bounceIntensity = max(0, 1 - cardAnimTimer / 300);
+                    cardBounce = sin(frameCount * 0.1) * 5 * bounceIntensity;
+                } else {
+                    cardBounce = 0;
+                }
+            } else {
+                cardSlideX = -200;
+                cardBounce = 0;
+                cardAnimTimer = 0;
             }
             
-            // Phase 5: Venue appears
+            // Phase 5: Venue appears with slide from right
             if (animationPhase >= 5) {
                 venueOpacity = min(255, venueOpacity + fadeSpeed);
+            }
+            
+            // Year offset animation that gradually stops
+            if (animationPhase >= 2) {
+                yearPulseTimer++;
+                if (yearPulseTimer < 180) { // 3 seconds at 60fps
+                    yearOffset = sin(frameCount * 0.05) * 3;
+                } else {
+                    yearOffset = 0;
+                }
             }
         }
           function drawGeometricElements() {
@@ -306,150 +374,302 @@
                 rect(-shape.size/2, -shape.size/2, shape.size, shape.size);
                 pop();
             }
-        }
-        
-        function drawContent() {
-            // Logo/Company identifier (top left)
-            // push();
-            // fill(50, 50, 50, logoOpacity);
-            // textAlign(LEFT, TOP);
-            // textSize(22);
-            // textStyle(BOLD);
-            // textFont('Oswald');
-            // text("THÁI NGUYÊN CHEMICAL", 60, 60);
-            // pop();
-            
-            // Main title - prominently displayed
+        }        function drawContent() {
+            // Main title - prominently displayed with advanced effects
             push();
-            fill(41, 84, 144, mainTitleOpacity); // Dark blue color from image
+            translate(width/2, 150);
+            scale(titleScale);
+            rotate(titleRotation);
+            
+            // Glow effect for main title that fades after 2 seconds
+            let glowIntensity = 0;
+            if (titleGlowTimer < 120) { // 2 seconds at 60fps
+                glowIntensity = 1;
+            } else if (titleGlowTimer < 240) { // fade out over next 2 seconds
+                glowIntensity = max(0, 1 - (titleGlowTimer - 120) / 120);
+            }
+            
+            if (glowIntensity > 0) {
+                drawingContext.shadowBlur = 20 * glowIntensity;
+                drawingContext.shadowColor = `rgba(41, 84, 144, ${mainTitleOpacity/255 * 0.5 * glowIntensity})`;
+            }
+            
+            fill(41, 84, 144, mainTitleOpacity);
             textAlign(CENTER, CENTER);
             textSize(80);
             textStyle(BOLD);
             textFont('Oswald');
-            let titleY = 150;
-            text("HỘI THI AN TOÀN VỆ SINH VIÊN GIỎI", width/2, titleY);
+            text("HỘI THI AN TOÀN VỆ SINH VIÊN GIỎI", 0, 0);
             
-            // Year highlight
-            push();
-            fill(255, 119, 51, mainTitleOpacity); // Orange color from image
-            textSize(72);
-            textStyle(BOLD);
-            textFont('Oswald');
-            text("NĂM 2025", width/2, titleY + 100);
-            
-            // Underline for year
-            stroke(255, 119, 51, mainTitleOpacity);
-            strokeWeight(4);
-            line(width/2 - 120, titleY + 125, width/2 + 120, titleY + 125);
+            // Reset shadow
+            drawingContext.shadowBlur = 0;
             pop();
             
-            // Company name
+            // Year highlight with oscillating effects
+            push();
+            translate(width/2, 250 + yearOffset);
+            
+            // Particle effect background for year
+            if (mainTitleOpacity > 100) {
+                for (let i = 0; i < 15; i++) {
+                    let angle = frameCount * 0.02 + i * 0.4;
+                    let radius = 80 + sin(frameCount * 0.03 + i) * 20;
+                    let x = cos(angle) * radius;
+                    let y = sin(angle) * radius;
+                    
+                    fill(255, 119, 51, mainTitleOpacity * 0.3);
+                    noStroke();
+                    ellipse(x, y, 8, 8);
+                }
+            }
+            
+            // Main year text with pulse effect that stops after 3 seconds
+            let pulseScale = 1;
+            if (yearPulseTimer < 180) { // 3 seconds at 60fps
+                pulseScale = 1 + sin(frameCount * 0.08) * 0.1;
+            }
+            scale(pulseScale);
+            
+            // Gradient-like effect using multiple text layers
+            for (let i = 3; i >= 0; i--) {
+                fill(255, 119 + i * 20, 51, mainTitleOpacity * (1 - i * 0.1));
+                textAlign(CENTER, CENTER);
+                textSize(72);
+                textStyle(BOLD);
+                textFont('Oswald');
+                text("NĂM 2025", i * 2, i * 2);
+            }
+            
+            // Animated underline that stops after pulse effect
+            stroke(255, 119, 51, mainTitleOpacity);
+            let strokeWeightVal = 4;
+            let lineWidth = 120;
+            
+            if (yearPulseTimer < 180) {
+                strokeWeightVal = 4 + sin(frameCount * 0.1) * 2;
+                lineWidth = 120 + sin(frameCount * 0.05) * 10;
+            }
+            
+            strokeWeight(strokeWeightVal);
+            line(-lineWidth, 35, lineWidth, 35);
+            pop();
+            
+            // Company name with shooting effect from right
+            push();
             fill(41, 84, 144, companyOpacity);
+            textAlign(CENTER, CENTER);
             textSize(38);
             textStyle(BOLD);
             textFont('Roboto Condensed');
-            text("CÔNG TY CÔNG NGHIỆP HÓA CHẤT MỎ THÁI NGUYÊN", width/2, titleY + 180);
+            
+            let companyText = "CÔNG TY CÔNG NGHIỆP HÓA CHẤT MỎ THÁI NGUYÊN";
+            let totalChars = companyText.length;
+            let visibleChars = 0;
+            
+            // Calculate how many characters should be visible based on animation timer
+            if (animationPhase >= 3) {
+                let animProgress = min(1, companyAnimTimer / 180); // 3 seconds to complete
+                visibleChars = floor(totalChars * animProgress);
+            }
+            
+            // Draw only visible characters
+            let displayText = companyText.substring(0, visibleChars);
+            text(displayText, width/2, 330);
             pop();
             
-            // Information cards section - larger cards
-            let cardY = height - 360; // Moved up to accommodate larger cards
-            let card1X = width/2 - 380; // Wider spacing
+            // Information cards section with enhanced animations
+            let cardY = height - 360;
+            let card1X = width/2 - 380;
             let card2X = width/2 + 50;
-            let cardWidth = 380; // Increased width
-            let cardHeight = 240; // Increased height
+            let cardWidth = 380;
+            let cardHeight = 240;
             
-            // Time card (left) - larger
+            // Time card (left) with slide and bounce
             push();
-            // Card background with shadow effect
-            fill(0, 0, 0, dateOpacity * 0.1);
-            noStroke();
-            rect(card1X + 5, cardY + 5, cardWidth, cardHeight, 20); // Shadow
+            translate(cardSlideX, cardBounce);
+            
+            // Enhanced shadow with blur
+            drawingContext.shadowBlur = 15;
+            drawingContext.shadowColor = `rgba(0, 0, 0, ${dateOpacity/255 * 0.2})`;
+            drawingContext.shadowOffsetX = 5;
+            drawingContext.shadowOffsetY = 5;
             
             fill(255, 255, 255, dateOpacity * 0.95);
             stroke(220, 220, 220, dateOpacity);
             strokeWeight(1);
             rect(card1X, cardY, cardWidth, cardHeight, 20);
             
-            // Calendar icon - slightly larger
+            // Reset shadow
+            drawingContext.shadowBlur = 0;
+            drawingContext.shadowOffsetX = 0;
+            drawingContext.shadowOffsetY = 0;
+            
+            // Animated calendar icon with rotation that stops after 5 seconds
             push();
             translate(card1X + cardWidth/2, cardY + 60);
-            // Icon background
+            
+            let iconRotation = 0;
+            if (cardAnimTimer < 300) { // 5 seconds
+                let rotationIntensity = max(0, 1 - cardAnimTimer / 300);
+                iconRotation = sin(frameCount * 0.05) * 0.1 * rotationIntensity;
+            }
+            rotate(iconRotation);
+            
+            // Icon with glow effect that fades
+            let iconGlowIntensity = cardAnimTimer < 300 ? max(0, 1 - cardAnimTimer / 300) : 0;
+            if (iconGlowIntensity > 0) {
+                drawingContext.shadowBlur = 10 * iconGlowIntensity;
+                drawingContext.shadowColor = `rgba(91, 152, 229, ${dateOpacity/255 * 0.7 * iconGlowIntensity})`;
+            }
+            
             fill(91, 152, 229, dateOpacity);
             noStroke();
             rect(-25, -20, 50, 40, 8);
-            // Icon details
+            
+            drawingContext.shadowBlur = 0;
+            
+            // Icon details with mini animations that stop
             fill(255, dateOpacity);
             rect(-20, -15, 40, 30, 3);
             fill(91, 152, 229, dateOpacity);
-            rect(-17, -12, 8, 5);
-            rect(-5, -12, 8, 5);
-            rect(7, -12, 8, 5);
-            rect(-17, -5, 8, 5);
-            rect(-5, -5, 8, 5);
-            rect(7, -5, 8, 5);
+            
+            let iconBounce = 0;
+            if (cardAnimTimer < 300) {
+                let bounceIntensity = max(0, 1 - cardAnimTimer / 300);
+                iconBounce = sin(frameCount * 0.15) * 2 * bounceIntensity;
+            }
+            
+            rect(-17, -12 + iconBounce, 8, 5);
+            rect(-5, -12 - iconBounce, 8, 5);
+            rect(7, -12 + iconBounce, 8, 5);
+            rect(-17, -5 - iconBounce, 8, 5);
+            rect(-5, -5 + iconBounce, 8, 5);
+            rect(7, -5 - iconBounce, 8, 5);
             pop();
             
-            // Time card content
-            fill(255, 119, 51, dateOpacity); // Orange for "THỜI GIAN"
+            // Time card content with typewriter effect
+            let timeProgress = map(dateOpacity, 0, 255, 0, 1);
+            
+            fill(255, 119, 51, dateOpacity);
             textAlign(CENTER, CENTER);
             textSize(28);
             textStyle(BOLD);
             textFont('Oswald');
-            text("THỜI GIAN", card1X + cardWidth/2, cardY + 120);
             
-            fill(80, 80, 80, dateOpacity);
-            textSize(32);
+            let timeText = "THỜI GIAN";
+            let visibleTimeChars = floor(timeText.length * timeProgress);
+            text(timeText.substring(0, visibleTimeChars), card1X + cardWidth/2, cardY + 120);            fill(80, 80, 80, dateOpacity);
+            textSize(20);
             textStyle(BOLD);
             textFont('Inter');
+            
+            // Display date immediately without typewriter effect
             text("25/06/2025", card1X + cardWidth/2, cardY + 170);
             pop();
             
-            // Location card (right) - larger
+            // Location card (right) with slide from right
             push();
-            // Card background with shadow effect
-            fill(0, 0, 0, venueOpacity * 0.1);
-            noStroke();
-            rect(card2X + 5, cardY + 5, cardWidth, cardHeight, 20); // Shadow
+            let rightSlideX = animationPhase >= 5 ? min(0, (-width + frameCount * 20)) : width;
+            if (animationPhase >= 5 && rightSlideX >= 0) rightSlideX = 0;
+            translate(rightSlideX, 0);
+            
+            // Enhanced shadow
+            drawingContext.shadowBlur = 15;
+            drawingContext.shadowColor = `rgba(0, 0, 0, ${venueOpacity/255 * 0.2})`;
+            drawingContext.shadowOffsetX = 5;
+            drawingContext.shadowOffsetY = 5;
             
             fill(255, 255, 255, venueOpacity * 0.95);
             stroke(220, 220, 220, venueOpacity);
             strokeWeight(1);
             rect(card2X, cardY, cardWidth, cardHeight, 20);
             
-            // Location pin icon - slightly larger
+            drawingContext.shadowBlur = 0;
+            drawingContext.shadowOffsetX = 0;
+            drawingContext.shadowOffsetY = 0;
+            
+            // Animated location pin icon
             push();
             translate(card2X + cardWidth/2, cardY + 60);
-            fill(229, 91, 152, venueOpacity); // Pink color for location
+            
+            // Pulsing effect that stops after 5 seconds
+            let pinPulse = 1;
+            if (animationPhase >= 5) {
+                let venueAnimTimer = (frameCount - (5 * phaseDuration + phaseTimer)) * (animationPhase > 5 ? 1 : phaseTimer / phaseDuration);
+                if (venueAnimTimer < 300) { // 5 seconds
+                    let pulseIntensity = max(0, 1 - venueAnimTimer / 300);
+                    pinPulse = 1 + sin(frameCount * 0.1) * 0.2 * pulseIntensity;
+                }
+            }
+            scale(pinPulse);
+            
+            // Pin with glow that fades
+            let pinGlowIntensity = 0;
+            if (animationPhase >= 5) {
+                let venueAnimTimer = (frameCount - (5 * phaseDuration + phaseTimer)) * (animationPhase > 5 ? 1 : phaseTimer / phaseDuration);
+                if (venueAnimTimer < 300) {
+                    pinGlowIntensity = max(0, 1 - venueAnimTimer / 300);
+                }
+            }
+            
+            if (pinGlowIntensity > 0) {
+                drawingContext.shadowBlur = 12 * pinGlowIntensity;
+                drawingContext.shadowColor = `rgba(229, 91, 152, ${venueOpacity/255 * 0.8 * pinGlowIntensity})`;
+            }
+            
+            fill(229, 91, 152, venueOpacity);
             noStroke();
             ellipse(0, 0, 35, 35);
+            
+            drawingContext.shadowBlur = 0;
+            
             fill(255, venueOpacity);
             ellipse(0, -4, 15, 15);
-            // Pin bottom
+            
+            // Animated pin bottom that stops
             fill(229, 91, 152, venueOpacity);
-            triangle(-4, 12, 4, 12, 0, 22);
+            let pinBounce = 0;
+            if (animationPhase >= 5) {
+                let venueAnimTimer = (frameCount - (5 * phaseDuration + phaseTimer)) * (animationPhase > 5 ? 1 : phaseTimer / phaseDuration);
+                if (venueAnimTimer < 300) {
+                    let bounceIntensity = max(0, 1 - venueAnimTimer / 300);
+                    pinBounce = sin(frameCount * 0.12) * 3 * bounceIntensity;
+                }
+            }
+            triangle(-4, 12 + pinBounce, 4, 12 + pinBounce, 0, 22 + pinBounce);
             pop();
             
-            // Location card content
-            fill(255, 119, 51, venueOpacity); // Orange for "ĐỊA ĐIỂM"
+            // Location card content with reveal effect
+            let venueProgress = map(venueOpacity, 0, 255, 0, 1);
+            
+            fill(255, 119, 51, venueOpacity);
             textAlign(CENTER, CENTER);
             textSize(28);
             textStyle(BOLD);
             textFont('Oswald');
-            text("ĐỊA ĐIỂM", card2X + cardWidth/2, cardY + 120);
+            
+            let venueTitle = "ĐỊA ĐIỂM";
+            let visibleVenueChars = floor(venueTitle.length * venueProgress);
+            text(venueTitle.substring(0, visibleVenueChars), card2X + cardWidth/2, cardY + 120);
             
             fill(80, 80, 80, venueOpacity);
             textAlign(CENTER, TOP);
-            textSize(18); // Increased font size for better readability
+            textSize(18);
             textStyle(NORMAL);
             textFont('Inter');
+            
             let venueLines = [
                 "Hội trường tầng 5 - Văn phòng Công ty",
                 "Số 9A, Đường Phan Đình Phùng",
                 "Phường Đồng Quang, TP Thái Nguyên"
             ];
-            
-            for (let i = 0; i < venueLines.length; i++) {
-                text(venueLines[i], card2X + cardWidth/2, cardY + 145 + i * 25); // Increased line spacing
+              for (let i = 0; i < venueLines.length; i++) {
+                let lineProgress = max(0, venueProgress - i * 0.2);
+                let line = venueLines[i];
+                let visibleLineChars = floor(line.length * lineProgress);
+                
+                // Remove slide effect for static text
+                text(line.substring(0, visibleLineChars), card2X + cardWidth/2, cardY + 145 + i * 25);
             }
             pop();
         }
