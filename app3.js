@@ -42,15 +42,12 @@ document.addEventListener('DOMContentLoaded', () => {    // URL Parameter handli
     // Main content elements
     const questionSectionEl = document.getElementById('questionSection'); 
     const questionTextContentEl = document.getElementById('questionTextContent');
-    const questionDisplayAreaEl = document.getElementById('questionDisplayArea');
-    // Footer elements
+    const questionDisplayAreaEl = document.getElementById('questionDisplayArea');    // Footer elements
     const footerEl = document.querySelector('.footer'); 
     const progressTextEl = document.getElementById('progressText');
     const startSequenceBtn = document.getElementById('startSequenceBtn');
-    const nextQuestionBtn = document.getElementById('nextQuestionBtn');
-    const backToThuchanhBtn = document.getElementById('backToThuchanhBtn');
     const footerProgressBarEl = document.getElementById('footerProgressBar');
-    const roundInfoDisplayEl = document.getElementById('roundInfoDisplay');    const DELAY_NO_SPEECH_ANSWER = 1000; // ms to wait after showing answer if no speech
+    const roundInfoDisplayEl = document.getElementById('roundInfoDisplay');const DELAY_NO_SPEECH_ANSWER = 1000; // ms to wait after showing answer if no speech
     const USE_SPEECH = false; // Disable speech functionality for Round 3
     const DEBUG_MODE = false; // Set to true to disable timer and auto-progression
     const DELAY_NO_SPEECH_QUESTION = 500; // ms to wait if no speech for question
@@ -62,9 +59,9 @@ document.addEventListener('DOMContentLoaded', () => {    // URL Parameter handli
     let allQuestions = [];
     let contestRoundsData = []; // To store data from quy_che_thi.cac_vong_thi
     let currentQuestionIndex = 0;
-    let currentQuestionData = null;
-    let timerInterval;
-    let timeLeft = 0; // Will be set per question    const DEFAULT_TIME_PER_QUESTION = 300; // Default 5 minutes for Round 3 practical exams
+    let currentQuestionData = null;    let timerInterval;
+    let timeLeft = 0; // Will be set per question
+    const DEFAULT_TIME_PER_QUESTION = 300; // Default 5 minutes for Round 3 practical exams
     let sequenceInProgress = false;
     let navigationInProgress = false; // Add flag to prevent audio restart during navigation// Background styles for cleanup purposes only
     const backgroundStyles = [
@@ -212,12 +209,8 @@ document.addEventListener('DOMContentLoaded', () => {    // URL Parameter handli
                 slideContainer.style.backgroundImage = '';
                 slideContainer.classList.add('bg-default');
             }
-        }
-
-
-        // Reset UI state
+        }        // Reset UI state
         progressTextEl.textContent = '';
-        nextQuestionBtn.style.display = 'none';
         startSequenceBtn.disabled = false;
         startSequenceBtn.classList.remove('opacity-50', 'cursor-not-allowed', 'speaking-indicator');
         
@@ -302,8 +295,7 @@ document.addEventListener('DOMContentLoaded', () => {    // URL Parameter handli
                 const offset = circumference * progress;
                 timerCircleEl.style.strokeDashoffset = offset;
             }
-            
-            if (timeLeft <= 0) {
+              if (timeLeft <= 0) {
                 clearInterval(timerInterval);
                 
                 if (!DEBUG_MODE) {
@@ -318,11 +310,6 @@ document.addEventListener('DOMContentLoaded', () => {    // URL Parameter handli
                 } else {
                     console.log("DEBUG MODE: Timer reached 0");
                 }
-                
-                // Show next question button
-                nextQuestionBtn.style.display = 'inline-block';
-                nextQuestionBtn.disabled = false;
-                nextQuestionBtn.classList.remove('opacity-50', 'cursor-not-allowed');
             }
         }, 1000);
     }    // --- Main Sequence Logic ---
@@ -339,15 +326,9 @@ document.addEventListener('DOMContentLoaded', () => {    // URL Parameter handli
 
         // 1. Show Question (no audio for Round 3)
         if (questionSectionEl) questionSectionEl.classList.remove('u-hidden-initially');
-        animateElement(questionSectionEl, 'question-appear');
-
-        // 2. Start Timer immediately (for practical questions, this is the time to complete the task)
+        animateElement(questionSectionEl, 'question-appear');        // 2. Start Timer immediately (for practical questions, this is the time to complete the task)
         if (DEBUG_MODE || timeLeft > 0) {
             startTimer();
-        } else if (!DEBUG_MODE && timeLeft <= 0) { 
-            nextQuestionBtn.style.display = 'inline-block'; 
-            nextQuestionBtn.disabled = false;
-            nextQuestionBtn.classList.remove('opacity-50', 'cursor-not-allowed');
         }
         
         startSequenceBtn.classList.remove('speaking-indicator');
@@ -431,17 +412,18 @@ document.addEventListener('DOMContentLoaded', () => {    // URL Parameter handli
                 console.warn("Could not load contest rules:", rulesError);
             }
 
-            // Extract all questions from vong3.json structure first
+            // Extract all questions from vong3.json structure
             const vong3Data = data.vong_3;
             let allAvailableQuestions = [];
             
-            for (const categoryKey in vong3Data) {
-                const category = vong3Data[categoryKey];
-                for (const typeKey in category) {
-                    if (Array.isArray(category[typeKey])) {
-                        allAvailableQuestions = allAvailableQuestions.concat(category[typeKey]);
-                    }
-                }
+            // Process Y tế (Medical) category - only "thuc_hanh" questions
+            if (vong3Data.y_te && vong3Data.y_te.thuc_hanh) {
+                allAvailableQuestions = allAvailableQuestions.concat(vong3Data.y_te.thuc_hanh);
+            }
+            
+            // Process PCCC category - "ly_thuyet_thuc_hanh" questions  
+            if (vong3Data.phong_chay_chua_chay && vong3Data.phong_chay_chua_chay.ly_thuyet_thuc_hanh) {
+                allAvailableQuestions = allAvailableQuestions.concat(vong3Data.phong_chay_chua_chay.ly_thuyet_thuc_hanh);
             }
 
             // Get selected set from URL parameters
@@ -483,11 +465,7 @@ document.addEventListener('DOMContentLoaded', () => {    // URL Parameter handli
                 // Check if we need to load a specific question from URL parameters
                 const urlParams = getUrlParameters();
                 if (urlParams.questionId) {
-                    // Show back button when coming from thuchanh.html
-                    if (backToThuchanhBtn) {
-                        backToThuchanhBtn.style.display = 'block';
-                    }
-                      const specificQuestion = findQuestionById(urlParams.questionId, urlParams.category, urlParams.subcategory);
+                    const specificQuestion = findQuestionById(urlParams.questionId, urlParams.category, urlParams.subcategory);
                     if (specificQuestion) {
                         // Find the index of the specific question using both ID and category/subcategory
                         currentQuestionIndex = allQuestions.findIndex(q => {
@@ -521,7 +499,8 @@ document.addEventListener('DOMContentLoaded', () => {    // URL Parameter handli
                 // Update round info display
                 updateRoundInfoDisplay();
                 renderSlide(allQuestions[currentQuestionIndex]);
-                  // Ensure the question content is visible for Round 3 practical questions
+                
+                // Ensure the question content is visible for Round 3 practical questions
                 if (questionSectionEl) {
                     questionSectionEl.style.display = 'block';
                     questionSectionEl.style.opacity = '1';
@@ -529,21 +508,15 @@ document.addEventListener('DOMContentLoaded', () => {    // URL Parameter handli
                 }
             } else {
                 progressTextEl.textContent = "Không tìm thấy câu hỏi phù hợp theo cấu hình trong question_sets.json.";
-            }
-        } catch (error) {
+            }        } catch (error) {
             console.error("Could not load questions:", error);
             progressTextEl.textContent = "Lỗi tải dữ liệu câu hỏi. Vui lòng kiểm tra file vong3.json, question_sets.json và console.";
         }
     }
     
     startSequenceBtn.addEventListener('click', startQuestionSequence);
-    nextQuestionBtn.addEventListener('click', nextQuestion);
-      // Back to thuchanh.html button functionality
-    if (backToThuchanhBtn) {
-        backToThuchanhBtn.addEventListener('click', () => {
-            window.location.href = 'thuchanh.html';
-        });
-    }    document.addEventListener('keydown', (e) => {
+
+    document.addEventListener('keydown', (e) => {
         console.log('Key pressed in app3.js:', e.key); // Debug log
         if (e.key === 'ArrowRight') {
             e.preventDefault();
@@ -560,14 +533,10 @@ document.addEventListener('DOMContentLoaded', () => {    // URL Parameter handli
             if (!startSequenceBtn.disabled) {
                 startQuestionSequence();
             }
-        } else if (e.key === 'Enter') {
-            if (!nextQuestionBtn.disabled && nextQuestionBtn.style.display !== 'none') {
-                e.preventDefault();
-                nextQuestion();
-            }
         } else if (e.key.toLowerCase() === 'd' && e.ctrlKey) { // Ctrl+D to toggle debug
             e.preventDefault();
-            console.log("Debug mode toggle attempted. Reload page if DEBUG_MODE constant was changed.");        } else if (e.key.toLowerCase() === 'q') { // Q key for emergency exit
+            console.log("Debug mode toggle attempted. Reload page if DEBUG_MODE constant was changed.");
+        } else if (e.key.toLowerCase() === 'q') { // Q key for emergency exit
             e.preventDefault();
             console.log('Q key pressed - Emergency exit activated');
             emergencyExitToPage3();
