@@ -871,3 +871,45 @@ body, html {
 #questionOptionsArea::-webkit-scrollbar-thumb:hover {
     background: rgba(107, 114, 128, 0.7);
 }
+
+/* 3-Column Layout Styles */
+.three-columns-layout {
+    display: grid !important;
+    grid-template-columns: 2fr 1fr !important;
+    gap: 2rem !important;
+}
+
+.three-columns-layout #questionOptionsArea {
+    width: 100% !important;
+    padding-right: 0 !important;
+}
+
+.three-columns-layout #imageArea {
+    width: 100% !important;
+    padding-left: 0 !important;
+}
+
+#threeColumnsContainer {
+    display: none;
+}
+
+#threeColumnsContainer.active {
+    display: grid !important;
+}
+
+.column-header {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #1f2937;
+    padding: 0.75rem 1rem;
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(147, 197, 253, 0.1));
+    border-left: 4px solid #3b82f6;
+    border-radius: 0 0.5rem 0.5rem 0;
+    margin-bottom: 1rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.column-header i {
+    color: #3b82f6;
+    margin-right: 0.5rem;
+}

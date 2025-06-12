@@ -231,17 +231,20 @@
           },
           "dap_an_dung": ["a", "c", "d", "e", "h"],
           "speech_id_question": "V2_BV_HA_4.wav",
+          "speech_id_note1": "V2_BV_HA_4_Note1.wav",
           "speech_id_options_A": "V2_BV_HA_4_A.wav",
           "speech_id_options_B": "V2_BV_HA_4_B.wav",
           "speech_id_options_C": "V2_BV_HA_4_C.wav",
           "speech_id_options_D": "V2_BV_HA_4_D.wav",
+          "speech_id_note2": "V2_BV_HA_4_Note2.wav",
           "speech_id_options_E": "V2_BV_HA_4_E.wav",
           "speech_id_options_F": "V2_BV_HA_4_F.wav",
           "speech_id_options_G": "V2_BV_HA_4_G.wav",
           "speech_id_options_H": "V2_BV_HA_4_H.wav",
           "speech_id_answer": "V2_BV_HA_4_ans.wav",
           "bg_image": "images\\bg\\bg3.jpg",
-          "bg_image_overlay": null
+          "bg_image_overlay": null,
+          "layout": "3columns"
         },
         {
           "cau_hoi_so": 4,
@@ -384,9 +387,11 @@
           },
           "dap_an_dung": ["b", "d", "e", "f", "h"],
           "speech_id_question": "V2_BXV_HA_15.wav",
+          "speech_id_note1":"V2_BXV_HA_15_Note1.wav",
           "speech_id_options_A": "V2_BXV_HA_15_A.wav",
           "speech_id_options_B": "V2_BXV_HA_15_B.wav",
           "speech_id_options_C": "V2_BXV_HA_15_C.wav",
+          "speech_id_note2":"V2_BXV_HA_15_Note2.wav",
           "speech_id_options_D": "V2_BXV_HA_15_D.wav",
           "speech_id_options_E": "V2_BXV_HA_15_E.wav",
           "speech_id_options_F": "V2_BXV_HA_15_F.wav",
@@ -395,7 +400,8 @@
           "speech_id_options_I": "V2_BXV_HA_15_I.wav",
           "speech_id_answer": "V2_BXV_HA_15_ans.wav",
           "bg_image": "images\\bg\\bg10.png",
-          "bg_image_overlay": null
+          "bg_image_overlay": null,
+          "layout": "3columns"
         },
         {
           "cau_hoi_so": 4,
@@ -421,16 +427,19 @@
           },
           "dap_an_dung": ["b", "c", "d", "e", "g"],
           "speech_id_question": "V2_BXV_HA_22.wav",
+          "speech_id_note1": "V2_BXV_HA_22_Note1.wav",
           "speech_id_options_A": "V2_BXV_HA_22_A.wav",
           "speech_id_options_B": "V2_BXV_HA_22_B.wav",
           "speech_id_options_C": "V2_BXV_HA_22_C.wav",
           "speech_id_options_D": "V2_BXV_HA_22_D.wav",
+          "speech_id_note2": "V2_BXV_HA_22_Note2.wav",
           "speech_id_options_E": "V2_BXV_HA_22_E.wav",
           "speech_id_options_F": "V2_BXV_HA_22_F.wav",
           "speech_id_options_G": "V2_BXV_HA_22_G.wav",
           "speech_id_answer": "V2_BXV_HA_22_ans.wav",
           "bg_image": "images\\bg\\bg10.png",
-          "bg_image_overlay": null
+          "bg_image_overlay": null,
+          "layout": "3columns"
         }
       ]
     }

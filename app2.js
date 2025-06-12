@@ -311,11 +311,96 @@ document.addEventListener('DOMContentLoaded', () => {
             slideContainer.classList.add(themeClass); // Add the new theme class
         }
     }
+    // Function to render options in 3-column layout
+    function renderThreeColumnOptions(questionData) {
+        const threeColumnsContainer = document.getElementById('threeColumnsContainer');
+        const column1Container = document.getElementById('column1Container');
+        const column2Container = document.getElementById('column2Container');
+        
+        if (!threeColumnsContainer || !column1Container || !column2Container) {
+            console.error('Three columns containers not found');
+            return;
+        }
+        
+        // Clear existing content
+        column1Container.innerHTML = '';
+        column2Container.innerHTML = '';
+        
+        // Track current column (1 for errors, 2 for solutions)
+        let currentColumn = 1;
+        let note1Added = false;
+        let note2Added = false;
+        
+        if (questionData.phuong_an) {
+            Object.entries(questionData.phuong_an).forEach(([key, value]) => {
+                if (value) {
+                    if (key.toLowerCase() === 'note1') {
+                        // Add Note1 header to column 1
+                        const headerEl = document.createElement('div');
+                        headerEl.classList.add('column-header');
+                        headerEl.innerHTML = `<i class="fas fa-exclamation-triangle"></i>${value}`;
+                        column1Container.appendChild(headerEl);
+                        note1Added = true;
+                        currentColumn = 1;
+                    } else if (key.toLowerCase() === 'note2') {
+                        // Add Note2 header to column 2
+                        const headerEl = document.createElement('div');
+                        headerEl.classList.add('column-header');
+                        headerEl.innerHTML = `<i class="fas fa-tools"></i>${value}`;
+                        column2Container.appendChild(headerEl);
+                        note2Added = true;
+                        currentColumn = 2;
+                    } else {
+                        // Regular option - place in appropriate column
+                        const optionKeyUpper = key.toUpperCase();
+                        const optionEl = document.createElement('div');
+                        optionEl.id = `option${optionKeyUpper}`;
+                        optionEl.dataset.optionKey = key;
+                        optionEl.classList.add('option-card', 'rounded-lg', 'p-4', 'border-l-4', 'border-gray-400');
+                        optionEl.style.opacity = '0';
+
+                        const optionCharClass = `option-char-${key.toLowerCase()}`;
+                        optionEl.innerHTML = `
+                            <div class="flex items-center space-x-3">
+                                <div class="option-char ${optionCharClass} text-white rounded-full w-8 h-8 flex items-center justify-center font-bold">${optionKeyUpper}</div>
+                                <span class="text-gray-800 font-medium">${value}</span>
+                            </div>
+                        `;
+                        
+                        // Determine which column to place option in
+                        // Options a-d go to column 1 (errors), e-g go to column 2 (solutions)
+                        const optionLetter = key.toLowerCase();
+                        if (['a', 'b', 'c', 'd'].includes(optionLetter)) {
+                            column1Container.appendChild(optionEl);
+                        } else if (['e', 'f', 'g', 'h', 'i', 'j'].includes(optionLetter)) {
+                            column2Container.appendChild(optionEl);
+                        }
+                    }
+                }
+            });
+        }
+        
+        // Show the three columns container and hide regular options container
+        threeColumnsContainer.classList.remove('hidden');
+        threeColumnsContainer.classList.add('active');
+        
+        const optionsContainer = document.getElementById('optionsContainer');
+        if (optionsContainer) {
+            optionsContainer.style.display = 'none';
+        }
+        
+        console.log('Three column layout rendered successfully');
+    }
+
     function renderSlide(questionData) {
         console.log('--- renderSlide START ---', questionData);
         currentQuestionData = questionData;
         answerShown = false;
         sequenceInProgress = false;
+
+        // Check for 3-column layout
+        const isThreeColumnLayout = questionData.layout === '3columns';
+        console.log('3-column layout detected:', isThreeColumnLayout);
 
         // Function to apply background image with gradient or stripes overlay
         const applyBgImage = (bgImage, style) => {
@@ -512,47 +597,75 @@ document.addEventListener('DOMContentLoaded', () => {
                 imageAreaEl.classList.add('w-2/5', 'pl-6');
                 imageAreaEl.style.order = 2;
                 slideImageEl.classList.replace('object-contain', 'object-cover');
-            }
-        } else { // No image to show
+            }        } else { // No image to show
             if(imageAreaEl) imageAreaEl.classList.add('hidden');
             if(questionOptionsSection) questionOptionsSection.classList.add('w-full');
             if(mainContentFlexContainer) mainContentFlexContainer.classList.add('flex-row');
-        }        if (questionData.phuong_an) {
-            Object.entries(questionData.phuong_an).forEach(([key, value]) => {
-                if (value) {
-                    // Check if this is a Note (section header)
-                    if (key.toLowerCase().startsWith('note')) {
-                        const noteEl = document.createElement('div');
-                        noteEl.classList.add('note-section', 'mt-4', 'mb-2', 'px-4', 'py-2', 'bg-blue-50', 'border-l-4', 'border-blue-400', 'rounded-r-lg');
-                        noteEl.innerHTML = `
-                            <div class="flex items-center space-x-2">
-                                <i class="fas fa-info-circle text-blue-600"></i>
-                                <span class="text-blue-800 font-bold text-lg">${value}</span>
-                            </div>
-                        `;
-                        optionsContainerEl.appendChild(noteEl);
-                    } else {
-                        // Regular option
-                        const optionKeyUpper = key.toUpperCase();
-                        const optionEl = document.createElement('div');
-                        optionEl.id = `option${optionKeyUpper}`;
-                        optionEl.dataset.optionKey = key;
-                        // Add classes for card styling without white background
-                        optionEl.classList.add('option-card', 'rounded-lg', 'p-4', 'border-l-4', 'border-gray-400');
-                        optionEl.style.opacity = '0';
+        }
 
-                        const optionCharClass = `option-char-${key.toLowerCase()}`;
-                        // Ensure correct inner structure for flex layout and char styling
-                        optionEl.innerHTML = `
-                            <div class="flex items-center space-x-3">
-                                <div class="option-char ${optionCharClass} text-white rounded-full w-8 h-8 flex items-center justify-center font-bold">${optionKeyUpper}</div>
-                                <span class="text-gray-800 font-medium">${value}</span>
-                            </div>
-                        `;
-                        optionsContainerEl.appendChild(optionEl);
+        // Handle layout-specific styling for 3-column layout
+        if (isThreeColumnLayout) {
+            // Apply 3-column layout styling to main container
+            if (mainContentFlexContainer) {
+                mainContentFlexContainer.classList.add('three-columns-layout');
+            }
+            console.log('Applied 3-column layout styling');
+        }
+
+        // Reset and hide 3-column containers initially
+        const threeColumnsContainer = document.getElementById('threeColumnsContainer');
+        if (threeColumnsContainer) {
+            threeColumnsContainer.classList.add('hidden');
+            threeColumnsContainer.classList.remove('active');
+        }
+
+        // Render options based on layout type
+        if (isThreeColumnLayout) {
+            // Use 3-column layout
+            renderThreeColumnOptions(questionData);
+        } else {
+            // Use regular layout
+            if (optionsContainerEl) {
+                optionsContainerEl.style.display = 'grid'; // Ensure regular container is visible
+            }
+            
+            if (questionData.phuong_an) {
+                Object.entries(questionData.phuong_an).forEach(([key, value]) => {
+                    if (value) {
+                        // Check if this is a Note (section header)
+                        if (key.toLowerCase().startsWith('note')) {
+                            const noteEl = document.createElement('div');
+                            noteEl.classList.add('note-section', 'mt-4', 'mb-2', 'px-4', 'py-2', 'bg-blue-50', 'border-l-4', 'border-blue-400', 'rounded-r-lg');
+                            noteEl.innerHTML = `
+                                <div class="flex items-center space-x-2">
+                                    <i class="fas fa-info-circle text-blue-600"></i>
+                                    <span class="text-blue-800 font-bold text-lg">${value}</span>
+                                </div>
+                            `;
+                            optionsContainerEl.appendChild(noteEl);
+                        } else {
+                            // Regular option
+                            const optionKeyUpper = key.toUpperCase();
+                            const optionEl = document.createElement('div');
+                            optionEl.id = `option${optionKeyUpper}`;
+                            optionEl.dataset.optionKey = key;
+                            // Add classes for card styling without white background
+                            optionEl.classList.add('option-card', 'rounded-lg', 'p-4', 'border-l-4', 'border-gray-400');
+                            optionEl.style.opacity = '0';
+
+                            const optionCharClass = `option-char-${key.toLowerCase()}`;
+                            // Ensure correct inner structure for flex layout and char styling
+                            optionEl.innerHTML = `
+                                <div class="flex items-center space-x-3">
+                                    <div class="option-char ${optionCharClass} text-white rounded-full w-8 h-8 flex items-center justify-center font-bold">${optionKeyUpper}</div>
+                                    <span class="text-gray-800 font-medium">${value}</span>
+                                </div>
+                            `;
+                            optionsContainerEl.appendChild(optionEl);
+                        }
                     }
-                }
-            });
+                });
+            }
         }
         
         // Set timer
@@ -716,39 +829,105 @@ document.addEventListener('DOMContentLoaded', () => {
             await playAudio(`speech/${currentQuestionData.speech_id_question}`);
         } else {
             await new Promise(r => setTimeout(r, DELAY_NO_SPEECH_QUESTION));
-        }
-
-        // 3. Show & Speak Options (if Trac nghiem)
+        }        // 3. Show & Speak Options based on layout type
         if ((currentQuestionData.type_question === "Trắc nghiệm" || currentQuestionData.type_question === "Trắc nghiệm Hình ảnh") && currentQuestionData.phuong_an) {
-            const optionElements = optionsContainerEl.querySelectorAll('.option-card');
-            console.log(`startQuestionSequence: Found ${optionElements.length} option elements to animate.`);
             
-            let animationDelayBase = 0; // For staggering option animations
-            for (let i = 0; i < optionElements.length; i++) {
-                const optionEl = optionElements[i];
-                console.log('startQuestionSequence: Animating option', optionEl.id);
+            // Check if this is a 3-column layout question
+            const isThreeColumnLayout = currentQuestionData.layout === '3columns';
+            
+            if (isThreeColumnLayout) {
+                // Handle 3-column layout sequence: question > Note1 > a,b,c,d > Note2 > e,f,g
+                console.log('startQuestionSequence: Using 3-column audio sequence');
                 
-                // Set animation delay for staggered effect
-                optionEl.style.animationDelay = `${animationDelayBase}s`;
-                animateElement(optionEl, 'option-appear');
-                
-                // Speak option if audio exists
-                const optionKey = optionEl.dataset.optionKey;
-                const speechFileKey = `speech_id_options_${optionKey.toUpperCase()}`;
-                const speechFile = currentQuestionData[speechFileKey];
-                
-                if (USE_SPEECH && speechFile) {
-                    await playAudio(`speech/${speechFile}`);
+                // Step 1: Play Note1 audio if available
+                if (USE_SPEECH && currentQuestionData.speech_id_note1) {
+                    await playAudio(`speech/${currentQuestionData.speech_id_note1}`);
                 } else {
                     await new Promise(r => setTimeout(r, DELAY_NO_SPEECH_OPTION));
                 }
                 
-                animationDelayBase += 0.15; // Stagger next option by 150ms
+                // Step 2: Show and speak options a-d (column 1 - errors)
+                const column1Options = ['a', 'b', 'c', 'd'];
+                for (const optionKey of column1Options) {
+                    if (currentQuestionData.phuong_an[optionKey]) {
+                        const optionEl = document.getElementById(`option${optionKey.toUpperCase()}`);
+                        if (optionEl) {
+                            console.log(`startQuestionSequence: Animating 3-column option ${optionKey}`);
+                            animateElement(optionEl, 'option-appear');
+                            
+                            const speechFileKey = `speech_id_options_${optionKey.toUpperCase()}`;
+                            const speechFile = currentQuestionData[speechFileKey];
+                            
+                            if (USE_SPEECH && speechFile) {
+                                await playAudio(`speech/${speechFile}`);
+                            } else {
+                                await new Promise(r => setTimeout(r, DELAY_NO_SPEECH_OPTION));
+                            }
+                        }
+                    }
+                }
+                
+                // Step 3: Play Note2 audio if available
+                if (USE_SPEECH && currentQuestionData.speech_id_note2) {
+                    await playAudio(`speech/${currentQuestionData.speech_id_note2}`);
+                } else {
+                    await new Promise(r => setTimeout(r, DELAY_NO_SPEECH_OPTION));
+                }
+                
+                // Step 4: Show and speak options e-g (column 2 - solutions)
+                const column2Options = ['e', 'f', 'g', 'h', 'i', 'j'];
+                for (const optionKey of column2Options) {
+                    if (currentQuestionData.phuong_an[optionKey]) {
+                        const optionEl = document.getElementById(`option${optionKey.toUpperCase()}`);
+                        if (optionEl) {
+                            console.log(`startQuestionSequence: Animating 3-column option ${optionKey}`);
+                            animateElement(optionEl, 'option-appear');
+                            
+                            const speechFileKey = `speech_id_options_${optionKey.toUpperCase()}`;
+                            const speechFile = currentQuestionData[speechFileKey];
+                            
+                            if (USE_SPEECH && speechFile) {
+                                await playAudio(`speech/${speechFile}`);
+                            } else {
+                                await new Promise(r => setTimeout(r, DELAY_NO_SPEECH_OPTION));
+                            }
+                        }
+                    }
+                }
+                
+            } else {
+                // Regular layout - original logic
+                const optionElements = optionsContainerEl.querySelectorAll('.option-card');
+                console.log(`startQuestionSequence: Found ${optionElements.length} option elements to animate.`);
+                
+                let animationDelayBase = 0; // For staggering option animations
+                for (let i = 0; i < optionElements.length; i++) {
+                    const optionEl = optionElements[i];
+                    console.log('startQuestionSequence: Animating option', optionEl.id);
+                    
+                    // Set animation delay for staggered effect
+                    optionEl.style.animationDelay = `${animationDelayBase}s`;
+                    animateElement(optionEl, 'option-appear');
+                    
+                    // Speak option if audio exists
+                    const optionKey = optionEl.dataset.optionKey;
+                    const speechFileKey = `speech_id_options_${optionKey.toUpperCase()}`;
+                    const speechFile = currentQuestionData[speechFileKey];
+                    
+                    if (USE_SPEECH && speechFile) {
+                        await playAudio(`speech/${speechFile}`);
+                    } else {
+                        await new Promise(r => setTimeout(r, DELAY_NO_SPEECH_OPTION));
+                    }
+                    
+                    animationDelayBase += 0.15; // Stagger next option by 150ms
+                }
             }
+            
         } else if (currentQuestionData.type_question === "Thực hành") {
             // No options to show/speak for practical questions
             console.log('startQuestionSequence: Thực hành question - no options to show');
-        }        // 4. Start Timer
+        }// 4. Start Timer
         if (DEBUG_MODE || timeLeft > 0) {
             startTimer();
         } else if (!DEBUG_MODE && timeLeft <= 0) { 
