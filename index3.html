@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hội thi ATVSV giỏi - 2025</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.7.0/p5.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', Arial, sans-serif;
+            overflow: hidden;
+        }
+        #p5-container {
+            width: 100vw;
+            height: 100vh;
+        }
+    </style>
+</head>
+<body>
+    <div id="p5-container"></div>
+    <script>
+        let rotationAngle = 0;
+        let animationPhase = 0;
+        let maxPhase = 6;
+        let phaseTimer = 0;
+        let phaseDuration = 80;
+        let img;
+        
+        // Animation states
+        let logoOpacity = 0;
+        let mainTitleOpacity = 0;
+        let companyOpacity = 0;
+        let dateOpacity = 0;
+        let venueOpacity = 0;
+        let geometryOpacity = 0;
+        
+        // Floating elements
+        let floatingDots = [];
+        let decorativeShapes = [];
+        
+        function preload() {
+            // Using a placeholder image - you can replace this URL
+            img = loadImage('https://picsum.photos/400/300?random=1');
+        }
+        
+        function setup() {
+            let canvas = createCanvas(1920, 1080);
+            canvas.parent('p5-container');
+            
+            // Initialize floating elements
+            for (let i = 0; i < 20; i++) {
+                floatingDots.push({
+                    x: random(width),
+                    y: random(height),
+                    size: random(3, 8),
+                    speed: random(0.5, 2),
+                    direction: random(TWO_PI)
+                });
+            }
+            
+            for (let i = 0; i < 10; i++) {
+                decorativeShapes.push({
+                    x: random(width),
+                    y: random(height),
+                    size: random(20, 60),
+                    rotation: 0,
+                    rotSpeed: random(-0.02, 0.02)
+                });
+            }
+        }
+        
+        function draw() {
+            // Gradient background
+            for (let i = 0; i <= height; i++) {
+                let inter = map(i, 0, height, 0, 1);
+                let c = lerpColor(color(245, 245, 250), color(230, 230, 240), inter);
+                stroke(c);
+                line(0, i, width, i);
+            }
+            
+            rotationAngle += 0.01;
+            phaseTimer++;
+            
+            // Update animation phases
+            if (phaseTimer > phaseDuration && animationPhase < maxPhase) {
+                animationPhase++;
+                phaseTimer = 0;
+            }
+            
+            // Update opacity values based on phase
+            updateOpacities();
+            
+            // Draw animated geometric elements
+            drawGeometricElements();
+            
+            // Draw floating decorative elements
+            drawFloatingElements();
+            
+            // Draw main content
+            drawContent();
+        }
+        
+        function updateOpacities() {
+            let fadeSpeed = 8;
+            
+            // Phase 0: Geometric elements appear
+            if (animationPhase >= 0) {
+                geometryOpacity = min(255, geometryOpacity + fadeSpeed);
+            }
+            
+            // Phase 1: Logo appears
+            if (animationPhase >= 1) {
+                logoOpacity = min(255, logoOpacity + fadeSpeed);
+            }
+            
+            // Phase 2: Main title appears
+            if (animationPhase >= 2) {
+                mainTitleOpacity = min(255, mainTitleOpacity + fadeSpeed);
+            }
+            
+            // Phase 3: Company name appears
+            if (animationPhase >= 3) {
+                companyOpacity = min(255, companyOpacity + fadeSpeed);
+            }
+            
+            // Phase 4: Date appears
+            if (animationPhase >= 4) {
+                dateOpacity = min(255, dateOpacity + fadeSpeed);
+            }
+            
+            // Phase 5: Venue appears
+            if (animationPhase >= 5) {
+                venueOpacity = min(255, venueOpacity + fadeSpeed);
+            }
+        }
+        
+        function drawGeometricElements() {
+            push();
+            tint(255, geometryOpacity);
+            
+            // Main concentric circles with image
+            push();
+            translate(400, height/2);
+            
+            // Outer rotating ring
+            push();
+            rotate(rotationAngle);
+            noFill();
+            strokeWeight(40);
+            stroke(255, 100, 50, geometryOpacity * 0.8);
+            arc(0, 0, 400, 400, 0, PI * 1.5);
+            pop();
+            
+            // Middle rotating ring
+            push();
+            rotate(-rotationAngle * 1.5);
+            strokeWeight(30);
+            stroke(255, 180, 50, geometryOpacity * 0.9);
+            arc(0, 0, 320, 320, PI * 0.3, PI * 1.8);
+            pop();
+            
+            // Inner image circle
+            push();
+            // Mask for circular image
+            let mask = createGraphics(250, 250);
+            mask.fill(255);
+            mask.noStroke();
+            mask.ellipse(125, 125, 250, 250);
+            
+            let maskedImg = img.get();
+            maskedImg.mask(mask);
+            
+            imageMode(CENTER);
+            image(maskedImg, 0, 0, 250, 250);
+            pop();
+            
+            // Inner rotating ring
+            push();
+            rotate(rotationAngle * 0.8);
+            noFill();
+            strokeWeight(8);
+            stroke(255, 150, 0, geometryOpacity);
+            ellipse(0, 0, 280, 280);
+            pop();
+            
+            pop();
+            
+            // Floating red circles
+            fill(255, 50, 50, geometryOpacity * 0.8);
+            noStroke();
+            ellipse(200, 150, 120, 120);
+            ellipse(1700, 200, 80, 80);
+            ellipse(1600, 800, 100, 100);
+            ellipse(150, 900, 200, 200);
+            
+            // Yellow accent elements
+            fill(255, 200, 0, geometryOpacity * 0.7);
+            ellipse(650, 100, 150, 150);
+            ellipse(1800, 600, 60, 60);
+            
+            // Dotted patterns
+            drawDottedPattern(650, 150, geometryOpacity);
+            drawDottedPattern(1650, 650, geometryOpacity);
+            
+            pop();
+        }
+        
+        function drawDottedPattern(x, y, opacity) {
+            fill(50, 50, 50, opacity * 0.6);
+            noStroke();
+            for (let i = 0; i < 5; i++) {
+                for (let j = 0; j < 4; j++) {
+                    ellipse(x + i * 12, y + j * 12, 4, 4);
+                }
+            }
+        }
+        
+        function drawFloatingElements() {
+            // Update and draw floating dots
+            for (let dot of floatingDots) {
+                dot.x += cos(dot.direction) * dot.speed;
+                dot.y += sin(dot.direction) * dot.speed;
+                
+                // Wrap around screen
+                if (dot.x < 0) dot.x = width;
+                if (dot.x > width) dot.x = 0;
+                if (dot.y < 0) dot.y = height;
+                if (dot.y > height) dot.y = 0;
+                
+                fill(100, 100, 100, geometryOpacity * 0.3);
+                noStroke();
+                ellipse(dot.x, dot.y, dot.size, dot.size);
+            }
+            
+            // Update and draw decorative shapes
+            for (let shape of decorativeShapes) {
+                shape.rotation += shape.rotSpeed;
+                
+                push();
+                translate(shape.x, shape.y);
+                rotate(shape.rotation);
+                stroke(255, 150, 50, geometryOpacity * 0.2);
+                strokeWeight(2);
+                noFill();
+                rect(-shape.size/2, -shape.size/2, shape.size, shape.size);
+                pop();
+            }
+        }
+        
+        function drawContent() {
+            // Logo/Company identifier (top right)
+            push();
+            tint(255, logoOpacity);
+            fill(50, 50, 50, logoOpacity);
+            textAlign(RIGHT, TOP);
+            textSize(24);
+            textStyle(BOLD);
+            text("Thái Nguyên Chemical", width - 60, 60);
+            
+            // Add logo symbol
+            push();
+            translate(width - 40, 85);
+            rotate(rotationAngle * 2);
+            stroke(255, 100, 50, logoOpacity);
+            strokeWeight(3);
+            noFill();
+            ellipse(0, 0, 25, 25);
+            fill(255, 100, 50, logoOpacity);
+            noStroke();
+            ellipse(0, 0, 8, 8);
+            pop();
+            pop();
+            
+            // Main title
+            push();
+            fill(30, 30, 30, mainTitleOpacity);
+            textAlign(LEFT, CENTER);
+            textSize(72);
+            textStyle(BOLD);
+            let titleY = height/2 - 100;
+            text("HỘI THI AN TOÀN VỆ SINH VIÊN GIỎI", width/2 + 100, titleY);
+            text("cấp Công ty", width/2 + 100, titleY + 90);
+            pop();
+            
+            // Company name
+            push();
+            fill(60, 60, 60, companyOpacity);
+            textAlign(LEFT, CENTER);
+            textSize(36);
+            textStyle(NORMAL);
+            text("Công ty Công nghiệp Hóa chất mỏ Thái Nguyên", width/2 + 100, height/2 + 80);
+            pop();
+            
+            // Date badge
+            push();
+            fill(255, 80, 50, dateOpacity);
+            noStroke();
+            rect(width/2 + 100, height/2 + 150, 280, 60, 30);
+            
+            fill(255, dateOpacity);
+            textAlign(LEFT, CENTER);
+            textSize(28);
+            textStyle(BOLD);
+            text("25/06/2025", width/2 + 130, height/2 + 180);
+            pop();
+            
+            // Venue information
+            push();
+            fill(80, 80, 80, venueOpacity);
+            textAlign(LEFT, TOP);
+            textSize(20);
+            textStyle(NORMAL);
+            let venueText = "Hội trường tầng 5 - Văn phòng Công ty\nSố 9A, Đường Phan Đình Phùng\nPhường Đồng Quang, Thành phố Thái Nguyên";
+            text(venueText, width/2 + 100, height/2 + 240);
+            
+            // Add location icon
+            push();
+            translate(width/2 + 70, height/2 + 250);
+            stroke(255, 100, 50, venueOpacity);
+            strokeWeight(2);
+            noFill();
+            ellipse(0, 0, 16, 16);
+            fill(255, 100, 50, venueOpacity);
+            noStroke();
+            ellipse(0, -2, 6, 6);
+            pop();
+            pop();
+        }
+        
+        function windowResized() {
+            resizeCanvas(windowWidth, windowHeight);
+        }
+    </script>
+</body>
+</html>
