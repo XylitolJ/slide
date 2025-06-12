@@ -618,11 +618,29 @@ document.addEventListener('DOMContentLoaded', () => {
                                ? currentQuestionData.dap_an_dung 
                                : [currentQuestionData.dap_an_dung];
 
+        // For Round 1, total points per question is 10, divided equally among correct answers
+        const totalPoints = 10;
+        const numberOfCorrectAnswers = correctAnswers.length;
+        const pointsPerAnswer = Math.round((totalPoints / numberOfCorrectAnswers) * 10) / 10; // Round to 1 decimal place
+
         correctAnswers.forEach(correctKey => {
             const correctOptionEl = optionsContainerEl.querySelector(`[data-option-key="${correctKey.toLowerCase()}"]`);
             if (correctOptionEl) {
                 // Add the correct-answer class which handles all styling
                 correctOptionEl.classList.add('correct-answer');
+
+                // Add score badge to the option
+                const scoreBadge = document.createElement('div');
+                scoreBadge.classList.add('score-badge');
+                // Format points to show decimal only if needed
+                const formattedPoints = pointsPerAnswer % 1 === 0 ? pointsPerAnswer.toString() : pointsPerAnswer.toFixed(1);
+                scoreBadge.innerHTML = `<i class="fas fa-star mr-1"></i>+${formattedPoints}đ`;
+                
+                // Find the option content and append the score badge
+                const optionContent = correctOptionEl.querySelector('.flex.items-center.space-x-3');
+                if (optionContent) {
+                    optionContent.appendChild(scoreBadge);
+                }
                 
                 // Ensure the option is visible and smoothly animated
                 correctOptionEl.style.transition = 'all 0.5s ease';
@@ -651,14 +669,20 @@ async function displayAnswer() {
 
         showAnswerBtn.disabled = true;
         showAnswerBtn.classList.add('opacity-50', 'cursor-not-allowed');
-        
-        let answerDisplayString = "";
+          let answerDisplayString = "";
         if (currentQuestionData.type_question === "Trắc nghiệm") {
             if (currentQuestionData.dap_an_dung) {
                 const correctKeys = Array.isArray(currentQuestionData.dap_an_dung) 
                                     ? currentQuestionData.dap_an_dung 
                                     : [currentQuestionData.dap_an_dung];
-                answerDisplayString = "Đáp án: " + correctKeys.map(k => k.toUpperCase()).join(', ');
+                
+                // Calculate points distribution for Round 1
+                const totalPoints = 10;
+                const numberOfCorrectAnswers = correctKeys.length;
+                const pointsPerAnswer = Math.round((totalPoints / numberOfCorrectAnswers) * 10) / 10;
+                const formattedPoints = pointsPerAnswer % 1 === 0 ? pointsPerAnswer.toString() : pointsPerAnswer.toFixed(1);
+                
+                answerDisplayString = `Đáp án: ${correctKeys.map(k => k.toUpperCase()).join(', ')} | Điểm tối đa: ${totalPoints} điểm (${formattedPoints}đ/câu)`;
                 highlightCorrectAnswer();
             } else {
                 answerDisplayString = "Không có đáp án cho câu này.";
