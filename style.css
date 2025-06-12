@@ -903,7 +903,7 @@ body, html {
 }
 
 /* Column containers with background colors */
-#column1Container {
+/* #column1Container {
     background: linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(252, 165, 165, 0.1));
     border: 1px solid rgba(239, 68, 68, 0.2);
     border-radius: 0.75rem;
@@ -917,7 +917,7 @@ body, html {
     border-radius: 0.75rem;
     padding: 1rem;
     box-shadow: 0 2px 8px rgba(59, 130, 246, 0.1);
-}
+} */
 
 .column-header {
     font-size: 1.25rem;
@@ -934,22 +934,22 @@ body, html {
 
 /* Column header variants */
 .column-header.errors {
-    background: linear-gradient(135deg, rgba(239, 68, 68, 0.15), rgba(252, 165, 165, 0.15));
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.95), rgba(252, 165, 165, 0.95));
     border-left: 4px solid #ef4444;
 }
 
 .column-header.errors i {
-    color: #ef4444;
+    color: #ffffff;
     margin-right: 0.5rem;
 }
 
 .column-header.solutions {
-    background: linear-gradient(135deg, rgba(59, 130, 246, 0.15), rgba(147, 197, 253, 0.15));
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.95), rgba(147, 197, 253, 0.95));
     border-left: 4px solid #3b82f6;
 }
 
 .column-header.solutions i {
-    color: #3b82f6;
+    color: #ffffff;
     margin-right: 0.5rem;
 }
 

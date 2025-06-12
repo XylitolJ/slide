@@ -421,9 +421,9 @@
             "c": "Để VLNCN xuống nền nhà kho; đứng, ngồi lên hòm thuốc nổ sai với quy định an toàn.",
             "d": "Để vật tư PCTT-TKCN không đúng nơi quy định",
             "Note2": "Biện pháp xử lý:",
-            "e": "Thủ kho: Phải mang đủ, mang đúng trang bị bảo vệ cá nhân đã được cấp phát. Phải tuân thủ quy định an toàn không được để VLNCN xuống nền nhà kho; khi nhập, xuất VLNCN không được ngồi lên hòm thuốc nổ. Phải vệ sinh nhà kho sạch sẽ, di chuyển dụng cụ, vật tư ra ngoài để đảm bảo an toàn, thông thoáng. Yêu cầu công nhân học lại nội quy an toàn.",
-            "f": "Thủ kho: Phải mang đủ, mang đúng trang bị bảo vệ cá nhân đã được cấp phát.. Phải tuân thủ quy định an toàn không được để VLNCN xuống nền nhà kho; khi nhập, xuất VLNCN không được ngồi lên hòm thuốc nổ. Xếp VLNCN đúng chiều cao quy định. Phải vệ sinh nhà kho sạch sẽ, di chuyển dụng cụ, vật tư ra ngoài để đảm bảo an toàn, thông thoáng. Yêu cầu công nhân học lại nội quy an toàn.",
-            "g": "Công nhân bốc xếp: Phải mang đủ, mang đúng trang bị bảo vệ cá nhân đã được cấp phát. Phải tuân thủ quy định an toàn không được để VLNCN xuống nền nhà kho; khi nhập, xuất VLNCN không được dẫm lên hòm thuốc nổ. Yêu cầu công nhân học lại nội quy an toàn."
+            "e": "Thủ kho: \n• Phải mang đủ, mang đúng trang bị bảo vệ cá nhân đã được cấp phát.\n• Phải tuân thủ quy định an toàn không được để VLNCN xuống nền nhà kho.\n• Khi nhập, xuất VLNCN không được ngồi lên hòm thuốc nổ.\n• Phải vệ sinh nhà kho sạch sẽ, di chuyển dụng cụ, vật tư ra ngoài để đảm bảo an toàn, thông thoáng.\n• Yêu cầu công nhân học lại nội quy an toàn.",
+            "f": "Thủ kho: \n• Phải mang đủ, mang đúng trang bị bảo vệ cá nhân đã được cấp phát.\n• Phải tuân thủ quy định an toàn không được để VLNCN xuống nền nhà kho.\n• Khi nhập, xuất VLNCN không được ngồi lên hòm thuốc nổ.\n• Xếp VLNCN đúng chiều cao quy định.\n• Phải vệ sinh nhà kho sạch sẽ, di chuyển dụng cụ, vật tư ra ngoài để đảm bảo an toàn, thông thoáng.\n• Yêu cầu công nhân học lại nội quy an toàn.",
+            "g": "Công nhân bốc xếp: \n• Phải mang đủ, mang đúng trang bị bảo vệ cá nhân đã được cấp phát.\n• Phải tuân thủ quy định an toàn không được để VLNCN xuống nền nhà kho.\n• Khi nhập, xuất VLNCN không được dẫm lên hòm thuốc nổ.\n• Yêu cầu công nhân học lại nội quy an toàn."
           },
           "dap_an_dung": ["b", "c", "d", "e", "g"],
           "speech_id_question": "V2_BXV_HA_22.wav",
@@ -437,7 +437,7 @@
           "speech_id_options_F": "V2_BXV_HA_22_F.wav",
           "speech_id_options_G": "V2_BXV_HA_22_G.wav",
           "speech_id_answer": "V2_BXV_HA_22_ans.wav",
-          "bg_image": "images\\bg\\bg10.png",
+          "bg_image": "images\\bg\\bg1.png",
           "bg_image_overlay": null,
           "layout": "3columns"
         }
