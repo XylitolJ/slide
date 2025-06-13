@@ -214,36 +214,66 @@
 
     <script>        // Global state variables
         let questionsData = null;
-        let currentAudio = null;// Load and display questions
-        fetch('vong3.json')
-            .then(response => response.json())
-            .then(data => {
-                const vong3Data = data.vong_3;
-                
-                // Load Y Tế Thực Hành questions
-                const ytePracticeContainer = document.getElementById('ytePracticeContainer');
-                const ytePracticeQuestions = vong3Data.y_te.thuc_hanh;
-                
-                // Update question count
-                document.getElementById('yteQuestionCount').textContent = ytePracticeQuestions.length;
-                
-                ytePracticeQuestions.forEach((question, index) => {
+        let currentAudio = null;        // Load and display questions
+        Promise.all([
+            fetch('question_sets.json').then(response => response.json()),
+            fetch('vong3.json').then(response => response.json())
+        ])
+        .then(([questionSetsData, vong3Data]) => {
+            const vong3Config = questionSetsData.vong3;
+            const vong3Questions = vong3Data.vong_3;
+            
+            // Create a lookup map for questions by ID
+            const questionLookup = {};
+            
+            // Add Y tế questions to lookup
+            if (vong3Questions.y_te && vong3Questions.y_te.thuc_hanh) {
+                vong3Questions.y_te.thuc_hanh.forEach(q => {
+                    questionLookup[q.id] = q;
+                });
+            }
+            
+            // Add PCCC questions to lookup  
+            if (vong3Questions.phong_chay_chua_chay && vong3Questions.phong_chay_chua_chay.ly_thuyet_thuc_hanh) {
+                vong3Questions.phong_chay_chua_chay.ly_thuyet_thuc_hanh.forEach(q => {
+                    questionLookup[q.id] = q;
+                });
+            }
+            
+            // Load Y Tế questions based on question_sets.json configuration
+            const ytePracticeContainer = document.getElementById('ytePracticeContainer');
+            const yteQuestionIds = vong3Config.y_te || [];
+            
+            // Update question count
+            document.getElementById('yteQuestionCount').textContent = yteQuestionIds.length;
+            
+            yteQuestionIds.forEach((questionId, index) => {
+                const question = questionLookup[questionId];
+                if (question) {
                     const questionButton = createQuestionButton(question, 'practice', index);
                     ytePracticeContainer.appendChild(questionButton);
-                });
-                
-                // Load PCCC Lý Thuyết & Thực Hành questions
-                const pcccContainer = document.getElementById('pcccTheoryPracticeContainer');
-                const pcccQuestions = vong3Data.phong_chay_chua_chay.ly_thuyet_thuc_hanh;
-                
-                // Update question count
-                document.getElementById('pcccQuestionCount').textContent = pcccQuestions.length;
-                
-                pcccQuestions.forEach((question, index) => {
+                } else {
+                    console.warn(`Question with ID ${questionId} not found in vong3.json`);
+                }
+            });
+            
+            // Load PCCC questions based on question_sets.json configuration
+            const pcccContainer = document.getElementById('pcccTheoryPracticeContainer');
+            const pcccQuestionIds = vong3Config.pccc || [];
+            
+            // Update question count
+            document.getElementById('pcccQuestionCount').textContent = pcccQuestionIds.length;
+            
+            pcccQuestionIds.forEach((questionId, index) => {
+                const question = questionLookup[questionId];
+                if (question) {
                     const questionButton = createQuestionButton(question, 'theory', index);
                     pcccContainer.appendChild(questionButton);
-                });
-            })
+                } else {
+                    console.warn(`Question with ID ${questionId} not found in vong3.json`);
+                }
+            });
+        })
             .catch(error => {
                 console.error('Error loading questions:', error);
                 // Show error message
@@ -287,13 +317,13 @@
         }        function showQuestionDetails(question) {
             // Always go to slide presentation mode - redirect to vong3.html
             const params = new URLSearchParams({
-                questionId: question.cau_hoi_so,
+                questionId: question.id,
                 category: question.category,
                 subcategory: question.subcategory,
                 autoStart: 'true'
             });
             window.location.href = `vong3.html?${params.toString()}`;
-        }        // Add keyboard navigation
+        }// Add keyboard navigation
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
                 const modal = document.querySelector('.fixed.inset-0');

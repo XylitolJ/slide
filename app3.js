@@ -16,19 +16,11 @@ document.addEventListener('DOMContentLoaded', () => {    // URL Parameter handli
         
         // If no set parameter, return null (will load all questions)
         return setParam;
-    }
-
-    // Function to find question by ID and category
-    function findQuestionById(questionId, category, subcategory) {
+    }    // Function to find question by ID
+    function findQuestionById(questionId) {
         if (!allQuestions || !questionId) return null;
         
-        return allQuestions.find(q => {
-            const matchesId = q.cau_hoi_so.toString() === questionId.toString();
-            const matchesCategory = category ? q.category.toLowerCase().includes(category.toLowerCase()) : true;
-            const matchesSubcategory = subcategory ? q.subcategory.toLowerCase().includes(subcategory.toLowerCase()) : true;
-            
-            return matchesId && matchesCategory && matchesSubcategory;
-        });
+        return allQuestions.find(q => q.id === questionId);
     }
 
     // DOM Elements
@@ -410,71 +402,70 @@ document.addEventListener('DOMContentLoaded', () => {    // URL Parameter handli
                 }
             } catch (rulesError) {
                 console.warn("Could not load contest rules:", rulesError);
-            }
-
-            // Extract all questions from vong3.json structure
+            }            // Extract all questions from vong3.json structure
             const vong3Data = data.vong_3;
             let allAvailableQuestions = [];
             
+            // Create a lookup map for questions by ID
+            const questionLookup = {};
+            
             // Process Y tế (Medical) category - only "thuc_hanh" questions
             if (vong3Data.y_te && vong3Data.y_te.thuc_hanh) {
-                allAvailableQuestions = allAvailableQuestions.concat(vong3Data.y_te.thuc_hanh);
+                vong3Data.y_te.thuc_hanh.forEach(q => {
+                    questionLookup[q.id] = q;
+                    allAvailableQuestions.push(q);
+                });
             }
             
             // Process PCCC category - "ly_thuyet_thuc_hanh" questions  
             if (vong3Data.phong_chay_chua_chay && vong3Data.phong_chay_chua_chay.ly_thuyet_thuc_hanh) {
-                allAvailableQuestions = allAvailableQuestions.concat(vong3Data.phong_chay_chua_chay.ly_thuyet_thuc_hanh);
+                vong3Data.phong_chay_chua_chay.ly_thuyet_thuc_hanh.forEach(q => {
+                    questionLookup[q.id] = q;
+                    allAvailableQuestions.push(q);
+                });
             }
 
-            // Get selected set from URL parameters
-            const selectedSet = getSelectedSet();
-            console.log('Selected set:', selectedSet);
-            
-            // Filter questions based on question_sets.json configuration
+            // Get vong3 configuration from question_sets.json
+            const vong3Config = questionSetsData.vong3;
+            if (!vong3Config) {
+                throw new Error('Vong3 configuration not found in question_sets.json');
+            }
+
+            // Build questions array based on question_sets.json configuration
             allQuestions = [];
             
-            if (selectedSet) {
-                // Load specific set from question_sets.json
-                const questionIds = questionSetsData.vong3?.[selectedSet];
-                if (questionIds && Array.isArray(questionIds)) {
-                    console.log(`Loading questions for set "${selectedSet}":`, questionIds);
-                    
-                    // Filter questions based on IDs from question_sets.json
-                    questionIds.forEach(questionId => {
-                        const question = allAvailableQuestions.find(q => q.id === questionId);
-                        if (question) {
-                            allQuestions.push(question);
-                        } else {
-                            console.warn(`Question with ID "${questionId}" not found in vong3.json`);
-                        }
-                    });
-                } else {
-                    console.error(`Set "${selectedSet}" not found in question_sets.json for vong3`);
-                    // Fallback to all questions if set not found
-                    allQuestions = allAvailableQuestions;
-                }
-            } else {
-                // No specific set selected, load all questions (fallback behavior)
-                console.log('No specific set selected, loading all questions');
-                allQuestions = allAvailableQuestions;
+            // Add Y tế questions in configured order
+            if (vong3Config.y_te && Array.isArray(vong3Config.y_te)) {
+                vong3Config.y_te.forEach(questionId => {
+                    const question = questionLookup[questionId];
+                    if (question) {
+                        allQuestions.push(question);
+                    } else {
+                        console.warn(`Y tế question with ID ${questionId} not found in vong3.json`);
+                    }
+                });
             }
-
-            if (allQuestions.length > 0) {
+            
+            // Add PCCC questions in configured order
+            if (vong3Config.pccc && Array.isArray(vong3Config.pccc)) {
+                vong3Config.pccc.forEach(questionId => {
+                    const question = questionLookup[questionId];
+                    if (question) {
+                        allQuestions.push(question);
+                    } else {
+                        console.warn(`PCCC question with ID ${questionId} not found in vong3.json`);
+                    }
+                });
+            }            if (allQuestions.length > 0) {
                 console.log(`Loaded ${allQuestions.length} questions for vong3 based on question_sets.json configuration`);
                 
                 // Check if we need to load a specific question from URL parameters
                 const urlParams = getUrlParameters();
                 if (urlParams.questionId) {
-                    const specificQuestion = findQuestionById(urlParams.questionId, urlParams.category, urlParams.subcategory);
+                    const specificQuestion = findQuestionById(urlParams.questionId);
                     if (specificQuestion) {
-                        // Find the index of the specific question using both ID and category/subcategory
-                        currentQuestionIndex = allQuestions.findIndex(q => {
-                            const matchesId = q.cau_hoi_so.toString() === urlParams.questionId.toString();
-                            const matchesCategory = urlParams.category ? q.category.toLowerCase().includes(urlParams.category.toLowerCase()) : true;
-                            const matchesSubcategory = urlParams.subcategory ? q.subcategory.toLowerCase().includes(urlParams.subcategory.toLowerCase()) : true;
-                            
-                            return matchesId && matchesCategory && matchesSubcategory;
-                        });
+                        // Find the index of the specific question using ID
+                        currentQuestionIndex = allQuestions.findIndex(q => q.id === urlParams.questionId);
                         if (currentQuestionIndex === -1) {
                             currentQuestionIndex = 0;
                         }
@@ -492,8 +483,7 @@ document.addEventListener('DOMContentLoaded', () => {    // URL Parameter handli
                         progressTextEl.textContent = `Không tìm thấy câu hỏi ${urlParams.questionId}. Hiển thị câu hỏi đầu tiên.`;
                     }
                 } else {
-                    const setInfo = selectedSet ? ` cho bộ ${selectedSet}` : '';
-                    progressTextEl.textContent = `Đã tải ${allQuestions.length} câu hỏi thực hành${setInfo}. Nhấn "Bắt đầu" để bắt đầu.`;
+                    progressTextEl.textContent = `Đã tải ${allQuestions.length} câu hỏi thực hành. Nhấn "Bắt đầu" để bắt đầu.`;
                 }
                 
                 // Update round info display
