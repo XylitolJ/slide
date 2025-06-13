@@ -440,17 +440,15 @@
                 circle(0, 0, this.size);
                 pop();
             }
-        }
-
-        class GeometricShape {
+        }        class GeometricShape {
             constructor() {
-                this.x = random(width);
+                this.x = random(-100, width + 100); // Start từ bên trái hoặc trong màn hình
                 this.y = random(height);
                 this.size = random(20, 60);
-                this.speedX = random(-0.3, 0.3);
-                this.speedY = random(-0.3, 0.3);
+                this.speedX = random(1.5, 3.0); // Tăng tốc độ ngang, chỉ di chuyển từ trái qua phải
+                this.speedY = random(-0.4, 0.4); // Tăng nhẹ tốc độ dọc
                 this.rotation = 0;
-                this.rotationSpeed = random(-0.01, 0.01);
+                this.rotationSpeed = random(-0.04, 0.04); // Tăng tốc độ quay
                 this.type = random(['circle', 'square', 'triangle']);
                 this.filled = random() > 0.5;
                 this.color = random(['#3B82F6', '#10B981', '#8B5CF6', '#F59E0B', '#EF4444', '#EC4899']);
@@ -463,12 +461,16 @@
                 this.y += this.speedY;
                 this.rotation += this.rotationSpeed;
                 
-                // Bounce off edges
-                if (this.x < 0 || this.x > width) this.speedX *= -1;
-                if (this.y < 0 || this.y > height) this.speedY *= -1;
+                // Loop lại khi đi ra khỏi màn hình bên phải
+                if (this.x > width + 100) {
+                    this.x = -100;
+                    this.y = random(height); // Random vị trí Y mới
+                }
                 
-                // Keep within bounds
-                this.x = constrain(this.x, 0, width);
+                // Giữ trong bounds theo chiều dọc với bounce nhẹ
+                if (this.y < 0 || this.y > height) {
+                    this.speedY *= -1;
+                }
                 this.y = constrain(this.y, 0, height);
                 
                 // Pulsing effect
@@ -555,7 +557,7 @@
         document.addEventListener('keydown', (e) => {
             if (e.key === 'ArrowLeft' || e.key.toLowerCase() === 'q') {
                 // Navigate back to main page
-                window.location.href = 'index.html';
+                window.location.href = 'page3.html';
             } else if (e.key === 'ArrowRight') {
                 // Navigate to vong1.html (start slideshow)
                 window.location.href = 'vong1.html';
