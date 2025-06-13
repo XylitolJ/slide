@@ -6,8 +6,15 @@
     <title>Quản Lý Vòng Thi - ATVSV 2025 V2</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
-    <style>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">    <style>
+        :root {
+            --color-1: #F1F3F9; /* very light background */
+            --color-2: #2A558C; /* blue */
+            --color-3: #F2C53D; /* yellow */
+            --color-4: #F2A341; /* orange */
+            --color-5: #F26E50; /* red/orange */
+        }
+        
         * {
             font-family: 'Inter', sans-serif;
             margin: 0;
@@ -28,10 +35,9 @@
         }
         
         .gradient-bg {
-            background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 30%, #16213e 70%, #0f3460 100%);
+            background: linear-gradient(135deg, var(--color-1) 0%, rgba(241, 243, 249, 0.95) 30%, rgba(42, 85, 140, 0.1) 70%, rgba(242, 197, 61, 0.05) 100%);
         }
-        
-        .floating-particles {
+          .floating-particles {
             position: absolute;
             top: 0;
             left: 0;
@@ -43,9 +49,10 @@
         
         .particle {
             position: absolute;
-            background: rgba(255, 255, 255, 0.1);
+            background: linear-gradient(45deg, var(--color-3), var(--color-4));
             border-radius: 50%;
             animation: float 8s infinite linear;
+            opacity: 0.6;
         }
         
         .particle:nth-child(1) { width: 8px; height: 8px; left: 10%; animation-delay: 0s; }
@@ -81,8 +88,7 @@
             flex: 1;
             padding: 2rem;
         }
-        
-        .round-circle {
+          .round-circle {
             position: relative;
             width: 280px;
             height: 280px;
@@ -95,9 +101,9 @@
             justify-content: center;
             text-align: center;
             overflow: hidden;
-            border: 4px solid rgba(255, 255, 255, 0.2);
+            border: 4px solid var(--color-2);
             backdrop-filter: blur(10px);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 8px 32px rgba(42, 85, 140, 0.2);
         }
         
         .round-circle::before {
@@ -108,7 +114,7 @@
             right: -2px;
             bottom: -2px;
             border-radius: 50%;
-            background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            background: linear-gradient(45deg, var(--color-3), var(--color-4), var(--color-5));
             z-index: -1;
             animation: rotate 3s linear infinite;
         }
@@ -120,26 +126,26 @@
         
         .round-circle:hover {
             transform: scale(1.1) translateY(-10px);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+            box-shadow: 0 20px 40px rgba(42, 85, 140, 0.3);
         }
         
         .round-1 {
-            background: linear-gradient(135deg, #059669, #10b981, #34d399);
+            background: linear-gradient(135deg, var(--color-2), rgba(42, 85, 140, 0.9));
         }
         
         .round-2 {
-            background: linear-gradient(135deg, #dc2626, #ef4444, #f87171);
+            background: linear-gradient(135deg, var(--color-4), var(--color-5));
         }
         
         .round-3 {
-            background: linear-gradient(135deg, #7c3aed, #a855f7, #c084fc);
+            background: linear-gradient(135deg, var(--color-3), var(--color-4));
         }
-        
-        .round-icon {
+          .round-icon {
             font-size: 4rem;
             color: white;
             margin-bottom: 1rem;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            text-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            filter: drop-shadow(0 2px 4px rgba(42, 85, 140, 0.5));
         }
         
         .round-title {
@@ -151,24 +157,23 @@
         }
         
         .round-description {
-            color: rgba(255, 255, 255, 0.9);
+            color: rgba(255, 255, 255, 0.95);
             font-size: 1rem;
             font-weight: 500;
-            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
         }
         
         /* Arrow Connectors */
         .arrow-connector {
             position: relative;
             z-index: 5;
-            color: rgba(255, 255, 255, 0.6);
+            color: var(--color-2);
             font-size: 3rem;
             animation: pulse-arrow 2s infinite;
         }
-        
-        @keyframes pulse-arrow {
-            0%, 100% { opacity: 0.6; transform: scale(1); }
-            50% { opacity: 1; transform: scale(1.2); }
+          @keyframes pulse-arrow {
+            0%, 100% { opacity: 0.8; transform: scale(1); color: var(--color-2); }
+            50% { opacity: 1; transform: scale(1.2); color: var(--color-4); }
         }
         
         /* Enhanced animations */
@@ -216,27 +221,27 @@
                 transform: translateX(0) rotate(0deg) scale(1);
             }
         }
-        
-        .navigation-hint {
+          .navigation-hint {
             position: fixed;
             bottom: 2rem;
             left: 50%;
             transform: translateX(-50%);
-            background: rgba(0, 0, 0, 0.8);
+            background: linear-gradient(135deg, var(--color-2), rgba(42, 85, 140, 0.9));
             color: white;
             padding: 1rem 2rem;
             border-radius: 50px;
             font-size: 0.9rem;
             z-index: 100;
             opacity: 0.9;
+            box-shadow: 0 4px 20px rgba(42, 85, 140, 0.3);
         }
         
         .loading-spinner {
             display: inline-block;
             width: 20px;
             height: 20px;
-            border: 2px solid #f3f3f3;
-            border-top: 2px solid #3b82f6;
+            border: 2px solid var(--color-1);
+            border-top: 2px solid var(--color-2);
             border-radius: 50%;
             animation: spin 1s linear infinite;
         }
@@ -253,10 +258,9 @@
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
-        }
-          /* Main title styling */
+        }          /* Main title styling */
         .main-title {
-            background: linear-gradient(45deg, #60a5fa, #a78bfa, #f472b6);
+            background: linear-gradient(45deg, var(--color-2), var(--color-4), var(--color-5));
             -webkit-background-clip: text;
             background-clip: text;
             -webkit-text-fill-color: transparent;
@@ -264,7 +268,7 @@
             font-size: 3rem;
             font-weight: 800;
             margin-bottom: 2rem;
-            text-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            filter: drop-shadow(0 4px 8px rgba(42, 85, 140, 0.3));
         }
 
         /* Question list styling */
@@ -278,13 +282,28 @@
             border-radius: 12px;
             padding: 1.5rem;
             margin-bottom: 1rem;
-            border: 1px solid #e5e7eb;
+            border: 2px solid var(--color-1);
             transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(42, 85, 140, 0.1);
         }
 
         .question-item:hover {
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 8px 24px rgba(42, 85, 140, 0.2);
             transform: translateY(-2px);
+            border-color: var(--color-3);
+        }
+
+        /* Header styling */
+        .header-info {
+            color: var(--color-2);
+        }
+
+        .header-subtitle {
+            color: rgba(42, 85, 140, 0.8);
+        }
+
+        .header-details {
+            color: rgba(42, 85, 140, 0.7);
         }
     </style>
 </head>
@@ -300,15 +319,14 @@
             <div class="particle"></div>
             <div class="particle"></div>
             <div class="particle"></div>
-        </div>        <div class="content-layer">
-            <!-- Header -->
-            <header class="text-center py-8 text-white">
+        </div>        <div class="content-layer">            <!-- Header -->
+            <header class="text-center py-8">
                 <h1 class="main-title fade-in">
-                    <i class="fas fa-trophy mr-4 text-yellow-300"></i>
+                    <i class="fas fa-trophy mr-4" style="color: var(--color-3);"></i>
                     HỘI THI ATVSV GIỎI 2025
                 </h1>
-                <p class="text-xl text-gray-300 fade-in mb-2">Công ty Công nghiệp Hóa chất mỏ Thái Nguyên</p>
-                <p class="text-lg text-gray-400 fade-in">
+                <p class="text-xl header-subtitle fade-in mb-2">Công ty Công nghiệp Hóa chất mỏ Thái Nguyên</p>
+                <p class="text-lg header-details fade-in">
                     <i class="fas fa-calendar-alt mr-2"></i>25/06/2025
                     <span class="mx-4">|</span>
                     <i class="fas fa-map-marker-alt mr-2"></i>Hội trường tầng 5
@@ -320,14 +338,12 @@
                 <!-- Round Selection -->
                 <div class="rounds-container" id="roundSelection">
                     <!-- Round cards will be injected here -->
-                </div>
-
-                <!-- Question Container -->
+                </div>                <!-- Question Container -->
                 <div id="questionContainer" class="fade-in px-8" style="display: none;">
                     <div class="max-w-7xl mx-auto">
-                        <div class="bg-white bg-opacity-90 rounded-2xl p-6 backdrop-filter backdrop-blur-sm">
+                        <div class="bg-white bg-opacity-95 rounded-2xl p-6 backdrop-filter backdrop-blur-sm border-2 border-yellow-200 shadow-xl">
                             <div class="flex items-center justify-between mb-6">
-                                <button id="backToRounds" class="flex items-center text-blue-600 hover:text-blue-800 font-semibold transition-colors">
+                                <button id="backToRounds" class="flex items-center text-blue-600 hover:text-blue-800 font-semibold transition-colors bg-blue-50 px-4 py-2 rounded-lg hover:bg-blue-100" style="color: var(--color-2); background-color: rgba(42, 85, 140, 0.1);">
                                     <i class="fas fa-arrow-left mr-2"></i>Quay lại danh sách vòng thi
                                 </button>
                                 <div id="questionStats" class="text-gray-600 font-medium">
@@ -353,9 +369,8 @@
 
         // Load rounds data on page load
         async function loadRounds() {
-            try {
-                const roundSelection = document.getElementById('roundSelection');
-                roundSelection.innerHTML = '<div class="text-center text-white"><div class="loading-spinner mx-auto mb-4"></div><p>Đang tải dữ liệu...</p></div>';
+            try {                const roundSelection = document.getElementById('roundSelection');
+                roundSelection.innerHTML = '<div class="text-center" style="color: var(--color-2);"><div class="loading-spinner mx-auto mb-4"></div><p>Đang tải dữ liệu...</p></div>';
 
                 const response = await fetch('quyche.json');
                 const data = await response.json();
@@ -394,12 +409,10 @@
                     setTimeout(() => {
                         card.classList.add(animationClasses[index] || 'slide-in-center');
                     }, index * 300);
-                });
-
-            } catch (error) {
+                });            } catch (error) {
                 console.error('Error loading rounds:', error);
                 const roundSelection = document.getElementById('roundSelection');
-                roundSelection.innerHTML = '<div class="text-center text-red-600"><i class="fas fa-exclamation-triangle text-4xl mb-4"></i><p>Không thể tải dữ liệu. Vui lòng thử lại.</p></div>';
+                roundSelection.innerHTML = '<div class="text-center" style="color: var(--color-5);"><i class="fas fa-exclamation-triangle text-4xl mb-4"></i><p>Không thể tải dữ liệu. Vui lòng thử lại.</p></div>';
             }
         }
 
@@ -551,11 +564,9 @@
                     if (data.vong_3?.phong_chay_chua_chay?.ly_thuyet_thuc_hanh) {
                         allQuestions = allQuestions.concat(data.vong_3.phong_chay_chua_chay.ly_thuyet_thuc_hanh);
                     }
-                }
-
-                // Update question stats
+                }                // Update question stats
                 document.getElementById('questionStats').innerHTML = `
-                    <span class="inline-flex items-center px-4 py-2 rounded-full bg-blue-100 text-blue-800">
+                    <span class="inline-flex items-center px-4 py-2 rounded-full text-white" style="background: linear-gradient(135deg, var(--color-2), var(--color-4));">
                         <i class="fas fa-list-ol mr-2"></i>
                         ${allQuestions.length} câu hỏi
                     </span>
@@ -564,41 +575,39 @@
                 // Display questions
                 const questionList = document.getElementById('questionList');
                 if (allQuestions.length > 0) {
-                    questionList.innerHTML = allQuestions.map((question, index) => `
-                        <div class="question-item" data-question-id="${question.id}">
+                    questionList.innerHTML = allQuestions.map((question, index) => `                        <div class="question-item" data-question-id="${question.id}">
                             <div class="flex items-start justify-between">
                                 <div class="flex-1">
                                     <div class="flex items-center mb-2">
-                                        <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-blue-100 text-blue-800 text-sm font-semibold mr-3">
+                                        <span class="inline-flex items-center justify-center w-8 h-8 rounded-full text-white text-sm font-semibold mr-3" style="background: linear-gradient(135deg, var(--color-2), var(--color-4));">
                                             ${index + 1}
                                         </span>
-                                        <div class="text-sm text-gray-500">
+                                        <div class="text-sm" style="color: var(--color-2);">
                                             ID: ${question.id} | ${question.category}
                                         </div>
                                     </div>
-                                    <p class="text-gray-800 font-medium leading-relaxed">${question.cau_hoi}</p>
+                                    <p class="font-medium leading-relaxed" style="color: #1f2937;">${question.cau_hoi}</p>
                                     ${question.subcategory ? `
                                         <div class="mt-2">
-                                            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs bg-gray-100 text-gray-700">
+                                            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs text-white" style="background: var(--color-3);">
                                                 ${question.subcategory}
                                             </span>
                                         </div>
                                     ` : ''}
                                 </div>
                                 <div class="ml-4 flex items-center space-x-2">
-                                    ${question.use_image === 'Yes' ? '<i class="fas fa-image text-green-600" title="Có hình ảnh"></i>' : ''}
-                                    ${question.speech_id_question ? '<i class="fas fa-volume-up text-blue-600" title="Có âm thanh"></i>' : ''}
+                                    ${question.use_image === 'Yes' ? `<i class="fas fa-image" style="color: var(--color-3);" title="Có hình ảnh"></i>` : ''}
+                                    ${question.speech_id_question ? `<i class="fas fa-volume-up" style="color: var(--color-2);" title="Có âm thanh"></i>` : ''}
                                 </div>
                             </div>
                         </div>
-                    `).join('');
-                } else {
-                    questionList.innerHTML = '<div class="text-center py-8 text-gray-500"><i class="fas fa-exclamation-circle text-4xl mb-4"></i><p>Không tìm thấy câu hỏi cho vòng thi này.</p></div>';
+                    `).join('');                } else {
+                    questionList.innerHTML = '<div class="text-center py-8" style="color: var(--color-2);"><i class="fas fa-exclamation-circle text-4xl mb-4"></i><p>Không tìm thấy câu hỏi cho vòng thi này.</p></div>';
                 }
 
             } catch (error) {
                 console.error('Error loading questions:', error);
-                document.getElementById('questionList').innerHTML = '<div class="text-center py-8 text-red-600"><i class="fas fa-exclamation-triangle text-4xl mb-4"></i><p>Không thể tải câu hỏi. Vui lòng thử lại.</p></div>';
+                document.getElementById('questionList').innerHTML = '<div class="text-center py-8" style="color: var(--color-5);"><i class="fas fa-exclamation-triangle text-4xl mb-4"></i><p>Không thể tải câu hỏi. Vui lòng thử lại.</p></div>';
             }
         }
 
@@ -642,6 +651,6 @@
 
         // Initialize on page load
         document.addEventListener('DOMContentLoaded', loadRounds);
-    </script>    <a href="control.html" id="openSettings" class="fixed bottom-4 left-4 text-gray-600 opacity-60 hover:opacity-100 z-50"><i class="fas fa-cog fa-lg"></i></a>
+    </script>    <a href="control.html" id="openSettings" class="fixed bottom-4 left-4 opacity-60 hover:opacity-100 z-50" style="color: var(--color-2);"><i class="fas fa-cog fa-lg"></i></a>
 </body>
 </html>
