@@ -6,13 +6,16 @@
     <title>Quản Lý Vòng Thi - ATVSV 2025 V2</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">    <style>
-        :root {
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">    <style>        :root {
             --color-1: #F1F3F9; /* very light background */
-            --color-2: #2A558C; /* blue */
+            --color-2: #2D4263; /* dark blue-gray for text */
             --color-3: #F2C53D; /* yellow */
             --color-4: #F2A341; /* orange */
             --color-5: #F26E50; /* red/orange */
+            --color-6: #8B5A3C; /* brown */
+            --color-7: #6A994E; /* green */
+            --color-8: #9C89B8; /* purple */
+            --color-9: #F4A261; /* peach */
         }
         
         * {
@@ -33,9 +36,8 @@
             display: flex;
             flex-direction: column;
         }
-        
-        .gradient-bg {
-            background: linear-gradient(135deg, var(--color-1) 0%, rgba(241, 243, 249, 0.95) 30%, rgba(42, 85, 140, 0.1) 70%, rgba(242, 197, 61, 0.05) 100%);
+          .gradient-bg {
+            background: linear-gradient(135deg, var(--color-1) 0%, rgba(241, 243, 249, 0.95) 30%, rgba(45, 66, 99, 0.1) 70%, rgba(242, 197, 61, 0.05) 100%);
         }
           .floating-particles {
             position: absolute;
@@ -100,10 +102,9 @@
             align-items: center;
             justify-content: center;
             text-align: center;
-            overflow: hidden;
-            border: 4px solid var(--color-2);
+            overflow: hidden;            border: 4px solid var(--color-2);
             backdrop-filter: blur(10px);
-            box-shadow: 0 8px 32px rgba(42, 85, 140, 0.2);
+            box-shadow: 0 8px 32px rgba(45, 66, 99, 0.2);
         }
         
         .round-circle::before {
@@ -123,14 +124,13 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
-        
-        .round-circle:hover {
+          .round-circle:hover {
             transform: scale(1.1) translateY(-10px);
-            box-shadow: 0 20px 40px rgba(42, 85, 140, 0.3);
+            box-shadow: 0 20px 40px rgba(45, 66, 99, 0.3);
         }
         
         .round-1 {
-            background: linear-gradient(135deg, var(--color-2), rgba(42, 85, 140, 0.9));
+            background: linear-gradient(135deg, var(--color-7), var(--color-6));
         }
         
         .round-2 {
@@ -138,14 +138,13 @@
         }
         
         .round-3 {
-            background: linear-gradient(135deg, var(--color-3), var(--color-4));
-        }
-          .round-icon {
+            background: linear-gradient(135deg, var(--color-8), var(--color-9));
+        }        .round-icon {
             font-size: 4rem;
             color: white;
             margin-bottom: 1rem;
             text-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-            filter: drop-shadow(0 2px 4px rgba(42, 85, 140, 0.5));
+            filter: drop-shadow(0 2px 4px rgba(45, 66, 99, 0.5));
         }
         
         .round-title {
@@ -220,20 +219,19 @@
                 opacity: 1;
                 transform: translateX(0) rotate(0deg) scale(1);
             }
-        }
-          .navigation-hint {
+        }        .navigation-hint {
             position: fixed;
             bottom: 2rem;
             left: 50%;
             transform: translateX(-50%);
-            background: linear-gradient(135deg, var(--color-2), rgba(42, 85, 140, 0.9));
+            background: linear-gradient(135deg, var(--color-2), var(--color-6));
             color: white;
             padding: 1rem 2rem;
             border-radius: 50px;
             font-size: 0.9rem;
             z-index: 100;
             opacity: 0.9;
-            box-shadow: 0 4px 20px rgba(42, 85, 140, 0.3);
+            box-shadow: 0 4px 20px rgba(45, 66, 99, 0.3);
         }
         
         .loading-spinner {
@@ -268,27 +266,24 @@
             font-size: 3rem;
             font-weight: 800;
             margin-bottom: 2rem;
-            filter: drop-shadow(0 4px 8px rgba(42, 85, 140, 0.3));
         }
 
         /* Question list styling */
         .question-list {
             max-height: 60vh;
             overflow-y: auto;
-        }
-
-        .question-item {
+        }        .question-item {
             background: white;
             border-radius: 12px;
             padding: 1.5rem;
             margin-bottom: 1rem;
             border: 2px solid var(--color-1);
             transition: all 0.3s ease;
-            box-shadow: 0 2px 8px rgba(42, 85, 140, 0.1);
+            box-shadow: 0 2px 8px rgba(45, 66, 99, 0.1);
         }
 
         .question-item:hover {
-            box-shadow: 0 8px 24px rgba(42, 85, 140, 0.2);
+            box-shadow: 0 8px 24px rgba(45, 66, 99, 0.2);
             transform: translateY(-2px);
             border-color: var(--color-3);
         }
@@ -299,11 +294,29 @@
         }
 
         .header-subtitle {
-            color: rgba(42, 85, 140, 0.8);
+            color: var(--color-2);
+            opacity: 0.8;
         }
 
         .header-details {
-            color: rgba(42, 85, 140, 0.7);
+            color: var(--color-2);
+            opacity: 0.7;
+        }        /* Enhanced round circle styles */
+        .round-1:hover {
+            box-shadow: 0 20px 40px rgba(106, 153, 78, 0.4);
+        }
+        
+        .round-2:hover {
+            box-shadow: 0 20px 40px rgba(242, 163, 65, 0.4);
+        }
+        
+        .round-3:hover {
+            box-shadow: 0 20px 40px rgba(156, 137, 184, 0.4);
+        }
+        
+        /* Button hover styles */
+        #backToRounds:hover {
+            background-color: rgba(45, 66, 99, 0.2) !important;
         }
     </style>
 </head>
@@ -342,8 +355,7 @@
                 <div id="questionContainer" class="fade-in px-8" style="display: none;">
                     <div class="max-w-7xl mx-auto">
                         <div class="bg-white bg-opacity-95 rounded-2xl p-6 backdrop-filter backdrop-blur-sm border-2 border-yellow-200 shadow-xl">
-                            <div class="flex items-center justify-between mb-6">
-                                <button id="backToRounds" class="flex items-center text-blue-600 hover:text-blue-800 font-semibold transition-colors bg-blue-50 px-4 py-2 rounded-lg hover:bg-blue-100" style="color: var(--color-2); background-color: rgba(42, 85, 140, 0.1);">
+                            <div class="flex items-center justify-between mb-6">                                <button id="backToRounds" class="flex items-center font-semibold transition-colors px-4 py-2 rounded-lg hover:opacity-80" style="color: var(--color-2); background-color: rgba(45, 66, 99, 0.1);">
                                     <i class="fas fa-arrow-left mr-2"></i>Quay lại danh sách vòng thi
                                 </button>
                                 <div id="questionStats" class="text-gray-600 font-medium">
