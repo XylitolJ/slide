@@ -8,207 +8,542 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">    <style>
-        .practice-container {
-            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 30%, #60a5fa 70%, #dbeafe 100%);
-            min-height: 100vh;
+        /* Global Styles */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            overflow-x: hidden;
         }
         
-        .floating-particles {
+        .main-container {
+            display: flex;
+            min-height: 100vh;
+            position: relative;
+        }
+        
+        /* Medical Emergency Section - Left Side */
+        .medical-section {
+            flex: 1;
+            background: linear-gradient(135deg, #0ea5e9 0%, #0369a1 50%, #1e40af 100%);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .medical-bg-effects {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
             pointer-events: none;
-            overflow: hidden;
+            z-index: 1;
         }
         
-        .particle {
+        /* ECG Heartbeat Animation */
+        .ecg-line {
             position: absolute;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 50%;
-            animation: float 6s infinite linear;
+            width: 100%;
+            height: 2px;
+            background: rgba(34, 197, 94, 0.6);
+            top: 20%;
+            animation: ecgPulse 2s infinite ease-in-out;
         }
         
-        .particle:nth-child(1) { width: 8px; height: 8px; left: 10%; animation-delay: -1s; }
-        .particle:nth-child(2) { width: 12px; height: 12px; left: 20%; animation-delay: -2s; }
-        .particle:nth-child(3) { width: 6px; height: 6px; left: 30%; animation-delay: -3s; }
-        .particle:nth-child(4) { width: 10px; height: 10px; left: 40%; animation-delay: -4s; }
-        .particle:nth-child(5) { width: 8px; height: 8px; left: 60%; animation-delay: -1.5s; }
-        .particle:nth-child(6) { width: 14px; height: 14px; left: 70%; animation-delay: -2.5s; }
-        .particle:nth-child(7) { width: 6px; height: 6px; left: 80%; animation-delay: -3.5s; }
-        .particle:nth-child(8) { width: 10px; height: 10px; left: 90%; animation-delay: -4.5s; }
+        .ecg-line:nth-child(2) {
+            top: 40%;
+            animation-delay: 0.5s;
+        }
         
-        @keyframes float {
+        .ecg-line:nth-child(3) {
+            top: 60%;
+            animation-delay: 1s;
+        }
+        
+        @keyframes ecgPulse {
+            0%, 20%, 50%, 80%, 100% { opacity: 0.3; transform: scaleY(1); }
+            40% { opacity: 0.8; transform: scaleY(3); }
+        }
+        
+        /* Medical Particles */
+        .medical-particle {
+            position: absolute;
+            color: rgba(255, 255, 255, 0.2);
+            font-size: 20px;
+            animation: medicalFloat 8s infinite linear;
+        }
+        
+        @keyframes medicalFloat {
             0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
-            10% { opacity: 1; }
-            90% { opacity: 1; }
+            10% { opacity: 0.6; }
+            90% { opacity: 0.6; }
             100% { transform: translateY(-100px) rotate(360deg); opacity: 0; }
         }
         
-        .question-button {
-            transition: all 0.3s ease;
-            cursor: pointer;
-            border: 2px solid #e5e7eb;
-            background: linear-gradient(135deg, #ffffff 0%, #f9fafb 100%);
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            min-height: 100px;
+        /* Fire Safety Section - Right Side */
+        .fire-section {
+            flex: 1;
+            background: linear-gradient(135deg, #1e3a8a 0%, #dc2626 30%, #ea580c 70%, #f97316 100%);
+            position: relative;
+            overflow: hidden;
         }
         
-        .question-button:hover {
-            transform: translateY(-3px) scale(1.02);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-            border-color: #3b82f6;
+        .fire-bg-effects {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
         }
         
-        .question-button:active {
-            transform: translateY(-1px) scale(1.01);
+        /* Fire Particle Effects */
+        .fire-particle {
+            position: absolute;
+            background: radial-gradient(circle, #fbbf24, #f59e0b, #dc2626);
+            border-radius: 50%;
+            animation: fireRise 4s infinite ease-out;
         }
         
-        .section-title {
-            color: #1f2937;
+        @keyframes fireRise {
+            0% { 
+                transform: translateY(100vh) scale(0.5);
+                opacity: 0;
+            }
+            20% { 
+                opacity: 0.8;
+                transform: translateY(80vh) scale(1);
+            }
+            80% { 
+                opacity: 0.6;
+                transform: translateY(20vh) scale(0.8);
+            }
+            100% { 
+                transform: translateY(-20px) scale(0.3);
+                opacity: 0;
+            }
+        }
+        
+        /* Radar Scanning Effect */
+        .radar-scanner {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 200px;
+            height: 200px;
+            border: 2px solid rgba(34, 197, 94, 0.3);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            animation: radarScan 3s infinite linear;
+        }
+        
+        .radar-scanner::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: 50%;
+            width: 2px;
+            height: 100px;
+            background: linear-gradient(to bottom, #22c55e, transparent);
+            transform-origin: bottom;
+            animation: radarSweep 3s infinite linear;
+        }
+        
+        @keyframes radarScan {
+            0% { transform: translate(-50%, -50%) scale(0.8); opacity: 0.8; }
+            50% { transform: translate(-50%, -50%) scale(1.2); opacity: 0.4; }
+            100% { transform: translate(-50%, -50%) scale(0.8); opacity: 0.8; }
+        }
+        
+        @keyframes radarSweep {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Center Divider */
+        .center-divider {
+            position: absolute;
+            left: 50%;
+            top: 0;
+            width: 4px;
+            height: 100%;
+            background: linear-gradient(to bottom, 
+                #22c55e 0%, 
+                #ffffff 20%, 
+                #ef4444 40%, 
+                #ffffff 60%, 
+                #22c55e 80%, 
+                #ef4444 100%);
+            transform: translateX(-50%);
+            z-index: 10;
+            animation: dividerPulse 3s infinite ease-in-out;
+        }
+        
+        @keyframes dividerPulse {
+            0%, 100% { box-shadow: 0 0 20px rgba(34, 197, 94, 0.5); }
+            50% { box-shadow: 0 0 30px rgba(239, 68, 68, 0.7); }
+        }
+        
+        /* Section Content Styling */
+        .section-content {
+            position: relative;
+            z-index: 5;
+            padding: 2rem;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .section-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .medical-title {
+            color: #ffffff;
+            font-size: 2.5rem;
             font-weight: 800;
+            text-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            animation: titleFadeIn 1s ease-out;
         }
         
-        .practice-icon {
-            background: linear-gradient(135deg, #7c3aed, #a855f7);
-            color: white;
+        .fire-title {
+            color: #ffffff;
+            font-size: 2.5rem;
+            font-weight: 800;
+            text-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+            animation: titleFadeIn 1s ease-out 0.2s both;
         }
         
-        .theory-icon {
-            background: linear-gradient(135deg, #dc2626, #ef4444);
-            color: white;
+        @keyframes titleFadeIn {
+            0% { opacity: 0; transform: translateY(-30px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+        
+        .section-subtitle {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1.1rem;
+            margin-top: 0.5rem;
+            animation: subtitleFadeIn 1s ease-out 0.5s both;
+        }
+        
+        @keyframes subtitleFadeIn {
+            0% { opacity: 0; }
+            100% { opacity: 1; }
+        }
+        
+        /* Question Grid Styling */
+        .questions-container {
+            flex: 1;
+            overflow-y: auto;
+            margin-top: 1rem;
         }
         
         .grid-container {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 1rem;
-            max-height: 65vh;
-            overflow-y: auto;
-            padding-right: 8px;
+            padding: 1rem;
         }
         
-        .grid-container::-webkit-scrollbar {
-            width: 6px;
+        /* Medical Question Buttons */
+        .medical-question-button {
+            background: rgba(255, 255, 255, 0.95);
+            border: 2px solid rgba(34, 197, 94, 0.3);
+            border-radius: 15px;
+            padding: 1.5rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            min-height: 120px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
         }
         
-        .grid-container::-webkit-scrollbar-track {
-            background: #f1f5f9;
-            border-radius: 10px;
+        .medical-question-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(34, 197, 94, 0.2), transparent);
+            transition: left 0.5s ease;
         }
         
-        .grid-container::-webkit-scrollbar-thumb {
-            background: #cbd5e1;
-            border-radius: 10px;
+        .medical-question-button:hover::before {
+            left: 100%;
         }
         
-        .grid-container::-webkit-scrollbar-thumb:hover {
-            background: #94a3b8;
+        .medical-question-button:hover {
+            transform: translateY(-5px) scale(1.02);
+            border-color: #22c55e;
+            box-shadow: 0 10px 30px rgba(34, 197, 94, 0.3);
+            background: rgba(255, 255, 255, 1);
         }
         
+        .medical-icon {
+            background: linear-gradient(135deg, #0ea5e9, #22c55e);
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+            animation: medicalIconBreathe 2s infinite ease-in-out;
+        }
+        
+        @keyframes medicalIconBreathe {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+        
+        /* Fire Question Buttons */
+        .fire-question-button {
+            background: rgba(255, 255, 255, 0.95);
+            border: 2px solid rgba(239, 68, 68, 0.3);
+            border-radius: 15px;
+            padding: 1.5rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            min-height: 120px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .fire-question-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(239, 68, 68, 0.2), transparent);
+            transition: left 0.5s ease;
+        }
+        
+        .fire-question-button:hover::before {
+            left: 100%;
+        }
+        
+        .fire-question-button:hover {
+            transform: translateY(-5px) scale(1.02);
+            border-color: #ef4444;
+            box-shadow: 0 10px 30px rgba(239, 68, 68, 0.4);
+            background: rgba(255, 255, 255, 1);
+        }
+        
+        .fire-icon {
+            background: linear-gradient(135deg, #dc2626, #f97316);
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+            animation: fireIconGlow 2s infinite ease-in-out;
+            position: relative;
+        }
+        
+        @keyframes fireIconGlow {
+            0%, 100% { 
+                transform: scale(1);
+                box-shadow: 0 0 10px rgba(239, 68, 68, 0.5);
+            }
+            50% { 
+                transform: scale(1.1);
+                box-shadow: 0 0 20px rgba(239, 68, 68, 0.8);
+            }
+        }
+        
+        /* Question Text Styling */
+        .question-number {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 0.5rem;
+        }
+        
+        .question-category {
+            font-size: 0.85rem;
+            color: #6b7280;
+            line-height: 1.3;
+        }
+        
+        /* Question Count Badge */
+        .question-count {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 20px;
+            padding: 0.5rem 1rem;
+            margin: 1rem auto;
+            display: inline-block;
+            font-weight: 600;
+            color: #374151;
+            backdrop-filter: blur(10px);
+        }
+        
+        /* Responsive Design */
         @media (max-width: 1024px) {
-            .grid-container {
-                grid-template-columns: repeat(2, 1fr);
-                gap: 0.75rem;
+            .main-container {
+                flex-direction: column;
+            }
+            
+            .center-divider {
+                left: 0;
+                top: 50%;
+                width: 100%;
+                height: 4px;
+                transform: translateY(-50%);
+            }
+            
+            .medical-section,
+            .fire-section {
+                min-height: 50vh;
+            }
+            
+            .section-content {
+                height: auto;
+                min-height: 50vh;
+                padding: 1.5rem;
+            }
+            
+            .medical-title,
+            .fire-title {
+                font-size: 2rem;
             }
         }
         
         @media (max-width: 768px) {
             .grid-container {
                 grid-template-columns: repeat(2, 1fr);
-                gap: 0.5rem;
-                max-height: 50vh;
-            }
-            
-            .question-button {
-                min-height: 80px;
+                gap: 0.75rem;
                 padding: 0.75rem;
             }
-        }
-        
-        .section-container {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.3);
+            
+            .medical-question-button,
+            .fire-question-button {
+                min-height: 100px;
+                padding: 1rem;
+            }
+            
+            .medical-icon,
+            .fire-icon {
+                width: 40px;
+                height: 40px;
+                margin-bottom: 0.75rem;
+            }
+            
+            .question-number {
+                font-size: 1rem;
+            }
+            
+            .question-category {
+                font-size: 0.75rem;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="practice-container relative overflow-hidden">
-        <!-- Floating particles background -->
-        <div class="floating-particles">
-            <div class="particle"></div>
-            <div class="particle"></div>
-            <div class="particle"></div>
-            <div class="particle"></div>
-            <div class="particle"></div>
-            <div class="particle"></div>
-            <div class="particle"></div>
-            <div class="particle"></div>
-        </div>
-
-        <div class="content-layer relative z-10 p-6">            <!-- Header -->
-            <header class="text-center mb-6">
-                <h1 class="text-4xl font-bold text-white text-shadow mb-2">
-                    <i class="fas fa-hands-helping mr-3"></i>
-                    Thực Hành - Y Tế & PCCC
-                </h1>
-                <p class="text-xl text-blue-100">Hội thi ATVSV giỏi 2025 - Công ty Công nghiệp Hóa chất mỏ Thái Nguyên</p>
-  
-            </header>
-
-            <!-- Main Content Grid -->
-            <div class="grid lg:grid-cols-2 gap-6 max-w-7xl mx-auto">
-                <!-- Left Side: Y Tế Thực Hành -->
-                <div class="section-container rounded-xl p-6 shadow-xl">
-                    <h2 class="text-2xl font-bold section-title mb-4 text-center">
-                        <i class="fas fa-user-md mr-2 text-purple-600"></i>
-                        Y Tế - Thực Hành
-                    </h2>
-                    <div class="bg-gray-50 rounded-lg p-2 mb-4">
-                        <p class="text-sm text-gray-600 text-center">
-                            <i class="fas fa-info-circle mr-1"></i>
-                            <span id="yteQuestionCount">0</span> câu hỏi thực hành
-                        </p>
-                    </div>
-                    <div id="ytePracticeContainer" class="grid-container">
-                        <!-- Y tế thực hành questions will be loaded here -->
+    <div class="main-container">
+        <!-- Medical Emergency Section - Left Side -->
+        <div class="medical-section">
+            <!-- Medical Background Effects -->
+            <div class="medical-bg-effects">
+                <!-- ECG Lines -->
+                <div class="ecg-line"></div>
+                <div class="ecg-line"></div>
+                <div class="ecg-line"></div>
+                
+                <!-- Medical Floating Particles -->
+                <div class="medical-particle" style="left: 10%; animation-delay: -1s;">💊</div>
+                <div class="medical-particle" style="left: 20%; animation-delay: -2s;">💉</div>
+                <div class="medical-particle" style="left: 30%; animation-delay: -3s;">🩺</div>
+                <div class="medical-particle" style="left: 40%; animation-delay: -4s;">💊</div>
+                <div class="medical-particle" style="left: 60%; animation-delay: -1.5s;">🏥</div>
+                <div class="medical-particle" style="left: 70%; animation-delay: -2.5s;">💉</div>
+                <div class="medical-particle" style="left: 80%; animation-delay: -3.5s;">⚕️</div>
+                <div class="medical-particle" style="left: 90%; animation-delay: -4.5s;">🩺</div>
+            </div>
+            
+            <!-- Medical Section Content -->
+            <div class="section-content">
+                <div class="section-header">
+                    <h1 class="medical-title">
+                        <i class="fas fa-user-md mr-3"></i>
+                        Medical Emergency Response
+                    </h1>
+                    <p class="section-subtitle">Y Tế - Thực Hành Cấp Cứu</p>
+                    <div class="question-count">
+                        <i class="fas fa-stethoscope mr-2"></i>
+                        <span id="yteQuestionCount">0</span> câu hỏi thực hành
                     </div>
                 </div>
-
-                <!-- Right Side: PCCC Lý Thuyết & Thực Hành -->
-                <div class="section-container rounded-xl p-6 shadow-xl">
-                    <h2 class="text-2xl font-bold section-title mb-4 text-center">
-                        <i class="fas fa-fire-extinguisher mr-2 text-red-600"></i>
-                        PCCC - Lý Thuyết & Thực Hành
-                    </h2>
-                    <div class="bg-gray-50 rounded-lg p-2 mb-4">
-                        <p class="text-sm text-gray-600 text-center">
-                            <i class="fas fa-info-circle mr-1"></i>
-                            <span id="pcccQuestionCount">0</span> câu hỏi lý thuyết & thực hành
-                        </p>
-                    </div>
-                    <div id="pcccTheoryPracticeContainer" class="grid-container">
-                        <!-- PCCC lý thuyết & thực hành questions will be loaded here -->
+                
+                <div class="questions-container">
+                    <div id="ytePracticeContainer" class="grid-container">
+                        <!-- Medical questions will be loaded here -->
                     </div>
                 </div>
             </div>
-            <!-- Back Button -->
-            <!-- <div class="fixed bottom-6 left-6">
-                <button onclick="window.location.href='infovong3.html'" 
-                        class="bg-white/95 backdrop-blur-sm text-blue-700 px-6 py-3 rounded-full font-semibold shadow-lg hover:bg-white hover:shadow-xl transition-all duration-300 border border-blue-200">
-                    <i class="fas fa-arrow-left mr-2"></i>
-                    Quay lại
-                </button>
-            </div> -->
-              <!-- Navigation Info -->
-            <!-- <div class="fixed bottom-6 right-6">
-                <div class="bg-white/95 backdrop-blur-sm text-gray-700 px-4 py-2 rounded-full text-sm shadow-lg border border-gray-200">
-                    <i class="fas fa-desktop mr-2"></i>
-                    Nhấn câu hỏi để mở slide presentation
+        </div>
+        
+        <!-- Center Divider -->
+        <div class="center-divider"></div>
+        
+        <!-- Fire Safety Section - Right Side -->
+        <div class="fire-section">
+            <!-- Fire Background Effects -->
+            <div class="fire-bg-effects">
+                <!-- Fire Particles -->
+                <div class="fire-particle" style="width: 8px; height: 8px; left: 15%; animation-delay: -1s;"></div>
+                <div class="fire-particle" style="width: 12px; height: 12px; left: 25%; animation-delay: -2s;"></div>
+                <div class="fire-particle" style="width: 6px; height: 6px; left: 35%; animation-delay: -3s;"></div>
+                <div class="fire-particle" style="width: 10px; height: 10px; left: 45%; animation-delay: -1.5s;"></div>
+                <div class="fire-particle" style="width: 8px; height: 8px; left: 55%; animation-delay: -2.5s;"></div>
+                <div class="fire-particle" style="width: 14px; height: 14px; left: 65%; animation-delay: -3.5s;"></div>
+                <div class="fire-particle" style="width: 6px; height: 6px; left: 75%; animation-delay: -4s;"></div>
+                <div class="fire-particle" style="width: 10px; height: 10px; left: 85%; animation-delay: -0.5s;"></div>
+                
+                <!-- Radar Scanner -->
+                <div class="radar-scanner"></div>
+            </div>
+            
+            <!-- Fire Section Content -->
+            <div class="section-content">
+                <div class="section-header">
+                    <h1 class="fire-title">
+                        <i class="fas fa-fire-extinguisher mr-3"></i>
+                        Fire Safety Command Center
+                    </h1>
+                    <p class="section-subtitle">PCCC - Lý Thuyết & Thực Hành</p>
+                    <div class="question-count">
+                        <i class="fas fa-fire mr-2"></i>
+                        <span id="pcccQuestionCount">0</span> câu hỏi lý thuyết & thực hành
+                    </div>
                 </div>
-            </div> -->
+                
+                <div class="questions-container">
+                    <div id="pcccTheoryPracticeContainer" class="grid-container">
+                        <!-- Fire safety questions will be loaded here -->
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -281,22 +616,30 @@
                     '<div class="col-span-3 text-center text-red-600 p-4"><i class="fas fa-exclamation-triangle mb-2"></i><br>Không thể tải câu hỏi</div>';
                 document.getElementById('pcccTheoryPracticeContainer').innerHTML = 
                     '<div class="col-span-3 text-center text-red-600 p-4"><i class="fas fa-exclamation-triangle mb-2"></i><br>Không thể tải câu hỏi</div>';
-            });
-
-        function createQuestionButton(question, type, index) {
+            });        function createQuestionButton(question, type, index) {
             const button = document.createElement('div');
-            button.className = 'question-button rounded-lg p-4 text-center flex flex-col justify-center items-center';
             
-            const iconClass = type === 'practice' ? 'fas fa-stethoscope' : 'fas fa-fire-extinguisher';
-            const iconBgClass = type === 'practice' ? 'practice-icon' : 'theory-icon';
-            
-            button.innerHTML = `
-                <div class="${iconBgClass} w-10 h-10 rounded-full flex items-center justify-center mb-2">
-                    <i class="${iconClass} text-lg"></i>
-                </div>
-                <h3 class="font-bold text-lg text-gray-800 mb-1">Câu ${question.cau_hoi_so}</h3>
-                <p class="text-xs text-gray-600 text-center leading-tight">${question.subcategory}</p>
-            `;
+            if (type === 'practice') {
+                button.className = 'medical-question-button';
+                
+                button.innerHTML = `
+                    <div class="medical-icon">
+                        <i class="fas fa-stethoscope text-lg"></i>
+                    </div>
+                    <div class="question-number">Câu ${question.cau_hoi_so}</div>
+                    <p class="question-category">${question.subcategory}</p>
+                `;
+            } else {
+                button.className = 'fire-question-button';
+                
+                button.innerHTML = `
+                    <div class="fire-icon">
+                        <i class="fas fa-fire-extinguisher text-lg"></i>
+                    </div>
+                    <div class="question-number">Câu ${question.cau_hoi_so}</div>
+                    <p class="question-category">${question.subcategory}</p>
+                `;
+            }
             
             // Add click event to show question details
             button.addEventListener('click', () => {
@@ -305,16 +648,16 @@
             
             // Add entrance animation with staggered delay
             button.style.opacity = '0';
-            button.style.transform = 'translateY(20px)';
-            button.style.transition = 'all 0.5s ease';
+            button.style.transform = 'translateY(30px)';
+            button.style.transition = 'all 0.6s ease';
             
             setTimeout(() => {
                 button.style.opacity = '1';
                 button.style.transform = 'translateY(0)';
-            }, (index + 1) * 100);
+            }, (index + 1) * 150);
             
             return button;
-        }        function showQuestionDetails(question) {
+        }function showQuestionDetails(question) {
             // Always go to slide presentation mode - redirect to vong3.html
             const params = new URLSearchParams({
                 questionId: question.id,
