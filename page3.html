@@ -6,16 +6,88 @@
     <title>Quản Lý Vòng Thi - ATVSV 2025 V2</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">    <style>        :root {
-            --color-1: #F1F3F9; /* very light background */
-            --color-2: #2D4263; /* dark blue-gray for text */
-            --color-3: #F2C53D; /* yellow */
-            --color-4: #F2A341; /* orange */
-            --color-5: #F26E50; /* red/orange */
-            --color-6: #8B5A3C; /* brown */
-            --color-7: #6A994E; /* green */
-            --color-8: #9C89B8; /* purple */
-            --color-9: #F4A261; /* peach */
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">    <style>        /* ===== THEME SYSTEM ===== */
+        /* 🎨 THAY ĐỔI THEME TẠI ĐÂY: 1, 2, 3, 4, hoặc 5 */
+        :root {
+            --current-theme: 1;
+        }
+
+        /* Default Theme (fallback) */
+        :root {
+            --primary: #1FA2B8;
+            --secondary: #52C4A0; 
+            --accent: #7CB342;
+            --highlight: #FFD54F;
+            --text-dark: #263238;
+            --text-light: #37474F;
+            --background: #F8FFFE;
+            --card-bg: #FFFFFF;
+            --shadow: rgba(31, 162, 184, 0.2);
+        }
+
+        /* Theme 1: Business Professional */
+        body[data-theme="1"] {
+            --primary: #1FA2B8;
+            --secondary: #52C4A0; 
+            --accent: #7CB342;
+            --highlight: #FFD54F;
+            --text-dark: #263238;
+            --text-light: #37474F;
+            --background: #F8FFFE;
+            --card-bg: #FFFFFF;
+            --shadow: rgba(31, 162, 184, 0.2);
+        }
+
+        /* Theme 2: Vibrant Energy */
+        body[data-theme="2"] {
+            --primary: #FF6B35;
+            --secondary: #F7931E;
+            --accent: #FFD23F;
+            --highlight: #FF4757;
+            --text-dark: #2C3E50;
+            --text-light: #34495E;
+            --background: #FFF8F0;
+            --card-bg: #FFFFFF;
+            --shadow: rgba(255, 107, 53, 0.2);
+        }
+
+        /* Theme 3: Corporate Modern */
+        body[data-theme="3"] {
+            --primary: #2C3E50;
+            --secondary: #FF6B35;
+            --accent: #F39C12;
+            --highlight: #E74C3C;
+            --text-dark: #2C3E50;
+            --text-light: #34495E;
+            --background: #F7F9FC;
+            --card-bg: #FFFFFF;
+            --shadow: rgba(44, 62, 80, 0.2);
+        }
+
+        /* Theme 4: Tech Innovation */
+        body[data-theme="4"] {
+            --primary: #3498DB;
+            --secondary: #2980B9;
+            --accent: #F1C40F;
+            --highlight: #E67E22;
+            --text-dark: #2C3E50;
+            --text-light: #34495E;
+            --background: #F4F6F9;
+            --card-bg: #FFFFFF;
+            --shadow: rgba(52, 152, 219, 0.2);
+        }
+
+        /* Theme 5: Fresh Workflow */
+        body[data-theme="5"] {
+            --primary: #26D0CE;
+            --secondary: #6BCF7F;
+            --accent: #FFB74D;
+            --highlight: #FF6B6B;
+            --text-dark: #37474F;
+            --text-light: #546E7A;
+            --background: #F1F8F6;
+            --card-bg: #FFFFFF;
+            --shadow: rgba(38, 208, 206, 0.2);
         }
         
         * {
@@ -29,17 +101,27 @@
             height: 100vh;
             overflow: hidden;
         }
-        
-        .slide-container {
+          .slide-container {
             width: 100vw;
             height: 100vh;
             display: flex;
             flex-direction: column;
+            background: var(--background);
+            transition: all 0.5s ease;
         }
-          .gradient-bg {
-            background: linear-gradient(135deg, var(--color-1) 0%, rgba(241, 243, 249, 0.95) 30%, rgba(45, 66, 99, 0.1) 70%, rgba(242, 197, 61, 0.05) 100%);
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, 
+                var(--background) 0%, 
+                rgba(255, 255, 255, 0.9) 30%, 
+                var(--primary)10 70%, 
+                var(--accent)05 100%);
+            position: relative;
+            overflow: hidden;
         }
-          .floating-particles {
+        
+        /* Advanced floating particles with theme colors */
+        .floating-particles {
             position: absolute;
             top: 0;
             left: 0;
@@ -51,22 +133,43 @@
         
         .particle {
             position: absolute;
-            background: linear-gradient(45deg, var(--color-3), var(--color-4));
             border-radius: 50%;
-            animation: float 8s infinite linear;
+            animation: float 12s infinite linear;
             opacity: 0.6;
         }
         
-        .particle:nth-child(1) { width: 8px; height: 8px; left: 10%; animation-delay: 0s; }
-        .particle:nth-child(2) { width: 12px; height: 12px; left: 20%; animation-delay: 1s; }
-        .particle:nth-child(3) { width: 6px; height: 6px; left: 30%; animation-delay: 2s; }
-        .particle:nth-child(4) { width: 10px; height: 10px; left: 40%; animation-delay: 3s; }
-        .particle:nth-child(5) { width: 14px; height: 14px; left: 50%; animation-delay: 4s; }
-        .particle:nth-child(6) { width: 8px; height: 8px; left: 60%; animation-delay: 5s; }
-        .particle:nth-child(7) { width: 12px; height: 12px; left: 70%; animation-delay: 6s; }
-        .particle:nth-child(8) { width: 6px; height: 6px; left: 80%; animation-delay: 7s; }
-        
-        @keyframes float {
+        .particle:nth-child(1) { 
+            width: 8px; height: 8px; left: 10%; animation-delay: 0s;
+            background: var(--primary);
+        }
+        .particle:nth-child(2) { 
+            width: 12px; height: 12px; left: 20%; animation-delay: 1s;
+            background: var(--secondary);
+        }
+        .particle:nth-child(3) { 
+            width: 6px; height: 6px; left: 30%; animation-delay: 2s;
+            background: var(--accent);
+        }
+        .particle:nth-child(4) { 
+            width: 10px; height: 10px; left: 40%; animation-delay: 3s;
+            background: var(--highlight);
+        }
+        .particle:nth-child(5) { 
+            width: 14px; height: 14px; left: 50%; animation-delay: 4s;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+        }
+        .particle:nth-child(6) { 
+            width: 8px; height: 8px; left: 60%; animation-delay: 5s;
+            background: var(--primary);
+        }
+        .particle:nth-child(7) { 
+            width: 12px; height: 12px; left: 70%; animation-delay: 6s;
+            background: var(--accent);
+        }
+        .particle:nth-child(8) { 
+            width: 6px; height: 6px; left: 80%; animation-delay: 7s;
+            background: var(--highlight);
+        }        @keyframes float {
             0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
             10% { opacity: 1; }
             90% { opacity: 1; }
@@ -89,90 +192,130 @@
             gap: 4rem;
             flex: 1;
             padding: 2rem;
-        }
-          .round-circle {
+        }        /* Circular Round Cards with Advanced Design */
+        .round-circle {
             position: relative;
-            width: 280px;
-            height: 280px;
+            width: 320px;
+            height: 320px;
             border-radius: 50%;
             cursor: pointer;
-            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             text-align: center;
-            overflow: hidden;            border: 4px solid var(--color-2);
-            backdrop-filter: blur(10px);
-            box-shadow: 0 8px 32px rgba(45, 66, 99, 0.2);
+            overflow: hidden;
+            border: 4px solid var(--primary);
+            backdrop-filter: blur(15px);
+            box-shadow: 0 12px 40px var(--shadow);
+            transform-style: preserve-3d;
         }
         
         .round-circle::before {
             content: '';
             position: absolute;
-            top: -2px;
-            left: -2px;
-            right: -2px;
-            bottom: -2px;
+            top: -3px;
+            left: -3px;
+            right: -3px;
+            bottom: -3px;
             border-radius: 50%;
-            background: linear-gradient(45deg, var(--color-3), var(--color-4), var(--color-5));
+            background: linear-gradient(45deg, var(--primary), var(--secondary), var(--accent), var(--highlight));
             z-index: -1;
-            animation: rotate 3s linear infinite;
+            animation: rotate 4s linear infinite;
         }
         
-        @keyframes rotate {
+        .round-circle::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, transparent 0%, var(--primary)05 50%, transparent 100%);
+            transform: translate(-50%, -50%);
+            animation: pulse-bg 3s ease-in-out infinite;
+            z-index: -2;
+        }
+          @keyframes rotate {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
-          .round-circle:hover {
-            transform: scale(1.1) translateY(-10px);
-            box-shadow: 0 20px 40px rgba(45, 66, 99, 0.3);
+        
+        @keyframes pulse-bg {
+            0%, 100% { opacity: 0.3; transform: translate(-50%, -50%) scale(1); }
+            50% { opacity: 0.6; transform: translate(-50%, -50%) scale(1.2); }
         }
         
+        .round-circle:hover {
+            transform: scale(1.15) translateY(-15px) rotateY(5deg);
+            box-shadow: 0 25px 60px var(--shadow);
+        }
+        
+        /* Dynamic round themes */
         .round-1 {
-            background: linear-gradient(135deg, var(--color-7), var(--color-6));
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
         }
         
         .round-2 {
-            background: linear-gradient(135deg, var(--color-4), var(--color-5));
+            background: linear-gradient(135deg, var(--secondary), var(--accent));
         }
         
         .round-3 {
-            background: linear-gradient(135deg, var(--color-8), var(--color-9));
+            background: linear-gradient(135deg, var(--accent), var(--highlight));
         }        .round-icon {
-            font-size: 4rem;
+            font-size: 5rem;
             color: white;
             margin-bottom: 1rem;
-            text-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-            filter: drop-shadow(0 2px 4px rgba(45, 66, 99, 0.5));
+            text-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+            filter: drop-shadow(0 4px 8px var(--shadow));
+            transition: all 0.3s ease;
+            animation: icon-float 3s ease-in-out infinite;
+        }
+        
+        @keyframes icon-float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
         }
         
         .round-title {
             color: white;
-            font-size: 1.5rem;
-            font-weight: 700;
+            font-size: 1.6rem;
+            font-weight: 800;
             margin-bottom: 0.5rem;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            text-shadow: 0 3px 6px rgba(0, 0, 0, 0.4);
+            letter-spacing: 0.5px;
         }
         
         .round-description {
             color: rgba(255, 255, 255, 0.95);
-            font-size: 1rem;
+            font-size: 1.1rem;
             font-weight: 500;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            line-height: 1.3;
         }
         
-        /* Arrow Connectors */
+        /* Enhanced Arrow Connectors */
         .arrow-connector {
             position: relative;
             z-index: 5;
-            color: var(--color-2);
-            font-size: 3rem;
+            color: var(--primary);
+            font-size: 3.5rem;
             animation: pulse-arrow 2s infinite;
+            transition: all 0.3s ease;
         }
-          @keyframes pulse-arrow {
-            0%, 100% { opacity: 0.8; transform: scale(1); color: var(--color-2); }
-            50% { opacity: 1; transform: scale(1.2); color: var(--color-4); }
+        
+        @keyframes pulse-arrow {
+            0%, 100% { 
+                opacity: 0.7; 
+                transform: scale(1); 
+                color: var(--primary); 
+            }
+            50% { 
+                opacity: 1; 
+                transform: scale(1.3); 
+                color: var(--highlight); 
+            }
         }
         
         /* Enhanced animations */
@@ -219,27 +362,29 @@
                 opacity: 1;
                 transform: translateX(0) rotate(0deg) scale(1);
             }
-        }        .navigation-hint {
+        }        /* Modern Navigation & UI Elements */
+        .navigation-hint {
             position: fixed;
             bottom: 2rem;
             left: 50%;
             transform: translateX(-50%);
-            background: linear-gradient(135deg, var(--color-2), var(--color-6));
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
             color: white;
             padding: 1rem 2rem;
             border-radius: 50px;
             font-size: 0.9rem;
             z-index: 100;
             opacity: 0.9;
-            box-shadow: 0 4px 20px rgba(45, 66, 99, 0.3);
+            box-shadow: 0 6px 25px var(--shadow);
+            backdrop-filter: blur(10px);
         }
         
         .loading-spinner {
             display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 2px solid var(--color-1);
-            border-top: 2px solid var(--color-2);
+            width: 24px;
+            height: 24px;
+            border: 3px solid var(--background);
+            border-top: 3px solid var(--primary);
             border-radius: 50%;
             animation: spin 1s linear infinite;
         }
@@ -256,72 +401,119 @@
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
-        }          /* Main title styling */
+        }        /* Enhanced Main Title */
         .main-title {
-            background: linear-gradient(45deg, var(--color-2), var(--color-4), var(--color-5));
+            background: linear-gradient(45deg, var(--primary), var(--secondary), var(--accent));
             -webkit-background-clip: text;
             background-clip: text;
             -webkit-text-fill-color: transparent;
             text-align: center;
-            font-size: 3rem;
-            font-weight: 800;
+            font-size: 3.5rem;
+            font-weight: 900;
             margin-bottom: 2rem;
+            text-shadow: 0 4px 8px var(--shadow);
+            animation: title-glow 3s ease-in-out infinite;
+        }
+        
+        @keyframes title-glow {
+            0%, 100% { filter: brightness(1); }
+            50% { filter: brightness(1.1); }
         }
 
-        /* Question list styling */
+        /* Modern Question Styling */
         .question-list {
-            max-height: 60vh;
+            max-height: 65vh;
             overflow-y: auto;
-        }        .question-item {
-            background: white;
-            border-radius: 12px;
-            padding: 1.5rem;
-            margin-bottom: 1rem;
-            border: 2px solid var(--color-1);
-            transition: all 0.3s ease;
-            box-shadow: 0 2px 8px rgba(45, 66, 99, 0.1);
+            scroll-behavior: smooth;
+        }
+        
+        .question-item {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+            border: 2px solid transparent;
+            transition: all 0.4s ease;
+            box-shadow: 0 4px 20px var(--shadow);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .question-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary), var(--accent));
+            opacity: 0;
+            transition: opacity 0.3s ease;
         }
 
         .question-item:hover {
-            box-shadow: 0 8px 24px rgba(45, 66, 99, 0.2);
-            transform: translateY(-2px);
-            border-color: var(--color-3);
+            box-shadow: 0 12px 40px var(--shadow);
+            transform: translateY(-5px);
+            border-color: var(--accent);
         }
-
-        /* Header styling */
+        
+        .question-item:hover::before {
+            opacity: 1;
+        }
+        
+        /* Enhanced Header Styling */
         .header-info {
-            color: var(--color-2);
+            color: var(--text-dark);
         }
 
         .header-subtitle {
-            color: var(--color-2);
-            opacity: 0.8;
+            color: var(--text-light);
+            font-weight: 600;
         }
 
         .header-details {
-            color: var(--color-2);
-            opacity: 0.7;
-        }        /* Enhanced round circle styles */
+            color: var(--text-light);
+            font-weight: 500;
+        }
+        
+        /* Dynamic Round Hover Effects */
         .round-1:hover {
-            box-shadow: 0 20px 40px rgba(106, 153, 78, 0.4);
+            box-shadow: 0 25px 60px var(--shadow);
         }
         
         .round-2:hover {
-            box-shadow: 0 20px 40px rgba(242, 163, 65, 0.4);
+            box-shadow: 0 25px 60px var(--shadow);
         }
         
         .round-3:hover {
-            box-shadow: 0 20px 40px rgba(156, 137, 184, 0.4);
+            box-shadow: 0 25px 60px var(--shadow);
         }
-        
-        /* Button hover styles */
+          /* Enhanced Button Styles */
         #backToRounds:hover {
-            background-color: rgba(45, 66, 99, 0.2) !important;
+            background-color: var(--primary) !important;
+            color: white !important;
         }
     </style>
 </head>
-<body>
-    <div class="slide-container gradient-bg">
+<body data-theme="1">
+<!-- 
+========================================
+🎨 HƯỚNG DẪN THAY ĐỔI THEME
+========================================
+Để thay đổi theme, tìm dòng này trong CSS:
+--current-theme: 4;
+
+Thay đổi số 4 thành:
+1 = Business Professional (Xanh dương - Mint - Xanh lá)
+2 = Vibrant Energy (Cam - Đỏ - Vàng) 
+3 = Corporate Modern (Navy - Cam - Vàng)
+4 = Tech Innovation (Xanh dương - Vàng) 
+5 = Fresh Workflow (Mint - Xanh lá - Cam - Đỏ)
+
+VD: --current-theme: 3; để dùng theme Corporate Modern
+Lưu file và refresh trang để thấy thay đổi
+========================================
+--><div class="slide-container gradient-bg">
         <!-- Floating particles background -->
         <div class="floating-particles">
             <div class="particle"></div>
@@ -332,10 +524,10 @@
             <div class="particle"></div>
             <div class="particle"></div>
             <div class="particle"></div>
-        </div>        <div class="content-layer">            <!-- Header -->
+        </div>        <div class="content-layer">        <!-- Header -->
             <header class="text-center py-8">
                 <h1 class="main-title fade-in">
-                    <i class="fas fa-trophy mr-4" style="color: var(--color-3);"></i>
+                    <i class="fas fa-trophy mr-4" style="color: var(--accent);"></i>
                     HỘI THI ATVSV GIỎI 2025
                 </h1>
                 <p class="text-xl header-subtitle fade-in mb-2">Công ty Công nghiệp Hóa chất mỏ Thái Nguyên</p>
@@ -354,8 +546,9 @@
                 </div>                <!-- Question Container -->
                 <div id="questionContainer" class="fade-in px-8" style="display: none;">
                     <div class="max-w-7xl mx-auto">
-                        <div class="bg-white bg-opacity-95 rounded-2xl p-6 backdrop-filter backdrop-blur-sm border-2 border-yellow-200 shadow-xl">
-                            <div class="flex items-center justify-between mb-6">                                <button id="backToRounds" class="flex items-center font-semibold transition-colors px-4 py-2 rounded-lg hover:opacity-80" style="color: var(--color-2); background-color: rgba(45, 66, 99, 0.1);">
+                        <div class="rounded-2xl p-6 backdrop-filter backdrop-blur-sm border-2 shadow-xl" style="background: var(--card-bg); border-color: var(--accent);">
+                            <div class="flex items-center justify-between mb-6">
+                                <button id="backToRounds" class="flex items-center font-semibold transition-colors px-4 py-2 rounded-lg hover:opacity-80" style="color: var(--primary); background-color: var(--primary)20;">
                                     <i class="fas fa-arrow-left mr-2"></i>Quay lại danh sách vòng thi
                                 </button>
                                 <div id="questionStats" class="text-gray-600 font-medium">
@@ -659,10 +852,103 @@
                 // Navigate to vong3.html (equivalent to clicking round 3 indicator)
                 window.location.href = 'vong3.html';
             }
+        });        // ===== THEME MANAGEMENT SYSTEM =====
+        const THEMES = {
+            1: 'Business Professional',
+            2: 'Vibrant Energy', 
+            3: 'Corporate Modern',
+            4: 'Tech Innovation',
+            5: 'Fresh Workflow'
+        };
+        
+        // Read theme from CSS variable
+        function getCurrentThemeFromCSS() {
+            const rootStyle = getComputedStyle(document.documentElement);
+            const themeValue = rootStyle.getPropertyValue('--current-theme').trim();
+            const themeNumber = parseInt(themeValue) || 1;
+            console.log(`📖 Reading theme from CSS: ${themeNumber}`);
+            return themeNumber;
+        }
+        
+        function switchTheme(themeNumber) {
+            if (themeNumber >= 1 && themeNumber <= 5) {
+                document.body.setAttribute('data-theme', themeNumber.toString());
+                console.log(`🎨 Theme switched to: ${THEMES[themeNumber]} (Theme ${themeNumber})`);
+                
+                // Add theme transition effect
+                document.body.style.transition = 'all 0.5s ease';
+                setTimeout(() => {
+                    document.body.style.transition = '';
+                }, 500);
+                
+                // Force update CSS variables by triggering a repaint
+                document.body.style.display = 'none';
+                document.body.offsetHeight; // Trigger reflow
+                document.body.style.display = '';
+            }
+        }
+        
+        // Initialize theme on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            const currentTheme = getCurrentThemeFromCSS();
+            switchTheme(currentTheme);
         });
-
+        
+        // Also apply immediately
+        const currentTheme = getCurrentThemeFromCSS();
+        switchTheme(currentTheme);
+        
+        // ===== ENHANCED ANIMATIONS =====
+        function addAdvancedAnimations() {
+            // Staggered card animations
+            const cards = document.querySelectorAll('.round-circle');
+            cards.forEach((card, index) => {
+                card.style.animationDelay = `${index * 0.2}s`;
+                card.style.animation = 'slideInScale 0.8s ease-out forwards';
+            });
+            
+            // Particle enhancement
+            const particles = document.querySelectorAll('.particle');
+            particles.forEach((particle, index) => {
+                particle.style.animationDuration = `${8 + Math.random() * 4}s`;
+            });
+        }
+        
+        // Add CSS for enhanced animations
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideInScale {
+                0% {
+                    opacity: 0;
+                    transform: translateY(50px) scale(0.8);
+                }
+                100% {
+                    opacity: 1;
+                    transform: translateY(0) scale(1);
+                }
+            }
+            
+            .rounds-container {
+                perspective: 1000px;
+            }
+            
+            .round-circle {
+                transform-style: preserve-3d;
+            }
+        `;
+        document.head.appendChild(style);
         // Initialize on page load
         document.addEventListener('DOMContentLoaded', loadRounds);
+        
+        // Debug: Log current CSS variables
+        setTimeout(() => {
+            const style = getComputedStyle(document.documentElement);
+            console.log('🔍 CSS Debug:');
+            console.log('--current-theme:', style.getPropertyValue('--current-theme'));
+            console.log('--primary:', style.getPropertyValue('--primary'));
+            console.log('--background:', style.getPropertyValue('--background'));
+            console.log('body data-theme:', document.body.getAttribute('data-theme'));
+        }, 1000);
     </script>    <a href="control.html" id="openSettings" class="fixed bottom-4 left-4 opacity-60 hover:opacity-100 z-50" style="color: var(--color-2);"><i class="fas fa-cog fa-lg"></i></a>
 </body>
 </html>
