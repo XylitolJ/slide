@@ -38,84 +38,55 @@
             pointer-events: none;
             z-index: 1;
         }        /* ECG Heartbeat Animation */
-        .ecg-line {
+        .ecg-container {
             position: absolute;
-            width: 100%;
-            height: 3px;
-            background: #22c55e;
-            top: 20%;
-            box-shadow: 
-                0 0 10px #22c55e,
-                0 0 20px #22c55e;
-            animation: ecgPulse 2s infinite ease-in-out;
-        }
-        
-        .ecg-line:nth-child(2) {
             top: 40%;
-            animation-delay: 0.7s;
-        }
-        
-        .ecg-line:nth-child(3) {
-            top: 60%;
-            animation-delay: 1.4s;
-        }
-        
-        .ecg-line::before {
-            content: '';
-            position: absolute;
             left: 0;
-            top: 50%;
             width: 100%;
+            height: 80px;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .ecg-container svg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 200%;
             height: 100%;
-            background: linear-gradient(
-                to right,
-                transparent 0%,
-                transparent 10%,
-                #22c55e 11%,
-                #22c55e 12%,
-                transparent 13%,
-                transparent 20%,
-                #22c55e 21%,
-                #22c55e 22%,
-                transparent 23%,
-                transparent 30%,
-                #22c55e 31%,
-                #22c55e 35%,
-                transparent 36%,
-                transparent 50%,
-                #22c55e 51%,
-                #22c55e 52%,
-                transparent 53%,
-                transparent 70%,
-                #22c55e 71%,
-                #22c55e 72%,
-                transparent 73%,
-                transparent 80%,
-                #22c55e 81%,
-                #22c55e 82%,
-                transparent 83%,
-                transparent 100%
-            );
-            transform: translateY(-50%);
-            animation: ecgMove 3s infinite linear;
-            box-shadow: 0 0 8px #22c55e;
+            animation: scroll-left 4s linear infinite;
         }
-        
-        @keyframes ecgPulse {
-            0%, 20%, 50%, 80%, 100% { 
-                opacity: 0.6; 
-                transform: scaleY(1); 
+
+        #heartbeat-path {
+            stroke: #22c55e;
+            stroke-width: 3;
+            fill: transparent;
+            stroke-dasharray: 1138;
+            stroke-dashoffset: 1138;
+            animation: draw-line 4s linear infinite;
+            filter: drop-shadow(0 0 8px rgba(34, 197, 94, 0.6));
+        }
+
+        @keyframes draw-line {
+            0% {
+                stroke-dashoffset: 1138;
             }
-            40% { 
-                opacity: 1; 
-                transform: scaleY(2); 
+            50% {
+                stroke-dashoffset: 0;
+            }
+            100% {
+                stroke-dashoffset: 0;
             }
         }
-        
-        @keyframes ecgMove {
-            0% { transform: translateX(-100%) translateY(-50%); }
-            100% { transform: translateX(100%) translateY(-50%); }
-        }        /* Medical Particles */
+
+        @keyframes scroll-left {
+            0% {
+                transform: translateX(0);
+            }
+            100% {
+                transform: translateX(-50%);
+            }
+        }/* Medical Particles */
         .medical-particle {
             position: absolute;
             animation: medicalFloat 15s infinite linear;
@@ -655,11 +626,12 @@
     <div class="main-container">
         <!-- Medical Emergency Section - Left Side -->
         <div class="medical-section">            <!-- Medical Background Effects -->
-            <div class="medical-bg-effects">
-                <!-- ECG Lines -->
-                <div class="ecg-line"></div>
-                <div class="ecg-line"></div>
-                <div class="ecg-line"></div>
+            <div class="medical-bg-effects">                <!-- ECG Heartbeat -->
+                <div class="ecg-container">
+                    <svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120">
+                        <path id="heartbeat-path" d="M0,60 h80 l10,-20 l20,40 l10,-20 h20 l10,60 l10,-110 l20,90 l10,-20 h40 l10,20 l10,-30 l10,15 h145 M600,60 h80 l10,-20 l20,40 l10,-20 h20 l10,60 l10,-110 l20,90 l10,-20 h40 l10,20 l10,-30 l10,15 h145"/>
+                    </svg>
+                </div>
                 
                 <!-- Medical Floating Particles -->
                 <div class="medical-particle" style="font-size: 28px;">💊</div>
@@ -670,7 +642,6 @@
                 <div class="medical-particle" style="font-size: 25px;">💉</div>
                 <div class="medical-particle" style="font-size: 29px;">⚕️</div>
                 <div class="medical-particle" style="font-size: 27px;">🩺</div>
-                <div class="medical-particle" style="font-size: 31px;">�</div>
                 <div class="medical-particle" style="font-size: 23px;">⚕️</div>
                 <div class="medical-particle" style="font-size: 33px;">💊</div>
                 <div class="medical-particle" style="font-size: 26px;">🏥</div>
