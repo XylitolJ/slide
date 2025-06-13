@@ -50,12 +50,11 @@
             border: 1px solid rgba(255, 255, 255, 0.3);
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
         }
-        
-        .content-item {
+          .content-item {
             display: flex;
             align-items: flex-start;
-            margin-bottom: 1.2rem;
-            padding: 1.2rem;
+            margin-bottom: 0.75rem;
+            padding: 0.75rem;
             background: rgba(255, 255, 255, 0.8);
             border-radius: 16px;
             border-left: 4px solid #3B82F6;
@@ -73,8 +72,8 @@
         .scoring-item {
             display: flex;
             align-items: flex-start;
-            margin-bottom: 1.2rem;
-            padding: 1.2rem;
+            margin-bottom: 0.75rem;
+            padding: 0.75rem;
             background: rgba(255, 255, 255, 0.8);
             border-radius: 16px;
             border-left: 4px solid #10B981;
@@ -88,17 +87,16 @@
             transform: translateX(-8px) scale(1.02);
             box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
         }
-        
-        .icon-container {
-            width: 60px;
-            height: 60px;
-            border-radius: 16px;
+          .icon-container {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.8rem;
+            font-size: 1.5rem;
             color: white;
-            margin-right: 1.5rem;
+            margin-right: 1rem;
             flex-shrink: 0;
             position: relative;
             overflow: hidden;
@@ -181,29 +179,26 @@
         <!-- P5.js Background Canvas -->
         <div id="p5-background"></div>
 
-        <div class="content-layer">
-            <!-- Header -->
-            <header class="text-center py-8 text-white relative z-20">
-                <div class="flex items-center justify-center mb-6 bounce-in">
-                    <div class="w-20 h-20 bg-white bg-opacity-20 rounded-2xl flex items-center justify-center mr-6 pulse-icon">
-                        <i class="fas fa-gavel text-4xl"></i>
+        <div class="content-layer">            <!-- Header -->
+            <header class="text-center py-4 text-white relative z-20">
+                <div class="flex items-center justify-center mb-3 bounce-in">
+                    <div class="w-16 h-16 bg-white bg-opacity-30 rounded-2xl flex items-center justify-center mr-4 pulse-icon">
+                        <i class="fas fa-gavel text-3xl"></i>
                     </div>
                     <div>
-                        <h1 class="text-5xl font-black drop-shadow-2xl text-gradient">VÒNG 1</h1>
-                        <p class="text-2xl font-semibold opacity-90 mt-2">Thi hiểu biết kiến thức</p>
+                        <h1 class="text-4xl font-black drop-shadow-2xl text-white bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text" style="text-shadow: 2px 2px 4px rgba(0,0,0,0.8);">VÒNG 1</h1>
+                        <p class="text-lg font-semibold opacity-95 mt-1">Thi hiểu biết kiến thức: Chính sách pháp luật, PCCC và Y tế</p>
                     </div>
                 </div>
-                <p class="text-xl opacity-80 font-medium">Chính sách pháp luật, PCCC và Y tế</p>
             </header>
 
             <!-- Main Content - 2 Columns Layout -->
             <main class="flex-1 px-8 pb-8">
                 <div class="max-w-7xl mx-auto h-full">
                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 h-full">
-                        
-                        <!-- Left Column - Nội dung Vòng 1 -->
-                        <div class="glass-card p-8">
-                            <h2 class="text-3xl font-bold text-gray-800 mb-6 fade-in-up" style="animation-delay: 0.2s;">
+                          <!-- Left Column - Nội dung Vòng 1 -->
+                        <div class="glass-card p-6">
+                            <h2 class="text-2xl font-bold text-gray-800 mb-4 fade-in-up" style="animation-delay: 0.2s;">
                                 <i class="fas fa-clipboard-list text-blue-600 mr-3"></i>
                                 Nội dung Vòng 1
                             </h2>
@@ -211,20 +206,17 @@
                             <div class="content-item slide-in-left" style="animation-delay: 0.4s;">
                                 <div class="icon-container" style="background: linear-gradient(135deg, #3B82F6, #1D4ED8);">
                                     <i class="fas fa-book-open"></i>
+                                </div>                                <div>
+                                    <h3 class="text-base font-bold text-gray-800 mb-1">Thi theo hình thức trắc nghiệm</h3>
+                                    <p class="text-sm text-gray-700">Câu hỏi và đáp án theo bộ đề thi trắc nghiệm của Tổng công ty ban hành theo quyết định số 1945/QĐ-M1CCO ngày 15/5/2025</p>
                                 </div>
-                                <div>
-                                    <h3 class="text-lg font-bold text-gray-800 mb-2">Thi theo hình thức trắc nghiệm</h3>
-                                    <p class="text-gray-700">Câu hỏi và đáp án theo bộ đề thi trắc nghiệm của Tổng công ty ban hành theo quyết định số 1945/QĐ-M1CCO ngày 15/5/2025</p>
-                                </div>
-                            </div>
-
-                            <div class="content-item slide-in-left" style="animation-delay: 0.6s;">
+                            </div>                            <div class="content-item slide-in-left" style="animation-delay: 0.6s;">
                                 <div class="icon-container" style="background: linear-gradient(135deg, #8B5CF6, #7C3AED);">
                                     <i class="fas fa-users"></i>
                                 </div>
                                 <div>
-                                    <h3 class="text-lg font-bold text-gray-800 mb-2">3 đội thi cùng trả lời 10 câu hỏi</h3>
-                                    <p class="text-gray-700">Cả đội thống nhất đáp án để trả lời và viết ra bảng giơ lên cho BKG chấm</p>
+                                    <h3 class="text-base font-bold text-gray-800 mb-1">3 đội thi cùng trả lời 10 câu hỏi</h3>
+                                    <p class="text-sm text-gray-700">Cả đội thống nhất đáp án để trả lời và viết ra bảng giơ lên cho BKG chấm</p>
                                 </div>
                             </div>
 
@@ -233,8 +225,8 @@
                                     <i class="fas fa-tv"></i>
                                 </div>
                                 <div>
-                                    <h3 class="text-lg font-bold text-gray-800 mb-2">Ban TC chiếu câu hỏi lên màn hình</h3>
-                                    <p class="text-gray-700">Câu hỏi và các lựa chọn đáp án được hiển thị rõ ràng trên màn hình lớn</p>
+                                    <h3 class="text-base font-bold text-gray-800 mb-1">Ban TC chiếu câu hỏi lên màn hình</h3>
+                                    <p class="text-sm text-gray-700">Câu hỏi và các lựa chọn đáp án được hiển thị rõ ràng trên màn hình lớn</p>
                                 </div>
                             </div>
 
@@ -243,8 +235,8 @@
                                     <i class="fas fa-clock"></i>
                                 </div>
                                 <div>
-                                    <h3 class="text-lg font-bold text-gray-800 mb-2">30 giây để viết đáp án</h3>
-                                    <p class="text-gray-700">Các đội có thời gian 30 giây để viết đáp án vào bảng (a/b/c/d...)</p>
+                                    <h3 class="text-base font-bold text-gray-800 mb-1">30 giây để viết đáp án</h3>
+                                    <p class="text-sm text-gray-700">Các đội có thời gian 30 giây để viết đáp án vào bảng (a/b/c/d...)</p>
                                 </div>
                             </div>
 
@@ -253,8 +245,8 @@
                                     <i class="fas fa-hand-paper"></i>
                                 </div>
                                 <div>
-                                    <h3 class="text-lg font-bold text-gray-800 mb-2">MC yêu cầu giơ bảng đáp án</h3>
-                                    <p class="text-gray-700">Các đội giơ bảng đáp án để Ban giám khảo chấm điểm</p>
+                                    <h3 class="text-base font-bold text-gray-800 mb-1">MC yêu cầu giơ bảng đáp án</h3>
+                                    <p class="text-sm text-gray-700">Các đội giơ bảng đáp án để Ban giám khảo chấm điểm</p>
                                 </div>
                             </div>
 
@@ -263,8 +255,8 @@
                                     <i class="fas fa-check-circle"></i>
                                 </div>
                                 <div>
-                                    <h3 class="text-lg font-bold text-gray-800 mb-2">Chấm và công bố điểm ngay</h3>
-                                    <p class="text-gray-700">Ban Giám khảo chấm xong và công bố điểm ngay, Thư ký ghi vào bảng tổng hợp điểm</p>
+                                    <h3 class="text-base font-bold text-gray-800 mb-1">Chấm và công bố điểm ngay</h3>
+                                    <p class="text-sm text-gray-700">Ban Giám khảo chấm xong và công bố điểm ngay, Thư ký ghi vào bảng tổng hợp điểm</p>
                                 </div>
                             </div>
 
@@ -273,26 +265,23 @@
                                     <i class="fas fa-arrow-right"></i>
                                 </div>
                                 <div>
-                                    <h3 class="text-lg font-bold text-gray-800 mb-2">Thi lần lượt từ câu 1 đến câu 10</h3>
-                                    <p class="text-gray-700">Hoàn thành xong chuyển sang vòng thi thứ 2</p>
+                                    <h3 class="text-base font-bold text-gray-800 mb-1">Thi lần lượt từ câu 1 đến câu 10</h3>
+                                    <p class="text-sm text-gray-700">Hoàn thành xong chuyển sang vòng thi thứ 2</p>
                                 </div>
                             </div>
-                        </div>
-
-                        <!-- Right Column - Cách tính điểm -->
-                        <div class="glass-card p-8">
-                            <h2 class="text-3xl font-bold text-gray-800 mb-6 fade-in-up" style="animation-delay: 0.3s;">
+                        </div>                        <!-- Right Column - Cách tính điểm -->
+                        <div class="glass-card p-6">
+                            <h2 class="text-2xl font-bold text-gray-800 mb-4 fade-in-up" style="animation-delay: 0.3s;">
                                 <i class="fas fa-calculator text-green-600 mr-3"></i>
                                 Cách tính điểm Vòng 1
                             </h2>
-                            
-                            <div class="scoring-item slide-in-right" style="animation-delay: 0.5s;">
+                              <div class="scoring-item slide-in-right" style="animation-delay: 0.5s;">
                                 <div class="icon-container" style="background: linear-gradient(135deg, #10B981, #059669);">
                                     <i class="fas fa-trophy"></i>
                                 </div>
                                 <div>
-                                    <h3 class="text-lg font-bold text-gray-800 mb-2">Gồm 10 câu hỏi</h3>
-                                    <p class="text-gray-700">Thi hiểu biết kiến thức về chính sách pháp luật, PCCC và Y tế</p>
+                                    <h3 class="text-base font-bold text-gray-800 mb-1">Gồm 10 câu hỏi</h3>
+                                    <p class="text-sm text-gray-700">Thi hiểu biết kiến thức về chính sách pháp luật, PCCC và Y tế</p>
                                 </div>
                             </div>
 
@@ -301,8 +290,8 @@
                                     <i class="fas fa-check-double"></i>
                                 </div>
                                 <div>
-                                    <h3 class="text-lg font-bold text-gray-800 mb-2">Câu trả lời đúng: 10 điểm</h3>
-                                    <p class="text-gray-700">Câu trả lời đúng theo đáp án của câu hỏi thì đạt thang điểm 10</p>
+                                    <h3 class="text-base font-bold text-gray-800 mb-1">Câu trả lời đúng: 10 điểm</h3>
+                                    <p class="text-sm text-gray-700">Câu trả lời đúng theo đáp án của câu hỏi thì đạt thang điểm 10</p>
                                 </div>
                             </div>
 
@@ -311,8 +300,8 @@
                                     <i class="fas fa-times-circle"></i>
                                 </div>
                                 <div>
-                                    <h3 class="text-lg font-bold text-gray-800 mb-2">Câu trả lời sai: 0 điểm</h3>
-                                    <p class="text-gray-700">Câu trả lời thiếu, sai theo đáp án của câu hỏi thì không được tính điểm</p>
+                                    <h3 class="text-base font-bold text-gray-800 mb-1">Câu trả lời sai: 0 điểm</h3>
+                                    <p class="text-sm text-gray-700">Câu trả lời thiếu, sai theo đáp án của câu hỏi thì không được tính điểm</p>
                                 </div>
                             </div>
 
@@ -321,8 +310,8 @@
                                     <i class="fas fa-star"></i>
                                 </div>
                                 <div>
-                                    <h3 class="text-lg font-bold text-gray-800 mb-2">Điểm tối đa: 100 điểm</h3>
-                                    <p class="text-gray-700">Tổng điểm tối đa có thể đạt được là 100 điểm (10 câu x 10 điểm)</p>
+                                    <h3 class="text-base font-bold text-gray-800 mb-1">Điểm tối đa: 100 điểm</h3>
+                                    <p class="text-sm text-gray-700">Tổng điểm tối đa có thể đạt được là 100 điểm (10 câu x 10 điểm)</p>
                                 </div>
                             </div>
 
@@ -331,8 +320,8 @@
                                     <i class="fas fa-balance-scale"></i>
                                 </div>
                                 <div>
-                                    <h3 class="text-lg font-bold text-gray-800 mb-2">Không bị trừ điểm</h3>
-                                    <p class="text-gray-700">Không có hình phạt trừ điểm khi trả lời sai hoặc không trả lời</p>
+                                    <h3 class="text-base font-bold text-gray-800 mb-1">Không bị trừ điểm</h3>
+                                    <p class="text-sm text-gray-700">Không có hình phạt trừ điểm khi trả lời sai hoặc không trả lời</p>
                                 </div>
                             </div>
 
@@ -341,8 +330,8 @@
                                     <i class="fas fa-chart-line"></i>
                                 </div>
                                 <div>
-                                    <h3 class="text-lg font-bold text-gray-800 mb-2">Điểm được cộng dồn</h3>
-                                    <p class="text-gray-700">Điểm vòng 1 sẽ được cộng vào tổng điểm cuối cùng của đội</p>
+                                    <h3 class="text-base font-bold text-gray-800 mb-1">Điểm được cộng dồn</h3>
+                                    <p class="text-sm text-gray-700">Điểm vòng 1 sẽ được cộng vào tổng điểm cuối cùng của đội</p>
                                 </div>
                             </div>
                         </div>
