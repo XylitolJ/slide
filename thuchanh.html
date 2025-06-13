@@ -40,7 +40,7 @@
         }        /* ECG Heartbeat Animation */
         .ecg-container {
             position: absolute;
-            top: 40%;
+            top: 80%;
             left: 0;
             width: 100%;
             height: 80px;
@@ -204,7 +204,7 @@
           /* Fire Safety Section - Right Side */
         .fire-section {
             flex: 1;
-            background: linear-gradient(135deg, #fed7aa 0%, #fdba74 20%, #fb923c 40%, #f97316 60%, #ea580c 80%, #dc2626 100%);
+            background: linear-gradient(135deg, #f8eddf 0%, #fae0c4 20%, #facaa2 40%, #f8b17f 60%, #fdad82 80%, #faa259 100%);
             position: relative;
             overflow: hidden;
         }
@@ -279,11 +279,11 @@
           /* Radar Scanning Effect */
         .radar-scanner {
             position: absolute;
-            top: 10%;
+            top: 15%;
             right: 5%;
             width: 120px;
             height: 120px;
-            border: 2px solid rgba(34, 197, 94, 0.4);
+            border: 2px solid rgba(4, 253, 95, 0.993);
             border-radius: 50%;
             animation: radarScan 3s infinite linear;
             z-index: 2;
@@ -323,30 +323,17 @@
         @keyframes radarSweep {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
-        }
-          /* Center Divider */
+        }        /* Center Divider */
         .center-divider {
             position: absolute;
             left: 50%;
             top: 0;
             width: 4px;
             height: 100%;
-            background: linear-gradient(to bottom, 
-                #22c55e 0%, 
-                #3b82f6 20%, 
-                #ef4444 40%, 
-                #f97316 60%, 
-                #22c55e 80%, 
-                #ef4444 100%);
+            background: #ffffff;
             transform: translateX(-50%);
             z-index: 10;
-            animation: dividerPulse 3s infinite ease-in-out;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
-        }
-        
-        @keyframes dividerPulse {
-            0%, 100% { box-shadow: 0 0 20px rgba(34, 197, 94, 0.5); }
-            50% { box-shadow: 0 0 30px rgba(239, 68, 68, 0.7); }
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
         }
         
         /* Section Content Styling */
@@ -538,7 +525,7 @@
         .question-number {
             font-size: 1.2rem;
             font-weight: 700;
-            color: #1f2937;
+            color: #ffffff;
             margin-bottom: 0.5rem;
         }
         
