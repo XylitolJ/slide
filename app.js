@@ -33,21 +33,23 @@ document.addEventListener('DOMContentLoaded', () => {
     const DEBUG_MODE = false; // Set to true to enable debug mode
     const USE_SPEECH = localStorage.getItem("useSpeech") !== "false";
     const SHOW_IMAGE_PLACEHOLDER_ON_ERROR = true; // If true, shows a placeholder if an image fails to load
-    const IMAGE_PLACEHOLDER_SVG = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23cbd5e1'%3E%3Cpath d='M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z'/%3E%3C/svg%3E"; // Simple image icon
-    const DELAY_NO_SPEECH_QUESTION = 1000; // ms to wait after showing question if no speech
+    const IMAGE_PLACEHOLDER_SVG = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23cbd5e1'%3E%3Cpath d='M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z'/%3E%3C/svg%3E"; // Simple image icon    const DELAY_NO_SPEECH_QUESTION = 1000; // ms to wait after showing question if no speech
     const DELAY_NO_SPEECH_OPTION = 500;  // ms to wait after showing an option if no speech
     const DELAY_NO_SPEECH_ANSWER = 1000; // ms to wait after showing answer if no speech
+    
+    // THEME CONFIGURATION - Global variable to control header/footer theme
+    // Options: 'default', 'category', 'round'
+    const THEME_MODE = 'round'; // Change this to switch between theme modes
 
     function applyFontSettings(){
         const qSize = localStorage.getItem("fontSizeQuestion");
         const oSize = localStorage.getItem("fontSizeOption");
         if(qSize) document.documentElement.style.setProperty("--question-font-size", qSize+"px");
         if(oSize) document.documentElement.style.setProperty("--option-font-size", oSize+"px");
-    }
-
-    // State variables
+    }    // State variables
     let allQuestions = [];
     let contestRoundsData = []; // To store data from quy_che_thi.cac_vong_thi
+    let currentRound = 'vong1'; // Default round for vong1.html
     let currentQuestionIndex = 0;
     let currentQuestionData = null;
     let timerInterval;
@@ -155,26 +157,68 @@ document.addEventListener('DOMContentLoaded', () => {
         } else {
             console.warn('animateElement: Called with null or undefined element for animationClass:', animationClass);
         }
+    }    // Function to change theme mode for testing (can be called from console)
+    window.changeThemeMode = function(mode) {
+        if (['default', 'category', 'round'].includes(mode)) {
+            // Use a const override for testing
+            window.THEME_MODE_OVERRIDE = mode;
+            console.log(`Theme mode changed to: ${mode}`);
+            // Re-apply theme with current question
+            if (currentQuestionData) {
+                applyTheme(currentQuestionData.category);
+            }
+        } else {
+            console.log('Invalid theme mode. Use: default, category, or round');
+        }
+    };
+
+    // Function to change current round for testing
+    window.changeCurrentRound = function(round) {
+        if (['vong1', 'vong2', 'vong3'].includes(round)) {
+            currentRound = round;
+            console.log(`Current round changed to: ${round}`);
+            // Re-apply theme if in round mode
+            if ((window.THEME_MODE_OVERRIDE || THEME_MODE) === 'round' && currentQuestionData) {
+                applyTheme(currentQuestionData.category);
+            }
+        } else {
+            console.log('Invalid round. Use: vong1, vong2, or vong3');
+        }
+    };
+
+    // Modified getThemeClass to use override if available
+    function getThemeClassWithOverride(category) {
+        const themeMode = window.THEME_MODE_OVERRIDE || THEME_MODE;
+        switch (themeMode) {
+            case 'round':
+                return `header-footer-theme-${currentRound}`;
+            
+            case 'category':
+                if (!category) return 'header-footer-theme-default';
+                const normalizedCategory = category.toLowerCase().replace(/\s+/g, '-');
+                if (normalizedCategory.includes('chính-sách-pháp-luật')) return 'header-footer-theme-cspl';
+                if (normalizedCategory.includes('phòng-cháy-chữa-cháy')) return 'header-footer-theme-pccc';
+                if (normalizedCategory.includes('y-tế')) return 'header-footer-theme-yte';
+                if (normalizedCategory.includes('khai-thác-mỏ')) return 'header-footer-theme-ktm';
+                if (normalizedCategory.includes('bảo-quản') || normalizedCategory.includes('bốc-xếp') || normalizedCategory.includes('vận-chuyển')) return 'header-footer-theme-bq-bx-vc';
+                return 'header-footer-theme-default';
+            
+            case 'default':
+            default:
+                return 'header-footer-theme-default';
+        }
     }
 
     function getThemeClass(category) {
-        if (!category) return 'header-footer-theme-default'; // Default theme for header/footer
-        const normalizedCategory = category.toLowerCase().replace(/\s+/g, '-');
-        if (normalizedCategory.includes('chính-sách-pháp-luật')) return 'header-footer-theme-cspl';
-        if (normalizedCategory.includes('phòng-cháy-chữa-cháy')) return 'header-footer-theme-pccc';
-        if (normalizedCategory.includes('y-tế')) return 'header-footer-theme-yte';
-        if (normalizedCategory.includes('khai-thác-mỏ')) return 'header-footer-theme-ktm';
-        if (normalizedCategory.includes('bảo-quản') || normalizedCategory.includes('bốc-xếp') || normalizedCategory.includes('vận-chuyển')) return 'header-footer-theme-bq-bx-vc';
-        return 'header-footer-theme-default'; // Fallback
-    }
-
-    function applyTheme(category) {
+        return getThemeClassWithOverride(category);
+    }    function applyTheme(category) {
         const themeClass = getThemeClass(category);
         // Define all possible theme classes to ensure only one is active on slideContainer
         const allClasses = [
             'header-footer-theme-default', 'header-footer-theme-cspl', 
             'header-footer-theme-pccc', 'header-footer-theme-yte', 
-            'header-footer-theme-ktm', 'header-footer-theme-bq-bx-vc'
+            'header-footer-theme-ktm', 'header-footer-theme-bq-bx-vc',
+            'header-footer-theme-vong1', 'header-footer-theme-vong2', 'header-footer-theme-vong3'
         ];
         // Apply theme to slideContainer, CSS will handle header/footer specifics
         if (slideContainer) {

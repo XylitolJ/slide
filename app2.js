@@ -37,9 +37,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
  
     // Popup
-    const timesUpPopupEl = document.getElementById('timeUpOverlay'); // Updated ID for new overlay
-
-    // --- Configuration ---
+    const timesUpPopupEl = document.getElementById('timeUpOverlay'); // Updated ID for new overlay    // --- Configuration ---
     const DEBUG_MODE = false; // Set to true to enable debug mode
     const USE_SPEECH = true; // Set to false to disable all speech synthesis & audio file playback
     const SHOW_IMAGE_PLACEHOLDER_ON_ERROR = true; // If true, shows a placeholder if an image fails to load
@@ -47,17 +45,21 @@ document.addEventListener('DOMContentLoaded', () => {
     const DELAY_NO_SPEECH_QUESTION = 1000; // ms to wait after showing question if no speech
     const DELAY_NO_SPEECH_OPTION = 500;  // ms to wait after showing an option if no speech
     const DELAY_NO_SPEECH_ANSWER = 1000; // ms to wait after showing answer if no speech
-
-    // State variables
+    
+    // THEME CONFIGURATION - Global variable to control header/footer theme
+    // Options: 'default', 'category', 'round'
+    const THEME_MODE = 'round'; // Change this to switch between theme modes    // State variables
     let allQuestions = [];
     let contestRoundsData = []; // To store data from quy_che_thi.cac_vong_thi
+    let currentRound = 'vong2'; // Default round, will be determined from data
     let currentQuestionIndex = 0;
     let currentQuestionData = null;
     let timerInterval;
     let timeLeft = 0; // Will be set per question
     const DEFAULT_TIME_PER_QUESTION = 60; // Default seconds for Round 2, can be overridden by JSON
     let audioContext;
-    let currentAudio = null;    let sequenceInProgress = false;
+    let currentAudio = null;
+    let sequenceInProgress = false;
     let answerShown = false;
     let navigationInProgress = false; // Add flag to prevent audio restart during navigation
     const OPTION_KEYS = ['a', 'b', 'c', 'd', 'e', 'g']; // Possible option keys
@@ -283,27 +285,70 @@ document.addEventListener('DOMContentLoaded', () => {
         // Reset the flag after a short delay
         setTimeout(() => {
             questionOptionsSection._isAdjusting = false;
-        }, 100);
+        }, 100);    }
+
+    // Function to change theme mode for testing (can be called from console)
+    window.changeThemeMode = function(mode) {
+        if (['default', 'category', 'round'].includes(mode)) {
+            // Use a const override for testing
+            window.THEME_MODE_OVERRIDE = mode;
+            console.log(`Theme mode changed to: ${mode}`);
+            // Re-apply theme with current question
+            if (currentQuestionData) {
+                applyTheme(currentQuestionData.category);
+            }
+        } else {
+            console.log('Invalid theme mode. Use: default, category, or round');
+        }
+    };
+
+    // Function to change current round for testing
+    window.changeCurrentRound = function(round) {
+        if (['vong1', 'vong2', 'vong3'].includes(round)) {
+            currentRound = round;
+            console.log(`Current round changed to: ${round}`);
+            // Re-apply theme if in round mode
+            if ((window.THEME_MODE_OVERRIDE || THEME_MODE) === 'round' && currentQuestionData) {
+                applyTheme(currentQuestionData.category);
+            }
+        } else {
+            console.log('Invalid round. Use: vong1, vong2, or vong3');
+        }
+    };
+
+    // Modified getThemeClass to use override if available
+    function getThemeClassWithOverride(category) {
+        const themeMode = window.THEME_MODE_OVERRIDE || THEME_MODE;
+        switch (themeMode) {
+            case 'round':
+                return `header-footer-theme-${currentRound}`;
+            
+            case 'category':
+                if (!category) return 'header-footer-theme-default';
+                const normalizedCategory = category.toLowerCase().replace(/\s+/g, '-');
+                if (normalizedCategory.includes('chính-sách-pháp-luật')) return 'header-footer-theme-cspl';
+                if (normalizedCategory.includes('phòng-cháy-chữa-cháy')) return 'header-footer-theme-pccc';
+                if (normalizedCategory.includes('y-tế')) return 'header-footer-theme-yte';
+                if (normalizedCategory.includes('khai-thác-mỏ')) return 'header-footer-theme-ktm';
+                if (normalizedCategory.includes('bảo-quản') || normalizedCategory.includes('bốc-xếp') || normalizedCategory.includes('vận-chuyển')) return 'header-footer-theme-bq-bx-vc';
+                return 'header-footer-theme-default';
+            
+            case 'default':
+            default:
+                return 'header-footer-theme-default';
+        }
     }
 
     function getThemeClass(category) {
-        if (!category) return 'header-footer-theme-default'; // Default theme for header/footer
-        const normalizedCategory = category.toLowerCase().replace(/\s+/g, '-');
-        if (normalizedCategory.includes('chính-sách-pháp-luật')) return 'header-footer-theme-cspl';
-        if (normalizedCategory.includes('phòng-cháy-chữa-cháy')) return 'header-footer-theme-pccc';
-        if (normalizedCategory.includes('y-tế')) return 'header-footer-theme-yte';
-        if (normalizedCategory.includes('khai-thác-mỏ')) return 'header-footer-theme-ktm';
-        if (normalizedCategory.includes('bảo-quản') || normalizedCategory.includes('bốc-xếp') || normalizedCategory.includes('vận-chuyển')) return 'header-footer-theme-bq-bx-vc';
-        return 'header-footer-theme-default'; // Fallback
-    }
-
-    function applyTheme(category) {
+        return getThemeClassWithOverride(category);
+    }function applyTheme(category) {
         const themeClass = getThemeClass(category);
         // Define all possible theme classes to ensure only one is active on slideContainer
         const allClasses = [
             'header-footer-theme-default', 'header-footer-theme-cspl', 
             'header-footer-theme-pccc', 'header-footer-theme-yte', 
-            'header-footer-theme-ktm', 'header-footer-theme-bq-bx-vc'
+            'header-footer-theme-ktm', 'header-footer-theme-bq-bx-vc',
+            'header-footer-theme-vong1', 'header-footer-theme-vong2', 'header-footer-theme-vong3'
         ];
         // Apply theme to slideContainer, CSS will handle header/footer specifics
         if (slideContainer) {
@@ -1140,8 +1185,23 @@ async function displayAnswer() {
             if (!questionSetsResponse.ok) {
                 throw new Error(`HTTP error loading question_sets.json! status: ${questionSetsResponse.status}`);
             }
-            const questionSetsData = await questionSetsResponse.json();
-            console.log('Loaded question_sets.json:', questionSetsData);
+            const questionSetsData = await questionSetsResponse.json();            console.log('Loaded question_sets.json:', questionSetsData);
+
+            // Determine current round from question_sets.json and URL parameters
+            const selectedParams = getSelectedIds();
+            if (selectedParams && selectedParams.set) {
+                // Try to find which round contains the selected set
+                for (const roundKey in questionSetsData) {
+                    if (questionSetsData[roundKey] && questionSetsData[roundKey][selectedParams.set]) {
+                        currentRound = roundKey;
+                        break;
+                    }
+                }
+            } else {
+                // Default to vong2 (this page is specifically for vong2)
+                currentRound = 'vong2';
+            }
+            console.log('Current round determined:', currentRound);
 
             // Load Round 2 questions from vong2.json
             const response = await fetch('vong2.json');
@@ -1175,9 +1235,7 @@ async function displayAnswer() {
                     if (Array.isArray(category[typeKey])) {
                         allAvailableQuestions = allAvailableQuestions.concat(category[typeKey]);
                     }
-                }
-            }            // Get selected set from URL parameters  
-            const selectedParams = getSelectedIds();
+                }            }            // Get selected set from URL parameters  
             console.log('Selected parameters:', selectedParams);
             
             // Filter questions based on question_sets.json configuration

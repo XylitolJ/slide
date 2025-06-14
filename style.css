@@ -2,10 +2,12 @@
     position: absolute;
     top: 0;
     left: 0;
-    height: 6px;
-    background: linear-gradient(90deg, #10b981, #34d399); /* Initial green color */
+    height: 4px;
+    background: linear-gradient(90deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4, #feca57);
+    background-size: 300% 100%;
+    animation: progressRainbow 3s ease-in-out infinite;
     width: 100%; /* JS will update this */
-    z-index: 100; /* Ensure it's above the header */
+    z-index: 1000; /* Ensure it's above the header */
     transition: width 0.3s linear, background 0.3s linear;
 }
 .u-hidden-initially {
@@ -319,7 +321,8 @@ body, html {
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
     flex-shrink: 0;
     position: relative;
-    z-index: 50;
+    z-index: 20;
+    animation: headerSlideDown 1s ease-out;
 }
 
 .contest-info h1 {
@@ -438,10 +441,11 @@ body, html {
     color: white;
     display: flex;
     justify-content: space-between;
-    align-items: center; /* Changed from align-items:end for better control layout */
-    flex-shrink: 0;
+    align-items: center;
     position: relative;
-    z-index: 50;
+    z-index: 20;
+    animation: footerSlideUp 1s ease-out;
+    flex-shrink: 0;
 }
 
 .footer-left h3 {
@@ -465,7 +469,28 @@ body, html {
 .footer-controls button {
     padding: 0.4rem 0.8rem !important; /* Reduced padding */
     font-size: 0.8rem !important; /* Reduced font size */
-    /* Adjust icon size if needed, though FontAwesome might scale with font-size */
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+.footer-controls button::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    transition: width 0.3s ease, height 0.3s ease;
+}
+.footer-controls button:hover::before {
+    width: 100%;
+    height: 100%;
+}
+.footer-controls button:active {
+    transform: scale(0.95);
 }
 .footer-controls button i {
     margin-right: 0.3rem !important; /* Adjust icon margin if needed */
@@ -491,7 +516,9 @@ body, html {
     bottom: 0;
     left: 0;
     height: 6px;
-    background: linear-gradient(90deg, #FFCA55, #F29F05, #F25C05);
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    background-size: 200% 100%;
+    animation: progressShimmer 2s infinite;
     width: 0%; /* JS will update this, start at 0 or a default */
     animation: progressGlow 2s ease-in-out infinite alternate;
     transition: width 0.5s ease-out;
@@ -647,6 +674,22 @@ body, html {
 .header-footer-theme-bq-bx-vc .header,
 .header-footer-theme-bq-bx-vc .footer {
     background: linear-gradient(135deg, #1e40af, #1d4ed8) !important;
+}
+
+/* Round-based themes */
+.header-footer-theme-vong1 .header,
+.header-footer-theme-vong1 .footer {
+    background: linear-gradient(135deg, #dc2626, #ef4444, #f87171) !important; /* Red gradient for Round 1 */
+}
+
+.header-footer-theme-vong2 .header,
+.header-footer-theme-vong2 .footer {
+    background: linear-gradient(135deg, #2563eb, #3b82f6, #60a5fa) !important; /* Blue gradient for Round 2 */
+}
+
+.header-footer-theme-vong3 .header,
+.header-footer-theme-vong3 .footer {
+    background: linear-gradient(135deg, #7c3aed, #a855f7, #c084fc) !important; /* Purple gradient for Round 3 */
 }
 
 /* Custom shape for the image wrapper */
@@ -957,4 +1000,182 @@ body, html {
 .column-header.show {
     opacity: 1;
     transform: translateY(0);
+}
+
+/* Enhanced animations and effects for header and footer */
+@keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+}
+
+@keyframes headerSlideDown {
+    0% {
+        transform: translateY(-100%);
+        opacity: 0;
+    }
+    100% {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+@keyframes footerSlideUp {
+    0% {
+        transform: translateY(100%);
+        opacity: 0;
+    }
+    100% {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+@keyframes fadeInScale {
+    0% {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes glowPulse {
+    0%, 100% {
+        box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+    }
+    50% {
+        box-shadow: 0 0 30px rgba(255, 255, 255, 0.2);
+    }
+}
+
+/* Apply shimmer effect to all header/footer themes */
+.header-footer-theme-default .header,
+.header-footer-theme-default .footer,
+.header-footer-theme-cspl .header,
+.header-footer-theme-cspl .footer,
+.header-footer-theme-pccc .header,
+.header-footer-theme-pccc .footer,
+.header-footer-theme-yte .header,
+.header-footer-theme-yte .footer,
+.header-footer-theme-ktm .header,
+.header-footer-theme-ktm .footer,
+.header-footer-theme-bq-bx-vc .header,
+.header-footer-theme-bq-bx-vc .footer,
+.header-footer-theme-vong1 .header,
+.header-footer-theme-vong1 .footer,
+.header-footer-theme-vong2 .header,
+.header-footer-theme-vong2 .footer,
+.header-footer-theme-vong3 .header,
+.header-footer-theme-vong3 .footer {
+    position: relative;
+    overflow: hidden;
+}
+
+.header-footer-theme-default .header::before,
+.header-footer-theme-default .footer::before,
+.header-footer-theme-cspl .header::before,
+.header-footer-theme-cspl .footer::before,
+.header-footer-theme-pccc .header::before,
+.header-footer-theme-pccc .footer::before,
+.header-footer-theme-yte .header::before,
+.header-footer-theme-yte .footer::before,
+.header-footer-theme-ktm .header::before,
+.header-footer-theme-ktm .footer::before,
+.header-footer-theme-bq-bx-vc .header::before,
+.header-footer-theme-bq-bx-vc .footer::before,
+.header-footer-theme-vong1 .header::before,
+.header-footer-theme-vong1 .footer::before,
+.header-footer-theme-vong2 .header::before,
+.header-footer-theme-vong2 .footer::before,
+.header-footer-theme-vong3 .header::before,
+.header-footer-theme-vong3 .footer::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -200%;
+    width: 200%;
+    height: 100%;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 255, 255, 0.1),
+        rgba(255, 255, 255, 0.2),
+        rgba(255, 255, 255, 0.1),
+        transparent
+    );
+    animation: shimmer 3s infinite ease-in-out;
+    z-index: 1;
+    pointer-events: none;
+}
+
+/* Animated elements within header and footer */
+.contest-info h1,
+.contest-info p,
+.question-number,
+.category-badge,
+.timer-circle,
+.footer-left h3,
+.footer-left p,
+.footer-controls,
+.footer-right .date,
+.footer-right .location {
+    animation: fadeInScale 1s ease-out;
+    animation-fill-mode: both;
+}
+
+.contest-info h1 { animation-delay: 0.1s; }
+.contest-info p { animation-delay: 0.2s; }
+.question-number { animation-delay: 0.3s; }
+.category-badge { animation-delay: 0.4s; }
+.timer-circle { animation-delay: 0.5s; }
+
+.footer-left h3 { animation-delay: 0.1s; }
+.footer-left p { animation-delay: 0.2s; }
+.footer-controls { animation-delay: 0.3s; }
+.footer-right .date { animation-delay: 0.4s; }
+.footer-right .location { animation-delay: 0.5s; }
+
+/* Add glow effect on hover for interactive elements */
+.footer-controls button:hover {
+    animation: glowPulse 1.5s infinite;
+}
+
+.timer-circle:hover {
+    animation: glowPulse 2s infinite, fadeInScale 1s ease-out;
+}
+
+@keyframes progressRainbow {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+}
+
+@keyframes progressShimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+}
+
+/* Responsive animations for smaller screens */
+@media (max-width: 768px) {
+    .header {
+        animation: headerSlideDown 0.8s ease-out;
+    }
+    
+    .footer {
+        animation: footerSlideUp 0.8s ease-out;
+    }
+    
+    .contest-info h1,
+    .contest-info p,
+    .question-number,
+    .category-badge,
+    .timer-circle,
+    .footer-left h3,
+    .footer-left p,
+    .footer-controls,
+    .footer-right .date,
+    .footer-right .location {
+        animation-duration: 0.8s;
+    }
 }

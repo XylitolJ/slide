@@ -43,15 +43,18 @@ document.addEventListener('DOMContentLoaded', () => {    // URL Parameter handli
     const USE_SPEECH = false; // Disable speech functionality for Round 3
     const DEBUG_MODE = false; // Set to true to disable timer and auto-progression
     const DELAY_NO_SPEECH_QUESTION = 500; // ms to wait if no speech for question
+    
+    // THEME CONFIGURATION - Global variable to control header/footer theme
+    // Options: 'default', 'category', 'round'
+    const THEME_MODE = 'round'; // Change this to switch between theme modes
 
     // Popup elements
-    const timesUpPopupEl = document.getElementById('timesUpPopup') || { style: { display: 'none', opacity: '0' } };
-
-    // State variables
+    const timesUpPopupEl = document.getElementById('timesUpPopup') || { style: { display: 'none', opacity: '0' } };    // State variables
     let allQuestions = [];
     let contestRoundsData = []; // To store data from quy_che_thi.cac_vong_thi
+    let currentRound = 'vong3'; // Default round for vong3.html
     let currentQuestionIndex = 0;
-    let currentQuestionData = null;    let timerInterval;
+    let currentQuestionData = null;let timerInterval;
     let timeLeft = 0; // Will be set per question
     const DEFAULT_TIME_PER_QUESTION = 300; // Default 5 minutes for Round 3 practical exams
     let sequenceInProgress = false;
@@ -111,32 +114,80 @@ document.addEventListener('DOMContentLoaded', () => {    // URL Parameter handli
             element.style.opacity = '1';
             element.style.visibility = 'visible';
             element.style.display = 'block';
+        }    }
+
+    // Function to change theme mode for testing (can be called from console)
+    window.changeThemeMode = function(mode) {
+        if (['default', 'category', 'round'].includes(mode)) {
+            // Use a const override for testing
+            window.THEME_MODE_OVERRIDE = mode;
+            console.log(`Theme mode changed to: ${mode}`);
+            // Re-apply theme with current question
+            if (currentQuestionData) {
+                applyTheme(currentQuestionData.category);
+            }
+        } else {
+            console.log('Invalid theme mode. Use: default, category, or round');
+        }
+    };
+
+    // Function to change current round for testing
+    window.changeCurrentRound = function(round) {
+        if (['vong1', 'vong2', 'vong3'].includes(round)) {
+            currentRound = round;
+            console.log(`Current round changed to: ${round}`);
+            // Re-apply theme if in round mode
+            if ((window.THEME_MODE_OVERRIDE || THEME_MODE) === 'round' && currentQuestionData) {
+                applyTheme(currentQuestionData.category);
+            }
+        } else {
+            console.log('Invalid round. Use: vong1, vong2, or vong3');
+        }
+    };
+
+    // Modified getThemeClass to use override if available
+    function getThemeClassWithOverride(category) {
+        const themeMode = window.THEME_MODE_OVERRIDE || THEME_MODE;
+        switch (themeMode) {
+            case 'round':
+                return `header-footer-theme-${currentRound}`;
+            
+            case 'category':
+                if (!category) return 'header-footer-theme-default';
+                const normalizedCategory = category.toLowerCase().replace(/\s+/g, '-');
+                if (normalizedCategory.includes('chính-sách-pháp-luật')) return 'header-footer-theme-cspl';
+                if (normalizedCategory.includes('phòng-cháy-chữa-cháy')) return 'header-footer-theme-pccc';
+                if (normalizedCategory.includes('y-tế')) return 'header-footer-theme-yte';
+                if (normalizedCategory.includes('khai-thác-mỏ')) return 'header-footer-theme-ktm';
+                if (normalizedCategory.includes('bảo-quản') || normalizedCategory.includes('bốc-xếp') || normalizedCategory.includes('vận-chuyển')) return 'header-footer-theme-bq-bx-vc';
+                return 'header-footer-theme-default';
+            
+            case 'default':
+            default:
+                return 'header-footer-theme-default';
         }
     }
 
     function getThemeClass(category) {
-        if (!category) return 'theme-default';
-        const normalizedCategory = category.toLowerCase();
-        if (normalizedCategory.includes('y tế') || normalizedCategory.includes('sơ cấp cứu')) {
-            return 'theme-medical';
-        } else if (normalizedCategory.includes('phòng cháy') || normalizedCategory.includes('pccc')) {
-            return 'theme-fire';
-        } else if (normalizedCategory.includes('kỹ thuật') || normalizedCategory.includes('an toàn')) {
-            return 'theme-safety';
-        } else {
-            return 'theme-default';
+        return getThemeClassWithOverride(category);
+    }    function applyTheme(category) {
+        const themeClass = getThemeClass(category);
+        // Define all possible theme classes to ensure only one is active on slideContainer
+        const allClasses = [
+            'header-footer-theme-default', 'header-footer-theme-cspl', 
+            'header-footer-theme-pccc', 'header-footer-theme-yte', 
+            'header-footer-theme-ktm', 'header-footer-theme-bq-bx-vc',
+            'header-footer-theme-vong1', 'header-footer-theme-vong2', 'header-footer-theme-vong3',
+            // Remove old theme classes for backward compatibility
+            'theme-default', 'theme-medical', 'theme-fire', 'theme-safety'        ];
+        // Apply theme to slideContainer, CSS will handle header/footer specifics
+        if (slideContainer) {
+            slideContainer.classList.remove(...allClasses); // Remove all theme classes
+            slideContainer.classList.add(themeClass); // Add the new theme class
         }
     }
 
-    function applyTheme(category) {
-        const themeClass = getThemeClass(category);
-        
-        // Remove all existing theme classes
-        slideContainer.classList.remove('theme-default', 'theme-medical', 'theme-fire', 'theme-safety');
-        
-        // Add the new theme class
-        slideContainer.classList.add(themeClass);
-    }    function renderSlide(questionData) {
+    function renderSlide(questionData) {
         console.log('--- renderSlide START ---', questionData);
         currentQuestionData = questionData;
         sequenceInProgress = false;
