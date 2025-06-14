@@ -87,7 +87,7 @@ body, html {
 
 .option-card {
     transition: all 0.3s ease;
-    cursor: pointer;
+    /* cursor: pointer; */
     display: flex; 
     align-items: center;
     /* Use a light gradient background instead of white to provide better contrast */
