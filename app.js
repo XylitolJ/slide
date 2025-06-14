@@ -262,35 +262,26 @@ document.addEventListener('DOMContentLoaded', () => {
                 slideContainer.style.backgroundPosition = 'center';
                 slideContainer.style.backgroundRepeat = 'no-repeat';
             }
-        };
-
-        // Apply background based on bg_image and bg_image_overlay properties
+        };        // Apply background based on bg_image and bg_image_overlay properties
         if (slideContainer) {
             if (questionData.bg_image) {
-                let imageStyle = null;
-
-                if (questionData.bg_image_overlay === 'gradient') {
-                    imageStyle = 'gradient';
-                } else if (questionData.bg_image_overlay === 'stripes') {
-                    imageStyle = 'stripes';
-                }
-
-                if (imageStyle) {
-                    applyBgImage(questionData.bg_image, imageStyle);
-                } else {
-                    // Apply only the bg_image if no overlay is specified
-                    const webPath = questionData.bg_image.replace(/\\/g, '/');
-                    slideContainer.style.backgroundImage = `url('${webPath}')`;
-                    slideContainer.style.backgroundSize = 'cover';
-                    slideContainer.style.backgroundPosition = 'center';
-                    slideContainer.style.backgroundRepeat = 'no-repeat';
-                    slideContainer.classList.remove(...backgroundStyles);
-                }
+                // Initially apply only the background image without overlay for visual appeal
+                const webPath = questionData.bg_image.replace(/\\/g, '/');
+                slideContainer.style.backgroundImage = `url('${webPath}')`;
+                slideContainer.style.backgroundSize = 'cover';
+                slideContainer.style.backgroundPosition = 'center';
+                slideContainer.style.backgroundRepeat = 'no-repeat';
+                slideContainer.classList.remove(...backgroundStyles);
+                
+                // Store overlay info for later use when question sequence starts
+                slideContainer.dataset.bgOverlay = questionData.bg_image_overlay || 'none';
+                slideContainer.dataset.bgImage = webPath;
             } else {
                 // Fallback to default background if no bg_image is specified
                 slideContainer.classList.remove(...backgroundStyles);
                 slideContainer.style.backgroundImage = '';
                 slideContainer.classList.add('bg-default');
+                slideContainer.dataset.bgOverlay = 'none';
             }
         }
         const imageWrapperEl = document.getElementById('imageWrapper');
@@ -583,10 +574,11 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
         sequenceInProgress = true;
-        initAudio();
-
-        startSequenceBtn.disabled = true;
+        initAudio();        startSequenceBtn.disabled = true;
         startSequenceBtn.classList.add('opacity-50', 'cursor-not-allowed', 'speaking-indicator');
+
+        // Apply background overlay when question sequence starts
+        applyBackgroundOverlay();
 
         // 1. Show Question and Image simultaneously
         const imageWrapperEl = document.getElementById('imageWrapper'); 
@@ -1008,3 +1000,38 @@ async function displayAnswer() {
     // --- Initialization ---
     loadQuestions();
 });
+
+// Function to apply background overlay when question sequence starts
+    function applyBackgroundOverlay() {
+        if (!slideContainer) return;
+        
+        const bgOverlay = slideContainer.dataset.bgOverlay;
+        const bgImage = slideContainer.dataset.bgImage;
+        
+        if (bgOverlay && bgOverlay !== 'none' && bgImage) {
+            if (bgOverlay === 'gradient') {
+                slideContainer.style.backgroundImage = `
+                    linear-gradient(135deg, 
+                        rgba(0, 0, 0, 0.4) 0%, 
+                        rgba(0, 0, 0, 0.1) 50%, 
+                        rgba(0, 0, 0, 0.3) 100%
+                    ), 
+                    url('${bgImage}')
+                `;
+                console.log('Applied gradient overlay to background');
+            } else if (bgOverlay === 'stripes') {
+                slideContainer.style.backgroundImage = `
+                    linear-gradient(45deg,
+                        rgba(245, 158, 11, 0.7) 0%,
+                        rgba(245, 158, 11, 0.7) 33.33%,
+                        rgba(255, 255, 255, 0.7) 33.33%,
+                        rgba(255, 255, 255, 0.7) 66.66%,
+                        rgba(245, 158, 11, 0.7) 66.66%,
+                        rgba(245, 158, 11, 0.7) 100%
+                    ),
+                    url('${bgImage}')
+                `;
+                console.log('Applied stripes overlay to background');
+            }
+        }
+    }

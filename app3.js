@@ -222,37 +222,28 @@ document.addEventListener('DOMContentLoaded', () => {    // URL Parameter handli
                 slideContainer.style.backgroundPosition = 'center';
                 slideContainer.style.backgroundRepeat = 'no-repeat';
             }
-        };
-
-        // Apply background based on bg_image and bg_image_overlay properties
+        };        // Apply background based on bg_image and bg_image_overlay properties
         if (slideContainer) {
             if (questionData.bg_image) {
-                let imageStyle = null;
-
-                if (questionData.bg_image_overlay === 'gradient') {
-                    imageStyle = 'gradient';
-                } else if (questionData.bg_image_overlay === 'stripes') {
-                    imageStyle = 'stripes';
-                }
-
-                if (imageStyle) {
-                    applyBgImage(questionData.bg_image, imageStyle);
-                } else {
-                    // Apply only the bg_image if no overlay is specified
-                    const webPath = questionData.bg_image.replace(/\\/g, '/');
-                    slideContainer.style.backgroundImage = `url('${webPath}')`;
-                    slideContainer.style.backgroundSize = 'cover';
-                    slideContainer.style.backgroundPosition = 'center';
-                    slideContainer.style.backgroundRepeat = 'no-repeat';
-                    slideContainer.classList.remove(...backgroundStyles);
-                }
+                // Initially apply only the background image without overlay for visual appeal
+                const webPath = questionData.bg_image.replace(/\\/g, '/');
+                slideContainer.style.backgroundImage = `url('${webPath}')`;
+                slideContainer.style.backgroundSize = 'cover';
+                slideContainer.style.backgroundPosition = 'center';
+                slideContainer.style.backgroundRepeat = 'no-repeat';
+                slideContainer.classList.remove(...backgroundStyles);
+                
+                // Store overlay info for later use when question sequence starts
+                slideContainer.dataset.bgOverlay = questionData.bg_image_overlay || 'none';
+                slideContainer.dataset.bgImage = webPath;
             } else {
                 // Fallback to default background if no bg_image is specified
                 slideContainer.classList.remove(...backgroundStyles);
                 slideContainer.style.backgroundImage = '';
                 slideContainer.classList.add('bg-default');
+                slideContainer.dataset.bgOverlay = 'none';
             }
-        }        // Reset UI state
+        }// Reset UI state
         progressTextEl.textContent = '';
         startSequenceBtn.disabled = false;
         startSequenceBtn.classList.remove('opacity-50', 'cursor-not-allowed', 'speaking-indicator');
@@ -362,10 +353,11 @@ document.addEventListener('DOMContentLoaded', () => {    // URL Parameter handli
             console.log('startQuestionSequence: Aborted - sequenceInProgress:', sequenceInProgress);
             return;
         }
-        sequenceInProgress = true;
-
-        startSequenceBtn.disabled = true;
+        sequenceInProgress = true;        startSequenceBtn.disabled = true;
         startSequenceBtn.classList.add('opacity-50', 'cursor-not-allowed');
+
+        // Apply background overlay when question sequence starts
+        applyBackgroundOverlay();
 
         // 1. Show Question (no audio for Round 3)
         if (questionSectionEl) questionSectionEl.classList.remove('u-hidden-initially');

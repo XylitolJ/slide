@@ -3,3 +3,13 @@
 - vòng 2 đang không hiển thị hết các phương án trả lời
 - vòng 2 thời gian đang sai, đúng là 60s, hiện tại là 30s
 - tạo lại âm thanh cho vòng 3: thêm từ Câu hỏi vào.
+#########
+V2_KTM_HA_10_ans.wav -> tạo lại
+V2_KTM_LT_11_ans.wav -> tạo lại
+PCCC_TN_5_ans.wav -> tạo lại
+Tạo lại câu số 4 Vòng 1
+Cho đồng hồ nổi lên khi bắt đầu tính giờ, Có âm thanh báo khi tính giờ hay hết giờ rõ ràng hơn
+Bỏ đi hiệu ứng pointer của chuột khi di qua các đáp án
+Bỏ đi nút "Đáp án" ở footer, vì đã tự động hiển thị đáp án khi nhấn Enter
+format lại text hiển thị ở đáp án trong câu số 9 vòng 1 để nó có các gạch xuống dòng.
+Đổi màu nền cho page vong1 , vong2 để các particles trôi nổi nổi bật hơn.

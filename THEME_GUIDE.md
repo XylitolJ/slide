@@ -98,3 +98,42 @@ Các theme classes được áp dụng cho `slideContainer`:
 - `header-footer-theme-bq-bx-vc`
 
 CSS sẽ tự động áp dụng cho `.header` và `.footer` dựa trên class của container.
+
+## F. Background Overlay Logic
+
+### Cách hoạt động mới:
+
+1. **Khi load slide**: Hiển thị ảnh nền thuần túy (không overlay) để tạo visual appeal
+2. **Khi bắt đầu phát câu hỏi**: Tự động áp dụng gradient overlay để làm nổi bật nội dung
+
+### Logic implementation:
+
+```javascript
+// Trong renderSlide() - chỉ hiển thị ảnh nền thuần túy
+slideContainer.style.backgroundImage = `url('${webPath}')`;
+slideContainer.dataset.bgOverlay = questionData.bg_image_overlay || 'none';
+slideContainer.dataset.bgImage = webPath;
+
+// Trong startQuestionSequence() - áp dụng overlay khi phát câu hỏi
+function applyBackgroundOverlay() {
+    if (bgOverlay === 'gradient') {
+        slideContainer.style.backgroundImage = `
+            linear-gradient(135deg, 
+                rgba(0, 0, 0, 0.4) 0%, 
+                rgba(0, 0, 0, 0.1) 50%, 
+                rgba(0, 0, 0, 0.3) 100%
+            ), 
+            url('${bgImage}')
+        `;
+    }
+}
+```
+
+### Được áp dụng cho:
+- ✅ **vong1.html** (app.js)
+- ✅ **vong2.html** (app2.js) 
+- ✅ **vong3.html** (app3.js)
+
+### Hiệu ứng:
+- **Initial**: Ảnh nền rõ nét, đẹp mắt
+- **When question starts**: Gradient overlay làm tối ảnh để nội dung nổi bật hơn
