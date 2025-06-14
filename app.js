@@ -1009,7 +1009,7 @@ async function displayAnswer() {
         const bgImage = slideContainer.dataset.bgImage;
         
         if (bgOverlay && bgOverlay !== 'none' && bgImage) {            if (bgOverlay === 'gradient') {
-                slideContainer.style.backgroundImage = `linear-gradient(135deg, rgb(0, 0, 0), rgba(0, 0, 0, 0.69)), url('${bgImage}')`;
+                slideContainer.style.backgroundImage = `linear-gradient(180deg, rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0.51)), url('${bgImage}')`;
                 console.log('Applied gradient overlay to background');
             } else if (bgOverlay === 'stripes') {
                 slideContainer.style.backgroundImage = `
