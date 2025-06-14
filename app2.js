@@ -748,23 +748,15 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Function to apply background overlay when question sequence starts
+// Function to apply background overlay when question sequence starts
     function applyBackgroundOverlay() {
         if (!slideContainer) return;
         
         const bgOverlay = slideContainer.dataset.bgOverlay;
         const bgImage = slideContainer.dataset.bgImage;
         
-        if (bgOverlay && bgOverlay !== 'none' && bgImage) {
-            if (bgOverlay === 'gradient') {
-                slideContainer.style.backgroundImage = `
-                    linear-gradient(135deg, 
-                        rgba(0, 0, 0, 0.4) 0%, 
-                        rgba(0, 0, 0, 0.1) 50%, 
-                        rgba(0, 0, 0, 0.3) 100%
-                    ), 
-                    url('${bgImage}')
-                `;
+        if (bgOverlay && bgOverlay !== 'none' && bgImage) {            if (bgOverlay === 'gradient') {
+                slideContainer.style.backgroundImage = `linear-gradient(180deg, rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0.51)), url('${bgImage}')`;
                 console.log('Applied gradient overlay to background');
             } else if (bgOverlay === 'stripes') {
                 slideContainer.style.backgroundImage = `
@@ -782,7 +774,6 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
     }
-
     // --- Timer Logic ---
     function startTimer() {
         if (timerInterval) clearInterval(timerInterval);

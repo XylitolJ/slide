@@ -12,10 +12,9 @@
             "use_image": "No",
             "position_image": "Right",
             "question_image": "No",
-            "cau_hoi": "Anh (chị) thực hành đặt garô trong trường hợp cụt hoặc đứt động mạch 1/3 giữa cẳng tay",
-            "speech_id_question": "V3_YT_SC_TH_1.wav",
-            "bg_image": "images\\bg\\yte1.jpg",
-            "bg_image_overlay": null
+            "cau_hoi": "Anh (chị) thực hành đặt garô trong trường hợp cụt hoặc đứt động mạch 1/3 giữa cẳng tay",            "speech_id_question": "V3_YT_SC_TH_1.wav",
+            "bg_image": "images\\bg\\bg1.jpg",
+            "bg_image_overlay": "gradient"
           },
           {
             "cau_hoi_so": 2,
@@ -27,10 +26,9 @@
             "use_image": "No",
             "position_image": "Right",
             "question_image": "No",
-            "cau_hoi": "Anh (chị) thực hành cố định gẫy xương cẳng tay tay hở",
-            "speech_id_question": "V3_YT_SC_TH_2.wav",
-            "bg_image": "images\\bg\\yte1.jpg",
-            "bg_image_overlay": null
+            "cau_hoi": "Anh (chị) thực hành cố định gẫy xương cẳng tay tay hở",            "speech_id_question": "V3_YT_SC_TH_2.wav",
+            "bg_image": "images\\bg\\bg1.jpg",
+            "bg_image_overlay": "gradient"
           },
           {
             "cau_hoi_so": 3,
@@ -42,10 +40,9 @@
             "use_image": "No",
             "position_image": "Right",
             "question_image": "No",
-            "cau_hoi": "Anh (chị) thực hành cố định Gãy xương đùi kín phương pháp 2 nẹp",
-            "speech_id_question": "V3_YT_SC_TH_3.wav",
-            "bg_image": "images\\bg\\yte1.jpg",
-            "bg_image_overlay": null
+            "cau_hoi": "Anh (chị) thực hành cố định Gãy xương đùi kín phương pháp 2 nẹp",            "speech_id_question": "V3_YT_SC_TH_3.wav",
+            "bg_image": "images\\bg\\bg1.jpg",
+            "bg_image_overlay": "gradient"
           },
           {
             "cau_hoi_so": 4,
@@ -57,10 +54,9 @@
             "use_image": "No",
             "position_image": "Right",
             "question_image": "No",
-            "cau_hoi": "Anh (chị) thực hành băng vết thương mặt trước khuỷu tay",
-            "speech_id_question": "V3_YT_SC_TH_4.wav",
-            "bg_image": "images\\bg\\yte1.jpg",
-            "bg_image_overlay": null
+            "cau_hoi": "Anh (chị) thực hành băng vết thương mặt trước khuỷu tay",            "speech_id_question": "V3_YT_SC_TH_4.wav",
+            "bg_image": "images\\bg\\bg1.jpg",
+            "bg_image_overlay": "gradient"
           },
           {
             "cau_hoi_so": 5,
@@ -72,10 +68,9 @@
             "use_image": "No",
             "position_image": "Right",
             "question_image": "No",
-            "cau_hoi": "Anh (chị) thực hành cố định cột sống cổ bằng nẹp nhựa trong trường hợp nạn nhân ngồi.",
-            "speech_id_question": "V3_YT_SC_TH_5.wav",
-            "bg_image": "images\\bg\\yte1.jpg",
-            "bg_image_overlay": null
+            "cau_hoi": "Anh (chị) thực hành cố định cột sống cổ bằng nẹp nhựa trong trường hợp nạn nhân ngồi.",            "speech_id_question": "V3_YT_SC_TH_5.wav",
+            "bg_image": "images\\bg\\bg1.jpg",
+            "bg_image_overlay": "gradient"
           },
           {
             "cau_hoi_so": 6,
@@ -87,10 +82,9 @@
             "use_image": "No",
             "position_image": "Right",
             "question_image": "No",
-            "cau_hoi": "Anh (chị) thực hành cố định gẫy xương hở: Gãy xương cẳng chân",
-            "speech_id_question": "V3_YT_SC_TH_6.wav",
-            "bg_image": "images\\bg\\yte1.jpg",
-            "bg_image_overlay": null
+            "cau_hoi": "Anh (chị) thực hành cố định gẫy xương hở: Gãy xương cẳng chân",            "speech_id_question": "V3_YT_SC_TH_6.wav",
+            "bg_image": "images\\bg\\bg1.jpg",
+            "bg_image_overlay": "gradient"
           }
         ]
     },
@@ -106,10 +100,9 @@
           "use_image": "No",
           "position_image": "Right",
           "question_image": "No",
-          "cau_hoi": "Anh/Chị hãy nêu các yếu tố và điều kiện hình thành sự cháy/đám cháy?",
-          "speech_id_question": "V3_PCCC_TL_1.wav",
-          "bg_image": "images\\bg\\pccc1.jpg",
-          "bg_image_overlay": null
+          "cau_hoi": "Anh/Chị hãy nêu các yếu tố và điều kiện hình thành sự cháy/đám cháy?",          "speech_id_question": "V3_PCCC_TL_1.wav",
+          "bg_image": "images\\bg\\bg1.jpg",
+          "bg_image_overlay": "gradient"
         },
         {
           "cau_hoi_so": 2,
@@ -121,10 +114,9 @@
           "use_image": "No",
           "position_image": "Right",
           "question_image": "No",
-          "cau_hoi": "Anh/Chị cho biết biện pháp cơ bản trong phòng cháy? Liên hệ thực tế tại cơ sở anh/chị đang làm việc?",
-          "speech_id_question": "V3_PCCC_TL_2.wav",
-          "bg_image": "images\\bg\\pccc1.jpg",
-          "bg_image_overlay": null
+          "cau_hoi": "Anh/Chị cho biết biện pháp cơ bản trong phòng cháy? Liên hệ thực tế tại cơ sở anh/chị đang làm việc?",          "speech_id_question": "V3_PCCC_TL_2.wav",
+          "bg_image": "images\\bg\\bg1.jpg",
+          "bg_image_overlay": "gradient"
         },
         {
           "cau_hoi_so": 3,
@@ -136,10 +128,9 @@
           "use_image": "No",
           "position_image": "Right",
           "question_image": "No",
-          "cau_hoi": "Anh/Chị hãy nêu những điều kiện an toàn về PCCC đối với cơ sở do cơ quan Công an quản lý?",
-          "speech_id_question": "V3_PCCC_TL_3.wav",
-          "bg_image": "images\\bg\\pccc1.jpg",
-          "bg_image_overlay": null
+          "cau_hoi": "Anh/Chị hãy nêu những điều kiện an toàn về PCCC đối với cơ sở do cơ quan Công an quản lý?",          "speech_id_question": "V3_PCCC_TL_3.wav",
+          "bg_image": "images\\bg\\bg1.jpg",
+          "bg_image_overlay": "gradient"
         },
         {
           "cau_hoi_so": 4,
@@ -151,10 +142,9 @@
           "use_image": "No",
           "position_image": "Right",
           "question_image": "No",
-          "cau_hoi": "Anh/Chị nêu trách nhiệm PCCC của người đứng đầu cơ sở?",
-          "speech_id_question": "V3_PCCC_TL_4.wav",
-          "bg_image": "images\\bg\\pccc1.jpg",
-          "bg_image_overlay": null
+          "cau_hoi": "Anh/Chị nêu trách nhiệm PCCC của người đứng đầu cơ sở?",          "speech_id_question": "V3_PCCC_TL_4.wav",
+          "bg_image": "images\\bg\\bg1.jpg",
+          "bg_image_overlay": "gradient"
         },
         {
           "cau_hoi_so": 5,
@@ -166,10 +156,9 @@
           "use_image": "No",
           "position_image": "Right",
           "question_image": "No",
-          "cau_hoi": "Anh/Chị cần làm gì khi phát hiện có đám cháy gần nơi làm việc?",
-          "speech_id_question": "V3_PCCC_TL_5.wav",
-          "bg_image": "images\\bg\\pccc1.jpg",
-          "bg_image_overlay": null
+          "cau_hoi": "Anh/Chị cần làm gì khi phát hiện có đám cháy gần nơi làm việc?",          "speech_id_question": "V3_PCCC_TL_5.wav",
+          "bg_image": "images\\bg\\bg1.jpg",
+          "bg_image_overlay": "gradient"
         },
         {
           "cau_hoi_so": 6,
@@ -181,10 +170,9 @@
           "use_image": "No",
           "position_image": "Right",
           "question_image": "No",
-          "cau_hoi": "Để bảo đảm an toàn PCCC tại nhà ở hộ gia đình, anh chị nên làm gì?",
-          "speech_id_question": "V3_PCCC_TL_6.wav",
-          "bg_image": "images\\bg\\pccc1.jpg",
-          "bg_image_overlay": null
+          "cau_hoi": "Để bảo đảm an toàn PCCC tại nhà ở hộ gia đình, anh chị nên làm gì?",          "speech_id_question": "V3_PCCC_TL_6.wav",
+          "bg_image": "images\\bg\\bg1.jpg",
+          "bg_image_overlay": "gradient"
         },
         {
           "cau_hoi_so": 7,
@@ -196,10 +184,9 @@
           "use_image": "No",
           "position_image": "Right",
           "question_image": "No",
-          "cau_hoi": "Anh/ Chị hãy nêu biện pháp xử lý và thoát nạn khi xảy ra cháy tại hộ gia đình?",
-          "speech_id_question": "V3_PCCC_TL_7.wav",
-          "bg_image": "images\\bg\\pccc1.jpg",
-          "bg_image_overlay": null
+          "cau_hoi": "Anh/ Chị hãy nêu biện pháp xử lý và thoát nạn khi xảy ra cháy tại hộ gia đình?",          "speech_id_question": "V3_PCCC_TL_7.wav",
+          "bg_image": "images\\bg\\bg1.jpg",
+          "bg_image_overlay": "gradient"
         },
         {
           "cau_hoi_so": 8,
@@ -211,10 +198,9 @@
           "use_image": "No",
           "position_image": "Right",
           "question_image": "No",
-          "cau_hoi": "Phương án chữa cháy của cơ sở phải bảo đảm những yêu cầu gì?",
-          "speech_id_question": "V3_PCCC_TL_8.wav",
-          "bg_image": "images\\bg\\pccc1.jpg",
-          "bg_image_overlay": null
+          "cau_hoi": "Phương án chữa cháy của cơ sở phải bảo đảm những yêu cầu gì?",          "speech_id_question": "V3_PCCC_TL_8.wav",
+          "bg_image": "images\\bg\\bg1.jpg",
+          "bg_image_overlay": "gradient"
         },
         {
           "cau_hoi_so": 9,
@@ -226,10 +212,9 @@
           "use_image": "No",
           "position_image": "Right",
           "question_image": "No",
-          "cau_hoi": "Anh/Chị hãy nêu cấu tạo, tính năng tác dụng, cách sử dụng và bảo quản bình chữa cháy xách tay sử dụng chất chữa cháy CO2?",
-          "speech_id_question": "V3_PCCC_TL_9.wav",
-          "bg_image": "images\\bg\\pccc1.jpg",
-          "bg_image_overlay": null
+          "cau_hoi": "Anh/Chị hãy nêu cấu tạo, tính năng tác dụng, cách sử dụng và bảo quản bình chữa cháy xách tay sử dụng chất chữa cháy CO2?",          "speech_id_question": "V3_PCCC_TL_9.wav",
+          "bg_image": "images\\bg\\bg1.jpg",
+          "bg_image_overlay": "gradient"
         },
         {
           "cau_hoi_so": 10,
@@ -241,9 +226,9 @@
           "use_image": "No",
           "position_image": "Right",
           "question_image": "No",
-          "cau_hoi": "Anh/Chị hãy nêu cấu tạo tính năng tác dụng, nguyên lý chữa cháy, cách sử dụng và bảo quản bình chữa cháy xách tay sử dụng chất chữa cháy dạng bột.",
-          "speech_id_question": "V3_PCCC_TL_10.wav",
-          "bg_image": "images\\bg\\pccc1.jpg"
+          "cau_hoi": "Anh/Chị hãy nêu cấu tạo tính năng tác dụng, nguyên lý chữa cháy, cách sử dụng và bảo quản bình chữa cháy xách tay sử dụng chất chữa cháy dạng bột.",          "speech_id_question": "V3_PCCC_TL_10.wav",
+          "bg_image": "images\\bg\\bg1.jpg",
+          "bg_image_overlay": "gradient"
         },
         {
           "cau_hoi_so": 11,
@@ -255,9 +240,9 @@
           "use_image": "No",
           "position_image": "Right",
             "question_image": "No",
-          "cau_hoi": "Anh/Chị trình bày các tư thế và kỹ thuật cầm lăng B chữa cháy?",
-          "speech_id_question": "V3_PCCC_TL_11.wav",
-          "bg_image": "images\\bg\\pccc1.jpg"
+          "cau_hoi": "Anh/Chị trình bày các tư thế và kỹ thuật cầm lăng B chữa cháy?",          "speech_id_question": "V3_PCCC_TL_11.wav",
+          "bg_image": "images\\bg\\bg1.jpg",
+          "bg_image_overlay": "gradient"
       }
       ]
     }

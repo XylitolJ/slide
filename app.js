@@ -245,7 +245,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 
                 if (style === 'gradient') {
                     // Apply gradient overlay with the specified image
-                    slideContainer.style.backgroundImage = `linear-gradient(to bottom right, rgba(245, 158, 11, 0.7), rgba(255, 255, 255, 0.7)), url('${webPath}')`;
+                    slideContainer.style.backgroundImage = `linear-gradient(135deg, rgb(0, 0, 0), rgba(0, 0, 0, 0.69)), url('${webPath}')`;
                 } else if (style === 'stripes') {
                     // Apply diagonal stripes overlay with the specified image
                     slideContainer.style.backgroundImage = `linear-gradient(45deg,
@@ -1008,16 +1008,8 @@ async function displayAnswer() {
         const bgOverlay = slideContainer.dataset.bgOverlay;
         const bgImage = slideContainer.dataset.bgImage;
         
-        if (bgOverlay && bgOverlay !== 'none' && bgImage) {
-            if (bgOverlay === 'gradient') {
-                slideContainer.style.backgroundImage = `
-                    linear-gradient(135deg, 
-                        rgba(0, 0, 0, 0.4) 0%, 
-                        rgba(0, 0, 0, 0.1) 50%, 
-                        rgba(0, 0, 0, 0.3) 100%
-                    ), 
-                    url('${bgImage}')
-                `;
+        if (bgOverlay && bgOverlay !== 'none' && bgImage) {            if (bgOverlay === 'gradient') {
+                slideContainer.style.backgroundImage = `linear-gradient(135deg, rgb(0, 0, 0), rgba(0, 0, 0, 0.69)), url('${bgImage}')`;
                 console.log('Applied gradient overlay to background');
             } else if (bgOverlay === 'stripes') {
                 slideContainer.style.backgroundImage = `

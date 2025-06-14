@@ -240,7 +240,7 @@ body, html {
 
 #questionOptionsArea {
     scrollbar-width: thin;
-    scrollbar-color: rgba(156, 163, 175, 0.5) transparent; /* gray-400 for thumb */
+    scrollbar-color: rgba(156, 163, 175, 0) transparent; /* gray-400 for thumb */
 }
 #questionOptionsArea::-webkit-scrollbar {
     width: 8px;
@@ -679,7 +679,7 @@ body, html {
 /* Round-based themes */
 .header-footer-theme-vong1 .header,
 .header-footer-theme-vong1 .footer {
-    background: linear-gradient(135deg, #dc2626, #ef4444, #f87171) !important; /* Red gradient for Round 1 */
+    background: linear-gradient(180deg, #dc2626, #ef4444, #f87171) !important; /* Red gradient for Round 1 */
 }
 
 .header-footer-theme-vong2 .header,

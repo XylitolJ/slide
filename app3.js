@@ -205,7 +205,7 @@ document.addEventListener('DOMContentLoaded', () => {    // URL Parameter handli
                 
                 if (style === 'gradient') {
                     // Apply gradient overlay with the specified image
-                    slideContainer.style.backgroundImage = `linear-gradient(to bottom right, rgba(245, 158, 11, 0.7), rgba(255, 255, 255, 0.7)), url('${webPath}')`;
+                    slideContainer.style.backgroundImage = `linear-gradient(0deg, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.3)), url('${webPath}')`;
                 } else if (style === 'stripes') {
                     // Apply diagonal stripes overlay with the specified image
                     slideContainer.style.backgroundImage = `linear-gradient(45deg,
