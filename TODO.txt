@@ -6,4 +6,3 @@
 #########
 
 ☐ Cho đồng hồ nổi lên khi bắt đầu tính giờ, Có âm thanh báo khi tính giờ hay hết giờ rõ ràng hơn
-☐ format lại text hiển thị ở đáp án trong câu số 9 vòng 1 để nó có các gạch xuống dòng.

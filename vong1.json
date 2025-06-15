@@ -235,12 +235,12 @@
           "position_image": "Right",
           "question_image": "No",
           "cau_hoi": "Anh (chị) đánh dấu nội dung không chính xác trong kỹ thuật thực hành cố định gẫy xương cẳng tay tay hở?",
-          "phuong_an": {
-            "a": "Xử lý vết thương: - Rửa và sát khuẩn vết thương. Thấm khô. - Đặt gạc vô khuẩn che kín vết thương. - Băng vết thương. + Có vòng cố định ban đầu và kết thúc. + Rõ kiểu băng và dấu nhân, vòng băng sau đè 2/3 chiều rộng vòng băng trước",
+            "phuong_an": {
+            "a": "Xử lý vết thương:<br/>• Rửa và sát khuẩn vết thương. Thấm khô.<br/>• Đặt gạc vô khuẩn che kín vết thương.<br/>• Băng vết thương:<br/>&nbsp;&nbsp;○ Có vòng cố định ban đầu và kết thúc.<br/>&nbsp;&nbsp;○ Rõ kiểu băng và dấu nhân, vòng băng sau đè 2/3 chiều rộng vòng băng trước",
             "b": "Đặt nẹp: Đặt hai nẹp ở mặt trước và sau cẳng tay, từ khuỷu tới khớp 3 ngón",
             "c": "Đặt đệm lót.",
-            "d": "Buộc dây cố định nẹp: - Buộc trên và dưới ổ gãy. - Cố định cổ tay - bàn tay kiểu băng vòng xoắn. - Cố định khớp khuỷu kiểu băng số 8. - Treo tay tư thế cơ năng."
-          },
+            "d": "Buộc dây cố định nẹp:<br/>• Buộc trên và dưới ổ gãy.<br/>• Cố định cổ tay - bàn tay kiểu băng vòng xoắn.<br/>• Cố định khớp khuỷu kiểu băng số 8.<br/>• Treo tay tư thế cơ năng."
+            },
           "dap_an_dung": "d",
           "speech_id_question_num": "YT_SC_TN_2_num.wav",
           "speech_id_question": "YT_SC_TN_2.wav",

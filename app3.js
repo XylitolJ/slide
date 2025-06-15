@@ -193,37 +193,7 @@ document.addEventListener('DOMContentLoaded', () => {    // URL Parameter handli
         currentQuestionData = questionData;
         sequenceInProgress = false;
 
-        // Function to apply background image with gradient or stripes overlay
-        const applyBgImage = (bgImage, style) => {
-            if (slideContainer) {
-                // Clear any existing background styles
-                slideContainer.classList.remove(...backgroundStyles);
-                slideContainer.style.backgroundImage = '';
-                slideContainer.classList.remove('bg-gradient-overlay', 'bg-stripes-overlay');
-                
-                // Convert Windows path to web path
-                const webPath = bgImage.replace(/\\/g, '/');
-                
-                if (style === 'gradient') {
-                    // Apply gradient overlay with the specified image
-                    slideContainer.style.backgroundImage = `linear-gradient(0deg, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.3)), url('${webPath}')`;
-                } else if (style === 'stripes') {
-                    // Apply diagonal stripes overlay with the specified image
-                    slideContainer.style.backgroundImage = `linear-gradient(45deg,
-                        rgba(245, 158, 11, 0.7) 0%,
-                        rgba(245, 158, 11, 0.7) 33.33%,
-                        rgba(255, 255, 255, 0.7) 33.33%,
-                        rgba(255, 255, 255, 0.7) 66.66%,
-                        rgba(245, 158, 11, 0.7) 66.66%,
-                        rgba(245, 158, 11, 0.7) 100%),
-                        url('${webPath}')`;
-                }
-                
-                slideContainer.style.backgroundSize = 'cover';
-                slideContainer.style.backgroundPosition = 'center';
-                slideContainer.style.backgroundRepeat = 'no-repeat';
-            }
-        };        // Apply background based on bg_image and bg_image_overlay properties
+        // Apply background based on bg_image and bg_image_overlay properties
         if (slideContainer) {
             if (questionData.bg_image) {
                 // Initially apply only the background image without overlay for visual appeal
