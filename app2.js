@@ -125,6 +125,42 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
             }
         });
+    }    // Special function for playing question number audio that bypasses navigation check
+    async function playQuestionNumberAudio(filePath, onEndCallback) {
+        if (!USE_SPEECH || !audioContext || !filePath) {
+            if (onEndCallback) onEndCallback();
+            return Promise.resolve();
+        }
+
+        // Create a new audio object for question number playback
+        const audio = new Audio(filePath);
+
+        return new Promise((resolve, reject) => {
+            audio.oncanplaythrough = () => {
+                audio.play().catch(e => {
+                    console.error(`Error playing question number audio ${filePath}:`, e);
+                    if (onEndCallback) onEndCallback();
+                    resolve(); // Resolve even on error to not block sequence
+                });
+            };
+            audio.onended = () => {
+                if (onEndCallback) onEndCallback();
+                resolve();
+            };
+            audio.onerror = (e) => {
+                console.error(`Error loading question number audio ${filePath}:`, e);
+                if (onEndCallback) onEndCallback();
+                resolve(); // Resolve to not block sequence
+            };
+            // Handle cases where oncanplaythrough might not fire (e.g. cached files)
+            if (audio.readyState >= 3) { // HAVE_FUTURE_DATA or HAVE_ENOUGH_DATA
+                 audio.play().catch(e => {
+                    console.error(`Error playing question number audio ${filePath} (readyState >=3):`, e);
+                    if (onEndCallback) onEndCallback();
+                    resolve();
+                });
+            }
+        });
     }    // Global utility to stop all ongoing timers and audio without navigating away
     function stopAllEvents() {
         console.log('%c[STOP ALL EVENTS] Starting stopAllEvents() in app2.js', 'color: red; font-weight: bold;');
@@ -536,10 +572,14 @@ document.addEventListener('DOMContentLoaded', () => {
         if (questionNumberEl) questionNumberEl.textContent = currentQuestionIndex + 1;
         if (questionCategoryEl) questionCategoryEl.textContent = questionData.category || 'Không có danh mục';
         
-        // Play question number audio if available
-        if (questionData.speech_id_question_num) {
+        // Trigger header and footer animations
+        triggerHeaderFooterAnimation();
+        
+        // Play question number audio if available (always play, regardless of navigation state)
+        if (questionData.speech_id_question_num && USE_SPEECH && audioContext) {
             const audioPath = `speech/${questionData.speech_id_question_num}`;
-            playAudio(audioPath).catch(err => {
+            // Create a dedicated function for question number audio that bypasses navigation check
+            playQuestionNumberAudio(audioPath).catch(err => {
                 console.warn('Could not play question number audio:', err);
             });
         }
@@ -1033,7 +1073,35 @@ document.addEventListener('DOMContentLoaded', () => {
         
         startSequenceBtn.classList.remove('speaking-indicator');
         sequenceInProgress = false;
-    }    function highlightCorrectAnswer() {
+    }    // Function to trigger header and footer animations
+    function triggerHeaderFooterAnimation() {
+        const header = document.querySelector('.header');
+        const footer = document.querySelector('.footer');
+        
+        if (header) {
+            // Remove existing animation class if present
+            header.style.animation = 'none';
+            // Force reflow to ensure animation is reset
+            void header.offsetHeight;
+            // Add animation with a slight delay to ensure proper triggering
+            setTimeout(() => {
+                header.style.animation = 'headerSlideDown 0.8s ease-out';
+            }, 10);
+        }
+        
+        if (footer) {
+            // Remove existing animation class if present
+            footer.style.animation = 'none';
+            // Force reflow to ensure animation is reset
+            void footer.offsetHeight;
+            // Add animation with a slight delay to ensure proper triggering
+            setTimeout(() => {
+                footer.style.animation = 'footerSlideUp 0.8s ease-out';
+            }, 10);
+        }
+    }
+
+    function highlightCorrectAnswer() {
         if (!currentQuestionData || !currentQuestionData.dap_an_dung) return;
 
         const correctAnswers = Array.isArray(currentQuestionData.dap_an_dung) 
