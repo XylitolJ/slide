@@ -677,6 +677,13 @@
         function windowResized() {
             resizeCanvas(windowWidth, windowHeight);
         }
+        
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight') {
+                window.location.href = 'page3.html';
+            }
+        });
     </script>
 </body>
 </html>

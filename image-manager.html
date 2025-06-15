@@ -1383,6 +1383,10 @@
 
         // Keyboard shortcuts
         document.addEventListener('keydown', function(e) {
+            // Add Q key navigation to go back to page3.html
+            if (e.key.toLowerCase() === 'q') {
+                window.location.href = 'page3.html';
+            }
             if (e.key === 'Escape') {
                 if (document.getElementById('editModal').style.display === 'flex') {
                     closeEditModal();
