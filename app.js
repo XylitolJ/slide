@@ -55,7 +55,10 @@ document.addEventListener('DOMContentLoaded', () => {
     let timerInterval;
     let timeLeft = 0; // Will be set per question
     const DEFAULT_TIME_PER_QUESTION = 30; // Default seconds, can be overridden by JSON
-    let audioContext;    let currentAudio = null;    let sequenceInProgress = false;
+    let audioContext;
+    let currentAudio = null;
+    let currentQuestionNumberAudio = null; // Track question number audio separately
+    let sequenceInProgress = false;
     let answerShown = false;
     let navigationInProgress = false; // Add flag to prevent audio restart during navigation
 
@@ -122,6 +125,92 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
             }
         });
+    }
+
+    // Special function for playing question number audio that bypasses navigation check
+    async function playQuestionNumberAudio(filePath, onEndCallback) {
+        if (!USE_SPEECH || !filePath) {
+            if (onEndCallback) onEndCallback();
+            return Promise.resolve();
+        }
+
+        // Initialize audio context if not already done
+        if (!audioContext) {
+            initAudio();
+        }
+
+        // Stop any currently playing question number audio first
+        if (currentQuestionNumberAudio) {
+            try {
+                currentQuestionNumberAudio.pause();
+                currentQuestionNumberAudio.currentTime = 0;
+                currentQuestionNumberAudio.src = '';
+                currentQuestionNumberAudio.load();
+            } catch (e) {
+                console.error('Error stopping previous question number audio:', e);
+            }
+        }
+
+        // Create a new audio object for question number playback
+        const audio = new Audio(filePath);
+        currentQuestionNumberAudio = audio; // Track this audio for stopping later
+
+        return new Promise((resolve, reject) => {
+            audio.oncanplaythrough = () => {
+                audio.play().catch(e => {
+                    console.error(`Error playing question number audio ${filePath}:`, e);
+                    if (onEndCallback) onEndCallback();
+                    resolve(); // Resolve even on error to not block sequence
+                });
+            };
+            audio.onended = () => {
+                if (onEndCallback) onEndCallback();
+                if (currentQuestionNumberAudio === audio) currentQuestionNumberAudio = null; // Clear if it's the one that ended
+                resolve();
+            };
+            audio.onerror = (e) => {
+                console.error(`Error loading question number audio ${filePath}:`, e);
+                if (onEndCallback) onEndCallback();
+                if (currentQuestionNumberAudio === audio) currentQuestionNumberAudio = null;
+                resolve(); // Resolve to not block sequence
+            };
+            // Handle cases where oncanplaythrough might not fire (e.g. cached files)
+            if (audio.readyState >= 3) { // HAVE_FUTURE_DATA or HAVE_ENOUGH_DATA
+                 audio.play().catch(e => {
+                    console.error(`Error playing question number audio ${filePath} (readyState >=3):`, e);
+                    if (onEndCallback) onEndCallback();
+                    resolve();
+                });
+            }
+        });
+    }
+
+    // Function to trigger header and footer animations
+    function triggerHeaderFooterAnimation() {
+        const header = document.querySelector('.header');
+        const footer = document.querySelector('.footer');
+        
+        if (header) {
+            // Remove existing animation class if present
+            header.style.animation = 'none';
+            // Force reflow to ensure animation is reset
+            void header.offsetHeight;
+            // Add animation with a slight delay to ensure proper triggering
+            setTimeout(() => {
+                header.style.animation = 'headerSlideDown 0.8s ease-out';
+            }, 10);
+        }
+        
+        if (footer) {
+            // Remove existing animation class if present
+            footer.style.animation = 'none';
+            // Force reflow to ensure animation is reset
+            void footer.offsetHeight;
+            // Add animation with a slight delay to ensure proper triggering
+            setTimeout(() => {
+                footer.style.animation = 'footerSlideUp 0.8s ease-out';
+            }, 10);
+        }
     }
 
     // --- UI Updates & Animations ---
@@ -315,12 +404,31 @@ document.addEventListener('DOMContentLoaded', () => {
         startSequenceBtn.classList.remove('opacity-50', 'cursor-not-allowed', 'speaking-indicator');
         
         timesUpPopupEl.style.display = 'none';
-        timesUpPopupEl.style.opacity = '0';
-
-
-        // Update header
+        timesUpPopupEl.style.opacity = '0';        // Update header
         if (questionNumberEl) questionNumberEl.textContent = currentQuestionIndex + 1;
         if (questionCategoryEl) questionCategoryEl.textContent = questionData.category || 'Không có danh mục';
+        
+        // Trigger header and footer animations
+        triggerHeaderFooterAnimation();
+        
+        // Initialize audio context if not already initialized (needed for auto-play)
+        if (!audioContext) {
+            initAudio();
+        }
+        
+        // Play question number audio if available (always play, regardless of any state)
+        if (questionData.speech_id_question_num && USE_SPEECH) {
+            const audioPath = `speech/${questionData.speech_id_question_num}`;
+            console.log(`Attempting to play question number audio: ${audioPath}`);
+            // Always play question number audio immediately when question is rendered
+            // Use a small delay to ensure the DOM is ready and previous audio is stopped
+            setTimeout(() => {
+                playQuestionNumberAudio(audioPath).catch(err => {
+                    console.warn('Could not play question number audio:', err);
+                });
+            }, 50);
+        }
+        
         applyTheme(questionData.category);
  
         // Update footer progress bar
@@ -899,6 +1007,26 @@ async function displayAnswer() {
     function stopAllEvents() {
         console.log('%c[STOP ALL EVENTS] Starting stopAllEvents()', 'color: red; font-weight: bold;');
         
+        // Stop question number audio first
+        if (currentQuestionNumberAudio) {
+            console.log('%c[STOP ALL EVENTS] Stopping question number audio', 'color: red;');
+            try {
+                currentQuestionNumberAudio.pause();
+                currentQuestionNumberAudio.currentTime = 0; // Reset to beginning
+                // Hủy bỏ callbacks
+                currentQuestionNumberAudio.oncanplaythrough = null;
+                currentQuestionNumberAudio.onended = null;
+                currentQuestionNumberAudio.onerror = null;
+                // Reset src và abort request
+                currentQuestionNumberAudio.src = '';
+                currentQuestionNumberAudio.load();
+                currentQuestionNumberAudio = null;
+                console.log('%c[STOP ALL EVENTS] Question number audio stopped successfully', 'color: green;');
+            } catch (e) {
+                console.error('[STOP ALL EVENTS] Error stopping question number audio:', e);
+            }
+        }
+        
         // Stop Web Audio API audio
         if (currentAudio && currentAudio.source) {
             console.log('%c[STOP ALL EVENTS] Stopping Web Audio API audio', 'color: red;');
@@ -916,6 +1044,7 @@ async function displayAnswer() {
     if (currentAudio) {
         try {
             currentAudio.pause();
+            currentAudio.currentTime = 0; // Reset to beginning
             // Hủy bỏ callbacks
             currentAudio.oncanplaythrough = null;
             currentAudio.onended        = null;
