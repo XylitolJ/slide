@@ -9,8 +9,8 @@
           "subcategory": "Chính sách pháp luật về ATVSLĐ",
           "type_question": "Trắc nghiệm",
           "image_id": "images/illustrative_cspl_tn_1.png",
-          "use_image": "Yes",
-          "position_image": "Right",
+          "use_image": "No",
+          "position_image": "Left",
           "question_image": "No",
           "cau_hoi": "Anh/Chị hãy cho biết An toàn vệ sinh viên có bao nhiêu quyền lợi và nghĩa vụ?",
           "phuong_an": {
@@ -27,7 +27,7 @@
           "speech_id_options_C": "CSPL_TN_1_C.wav",
           "speech_id_options_D": "CSPL_TN_1_D.wav",
           "speech_id_answer": "CSPL_TN_1_ans.wav",
-          "bg_image": "images\\bg\\bg1.jpg",
+          "bg_image": "images\\bg\\bg7.svg",
           "bg_image_overlay": "gradient"
         },
         {
@@ -54,7 +54,7 @@
           "speech_id_options_C": "CSPL_TN_2_C.wav",
           "speech_id_options_D": null,
           "speech_id_answer": "CSPL_TN_2_ans.wav",
-          "bg_image": "images\\bg\\bg1.jpg",
+          "bg_image": "images\\bg\\bg2.svg",
           "bg_image_overlay": "gradient"
         },
         {
@@ -82,7 +82,7 @@
           "speech_id_options_C": "CSPL_TN_3_C.wav",
           "speech_id_options_D": "CSPL_TN_3_D.wav",
           "speech_id_answer": "CSPL_TN_3_ans.wav",
-          "bg_image": "images\\bg\\bg1.jpg",
+          "bg_image": "images\\bg\\bg3.jpg",
           "bg_image_overlay": "gradient"
         },
         {
@@ -112,7 +112,7 @@
           "speech_id_options_D": "CSPL_TN_4_D.wav",
           "speech_id_options_E": "CSPL_TN_4_E.wav",
           "speech_id_answer": "CSPL_TN_4_ans.wav",
-          "bg_image": "images\\bg\\bg1.jpg",
+          "bg_image": "images\\bg\\bg8.svg",
           "bg_image_overlay": "gradient"
         },
         {
@@ -140,7 +140,7 @@
           "speech_id_options_C": "CSPL_TN_5_C.wav",
           "speech_id_options_D": "CSPL_TN_5_D.wav",
           "speech_id_answer": "CSPL_TN_5_ans.wav",
-          "bg_image": "images\\bg\\bg1.jpg",
+          "bg_image": "images\\bg\\bg3.svg",
           "bg_image_overlay": "gradient"
         },
         {
@@ -167,7 +167,7 @@
           "speech_id_options_C": "PCCC_TN_3_C.wav",
           "speech_id_options_D": null,
           "speech_id_answer": "PCCC_TN_3_ans.wav",
-          "bg_image": "images\\bg\\bg1.jpg",
+          "bg_image": "images\\bg\\bg2.jpg",
           "bg_image_overlay": "gradient"
         },
         {
@@ -193,7 +193,7 @@
           "speech_id_options_C": null,
           "speech_id_options_D": null,
           "speech_id_answer": "PCCC_TN_5_ans.wav",
-          "bg_image": "images\\bg\\bg1.jpg",
+          "bg_image": "images\\bg\\bg1.svg",
           "bg_image_overlay": "gradient"
         },
         {
@@ -221,7 +221,7 @@
           "speech_id_options_C": "PCCC_TN_7_C.wav",
           "speech_id_options_D": "PCCC_TN_7_D.wav",
           "speech_id_answer": "PCCC_TN_7_ans.wav",
-          "bg_image": "images\\bg\\bg1.jpg",
+          "bg_image": "images\\bg\\bg2.1.jpg",
           "bg_image_overlay": "gradient"
         },
         {
@@ -249,7 +249,7 @@
           "speech_id_options_C": "YT_SC_TN_2_C.wav",
           "speech_id_options_D": "YT_SC_TN_2_D.wav",
           "speech_id_answer": "YT_SC_TN_2_ans.wav",
-          "bg_image": "images\\bg\\bg1.jpg",
+          "bg_image": "images\\bg\\bg8.jpg",
           "bg_image_overlay": "gradient"
         },
         {
@@ -276,7 +276,7 @@
           "speech_id_options_C": "YT_SC_TN_3_C.wav",
           "speech_id_options_D": null,
           "speech_id_answer": "YT_SC_TN_3_ans.wav",
-          "bg_image": "images\\bg\\bg1.jpg",
+          "bg_image": "images\\bg\\bg9.svg",
           "bg_image_overlay": "gradient"
         }
       ]

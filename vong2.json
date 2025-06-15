@@ -20,7 +20,12 @@
             "e": "Phổ biến tuyên truyền quy định của Tổng công ty về việc không được hút thuốc lá, không sử dụng điện thoại di động trong khu vực nguy hiểm nổ mìn.",
             "f": "Tại cuộc họp định kỳ của ATVSV, có kiến nghị, đề xuất biện pháp xử lý người vi phạm quy định, nội quy an toàn khi làm việc tới lãnh đạo đơn vị để có hướng ngăn chặn những vi phạm tương tự."
           },
-          "dap_an_dung": ["b", "d", "e", "f"],
+          "dap_an_dung": [
+            "b",
+            "d",
+            "e",
+            "f"
+          ],
           "speech_id_question_num": "V2_KTM_LT_11_num.wav",
           "speech_id_question": "V2_KTM_LT_11.wav",
           "speech_id_options_A": "V2_KTM_LT_11_A.wav",
@@ -52,7 +57,12 @@
             "f": "Tổ trưởng tổ thi công là người cuối cùng tiến hành kiểm tra toàn bộ quá trình đấu ghép mạng nổ, và cho lấp các hộp nối chùm (hoặc cầu đấu chữ I) bằng cát, phoi khoan với mục đích là để cố định hộp nối chùm (hoặc cầu đấu chữ I) và phân biệt với lỗ mìn chưa được kiểm tra.",
             "g": "Người chỉ huy nổ mìn là người cuối cùng tiến hành kiểm tra toàn bộ quá trình đấu ghép mạng nổ, và cho lấp các hộp nối chùm (hoặc cầu đấu chữ I) bằng cát, phoi khoan với mục đích là để cố định hộp nối chùm (hoặc cầu đấu chữ I) và phân biệt với lỗ mìn chưa được kiểm tra."
           },
-          "dap_an_dung": ["a", "c", "e", "g"],
+          "dap_an_dung": [
+            "a",
+            "c",
+            "e",
+            "g"
+          ],
           "speech_id_question_num": "V2_KTM_LT_14_num.wav",
           "speech_id_question": "V2_KTM_LT_14.wav",
           "speech_id_options_A": "V2_KTM_LT_14_A.wav",
@@ -85,7 +95,12 @@
             "f": "Thuốc nổ vứt bừa bãi, an toàn vệ sinh viên không kịp thời nhắc nhở việc sắp xếp, dọn dẹp bãi mìn.",
             "g": "Vi phạm quy định an toàn trong thi công nạp mìn, sử dụng hòn đá để buộc cố định KXL của lỗ mìn."
           },
-          "dap_an_dung": ["b", "d", "e", "g"],
+          "dap_an_dung": [
+            "b",
+            "d",
+            "e",
+            "g"
+          ],
           "speech_id_question_num": "V2_KTM_HA_4_num.wav",
           "speech_id_question": "V2_KTM_HA_4.wav",
           "speech_id_options_A": "V2_KTM_HA_4_A.wav",
@@ -118,7 +133,12 @@
             "f": "Đặt biển cảnh báo, cắm cờ chưa đúng nơi quy định, vỏ bao thuốc nổ vứt bừa bãi khắp mặt bãi mìn.",
             "g": "Vi phạm quy trình thi công nạp mìn (đã thi công nạp xong lỗ mìn trong khi máy xúc vẫn ở trong vùng nguy hiểm, sử dụng hòn đá để cố định KXL của lỗ mìn), không vệ sinh sạch sẽ, để vỏ bao thuốc nổ vứt bừa bãi trên mặt bãi mìn"
           },
-          "dap_an_dung": ["b", "d", "e", "g"],
+          "dap_an_dung": [
+            "b",
+            "d",
+            "e",
+            "g"
+          ],
           "speech_id_question_num": "V2_KTM_HA_10_num.wav",
           "speech_id_question": "V2_KTM_HA_10.wav",
           "speech_id_options_A": "V2_KTM_HA_10_A.wav",
@@ -157,7 +177,13 @@
             "h": "Đơn vị được giao quản lý CCHT phải mở sổ theo dõi giao nhận CCHT. Khi thực hiện việc giao nhận phải ghi sổ và ký giao, nhận đầy đủ. Định kỳ (tối thiểu 6 tháng/lần), đơn vị được giao quản lý, sử dụng CCHT phải tổ chức kiểm kê số lượng, kiểm tra tình trạng kỹ thuật và đánh giá chất lượng, ghi vào Sổ theo dõi quản lý CCHT.",
             "i": "Người được giao CCHT phải có trách nhiệm kiểm tra các tính năng, tình trạng kỹ thuật của CCHT; nếu phát hiện có hư hỏng phải lập biên bản để báo cáo cấp trên xử lý. Không được tự ý sửa chữa, làm thay đổi cấu tạo, hình dạng ban đầu của CCHT. Khi gặp tình huống phải sử dụng CCHT, người được giao CCHT phải tuân thủ đúng quy định tại Điều 58 Luật Quản lý, sử dụng vũ khí, vật liệu nổ và công cụ hỗ trợ ngày 29/6/2024."
           },
-          "dap_an_dung": ["a", "c", "f", "h", "i"],
+          "dap_an_dung": [
+            "a",
+            "c",
+            "f",
+            "h",
+            "i"
+          ],
           "speech_id_question_num": "V2_BV_LT_2_num.wav",
           "speech_id_question": "V2_BV_LT_2.wav",
           "speech_id_options_A": "V2_BV_LT_2_A.wav",
@@ -170,7 +196,7 @@
           "speech_id_options_H": "V2_BV_LT_2_H.wav",
           "speech_id_options_I": "V2_BV_LT_2_I.wav",
           "speech_id_answer": "V2_BV_LT_2_ans.wav",
-          "bg_image": "images\\bg\\bg2.jpg",
+          "bg_image": "images/bg1.jpg",
           "bg_image_overlay": "gradient"
         },
         {
@@ -192,7 +218,15 @@
             "f": "Liên hệ với khách hàng để phối hợp giao nhận hàng. Khi giao hàng xong, lập biên bản giao nhận hàng, yêu cầu khách hàng ký xác nhận vào hóa đơn và ghi rõ chủng loại, số lượng VLNCN đã nhận và ký xác nhận, ghi rõ họ tên (đóng dấu nếu có thể) vào Giấy phép vận chuyển.",
             "g": "Khi về tới đơn vị, người áp tải có nhiệm vụ giao trả hóa đơn; Biên bản giao nhận, Giấy phép vận chuyển, CCHT kèm Giấy phép sử dụng cho người có trách nhiệm."
           },
-          "dap_an_dung": ["a", "b", "c", "d", "e", "f", "g"],
+          "dap_an_dung": [
+            "a",
+            "b",
+            "c",
+            "d",
+            "e",
+            "f",
+            "g"
+          ],
           "speech_id_question_num": "V2_BV_LT_7_num.wav",
           "speech_id_question": "V2_BV_LT_7.wav",
           "speech_id_options_A": "V2_BV_LT_7_A.wav",
@@ -228,7 +262,13 @@
             "g": "Kiến nghị với Công đoàn bộ phận để kiểm điểm hành vi vi phạm của nhân viên bảo vệ và người công nhân trên.",
             "h": "Kiến nghị với đơn vị để kiểm điểm hành vi vi phạm của nhân viên bảo vệ và người công nhân trên."
           },
-          "dap_an_dung": ["a", "c", "d", "e", "h"],
+          "dap_an_dung": [
+            "a",
+            "c",
+            "d",
+            "e",
+            "h"
+          ],
           "speech_id_question_num": "V2_BV_HA_4_num.wav",
           "speech_id_question": "V2_BV_HA_4.wav",
           "speech_id_note1": "V2_BV_HA_4_Note1.wav",
@@ -265,7 +305,12 @@
             "f": "Phòng thường trực thiếu ghế ngồi cho nhân viên Bảo vệ.",
             "g": "Phòng thường trực không gọn gàng."
           },
-          "dap_an_dung": ["a", "c", "e", "g"],
+          "dap_an_dung": [
+            "a",
+            "c",
+            "e",
+            "g"
+          ],
           "speech_id_question_num": "V2_BV_HA_9_num.wav",
           "speech_id_question": "V2_BV_HA_9.wav",
           "speech_id_options_A": "V2_BV_HA_9_A.wav",
@@ -307,7 +352,13 @@
             "k": "Hàng rào của khu vực nhà kho bị thủng.",
             "l": "Không thống kê, cập nhật số lượng, chủng loại VLNCN trong nhà kho vào bảng tổng hợp."
           },
-          "dap_an_dung": ["b", "c", "h", "j", "k"],
+          "dap_an_dung": [
+            "b",
+            "c",
+            "h",
+            "j",
+            "k"
+          ],
           "speech_id_question_num": "V2_BXV_LT_3_num.wav",
           "speech_id_question": "V2_BXV_LT_3.wav",
           "speech_id_options_A": "V2_BXV_LT_3_A.wav",
@@ -346,7 +397,13 @@
             "g": "Số lượng VLNCN vận chuyển trên xe được quy định như sau:\n- Đối với VLNCN nhóm D và G cho phép chở đủ tải trọng của ô tô.\n- Đối với kíp, thuốc nổ có nitrô este lỏng, thuốc nổ đen chỉ cho phép chở không quá 2/3 tải trọng của xe.\n- Các hòm, hộp, bao bì VLNCN phải đặt nằm sát nhau và chồng khít lên nhau đảm bảo độ ổn định chắc trong quá trình vận chuyển và không được cao vượt quá chiều cao của thành xe ô tô.\n- Trường hợp vận chuyển kíp (trừ kíp vi sai phi điện), thuốc nổ có nitrô este lỏng, thuốc nổ đen không được xếp cao quá hai lớp hòm, hộp.\n- Cho phép vận chuyển chung thuốc nổ và kíp nổ trên cùng 01 xe ô tô nhưng phải đảm bảo các quy định theo QCVN 01:2019/BCT",
             "h": "Chỉ được xếp dỡ VLNCN cho từng ô tô một; Ô tô chờ xếp dỡ VLNCN phải dừng, đỗ cách vị trí xếp, dỡ không nhỏ hơn 50 m."
           },
-          "dap_an_dung": ["a", "c", "e", "f", "h"],
+          "dap_an_dung": [
+            "a",
+            "c",
+            "e",
+            "f",
+            "h"
+          ],
           "speech_id_question_num": "V2_BXV_LT_11_num.wav",
           "speech_id_question": "V2_BXV_LT_11.wav",
           "speech_id_options_A": "V2_BXV_LT_11_A.wav",
@@ -384,7 +441,13 @@
             "h": "Phân tích để người lái xe thấy rõ được các nguy cơ dẫn đến mất an toàn khi không chèn bánh xe., đặc biệt ở các vị trí có độ dốc cao.",
             "i": "Yêu cầu người lái xe học lại nội quy an toàn."
           },
-          "dap_an_dung": ["b", "d", "e", "f", "h"],
+          "dap_an_dung": [
+            "b",
+            "d",
+            "e",
+            "f",
+            "h"
+          ],
           "speech_id_question_num": "V2_BXV_HA_15_num.wav",
           "speech_id_question": "V2_BXV_HA_15.wav",
           "speech_id_note1": "V2_BXV_HA_15_Note1.wav",
@@ -424,7 +487,13 @@
             "f": "Thủ kho: \n• Phải mang đủ, mang đúng trang bị bảo vệ cá nhân đã được cấp phát.\n• Phải tuân thủ quy định an toàn không được để VLNCN xuống nền nhà kho.\n• Khi nhập, xuất VLNCN không được ngồi lên hòm thuốc nổ.\n• Xếp VLNCN đúng chiều cao quy định.\n• Phải vệ sinh nhà kho sạch sẽ, di chuyển dụng cụ, vật tư ra ngoài để đảm bảo an toàn, thông thoáng.\n• Yêu cầu công nhân học lại nội quy an toàn.",
             "g": "Công nhân bốc xếp: \n• Phải mang đủ, mang đúng trang bị bảo vệ cá nhân đã được cấp phát.\n• Phải tuân thủ quy định an toàn không được để VLNCN xuống nền nhà kho.\n• Khi nhập, xuất VLNCN không được dẫm lên hòm thuốc nổ.\n• Yêu cầu công nhân học lại nội quy an toàn."
           },
-          "dap_an_dung": ["b", "c", "d", "e", "g"],
+          "dap_an_dung": [
+            "b",
+            "c",
+            "d",
+            "e",
+            "g"
+          ],
           "speech_id_question_num": "V2_BXV_HA_22_num.wav",
           "speech_id_question": "V2_BXV_HA_22.wav",
           "speech_id_note1": "V2_BXV_HA_22_Note1.wav",
