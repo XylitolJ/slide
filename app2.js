@@ -532,12 +532,18 @@ document.addEventListener('DOMContentLoaded', () => {
         startSequenceBtn.classList.remove('opacity-50', 'cursor-not-allowed', 'speaking-indicator');
         
         timesUpPopupEl.style.display = 'none';
-        timesUpPopupEl.style.opacity = '0';
-
-
-        // Update header
+        timesUpPopupEl.style.opacity = '0';        // Update header
         if (questionNumberEl) questionNumberEl.textContent = currentQuestionIndex + 1;
         if (questionCategoryEl) questionCategoryEl.textContent = questionData.category || 'Không có danh mục';
+        
+        // Play question number audio if available
+        if (questionData.speech_id_question_num) {
+            const audioPath = `speech/${questionData.speech_id_question_num}`;
+            playAudio(audioPath).catch(err => {
+                console.warn('Could not play question number audio:', err);
+            });
+        }
+        
         applyTheme(questionData.category);
  
         // Update footer progress bar
