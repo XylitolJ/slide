@@ -3,783 +3,684 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hội thi ATVSV giỏi năm 2025</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <title>Hội thi ATVSV giỏi - 2025</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.7.0/p5.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Roboto+Condensed:wght@400;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        * {
+        body {
             margin: 0;
             padding: 0;
-            box-sizing: border-box;
+            font-family: 'Inter', Arial, sans-serif;
+            overflow: hidden;
         }
-
-        body {
-            font-family: 'Inter', sans-serif;
+        #p5-container {
+            width: 100vw;
             height: 100vh;
-            background: url('images/bg/bg.svg') center center/cover no-repeat;
-            background-attachment: fixed;
-            overflow: hidden;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-        }
-
-        .container {
-            text-align: center;
-            padding: 2rem;
-            max-width: 1200px;
-            width: 100%;
-            position: relative;
-            z-index: 2;
-        }        
-        .decorative-line {
-            width: 200px;
-            height: 4px;
-            background: linear-gradient(90deg, transparent, #b45309, #d97706, #b45309, transparent);
-            margin: 0 auto 2rem auto;
-            opacity: 0;
-            transform: scaleX(0);
-            animation: lineGrow 1.5s ease-out 4.5s forwards, colorCycle 2s infinite linear 6s;
-            box-shadow: 0 2px 10px rgba(180, 83, 9, 0.4);
-        }
-
-        @keyframes lineGrow {
-            to {
-                opacity: 1;
-                transform: scaleX(1);
-            }
-        }        @keyframes colorCycle {
-            0% {
-                background: linear-gradient(90deg, transparent, hsl(212, 76%, 56%), hsl(46, 90%, 54%), hsl(25, 80%, 40%), transparent);
-            }
-            10% {
-                background: linear-gradient(90deg, transparent, hsl(212, 76%, 56%), hsl(46, 90%, 54%), hsl(25, 80%, 40%), transparent);
-            }
-            20% {
-                background: linear-gradient(90deg, transparent, hsl(212, 76%, 56%), hsl(46, 90%, 54%), hsl(25, 80%, 40%), transparent);
-            }
-            30% {
-                background: linear-gradient(90deg, transparent, hsl(212, 76%, 56%), hsl(46, 90%, 54%), hwb(27 15% 5%), transparent);
-            }
-            40% {
-                background: linear-gradient(90deg, transparent, hsl(212, 76%, 56%), hsl(46, 90%, 54%), hsl(25, 80%, 40%), transparent);
-            }
-            50% {
-                background: linear-gradient(90deg, transparent, hsl(212, 76%, 56%), hsl(46, 90%, 54%), hsl(25, 80%, 40%), transparent);
-            }
-            60% {
-                background: linear-gradient(90deg, transparent, hsl(212, 76%, 56%), hsl(46, 90%, 54%), hsl(25, 80%, 40%), transparent);
-            }
-            70% {
-                background: linear-gradient(90deg, transparent, hsl(212, 76%, 56%), hsl(46, 90%, 54%), hsl(25, 80%, 40%), transparent);
-            }
-            80% {
-                background: linear-gradient(90deg, transparent, hsl(212, 76%, 56%), hsl(46, 90%, 54%), hsl(25, 80%, 40%), transparent);
-            }
-            90% {
-                background: linear-gradient(90deg, transparent, hsl(212, 76%, 56%), hsl(46, 90%, 54%), hsl(25, 80%, 40%), transparent);
-            }
-            100% {
-                background: linear-gradient(90deg, transparent, hsl(212, 76%, 56%), hsl(46, 90%, 54%), hsl(25, 80%, 40%), transparent);
-            }
-        }        .main-title {
-            font-family: 'Oswald', sans-serif;
-            font-size: clamp(2.2rem, 5.5vw, 4.5rem);
-            color: #1a365d;
-            line-height: 1.1;
-            margin: 2rem 0 1rem 0;
-            opacity: 0;
-            transform: translateY(50px);
-            animation: slideUpFade 1.2s ease-out 2s forwards;
-            text-shadow: 2px 2px 8px rgba(255, 255, 255, 0.8), 0 0 20px rgba(26, 54, 93, 0.3);
-            letter-spacing: 2px;
-            font-weight: 700;
-        }
-
-        .title-year {
-            font-family: 'Oswald', sans-serif;
-            font-size: clamp(1.8rem, 4vw, 3.5rem);
-            color: #b45309;
-            line-height: 1.2;
-            margin-top: 0.5rem;
-            opacity: 0;
-            transform: translateY(50px);
-            animation: slideUpFade 1.2s ease-out 2.2s forwards;
-            text-shadow: 2px 2px 8px rgba(255, 255, 255, 0.8), 0 0 15px rgba(180, 83, 9, 0.4);
-            letter-spacing: 3px;
-            font-weight: 700;
-        }
-
-        @keyframes slideUpFade {
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }        .subtitle {
-            font-size: clamp(1.2rem, 3vw, 1.8rem);
-            color: #19355b;
-            font-weight: 700;
-            margin-bottom: 1.5rem;
-            opacity: 0;
-            animation: fadeIn 1s ease-out 5s forwards;
-            text-shadow: 1px 1px 4px rgba(255, 255, 255, 0.8);
-        }
-
-        .organization {
-            font-size: clamp(1rem, 2.5vw, 1.4rem);
-            color: #374151;
-            font-weight: 600;
-            margin-bottom: 3rem;
-            opacity: 0;
-            animation: fadeIn 1s ease-out 5.5s forwards;
-            text-shadow: 1px 1px 3px rgba(255, 255, 255, 0.6);
-        }
-
-        @keyframes fadeIn {
-            to {
-                opacity: 1;
-            }
-        }
-
-        .info-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 2rem;
-            margin-top: 3rem;
-        }
-
-        .info-card {
-            background: rgba(255, 255, 255, 0.9);
-            backdrop-filter: blur(15px);
-            border: 2px solid rgba(180, 83, 9, 0.3);
-            border-radius: 15px;
-            padding: 2rem;
-            opacity: 0;
-            transform: translateY(30px);
-            animation: cardSlideUp 1s ease-out forwards;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1), 0 4px 16px rgba(180, 83, 9, 0.2);
-        }        .info-card:nth-child(1) {
-            animation-delay: 6s;
-        }
-
-        .info-card:nth-child(2) {
-            animation-delay: 6.5s;
-        }
-
-        @keyframes cardSlideUp {
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .info-icon {
-            font-size: 2.5rem;
-            color: #b45309;
-            margin-bottom: 1rem;
-            opacity: 0;
-            transform: scale(0);
-            animation: iconBounce 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
-            filter: drop-shadow(2px 2px 4px rgba(180, 83, 9, 0.3));
-        }
-
-        .info-card:nth-child(1) .info-icon {
-            animation-delay: 3.5s;
-        }
-
-        .info-card:nth-child(2) .info-icon {
-            animation-delay: 3.8s;
-        }
-
-        @keyframes iconBounce {
-            to {
-                opacity: 1;
-                transform: scale(1);
-            }
-        }
-
-        .info-title {
-            font-size: 1.3rem;
-            font-weight: 700;
-            color: #b45309;
-            margin-bottom: 0.8rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .info-content {
-            font-size: 1rem;
-            color: #374151;
-            line-height: 1.6;
-            font-weight: 500;
-        }
-
-        .floating-elements {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-            z-index: 1;
-        }        .floating-circle {
-            position: absolute;
-            border: 2px solid rgba(180, 83, 9, 0.4);
-            border-radius: 50%;
-            animation: float 6s ease-in-out infinite, bubble 4s linear infinite, floatScale 5s ease-in-out infinite;
-        }
-
-        .bubble-circle {
-            position: absolute;
-            border: 1px solid rgba(180, 83, 9, 0.5);
-            border-radius: 50%;
-            animation: bubbleUp 2s linear infinite;
-        }
-
-        .pulse-dot {
-            position: absolute;
-            width: 10px;
-            height: 10px;
-            background: #b45309;
-            border-radius: 50%;
-            animation: pulse 2s infinite, scaleAnimation 2s ease-in-out infinite, bubbleFloat 3s ease-in-out infinite;
-            box-shadow: 0 0 10px rgba(180, 83, 9, 0.6);
-        }.floating-circle:nth-child(1) {
-            width: 60px;
-            height: 60px;
-            top: 20%;
-            left: 10%;
-            animation-delay: 0s;
-        }
-
-        .floating-circle:nth-child(2) {
-            width: 80px;
-            height: 80px;
-            top: 60%;
-            right: 15%;
-            animation-delay: 2s;
-        }
-
-        .floating-circle:nth-child(3) {
-            width: 40px;
-            height: 40px;
-            top: 30%;
-            right: 25%;
-            animation-delay: 4s;
-        }
-
-        .floating-circle:nth-child(4) {
-            width: 50px;
-            height: 50px;
-            top: 70%;
-            left: 20%;
-            animation-delay: 1s;
-        }
-
-        .floating-circle:nth-child(5) {
-            width: 35px;
-            height: 35px;
-            top: 10%;
-            right: 40%;
-            animation-delay: 3s;
-        }
-
-        .floating-circle:nth-child(6) {
-            width: 65px;
-            height: 65px;
-            bottom: 15%;
-            right: 5%;
-            animation-delay: 5s;
-        }
-
-        .floating-circle:nth-child(7) {
-            width: 45px;
-            height: 45px;
-            top: 5%;
-            left: 30%;
-            animation-delay: 6s;
-        }
-
-        .floating-circle:nth-child(8) {
-            width: 55px;
-            height: 55px;
-            bottom: 25%;
-            left: 40%;
-            animation-delay: 7s;
-        }
-
-        .floating-circle:nth-child(9) {
-            width: 30px;
-            height: 30px;
-            top: 40%;
-            right: 8%;
-            animation-delay: 8s;
-        }
-
-        .floating-circle:nth-child(10) {
-            width: 70px;
-            height: 70px;
-            bottom: 5%;
-            left: 15%;
-            animation-delay: 9s;
-        }        @keyframes float {
-            0%, 100% {
-                transform: translateY(0px) rotate(0deg);
-                opacity: 0.3;
-            }
-            50% {
-                transform: translateY(-20px) rotate(180deg);
-                opacity: 0.8;
-            }
-        }
-
-        @keyframes bubble {
-            0% {
-                transform: translateY(0) scale(1);
-                opacity: 0.6;
-            }
-            50% {
-                transform: translateY(-30px) scale(1.1);
-                opacity: 0.8;
-            }
-            100% {
-                transform: translateY(-60px) scale(0.9);
-                opacity: 0.4;
-            }
-        }
-
-        @keyframes bubbleUp {
-            0% {
-                transform: translateY(100vh) scale(0);
-                opacity: 0;
-            }
-            10% {
-                opacity: 0.6;
-            }
-            90% {
-                opacity: 0.3;
-            }
-            100% {
-                transform: translateY(-100px) scale(1.5);
-                opacity: 0;
-            }
-        }
-
-        @keyframes scaleAnimation {
-            0%, 100% {
-                transform: scale(1);
-            }
-            25% {
-                transform: scale(1.3);
-            }
-            50% {
-                transform: scale(0.7);
-            }
-            75% {
-                transform: scale(1.1);
-            }
-        }
-
-        @keyframes floatScale {
-            0%, 100% {
-                transform: scale(1) translateY(0);
-            }
-            25% {
-                transform: scale(1.2) translateY(-15px);
-            }
-            50% {
-                transform: scale(0.8) translateY(-30px);
-            }
-            75% {
-                transform: scale(1.1) translateY(-15px);
-            }
-        }
-
-        @keyframes bubbleFloat {
-            0% {
-                transform: translateY(0) scale(1);
-                opacity: 0.8;
-            }
-            25% {
-                transform: translateY(-10px) scale(1.3);
-                opacity: 1;
-            }
-            50% {
-                transform: translateY(-20px) scale(0.7);
-                opacity: 0.6;
-            }
-            75% {
-                transform: translateY(-15px) scale(1.1);
-                opacity: 0.9;
-            }
-            100% {
-                transform: translateY(0) scale(1);
-                opacity: 0.8;
-            }
-        }.year-badge {
-            position: absolute;
-            top: 2rem;
-            left: 2rem;
-            background: linear-gradient(135deg, #b45309, #d97706);
-            color: white;
-            padding: 1rem 2rem;
-            border-radius: 50px;
-            font-family: 'Oswald', sans-serif;
-            font-size: 1.5rem;
-            letter-spacing: 2px;
-            box-shadow: 0 10px 30px rgba(180, 83, 9, 0.4);
-            opacity: 0;
-            transform: translateX(100vw);
-            animation: meteorSlideRightToLeft 3s ease-out 1s forwards;
-            overflow: hidden;
-        }
-
-        .year-badge::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            right: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, 
-                rgba(255, 255, 255, 0.8) 20%, 
-                rgba(217, 119, 6, 0.8) 40%, 
-                rgba(255, 255, 255, 0.8) 60%, 
-                rgba(180, 83, 9, 0.6) 80%, 
-                transparent);
-            animation: meteorTrailRightToLeft 3s ease-out 1s forwards;
-        }
-
-        @keyframes meteorSlideRightToLeft {
-            0% {
-                opacity: 0;
-                transform: translateX(100vw) rotate(10deg);
-            }
-            60% {
-                opacity: 1;
-                transform: translateX(-30px) rotate(-3deg);
-            }
-            80% {
-                opacity: 1;
-                transform: translateX(-10px) rotate(-1deg);
-            }
-            100% {
-                opacity: 1;
-                transform: translateX(0) rotate(0deg);
-            }
-        }
-
-        @keyframes meteorTrailRightToLeft {
-            0% {
-                right: -100%;
-                opacity: 0;
-            }
-            20% {
-                opacity: 0.8;
-            }
-            50% {
-                opacity: 1;
-            }
-            80% {
-                right: 100%;
-                opacity: 0.8;
-            }
-            100% {
-                right: 100%;
-                opacity: 0;
-            }
-        }
-
-        .pulse-dot {
-            position: absolute;
-            width: 10px;
-            height: 10px;
-            background: #b45309;
-            border-radius: 50%;
-            animation: pulse 2s infinite;
-        }        .pulse-dot:nth-child(1) {
-            top: 15%;
-            left: 5%;
-            animation-delay: 0.5s;
-        }
-
-        .pulse-dot:nth-child(2) {
-            bottom: 20%;
-            left: 8%;
-            animation-delay: 1.5s;
-        }
-
-        .pulse-dot:nth-child(3) {
-            top: 25%;
-            right: 10%;
-            animation-delay: 2.5s;
-        }
-
-        .pulse-dot:nth-child(4) {
-            top: 45%;
-            left: 15%;
-            animation-delay: 3.5s;
-        }
-
-        .pulse-dot:nth-child(5) {
-            bottom: 30%;
-            right: 20%;
-            animation-delay: 4.5s;
-        }
-
-        .pulse-dot:nth-child(6) {
-            top: 5%;
-            left: 30%;
-            animation-delay: 5.5s;
-        }
-
-        .pulse-dot:nth-child(7) {
-            bottom: 10%;
-            right: 35%;
-            animation-delay: 6.5s;
-        }
-
-        .pulse-dot:nth-child(8) {
-            top: 35%;
-            left: 45%;
-            animation-delay: 7.5s;
-        }
-
-        .pulse-dot:nth-child(9) {
-            bottom: 40%;
-            right: 50%;
-            animation-delay: 8.5s;
-        }
-
-        .pulse-dot:nth-child(10) {
-            top: 55%;
-            left: 25%;
-            animation-delay: 9.5s;
-        }
-
-        .pulse-dot:nth-child(11) {
-            bottom: 60%;
-            right: 15%;
-            animation-delay: 10.5s;
-        }
-
-        .pulse-dot:nth-child(12) {
-            top: 75%;
-            left: 55%;
-            animation-delay: 11.5s;
-        }
-
-        @keyframes pulse {
-            0% {
-                transform: scale(1);
-                opacity: 1;
-            }
-            50% {
-                transform: scale(1.5);
-                opacity: 0.7;
-            }
-            100% {
-                transform: scale(1);
-                opacity: 1;
-            }
-        }
-
-        /* Responsive Design */
-        @media (max-width: 768px) {
-            .container {
-                padding: 1rem;
-            }
-            
-            .info-grid {
-                grid-template-columns: 1fr;
-                gap: 1.5rem;
-            }
-            
-            .info-card {
-                padding: 1.5rem;
-            }
-            
-            .year-badge {
-                top: 1rem;
-                left: 1rem;
-                padding: 0.8rem 1.5rem;
-                font-size: 1.2rem;
-            }
-        }
-
-        /* Loading overlay */
-        .loading-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(255, 255, 255, 0.95);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-            animation: fadeOut 1s ease-out 0.5s forwards;
-        }        .loading-text {
-            color: #b45309;
-            font-family: 'Oswald', sans-serif;
-            font-size: 2rem;
-            letter-spacing: 3px;
-            animation: loadingPulse 1.5s ease-in-out infinite;
-        }
-
-        @keyframes loadingPulse {
-            0%, 100% {
-                opacity: 0.6;
-            }
-            50% {
-                opacity: 1;
-            }
-        }
-
-        @keyframes fadeOut {
-            to {
-                opacity: 0;
-                visibility: hidden;
-            }
         }
     </style>
 </head>
 <body>
-    <!-- Loading Overlay -->
-    <div class="loading-overlay">
-        <div class="loading-text">...</div>
-    </div>    <!-- Floating Background Elements -->
-    <div class="floating-elements">
-        <div class="floating-circle"></div>
-        <div class="floating-circle"></div>
-        <div class="floating-circle"></div>
-        <div class="floating-circle"></div>
-        <div class="floating-circle"></div>
-        <div class="floating-circle"></div>
-        <div class="floating-circle"></div>
-        <div class="floating-circle"></div>
-        <div class="floating-circle"></div>
-        <div class="floating-circle"></div>
-        <div class="pulse-dot"></div>
-        <div class="pulse-dot"></div>
-        <div class="pulse-dot"></div>
-        <div class="pulse-dot"></div>
-        <div class="pulse-dot"></div>
-        <div class="pulse-dot"></div>
-        <div class="pulse-dot"></div>
-        <div class="pulse-dot"></div>
-        <div class="pulse-dot"></div>
-        <div class="pulse-dot"></div>
-        <div class="pulse-dot"></div>
-        <div class="pulse-dot"></div>
-    </div>
-
-    <!-- Year Badge -->
-    <div class="year-badge">2025</div>    <!-- Main Content -->
-    <div class="container">
-        <h1 class="main-title">
-            HỘI THI AN TOÀN VỆ SINH VIÊN GIỎI
-        </h1>
-        <div class="title-year">
-            NĂM 2025
-        </div>
-        
-        <div class="decorative-line"></div>
-        
-        <p class="subtitle">
-        CÔNG TY CÔNG NGHIỆP HÓA CHẤT MỎ THÁI NGUYÊN
-        </p>
-        
-        <div class="info-grid">
-            <div class="info-card">
-                <div class="info-icon">📅</div>
-                <div class="info-title">Thời gian</div>
-                <div class="info-content">25/06/2025</div>
-            </div>
-            
-            <div class="info-card">
-                <div class="info-icon">📍</div>
-                <div class="info-title">Địa điểm</div>
-                <div class="info-content">
-                    Hội trường tầng 5 - Văn phòng Công ty<br>
-                    Số 9A, Đường Phan Đình Phùng<br>
-                    Phường Đồng Quang, Thành phố Thái Nguyên
-                </div>
-            </div>
-        </div>
-    </div>
-
+    <div id="p5-container"></div>
     <script>
-        // Additional JavaScript for enhanced interactions
-        document.addEventListener('DOMContentLoaded', function() {
-            // Add subtle mouse movement effect to floating elements
-            document.addEventListener('mousemove', function(e) {
-                const circles = document.querySelectorAll('.floating-circle');
-                const dots = document.querySelectorAll('.pulse-dot');
-                
-                const mouseX = e.clientX / window.innerWidth;
-                const mouseY = e.clientY / window.innerHeight;
-                
-                circles.forEach((circle, index) => {
-                    const speed = (index + 1) * 0.02;
-                    const x = (mouseX - 0.5) * speed * 100;
-                    const y = (mouseY - 0.5) * speed * 100;
-                    
-                    circle.style.transform = `translate(${x}px, ${y}px)`;
+        let rotationAngle = 0;
+        let animationPhase = 0;
+        let maxPhase = 6;
+        let phaseTimer = 0;
+        let phaseDuration = 80;
+        let images = [];
+        let currentImageIndex = 0;
+        let imageTimer = 0;
+        let imageDuration = 180; // 3 seconds at 60fps
+        let imageLoadCount = 0;
+        let totalImagesToLoad = 5;        // Animation states
+        let logoOpacity = 0;
+        let mainTitleOpacity = 0;
+        let companyOpacity = 0;
+        let dateOpacity = 0;
+        let venueOpacity = 0;
+        let geometryOpacity = 0;
+          // Advanced animation properties
+        let titleScale = 0;
+        let titleRotation = 0;
+        let yearOffset = 0;
+        let companyWave = 0;
+        let cardSlideX = 0;
+        let cardBounce = 0;
+        
+        // Animation timers
+        let titleGlowTimer = 0;
+        let yearPulseTimer = 0;
+        let companyAnimTimer = 0;
+        let cardAnimTimer = 0;
+        
+        // Floating elements
+        let floatingDots = [];
+        let decorativeShapes = [];
+        
+        // Pre-created mask to avoid memory leaks
+        let circleMask;
+          function preload() {
+            // Auto-discover and load all images from the folder
+            let commonImageExtensions = ['jpg', 'jpeg', 'png'];
+            let imageFolderPath = 'images/index_images/';
+            
+            // Generate potential filenames to test
+            let potentialFiles = [];
+            
+            // Try numbered files with different extensions
+            for (let i = 1; i <= 20; i++) {
+                commonImageExtensions.forEach(ext => {
+                    potentialFiles.push(`${imageFolderPath}${i}.${ext}`);
                 });
-                
-                dots.forEach((dot, index) => {
-                    const speed = (index + 1) * 0.01;
-                    const x = (mouseX - 0.5) * speed * 50;
-                    const y = (mouseY - 0.5) * speed * 50;
-                    
-                    dot.style.transform = `translate(${x}px, ${y}px)`;
+            }
+            
+            // Try common filename patterns
+            let commonNames = ['img'];
+            for (let i = 1; i <= 10; i++) {
+                commonNames.forEach(name => {
+                    commonImageExtensions.forEach(ext => {
+                        potentialFiles.push(`${imageFolderPath}${name}${i}.${ext}`);
+                        potentialFiles.push(`${imageFolderPath}${name}_${i}.${ext}`);
+                    });
+                });
+            }
+            
+            // Try files without numbers
+            commonNames.forEach(name => {
+                commonImageExtensions.forEach(ext => {
+                    potentialFiles.push(`${imageFolderPath}${name}.${ext}`);
                 });
             });
-
-            // Add hover effects to info cards
-            const infoCards = document.querySelectorAll('.info-card');
-            infoCards.forEach(card => {
-                card.addEventListener('mouseenter', function() {
-                    this.style.transform = 'translateY(-5px) scale(1.02)';
-                    this.style.boxShadow = '0 15px 40px rgba(255, 105, 0, 0.2)';
-                    this.style.transition = 'all 0.3s ease';
-                });
-                
-                card.addEventListener('mouseleave', function() {
-                    this.style.transform = 'translateY(0) scale(1)';
-                    this.style.boxShadow = 'none';
-                });
+            
+            let loadedCount = 0;
+            let totalAttempts = potentialFiles.length;
+            
+            console.log(`Attempting to load images from ${imageFolderPath}...`);
+            
+            potentialFiles.forEach((imgPath, index) => {
+                loadImage(imgPath, 
+                    (img) => { 
+                        images.push(img);
+                        loadedCount++;
+                        console.log(`✓ Loaded: ${imgPath}`);
+                    },
+                    (error) => { 
+                        // Silently skip failed loads - this is expected for auto-discovery
+                    }
+                );
             });
-
-            // Add click effect to year badge
-            const yearBadge = document.querySelector('.year-badge');
-            yearBadge.addEventListener('click', function() {
-                this.style.animation = 'none';
-                setTimeout(() => {
-                    this.style.animation = 'pulse 0.6s ease-out';
-                }, 10);
-            });
-
-            // Preload animation completion
+            
+            // Check loading progress after a delay
             setTimeout(() => {
-                document.body.classList.add('loaded');
+                console.log(`Auto-discovery complete: Found ${images.length} images in ${imageFolderPath}`);
+            }, 2000);
+        }
+        
+        function setup() {
+            let canvas = createCanvas(1920, 1080);
+            canvas.parent('p5-container');
+            
+            // Initialize floating elements
+            for (let i = 0; i < 20; i++) {
+                floatingDots.push({
+                    x: random(width),
+                    y: random(height),
+                    size: random(3, 8),
+                    speed: random(0.5, 2),
+                    direction: random(TWO_PI)
+                });
+            }
+            
+            for (let i = 0; i < 10; i++) {
+                decorativeShapes.push({
+                    x: random(width),
+                    y: random(height),
+                    size: random(20, 60),
+                    rotation: 0,
+                    rotSpeed: random(-0.02, 0.02)
+                });            }
+            
+            // Wait a bit for images to load
+            setTimeout(() => {
+                console.log(`Loaded ${images.length} images`);
+                if (images.length === 0) {
+                    // Create default placeholder if no images loaded
+                    let defaultImg = createGraphics(400, 300);
+                    defaultImg.background(220);
+                    defaultImg.fill(100);
+                    defaultImg.textAlign(CENTER, CENTER);
+                    defaultImg.textSize(24);
+                    defaultImg.text('No Images Found', 200, 150);
+                    images.push(defaultImg);
+                }
+                
+                // Create circle mask once to avoid memory leaks
+                circleMask = createGraphics(370, 370);
+                circleMask.fill(255);
+                circleMask.noStroke();
+                circleMask.ellipse(185, 185, 370, 370);
             }, 1000);
-        });        // Remove the JavaScript color cycling since we're using CSS animation
-        // setInterval(() => {
-        //     const decorativeLine = document.querySelector('.decorative-line');
-        //     const currentHue = Math.floor(Math.random() * 30) + 25; // Amber range
-        //     decorativeLine.style.background = `linear-gradient(90deg, transparent, hsl(${currentHue}, 80%, 40%), hsl(${currentHue}, 90%, 50%), hsl(${currentHue}, 80%, 40%), transparent)";
-        // }, 1500);
-
-        // Add keyboard navigation
-        document.addEventListener('keydown', function(event) {
-            // Check if right arrow key is pressed
-            if (event.key === 'ArrowRight' || event.keyCode === 39) {
-                // Navigate to page3.html
+        }
+        
+        function draw() {
+            // Create subtle gradient background similar to the image
+            for (let i = 0; i <= height; i++) {
+                let inter = map(i, 0, height, 0, 1);
+                let c = lerpColor(color(248, 248, 252), color(240, 242, 250), inter);
+                stroke(c);
+                line(0, i, width, i);
+            }
+            
+            rotationAngle += 0.01;
+            phaseTimer++;
+            
+            // Update animation phases
+            if (phaseTimer > phaseDuration && animationPhase < maxPhase) {
+                animationPhase++;
+                phaseTimer = 0;
+            }
+            
+            // Update opacity values based on phase
+            updateOpacities();
+            
+            // Draw animated geometric elements
+            drawGeometricElements();
+            
+            // Draw floating decorative elements
+            drawFloatingElements();
+            
+            // Draw main content
+            drawContent();
+            
+            // Update image slideshow timer
+            imageTimer++;
+            if (imageTimer >= imageDuration && images.length > 1) {
+                currentImageIndex = (currentImageIndex + 1) % images.length;
+                imageTimer = 0;
+            }
+        }        function updateOpacities() {
+            let fadeSpeed = 8;
+            
+            // Phase 0: Geometric elements appear
+            if (animationPhase >= 0) {
+                geometryOpacity = min(255, geometryOpacity + fadeSpeed);
+            }
+            
+            // Phase 1: Logo appears
+            if (animationPhase >= 1) {
+                logoOpacity = min(255, logoOpacity + fadeSpeed);
+            }
+              // Phase 2: Main title appears with scale and rotation effects
+            if (animationPhase >= 2) {
+                mainTitleOpacity = min(255, mainTitleOpacity + fadeSpeed * 0.3); // Much slower appearance
+                titleScale = min(1.0, titleScale + 0.015); // Much slower scale
+                titleRotation = max(0, titleRotation - 0.01); // Much slower rotation
+                titleGlowTimer++;
+            } else {
+                titleScale = 0.3;
+                titleRotation = 0.2;
+            }
+            
+            // Phase 3: Company name appears with shooting effect
+            if (animationPhase >= 3) {
+                companyOpacity = min(255, companyOpacity + fadeSpeed);
+                companyAnimTimer++;
+            }
+            
+            // Phase 4: Date appears with slide and bounce
+            if (animationPhase >= 4) {
+                dateOpacity = min(255, dateOpacity + fadeSpeed);
+                cardSlideX = min(0, cardSlideX + 15);
+                cardAnimTimer++;
+                
+                // Bounce effect that gradually stops after 5 seconds
+                if (cardAnimTimer < 300) { // 5 seconds at 60fps
+                    let bounceIntensity = max(0, 1 - cardAnimTimer / 300);
+                    cardBounce = sin(frameCount * 0.1) * 5 * bounceIntensity;
+                } else {
+                    cardBounce = 0;
+                }
+            } else {
+                cardSlideX = -200;
+                cardBounce = 0;
+                cardAnimTimer = 0;
+            }
+            
+            // Phase 5: Venue appears with slide from right
+            if (animationPhase >= 5) {
+                venueOpacity = min(255, venueOpacity + fadeSpeed);
+            }
+            
+            // Year offset animation that gradually stops
+            if (animationPhase >= 2) {
+                yearPulseTimer++;
+                if (yearPulseTimer < 180) { // 3 seconds at 60fps
+                    yearOffset = sin(frameCount * 0.05) * 3;
+                } else {
+                    yearOffset = 0;
+                }
+            }
+        }
+          function drawGeometricElements() {
+            push();
+            tint(255, geometryOpacity);
+            
+            // Main concentric circles with image - enlarged
+            push();
+            translate(280, height/2 + 30); // Dịch trái (350->280) và xuống (height/2-50 -> height/2+30)
+            
+            // Outer rotating ring - increased size
+            push();
+            rotate(rotationAngle);
+            noFill();
+            strokeWeight(45);
+            stroke(255, 100, 50, geometryOpacity * 0.8);
+            arc(0, 0, 580, 580, 0, PI * 1.5); // Tăng kích thước (500->580)
+            pop();
+            
+            // Middle rotating ring - increased size
+            push();
+            rotate(-rotationAngle * 1.5);
+            strokeWeight(35);
+            stroke(255, 180, 50, geometryOpacity * 0.9);
+            arc(0, 0, 460, 460, PI * 0.3, PI * 1.8); // Tăng kích thước (400->460)
+            pop();            // Inner image circle with slideshow - enlarged
+            if (images.length > 0 && circleMask) {
+                push();
+                let currentImg = images[currentImageIndex];
+                
+                // Only use images that are already loaded, avoid creating new graphics
+                if (currentImg && currentImg.width && currentImg.height) {
+                    // Create a temporary copy only when needed
+                    let tempImg = currentImg.get();
+                    tempImg.resize(370, 370);
+                    tempImg.mask(circleMask);
+                    
+                    imageMode(CENTER);
+                    image(tempImg, 0, 0, 370, 370);
+                }
+                
+                pop();
+            }
+            
+            // Inner rotating ring - increased size
+            push();
+            rotate(rotationAngle * 0.8);
+            noFill();
+            strokeWeight(10);
+            stroke(255, 150, 0, geometryOpacity);
+            ellipse(0, 0, 420, 420); // Tăng kích thước (360->420)
+            pop();
+            
+            pop();
+            
+            // Floating red circles
+            fill(255, 50, 50, geometryOpacity * 0.8);
+            noStroke();
+            ellipse(200, 150, 120, 120);
+            ellipse(1700, 200, 80, 80);
+            ellipse(1600, 800, 100, 100);
+            ellipse(150, 900, 200, 200);
+            
+            // Yellow accent elements
+            fill(255, 200, 0, geometryOpacity * 0.7);
+            ellipse(950, 500, 150, 150);
+            ellipse(1800, 600, 60, 60);
+            
+            // Dotted patterns
+            drawDottedPattern(800, 550, geometryOpacity);
+            drawDottedPattern(1650, 650, geometryOpacity);
+            
+            pop();
+        }
+        
+        function drawDottedPattern(x, y, opacity) {
+            fill(50, 50, 50, opacity * 0.6);
+            noStroke();
+            for (let i = 0; i < 5; i++) {
+                for (let j = 0; j < 4; j++) {
+                    ellipse(x + i * 12, y + j * 12, 4, 4);
+                }
+            }
+        }
+        
+        function drawFloatingElements() {
+            // Update and draw floating dots
+            for (let dot of floatingDots) {
+                dot.x += cos(dot.direction) * dot.speed;
+                dot.y += sin(dot.direction) * dot.speed;
+                
+                // Wrap around screen
+                if (dot.x < 0) dot.x = width;
+                if (dot.x > width) dot.x = 0;
+                if (dot.y < 0) dot.y = height;
+                if (dot.y > height) dot.y = 0;
+                
+                fill(100, 100, 100, geometryOpacity * 0.3);
+                noStroke();
+                ellipse(dot.x, dot.y, dot.size, dot.size);
+            }
+            
+            // Update and draw decorative shapes
+            for (let shape of decorativeShapes) {
+                shape.rotation += shape.rotSpeed;
+                
+                push();
+                translate(shape.x, shape.y);
+                rotate(shape.rotation);
+                stroke(255, 150, 50, geometryOpacity * 0.2);
+                strokeWeight(2);
+                noFill();
+                rect(-shape.size/2, -shape.size/2, shape.size, shape.size);
+                pop();
+            }
+        }        function drawContent() {
+            // Main title - prominently displayed with advanced effects
+            push();
+            translate(width/2, 150);
+            scale(titleScale);
+            rotate(titleRotation);
+            
+            // Glow effect for main title that fades after 2 seconds
+            let glowIntensity = 0;
+            if (titleGlowTimer < 120) { // 2 seconds at 60fps
+                glowIntensity = 1;
+            } else if (titleGlowTimer < 240) { // fade out over next 2 seconds
+                glowIntensity = max(0, 1 - (titleGlowTimer - 120) / 120);
+            }
+            
+            if (glowIntensity > 0) {
+                drawingContext.shadowBlur = 20 * glowIntensity;
+                drawingContext.shadowColor = `rgba(41, 84, 144, ${mainTitleOpacity/255 * 0.5 * glowIntensity})`;
+            }
+            
+            fill(41, 84, 144, mainTitleOpacity);
+            textAlign(CENTER, CENTER);
+            textSize(80);
+            textStyle(BOLD);
+            textFont('Oswald');
+            text("HỘI THI AN TOÀN VỆ SINH VIÊN GIỎI", 0, 0);
+            
+            // Reset shadow
+            drawingContext.shadowBlur = 0;
+            pop();
+            
+            // Year highlight with oscillating effects
+            push();
+            translate(width/2, 250 + yearOffset);
+            
+            // Particle effect background for year
+            if (mainTitleOpacity > 100) {
+                for (let i = 0; i < 15; i++) {
+                    let angle = frameCount * 0.02 + i * 0.4;
+                    let radius = 80 + sin(frameCount * 0.03 + i) * 20;
+                    let x = cos(angle) * radius;
+                    let y = sin(angle) * radius;
+                    
+                    fill(255, 119, 51, mainTitleOpacity * 0.3);
+                    noStroke();
+                    ellipse(x, y, 8, 8);
+                }
+            }
+            
+            // Main year text with pulse effect that stops after 3 seconds
+            let pulseScale = 1;
+            if (yearPulseTimer < 180) { // 3 seconds at 60fps
+                pulseScale = 1 + sin(frameCount * 0.08) * 0.1;
+            }
+            scale(pulseScale);
+            
+            // Gradient-like effect using multiple text layers
+            for (let i = 3; i >= 0; i--) {
+                fill(255, 119 + i * 20, 51, mainTitleOpacity * (1 - i * 0.1));
+                textAlign(CENTER, CENTER);
+                textSize(72);
+                textStyle(BOLD);
+                textFont('Oswald');
+                text("NĂM 2025", i * 2, i * 2);
+            }
+            
+            // Animated underline that stops after pulse effect
+            stroke(255, 119, 51, mainTitleOpacity);
+            let strokeWeightVal = 4;
+            let lineWidth = 120;
+            
+            if (yearPulseTimer < 180) {
+                strokeWeightVal = 4 + sin(frameCount * 0.1) * 2;
+                lineWidth = 120 + sin(frameCount * 0.05) * 10;
+            }
+            
+            strokeWeight(strokeWeightVal);
+            line(-lineWidth, 35, lineWidth, 35);
+            pop();
+            
+            // Company name with shooting effect from right
+            push();
+            fill(41, 84, 144, companyOpacity);
+            textAlign(CENTER, CENTER);
+            textSize(38);
+            textStyle(BOLD);
+            textFont('Roboto Condensed');
+            
+            let companyText = "CÔNG TY CÔNG NGHIỆP HÓA CHẤT MỎ THÁI NGUYÊN";
+            let totalChars = companyText.length;
+            let visibleChars = 0;
+            
+            // Calculate how many characters should be visible based on animation timer
+            if (animationPhase >= 3) {
+                let animProgress = min(1, companyAnimTimer / 180); // 3 seconds to complete
+                visibleChars = floor(totalChars * animProgress);
+            }
+            
+            // Draw only visible characters
+            let displayText = companyText.substring(0, visibleChars);
+            text(displayText, width/2, 330);
+            pop();
+            
+            // Information cards section with enhanced animations
+            let cardY = height - 360;
+            let card1X = width/2 - 380;
+            let card2X = width/2 + 50;
+            let cardWidth = 380;
+            let cardHeight = 240;
+            
+            // Time card (left) with slide and bounce
+            push();
+            translate(cardSlideX, cardBounce);
+            
+            // Enhanced shadow with blur
+            drawingContext.shadowBlur = 15;
+            drawingContext.shadowColor = `rgba(0, 0, 0, ${dateOpacity/255 * 0.2})`;
+            drawingContext.shadowOffsetX = 5;
+            drawingContext.shadowOffsetY = 5;
+            
+            fill(255, 255, 255, dateOpacity * 0.95);
+            stroke(220, 220, 220, dateOpacity);
+            strokeWeight(1);
+            rect(card1X, cardY, cardWidth, cardHeight, 20);
+            
+            // Reset shadow
+            drawingContext.shadowBlur = 0;
+            drawingContext.shadowOffsetX = 0;
+            drawingContext.shadowOffsetY = 0;
+            
+            // Animated calendar icon with rotation that stops after 5 seconds
+            push();
+            translate(card1X + cardWidth/2, cardY + 60);
+            
+            let iconRotation = 0;
+            if (cardAnimTimer < 300) { // 5 seconds
+                let rotationIntensity = max(0, 1 - cardAnimTimer / 300);
+                iconRotation = sin(frameCount * 0.05) * 0.1 * rotationIntensity;
+            }
+            rotate(iconRotation);
+            
+            // Icon with glow effect that fades
+            let iconGlowIntensity = cardAnimTimer < 300 ? max(0, 1 - cardAnimTimer / 300) : 0;
+            if (iconGlowIntensity > 0) {
+                drawingContext.shadowBlur = 10 * iconGlowIntensity;
+                drawingContext.shadowColor = `rgba(91, 152, 229, ${dateOpacity/255 * 0.7 * iconGlowIntensity})`;
+            }
+            
+            fill(91, 152, 229, dateOpacity);
+            noStroke();
+            rect(-25, -20, 50, 40, 8);
+            
+            drawingContext.shadowBlur = 0;
+            
+            // Icon details with mini animations that stop
+            fill(255, dateOpacity);
+            rect(-20, -15, 40, 30, 3);
+            fill(91, 152, 229, dateOpacity);
+            
+            let iconBounce = 0;
+            if (cardAnimTimer < 300) {
+                let bounceIntensity = max(0, 1 - cardAnimTimer / 300);
+                iconBounce = sin(frameCount * 0.15) * 2 * bounceIntensity;
+            }
+            
+            rect(-17, -12 + iconBounce, 8, 5);
+            rect(-5, -12 - iconBounce, 8, 5);
+            rect(7, -12 + iconBounce, 8, 5);
+            rect(-17, -5 - iconBounce, 8, 5);
+            rect(-5, -5 + iconBounce, 8, 5);
+            rect(7, -5 - iconBounce, 8, 5);
+            pop();
+            
+            // Time card content with typewriter effect
+            let timeProgress = map(dateOpacity, 0, 255, 0, 1);
+            
+            fill(255, 119, 51, dateOpacity);
+            textAlign(CENTER, CENTER);
+            textSize(28);
+            textStyle(BOLD);
+            textFont('Oswald');
+            
+            let timeText = "THỜI GIAN";
+            let visibleTimeChars = floor(timeText.length * timeProgress);
+            text(timeText.substring(0, visibleTimeChars), card1X + cardWidth/2, cardY + 120);            fill(80, 80, 80, dateOpacity);
+            textSize(20);
+            textStyle(BOLD);
+            textFont('Inter');
+            
+            // Display date immediately without typewriter effect
+            text("25/06/2025", card1X + cardWidth/2, cardY + 170);
+            pop();
+            
+            // Location card (right) with slide from right
+            push();
+            let rightSlideX = animationPhase >= 5 ? min(0, (-width + frameCount * 20)) : width;
+            if (animationPhase >= 5 && rightSlideX >= 0) rightSlideX = 0;
+            translate(rightSlideX, 0);
+            
+            // Enhanced shadow
+            drawingContext.shadowBlur = 15;
+            drawingContext.shadowColor = `rgba(0, 0, 0, ${venueOpacity/255 * 0.2})`;
+            drawingContext.shadowOffsetX = 5;
+            drawingContext.shadowOffsetY = 5;
+            
+            fill(255, 255, 255, venueOpacity * 0.95);
+            stroke(220, 220, 220, venueOpacity);
+            strokeWeight(1);
+            rect(card2X, cardY, cardWidth, cardHeight, 20);
+            
+            drawingContext.shadowBlur = 0;
+            drawingContext.shadowOffsetX = 0;
+            drawingContext.shadowOffsetY = 0;
+            
+            // Animated location pin icon
+            push();
+            translate(card2X + cardWidth/2, cardY + 60);
+            
+            // Pulsing effect that stops after 5 seconds
+            let pinPulse = 1;
+            if (animationPhase >= 5) {
+                let venueAnimTimer = (frameCount - (5 * phaseDuration + phaseTimer)) * (animationPhase > 5 ? 1 : phaseTimer / phaseDuration);
+                if (venueAnimTimer < 300) { // 5 seconds
+                    let pulseIntensity = max(0, 1 - venueAnimTimer / 300);
+                    pinPulse = 1 + sin(frameCount * 0.1) * 0.2 * pulseIntensity;
+                }
+            }
+            scale(pinPulse);
+            
+            // Pin with glow that fades
+            let pinGlowIntensity = 0;
+            if (animationPhase >= 5) {
+                let venueAnimTimer = (frameCount - (5 * phaseDuration + phaseTimer)) * (animationPhase > 5 ? 1 : phaseTimer / phaseDuration);
+                if (venueAnimTimer < 300) {
+                    pinGlowIntensity = max(0, 1 - venueAnimTimer / 300);
+                }
+            }
+            
+            if (pinGlowIntensity > 0) {
+                drawingContext.shadowBlur = 12 * pinGlowIntensity;
+                drawingContext.shadowColor = `rgba(229, 91, 152, ${venueOpacity/255 * 0.8 * pinGlowIntensity})`;
+            }
+            
+            fill(229, 91, 152, venueOpacity);
+            noStroke();
+            ellipse(0, 0, 35, 35);
+            
+            drawingContext.shadowBlur = 0;
+            
+            fill(255, venueOpacity);
+            ellipse(0, -4, 15, 15);
+            
+            // Animated pin bottom that stops
+            fill(229, 91, 152, venueOpacity);
+            let pinBounce = 0;
+            if (animationPhase >= 5) {
+                let venueAnimTimer = (frameCount - (5 * phaseDuration + phaseTimer)) * (animationPhase > 5 ? 1 : phaseTimer / phaseDuration);
+                if (venueAnimTimer < 300) {
+                    let bounceIntensity = max(0, 1 - venueAnimTimer / 300);
+                    pinBounce = sin(frameCount * 0.12) * 3 * bounceIntensity;
+                }
+            }
+            triangle(-4, 12 + pinBounce, 4, 12 + pinBounce, 0, 22 + pinBounce);
+            pop();
+            
+            // Location card content with reveal effect
+            let venueProgress = map(venueOpacity, 0, 255, 0, 1);
+            
+            fill(255, 119, 51, venueOpacity);
+            textAlign(CENTER, CENTER);
+            textSize(28);
+            textStyle(BOLD);
+            textFont('Oswald');
+            
+            let venueTitle = "ĐỊA ĐIỂM";
+            let visibleVenueChars = floor(venueTitle.length * venueProgress);
+            text(venueTitle.substring(0, visibleVenueChars), card2X + cardWidth/2, cardY + 120);
+            
+            fill(80, 80, 80, venueOpacity);
+            textAlign(CENTER, TOP);
+            textSize(18);
+            textStyle(NORMAL);
+            textFont('Inter');
+            
+            let venueLines = [
+                "Hội trường tầng 5 - Văn phòng Công ty",
+                "Số 9A, Đường Phan Đình Phùng",
+                "Phường Đồng Quang, TP Thái Nguyên"
+            ];
+              for (let i = 0; i < venueLines.length; i++) {
+                let lineProgress = max(0, venueProgress - i * 0.2);
+                let line = venueLines[i];
+                let visibleLineChars = floor(line.length * lineProgress);
+                
+                // Remove slide effect for static text
+                text(line.substring(0, visibleLineChars), card2X + cardWidth/2, cardY + 145 + i * 25);
+            }
+            pop();
+        }
+        
+        function windowResized() {
+            resizeCanvas(windowWidth, windowHeight);
+        }
+        
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight') {
                 window.location.href = 'page3.html';
             }
         });

@@ -829,15 +829,15 @@
                 const modal = document.querySelector('.fixed.inset-0');
                 if (modal) {
                     modal.remove();
-                }            } else if (e.key.toLowerCase() === 'q') {
+                }
+            } else if (e.key.toLowerCase() === 'q') {
                 // Emergency exit to main page
-                navigateToMainPage();
+                window.location.href = 'page3.html';
             } else if (e.key === 'ArrowLeft') {
                 // Left arrow key to go back to infovong3.html
                 e.preventDefault();
                 window.location.href = 'infovong3.html';
             }
         });    </script>
-    <script src="navigation.js"></script>
 </body>
 </html>

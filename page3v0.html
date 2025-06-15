@@ -6,8 +6,90 @@
     <title>Quản Lý Vòng Thi - ATVSV 2025 V2</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
-    <style>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">    <style>        /* ===== THEME SYSTEM ===== */
+        /* 🎨 THAY ĐỔI THEME TẠI ĐÂY: 1, 2, 3, 4, hoặc 5 */
+        :root {
+            --current-theme: 1;
+        }
+
+        /* Default Theme (fallback) */
+        :root {
+            --primary: #1FA2B8;
+            --secondary: #52C4A0; 
+            --accent: #7CB342;
+            --highlight: #FFD54F;
+            --text-dark: #263238;
+            --text-light: #37474F;
+            --background: #F8FFFE;
+            --card-bg: #FFFFFF;
+            --shadow: rgba(31, 162, 184, 0.2);
+        }
+
+        /* Theme 1: Business Professional */
+        body[data-theme="1"] {
+            --primary: #1FA2B8;
+            --secondary: #52C4A0; 
+            --accent: #7CB342;
+            --highlight: #FFD54F;
+            --text-dark: #263238;
+            --text-light: #37474F;
+            --background: #F8FFFE;
+            --card-bg: #FFFFFF;
+            --shadow: rgba(31, 162, 184, 0.2);
+        }
+
+        /* Theme 2: Vibrant Energy */
+        body[data-theme="2"] {
+            --primary: #FF6B35;
+            --secondary: #F7931E;
+            --accent: #FFD23F;
+            --highlight: #FF4757;
+            --text-dark: #2C3E50;
+            --text-light: #34495E;
+            --background: #FFF8F0;
+            --card-bg: #FFFFFF;
+            --shadow: rgba(255, 107, 53, 0.2);
+        }
+
+        /* Theme 3: Corporate Modern */
+        body[data-theme="3"] {
+            --primary: #2C3E50;
+            --secondary: #FF6B35;
+            --accent: #F39C12;
+            --highlight: #E74C3C;
+            --text-dark: #2C3E50;
+            --text-light: #34495E;
+            --background: #F7F9FC;
+            --card-bg: #FFFFFF;
+            --shadow: rgba(44, 62, 80, 0.2);
+        }
+
+        /* Theme 4: Tech Innovation */
+        body[data-theme="4"] {
+            --primary: #3498DB;
+            --secondary: #2980B9;
+            --accent: #F1C40F;
+            --highlight: #E67E22;
+            --text-dark: #2C3E50;
+            --text-light: #34495E;
+            --background: #F4F6F9;
+            --card-bg: #FFFFFF;
+            --shadow: rgba(52, 152, 219, 0.2);
+        }
+
+        /* Theme 5: Fresh Workflow */
+        body[data-theme="5"] {
+            --primary: #26D0CE;
+            --secondary: #6BCF7F;
+            --accent: #FFB74D;
+            --highlight: #FF6B6B;
+            --text-dark: #37474F;
+            --text-light: #546E7A;
+            --background: #F1F8F6;
+            --card-bg: #FFFFFF;
+            --shadow: rgba(38, 208, 206, 0.2);
+        }
+        
         * {
             font-family: 'Inter', sans-serif;
             margin: 0;
@@ -19,16 +101,26 @@
             height: 100vh;
             overflow: hidden;
         }
-        
-        .slide-container {
+          .slide-container {
             width: 100vw;
             height: 100vh;
             display: flex;
             flex-direction: column;
-        }        .gradient-bg {
-            background: linear-gradient(135deg, #fefce8 0%, #fef3c7 30%, #fde68a 70%, #f59e0b 100%);
+            background: var(--background);
+            transition: all 0.5s ease;
         }
         
+        .gradient-bg {
+            background: linear-gradient(135deg, 
+                var(--background) 0%, 
+                rgba(255, 255, 255, 0.9) 30%, 
+                var(--primary)10 70%, 
+                var(--accent)05 100%);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        /* Advanced floating particles with theme colors */
         .floating-particles {
             position: absolute;
             top: 0;
@@ -37,22 +129,47 @@
             height: 100%;
             overflow: hidden;
             z-index: 1;
-        }        .particle {
-            position: absolute;
-            border-radius: 50%;
-            animation: float 8s infinite linear;
         }
         
-        .particle:nth-child(1) { width: 8px; height: 8px; left: 10%; animation-delay: 0s; background: rgba(239, 68, 68, 0.6); }
-        .particle:nth-child(2) { width: 12px; height: 12px; left: 20%; animation-delay: 1s; background: rgba(59, 130, 246, 0.6); }
-        .particle:nth-child(3) { width: 6px; height: 6px; left: 30%; animation-delay: 2s; background: rgba(16, 185, 129, 0.6); }
-        .particle:nth-child(4) { width: 10px; height: 10px; left: 40%; animation-delay: 3s; background: rgba(168, 85, 247, 0.6); }
-        .particle:nth-child(5) { width: 14px; height: 14px; left: 50%; animation-delay: 4s; background: rgba(245, 158, 11, 0.6); }
-        .particle:nth-child(6) { width: 8px; height: 8px; left: 60%; animation-delay: 5s; background: rgba(236, 72, 153, 0.6); }
-        .particle:nth-child(7) { width: 12px; height: 12px; left: 70%; animation-delay: 6s; background: rgba(34, 197, 94, 0.6); }
-        .particle:nth-child(8) { width: 6px; height: 6px; left: 80%; animation-delay: 7s; background: rgba(249, 115, 22, 0.6); }
+        .particle {
+            position: absolute;
+            border-radius: 50%;
+            animation: float 12s infinite linear;
+            opacity: 0.6;
+        }
         
-        @keyframes float {
+        .particle:nth-child(1) { 
+            width: 8px; height: 8px; left: 10%; animation-delay: 0s;
+            background: var(--primary);
+        }
+        .particle:nth-child(2) { 
+            width: 12px; height: 12px; left: 20%; animation-delay: 1s;
+            background: var(--secondary);
+        }
+        .particle:nth-child(3) { 
+            width: 6px; height: 6px; left: 30%; animation-delay: 2s;
+            background: var(--accent);
+        }
+        .particle:nth-child(4) { 
+            width: 10px; height: 10px; left: 40%; animation-delay: 3s;
+            background: var(--highlight);
+        }
+        .particle:nth-child(5) { 
+            width: 14px; height: 14px; left: 50%; animation-delay: 4s;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+        }
+        .particle:nth-child(6) { 
+            width: 8px; height: 8px; left: 60%; animation-delay: 5s;
+            background: var(--primary);
+        }
+        .particle:nth-child(7) { 
+            width: 12px; height: 12px; left: 70%; animation-delay: 6s;
+            background: var(--accent);
+        }
+        .particle:nth-child(8) { 
+            width: 6px; height: 6px; left: 80%; animation-delay: 7s;
+            background: var(--highlight);
+        }        @keyframes float {
             0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
             10% { opacity: 1; }
             90% { opacity: 1; }
@@ -66,101 +183,139 @@
             display: flex;
             flex-direction: column;
         }
-          /* Circular Round Cards */
+        
+        /* Circular Round Cards */
         .rounds-container {
             display: flex;
             justify-content: center;
             align-items: center;
-            gap: 6rem;
+            gap: 4rem;
             flex: 1;
             padding: 2rem;
-        }
-        
+        }        /* Circular Round Cards with Advanced Design */
         .round-circle {
             position: relative;
-            width: 380px;
-            height: 380px;
+            width: 320px;
+            height: 320px;
             border-radius: 50%;
             cursor: pointer;
-            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             text-align: center;
-            overflow: hidden;            border: 6px solid rgba(255, 255, 255, 0.8);
-            backdrop-filter: blur(10px);
-            box-shadow: 0 12px 48px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            border: 4px solid var(--primary);
+            backdrop-filter: blur(15px);
+            box-shadow: 0 12px 40px var(--shadow);
+            transform-style: preserve-3d;
         }
         
         .round-circle::before {
             content: '';
             position: absolute;
-            top: -2px;
-            left: -2px;
-            right: -2px;
-            bottom: -2px;
+            top: -3px;
+            left: -3px;
+            right: -3px;
+            bottom: -3px;
             border-radius: 50%;
-            background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.5), transparent);
+            background: linear-gradient(45deg, var(--primary), var(--secondary), var(--accent), var(--highlight));
             z-index: -1;
-            animation: rotate 3s linear infinite;
+            animation: rotate 4s linear infinite;
         }
         
-        @keyframes rotate {
+        .round-circle::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, transparent 0%, var(--primary)05 50%, transparent 100%);
+            transform: translate(-50%, -50%);
+            animation: pulse-bg 3s ease-in-out infinite;
+            z-index: -2;
+        }
+          @keyframes rotate {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
-          .round-circle:hover {
-            transform: scale(1.05) translateY(-15px);
-            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.4);
-        }        .round-1 {
-            background: linear-gradient(135deg, #059669, #10b981, #34d399);
+        
+        @keyframes pulse-bg {
+            0%, 100% { opacity: 0.3; transform: translate(-50%, -50%) scale(1); }
+            50% { opacity: 0.6; transform: translate(-50%, -50%) scale(1.2); }
+        }
+        
+        .round-circle:hover {
+            transform: scale(1.15) translateY(-15px) rotateY(5deg);
+            box-shadow: 0 25px 60px var(--shadow);
+        }
+        
+        /* Dynamic round themes */
+        .round-1 {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
         }
         
         .round-2 {
-            background: linear-gradient(135deg, #dc2626, #ef4444, #f87171);
+            background: linear-gradient(135deg, var(--secondary), var(--accent));
         }
         
         .round-3 {
-            background: linear-gradient(135deg, #7c3aed, #a855f7, #c084fc);
+            background: linear-gradient(135deg, var(--accent), var(--highlight));
+        }        .round-icon {
+            font-size: 5rem;
+            color: white;
+            margin-bottom: 1rem;
+            text-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+            filter: drop-shadow(0 4px 8px var(--shadow));
+            transition: all 0.3s ease;
+            animation: icon-float 3s ease-in-out infinite;
         }
         
-        .round-icon {
-            font-size: 5.5rem;
-            color: white;
-            margin-bottom: 1.5rem;
-            text-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        @keyframes icon-float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
         }
         
         .round-title {
             color: white;
-            font-size: 2.2rem;
+            font-size: 1.6rem;
             font-weight: 800;
-            margin-bottom: 1rem;
-            text-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
+            margin-bottom: 0.5rem;
+            text-shadow: 0 3px 6px rgba(0, 0, 0, 0.4);
             letter-spacing: 0.5px;
         }
         
         .round-description {
             color: rgba(255, 255, 255, 0.95);
-            font-size: 1.4rem;
-            font-weight: 600;
+            font-size: 1.1rem;
+            font-weight: 500;
             text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
             line-height: 1.3;
-            padding: 0 1rem;
         }
-          /* Arrow Connectors */        .arrow-connector {
+        
+        /* Enhanced Arrow Connectors */
+        .arrow-connector {
             position: relative;
             z-index: 5;
-            color: rgba(92, 92, 92, 0.8);
-            font-size: 4rem;
+            color: var(--primary);
+            font-size: 3.5rem;
             animation: pulse-arrow 2s infinite;
-            margin: 0 2rem;
+            transition: all 0.3s ease;
         }
         
         @keyframes pulse-arrow {
-            0%, 100% { opacity: 0.7; transform: scale(1); }
-            50% { opacity: 1; transform: scale(1.3); }
+            0%, 100% { 
+                opacity: 0.7; 
+                transform: scale(1); 
+                color: var(--primary); 
+            }
+            50% { 
+                opacity: 1; 
+                transform: scale(1.3); 
+                color: var(--highlight); 
+            }
         }
         
         /* Enhanced animations */
@@ -207,25 +362,29 @@
                 opacity: 1;
                 transform: translateX(0) rotate(0deg) scale(1);
             }
-        }        .navigation-hint {
+        }        /* Modern Navigation & UI Elements */
+        .navigation-hint {
             position: fixed;
             bottom: 2rem;
             left: 50%;
             transform: translateX(-50%);
-            background: rgba(55, 65, 81, 0.95);
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
             color: white;
             padding: 1rem 2rem;
             border-radius: 50px;
             font-size: 0.9rem;
             z-index: 100;
             opacity: 0.9;
-            border: 2px solid rgba(245, 158, 11, 0.4);
-        }        .loading-spinner {
+            box-shadow: 0 6px 25px var(--shadow);
+            backdrop-filter: blur(10px);
+        }
+        
+        .loading-spinner {
             display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 2px solid #f3f3f3;
-            border-top: 2px solid #f59e0b;
+            width: 24px;
+            height: 24px;
+            border: 3px solid var(--background);
+            border-top: 3px solid var(--primary);
             border-radius: 50%;
             animation: spin 1s linear infinite;
         }
@@ -242,51 +401,119 @@
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
-        }        /* Main title styling */
+        }        /* Enhanced Main Title */
         .main-title {
-            background: linear-gradient(45deg, #374151, #111827, #1f2937);
+            background: linear-gradient(45deg, var(--primary), var(--secondary), var(--accent));
             -webkit-background-clip: text;
             background-clip: text;
             -webkit-text-fill-color: transparent;
             text-align: center;
-            font-size: 4rem;
-            font-weight: 800;
+            font-size: 3.5rem;
+            font-weight: 900;
             margin-bottom: 2rem;
-            padding: 1rem 0;
-            text-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            line-height: 1.2;
+            text-shadow: 0 4px 8px var(--shadow);
+            animation: title-glow 3s ease-in-out infinite;
         }
         
-        .main-title .trophy-icon {
-            -webkit-text-fill-color: #d9a806 !important;
-            color: #d9a806 !important;
-            background: none !important;
-            -webkit-text-stroke: 2px white;
+        @keyframes title-glow {
+            0%, 100% { filter: brightness(1); }
+            50% { filter: brightness(1.1); }
         }
 
-        /* Question list styling */
+        /* Modern Question Styling */
         .question-list {
-            max-height: 60vh;
+            max-height: 65vh;
             overflow-y: auto;
+            scroll-behavior: smooth;
         }
-
+        
         .question-item {
-            background: white;
-            border-radius: 12px;
-            padding: 1.5rem;
-            margin-bottom: 1rem;
-            border: 1px solid #e5e7eb;
-            transition: all 0.3s ease;
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+            border: 2px solid transparent;
+            transition: all 0.4s ease;
+            box-shadow: 0 4px 20px var(--shadow);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .question-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary), var(--accent));
+            opacity: 0;
+            transition: opacity 0.3s ease;
         }
 
         .question-item:hover {
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            transform: translateY(-2px);
+            box-shadow: 0 12px 40px var(--shadow);
+            transform: translateY(-5px);
+            border-color: var(--accent);
+        }
+        
+        .question-item:hover::before {
+            opacity: 1;
+        }
+        
+        /* Enhanced Header Styling */
+        .header-info {
+            color: var(--text-dark);
+        }
+
+        .header-subtitle {
+            color: var(--text-light);
+            font-weight: 600;
+        }
+
+        .header-details {
+            color: var(--text-light);
+            font-weight: 500;
+        }
+        
+        /* Dynamic Round Hover Effects */
+        .round-1:hover {
+            box-shadow: 0 25px 60px var(--shadow);
+        }
+        
+        .round-2:hover {
+            box-shadow: 0 25px 60px var(--shadow);
+        }
+        
+        .round-3:hover {
+            box-shadow: 0 25px 60px var(--shadow);
+        }
+          /* Enhanced Button Styles */
+        #backToRounds:hover {
+            background-color: var(--primary) !important;
+            color: white !important;
         }
     </style>
 </head>
-<body>
-    <div class="slide-container gradient-bg">
+<body data-theme="1">
+<!-- 
+========================================
+🎨 HƯỚNG DẪN THAY ĐỔI THEME
+========================================
+Để thay đổi theme, tìm dòng này trong CSS:
+--current-theme: 4;
+
+Thay đổi số 4 thành:
+1 = Business Professional (Xanh dương - Mint - Xanh lá)
+2 = Vibrant Energy (Cam - Đỏ - Vàng) 
+3 = Corporate Modern (Navy - Cam - Vàng)
+4 = Tech Innovation (Xanh dương - Vàng) 
+5 = Fresh Workflow (Mint - Xanh lá - Cam - Đỏ)
+
+VD: --current-theme: 3; để dùng theme Corporate Modern
+Lưu file và refresh trang để thấy thay đổi
+========================================
+--><div class="slide-container gradient-bg">
         <!-- Floating particles background -->
         <div class="floating-particles">
             <div class="particle"></div>
@@ -297,13 +524,14 @@
             <div class="particle"></div>
             <div class="particle"></div>
             <div class="particle"></div>
-        </div>        <div class="content-layer">            <!-- Header -->
-            <header class="text-center py-8 text-white">                <h1 class="main-title fade-in">
-                    <i class="fas fa-trophy mr-4 trophy-icon"></i>
+        </div>        <div class="content-layer">        <!-- Header -->
+            <header class="text-center py-8">
+                <h1 class="main-title fade-in">
+                    <i class="fas fa-trophy mr-4" style="color: var(--accent);"></i>
                     HỘI THI ATVSV GIỎI 2025
                 </h1>
-                <p class="text-2xl fade-in mb-2 font-semibold" style="color: #374151;">Công ty Công nghiệp Hóa chất mỏ Thái Nguyên</p>
-                <p class="text-xl fade-in font-medium" style="color: #6b7280;">
+                <p class="text-xl header-subtitle fade-in mb-2">Công ty Công nghiệp Hóa chất mỏ Thái Nguyên</p>
+                <p class="text-lg header-details fade-in">
                     <i class="fas fa-calendar-alt mr-2"></i>25/06/2025
                     <span class="mx-4">|</span>
                     <i class="fas fa-map-marker-alt mr-2"></i>Hội trường tầng 5
@@ -315,13 +543,12 @@
                 <!-- Round Selection -->
                 <div class="rounds-container" id="roundSelection">
                     <!-- Round cards will be injected here -->
-                </div>
-
-                <!-- Question Container -->
+                </div>                <!-- Question Container -->
                 <div id="questionContainer" class="fade-in px-8" style="display: none;">
-                    <div class="max-w-7xl mx-auto">                        <div class="bg-white bg-opacity-95 rounded-2xl p-6 backdrop-filter backdrop-blur-sm shadow-lg border border-amber-200">
+                    <div class="max-w-7xl mx-auto">
+                        <div class="rounded-2xl p-6 backdrop-filter backdrop-blur-sm border-2 shadow-xl" style="background: var(--card-bg); border-color: var(--accent);">
                             <div class="flex items-center justify-between mb-6">
-                                <button id="backToRounds" class="flex items-center text-amber-700 hover:text-amber-900 font-semibold transition-colors">
+                                <button id="backToRounds" class="flex items-center font-semibold transition-colors px-4 py-2 rounded-lg hover:opacity-80" style="color: var(--primary); background-color: var(--primary)20;">
                                     <i class="fas fa-arrow-left mr-2"></i>Quay lại danh sách vòng thi
                                 </button>
                                 <div id="questionStats" class="text-gray-600 font-medium">
@@ -347,9 +574,8 @@
 
         // Load rounds data on page load
         async function loadRounds() {
-            try {
-                const roundSelection = document.getElementById('roundSelection');
-                roundSelection.innerHTML = '<div class="text-center text-white"><div class="loading-spinner mx-auto mb-4"></div><p>Đang tải dữ liệu...</p></div>';
+            try {                const roundSelection = document.getElementById('roundSelection');
+                roundSelection.innerHTML = '<div class="text-center" style="color: var(--color-2);"><div class="loading-spinner mx-auto mb-4"></div><p>Đang tải dữ liệu...</p></div>';
 
                 const response = await fetch('quyche.json');
                 const data = await response.json();
@@ -388,12 +614,10 @@
                     setTimeout(() => {
                         card.classList.add(animationClasses[index] || 'slide-in-center');
                     }, index * 300);
-                });
-
-            } catch (error) {
+                });            } catch (error) {
                 console.error('Error loading rounds:', error);
                 const roundSelection = document.getElementById('roundSelection');
-                roundSelection.innerHTML = '<div class="text-center text-red-600"><i class="fas fa-exclamation-triangle text-4xl mb-4"></i><p>Không thể tải dữ liệu. Vui lòng thử lại.</p></div>';
+                roundSelection.innerHTML = '<div class="text-center" style="color: var(--color-5);"><i class="fas fa-exclamation-triangle text-4xl mb-4"></i><p>Không thể tải dữ liệu. Vui lòng thử lại.</p></div>';
             }
         }
 
@@ -547,7 +771,7 @@
                     }
                 }                // Update question stats
                 document.getElementById('questionStats').innerHTML = `
-                    <span class="inline-flex items-center px-4 py-2 rounded-full bg-amber-100 text-amber-800">
+                    <span class="inline-flex items-center px-4 py-2 rounded-full text-white" style="background: linear-gradient(135deg, var(--color-2), var(--color-4));">
                         <i class="fas fa-list-ol mr-2"></i>
                         ${allQuestions.length} câu hỏi
                     </span>
@@ -556,40 +780,39 @@
                 // Display questions
                 const questionList = document.getElementById('questionList');
                 if (allQuestions.length > 0) {
-                    questionList.innerHTML = allQuestions.map((question, index) => `
-                        <div class="question-item" data-question-id="${question.id}">
+                    questionList.innerHTML = allQuestions.map((question, index) => `                        <div class="question-item" data-question-id="${question.id}">
                             <div class="flex items-start justify-between">
-                                <div class="flex-1">                                    <div class="flex items-center mb-2">
-                                        <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-amber-100 text-amber-800 text-sm font-semibold mr-3">
+                                <div class="flex-1">
+                                    <div class="flex items-center mb-2">
+                                        <span class="inline-flex items-center justify-center w-8 h-8 rounded-full text-white text-sm font-semibold mr-3" style="background: linear-gradient(135deg, var(--color-2), var(--color-4));">
                                             ${index + 1}
                                         </span>
-                                        <div class="text-sm text-gray-500">
+                                        <div class="text-sm" style="color: var(--color-2);">
                                             ID: ${question.id} | ${question.category}
                                         </div>
                                     </div>
-                                    <p class="text-gray-800 font-medium leading-relaxed">${question.cau_hoi}</p>
+                                    <p class="font-medium leading-relaxed" style="color: #1f2937;">${question.cau_hoi}</p>
                                     ${question.subcategory ? `
                                         <div class="mt-2">
-                                            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs bg-gray-100 text-gray-700">
+                                            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs text-white" style="background: var(--color-3);">
                                                 ${question.subcategory}
                                             </span>
                                         </div>
                                     ` : ''}
                                 </div>
                                 <div class="ml-4 flex items-center space-x-2">
-                                    ${question.use_image === 'Yes' ? '<i class="fas fa-image text-green-600" title="Có hình ảnh"></i>' : ''}
-                                    ${question.speech_id_question ? '<i class="fas fa-volume-up text-amber-600" title="Có âm thanh"></i>' : ''}
+                                    ${question.use_image === 'Yes' ? `<i class="fas fa-image" style="color: var(--color-3);" title="Có hình ảnh"></i>` : ''}
+                                    ${question.speech_id_question ? `<i class="fas fa-volume-up" style="color: var(--color-2);" title="Có âm thanh"></i>` : ''}
                                 </div>
                             </div>
                         </div>
-                    `).join('');
-                } else {
-                    questionList.innerHTML = '<div class="text-center py-8 text-gray-500"><i class="fas fa-exclamation-circle text-4xl mb-4"></i><p>Không tìm thấy câu hỏi cho vòng thi này.</p></div>';
+                    `).join('');                } else {
+                    questionList.innerHTML = '<div class="text-center py-8" style="color: var(--color-2);"><i class="fas fa-exclamation-circle text-4xl mb-4"></i><p>Không tìm thấy câu hỏi cho vòng thi này.</p></div>';
                 }
 
             } catch (error) {
                 console.error('Error loading questions:', error);
-                document.getElementById('questionList').innerHTML = '<div class="text-center py-8 text-red-600"><i class="fas fa-exclamation-triangle text-4xl mb-4"></i><p>Không thể tải câu hỏi. Vui lòng thử lại.</p></div>';
+                document.getElementById('questionList').innerHTML = '<div class="text-center py-8" style="color: var(--color-5);"><i class="fas fa-exclamation-triangle text-4xl mb-4"></i><p>Không thể tải câu hỏi. Vui lòng thử lại.</p></div>';
             }
         }
 
@@ -629,10 +852,103 @@
                 // Navigate to vong3.html (equivalent to clicking round 3 indicator)
                 window.location.href = 'vong3.html';
             }
+        });        // ===== THEME MANAGEMENT SYSTEM =====
+        const THEMES = {
+            1: 'Business Professional',
+            2: 'Vibrant Energy', 
+            3: 'Corporate Modern',
+            4: 'Tech Innovation',
+            5: 'Fresh Workflow'
+        };
+        
+        // Read theme from CSS variable
+        function getCurrentThemeFromCSS() {
+            const rootStyle = getComputedStyle(document.documentElement);
+            const themeValue = rootStyle.getPropertyValue('--current-theme').trim();
+            const themeNumber = parseInt(themeValue) || 1;
+            console.log(`📖 Reading theme from CSS: ${themeNumber}`);
+            return themeNumber;
+        }
+        
+        function switchTheme(themeNumber) {
+            if (themeNumber >= 1 && themeNumber <= 5) {
+                document.body.setAttribute('data-theme', themeNumber.toString());
+                console.log(`🎨 Theme switched to: ${THEMES[themeNumber]} (Theme ${themeNumber})`);
+                
+                // Add theme transition effect
+                document.body.style.transition = 'all 0.5s ease';
+                setTimeout(() => {
+                    document.body.style.transition = '';
+                }, 500);
+                
+                // Force update CSS variables by triggering a repaint
+                document.body.style.display = 'none';
+                document.body.offsetHeight; // Trigger reflow
+                document.body.style.display = '';
+            }
+        }
+        
+        // Initialize theme on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            const currentTheme = getCurrentThemeFromCSS();
+            switchTheme(currentTheme);
         });
-
+        
+        // Also apply immediately
+        const currentTheme = getCurrentThemeFromCSS();
+        switchTheme(currentTheme);
+        
+        // ===== ENHANCED ANIMATIONS =====
+        function addAdvancedAnimations() {
+            // Staggered card animations
+            const cards = document.querySelectorAll('.round-circle');
+            cards.forEach((card, index) => {
+                card.style.animationDelay = `${index * 0.2}s`;
+                card.style.animation = 'slideInScale 0.8s ease-out forwards';
+            });
+            
+            // Particle enhancement
+            const particles = document.querySelectorAll('.particle');
+            particles.forEach((particle, index) => {
+                particle.style.animationDuration = `${8 + Math.random() * 4}s`;
+            });
+        }
+        
+        // Add CSS for enhanced animations
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideInScale {
+                0% {
+                    opacity: 0;
+                    transform: translateY(50px) scale(0.8);
+                }
+                100% {
+                    opacity: 1;
+                    transform: translateY(0) scale(1);
+                }
+            }
+            
+            .rounds-container {
+                perspective: 1000px;
+            }
+            
+            .round-circle {
+                transform-style: preserve-3d;
+            }
+        `;
+        document.head.appendChild(style);
         // Initialize on page load
         document.addEventListener('DOMContentLoaded', loadRounds);
-    </script>    <a href="image-manager.html" id="openSettings" class="fixed bottom-4 left-4 text-amber-600 opacity-60 hover:opacity-100 z-50 hover:text-amber-800 transition-colors"><i class="fas fa-cog fa-lg"></i></a>
+        
+        // Debug: Log current CSS variables
+        setTimeout(() => {
+            const style = getComputedStyle(document.documentElement);
+            console.log('🔍 CSS Debug:');
+            console.log('--current-theme:', style.getPropertyValue('--current-theme'));
+            console.log('--primary:', style.getPropertyValue('--primary'));
+            console.log('--background:', style.getPropertyValue('--background'));
+            console.log('body data-theme:', document.body.getAttribute('data-theme'));
+        }, 1000);
+    </script>    <a href="image-manager.html" id="openSettings" class="fixed bottom-4 left-4 opacity-60 hover:opacity-100 z-50" style="color: var(--color-2);"><i class="fas fa-cog fa-lg"></i></a>
 </body>
 </html>
