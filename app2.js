@@ -127,9 +127,14 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }    // Special function for playing question number audio that bypasses navigation check
     async function playQuestionNumberAudio(filePath, onEndCallback) {
-        if (!USE_SPEECH || !audioContext || !filePath) {
+        if (!USE_SPEECH || !filePath) {
             if (onEndCallback) onEndCallback();
             return Promise.resolve();
+        }
+
+        // Initialize audio context if not already done
+        if (!audioContext) {
+            initAudio();
         }
 
         // Create a new audio object for question number playback
@@ -178,23 +183,24 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
         
-    // Stop HTML5 Audio elements
-    if (currentAudio) {
-        try {
-            currentAudio.pause();
-            // Hủy bỏ callbacks
-            currentAudio.oncanplaythrough = null;
-            currentAudio.onended        = null;
-            currentAudio.onerror        = null;
-            // Reset src và abort request
-            currentAudio.src = '';
-            currentAudio.load();
-        } catch (e) {
-            console.error('Error fully stopping audio:', e);
+        // Stop HTML5 Audio elements
+        if (currentAudio) {
+            try {
+                currentAudio.pause();
+                currentAudio.currentTime = 0; // Reset to beginning
+                // Hủy bỏ callbacks
+                currentAudio.oncanplaythrough = null;
+                currentAudio.onended        = null;
+                currentAudio.onerror        = null;
+                // Reset src và abort request
+                currentAudio.src = '';
+                currentAudio.load();
+            } catch (e) {
+                console.error('Error fully stopping audio:', e);
+            }
+            currentAudio = null;
+            console.log('[STOP ALL EVENTS] Fully stopped audio element');
         }
-        currentAudio = null;
-        console.log('[STOP ALL EVENTS] Fully stopped audio element');
-    }
         
         // Stop all audio elements on the page (failsafe)
         const allAudioElements = document.querySelectorAll('audio');
@@ -571,17 +577,24 @@ document.addEventListener('DOMContentLoaded', () => {
         timesUpPopupEl.style.opacity = '0';        // Update header
         if (questionNumberEl) questionNumberEl.textContent = currentQuestionIndex + 1;
         if (questionCategoryEl) questionCategoryEl.textContent = questionData.category || 'Không có danh mục';
-        
-        // Trigger header and footer animations
+          // Trigger header and footer animations
         triggerHeaderFooterAnimation();
+          // Initialize audio context if not already initialized (needed for auto-play)
+        if (!audioContext) {
+            initAudio();
+        }
         
-        // Play question number audio if available (always play, regardless of navigation state)
-        if (questionData.speech_id_question_num && USE_SPEECH && audioContext) {
+        // Play question number audio if available (always play, regardless of any state)
+        if (questionData.speech_id_question_num && USE_SPEECH) {
             const audioPath = `speech/${questionData.speech_id_question_num}`;
-            // Create a dedicated function for question number audio that bypasses navigation check
-            playQuestionNumberAudio(audioPath).catch(err => {
-                console.warn('Could not play question number audio:', err);
-            });
+            console.log(`Attempting to play question number audio: ${audioPath}`);
+            // Always play question number audio immediately when question is rendered
+            // Use a small delay to ensure the DOM is ready and previous audio is stopped
+            setTimeout(() => {
+                playQuestionNumberAudio(audioPath).catch(err => {
+                    console.warn('Could not play question number audio:', err);
+                });
+            }, 50);
         }
         
         applyTheme(questionData.category);
@@ -1218,8 +1231,15 @@ async function displayAnswer() {
         }
     }    // --- Navigation ---
     function nextQuestion() {
-        navigationInProgress = true; // Set flag to prevent audio restart
+        console.log('nextQuestion: Starting navigation to next question');
+        
+        // Stop all ongoing events immediately
         stopAllEvents();
+        
+        // Reset states
+        sequenceInProgress = false;
+        answerShown = false;
+        navigationInProgress = true; // Set flag to prevent other audio during transition
 
         if (currentQuestionIndex < allQuestions.length - 1) {
             currentQuestionIndex++;
@@ -1228,15 +1248,21 @@ async function displayAnswer() {
             window.location.href = 'page3.html';
         }
         
-        // Clear navigation flag after a short delay to allow page rendering
+        // Clear navigation flag after a short delay to allow audio to start
         setTimeout(() => {
             navigationInProgress = false;
+            console.log('nextQuestion: Navigation flag cleared, ready for new audio');
         }, 100);
-    }
-
-    function previousQuestion() {
-        navigationInProgress = true; // Set flag to prevent audio restart
+    }    function previousQuestion() {
+        console.log('previousQuestion: Starting navigation to previous question');
+        
+        // Stop all ongoing events immediately
         stopAllEvents();
+        
+        // Reset states
+        sequenceInProgress = false;
+        answerShown = false;
+        navigationInProgress = true; // Set flag to prevent other audio during transition
 
         if (currentQuestionIndex > 0) {
             currentQuestionIndex--;
@@ -1245,9 +1271,10 @@ async function displayAnswer() {
             // If we're at the first question, navigate back to page3.html
             window.location.href = 'page3.html';        }
         
-        // Clear navigation flag after a short delay to allow page rendering
+        // Clear navigation flag after a short delay to allow audio to start
         setTimeout(() => {
             navigationInProgress = false;
+            console.log('previousQuestion: Navigation flag cleared, ready for new audio');
         }, 100);
     }
 
@@ -1453,8 +1480,8 @@ async function displayAnswer() {
             e.preventDefault();
             window.location.href = 'infovong2.html';
         }
-    });
-
-    // --- Initialization ---
+    });    // --- Initialization ---
+    // Initialize audio context early for auto-play to work
+    initAudio();
     loadQuestions();
 });
