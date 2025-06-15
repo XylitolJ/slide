@@ -132,7 +132,10 @@
             "c": "Cho bệnh nhân uống thuốc đau bụng mua ở hiệu thuốc.",
             "d": "Không để bệnh nhân ăn gì cho tới khi sức khỏe ổn định trở lại. Nếu tình trạng nặng thì phải gửi tới bệnh viện."
           },
-          "dap_an_dung": ["b", "c"],
+          "dap_an_dung": [
+            "b",
+            "c"
+          ],
           "speech_id_question_num": "CSPL_TN_5_num.wav",
           "speech_id_question": "CSPL_TN_5.wav",
           "speech_id_options_A": "CSPL_TN_5_A.wav",
@@ -150,7 +153,7 @@
           "subcategory": "Lĩnh vực PCCC",
           "type_question": "Trắc nghiệm",
           "image_id": "images/illustrative_pccc_tn_3.jpg",
-          "use_image": "Yes",
+          "use_image": "No",
           "position_image": "Right",
           "question_image": "No",
           "cau_hoi": "Anh/Chị hãy cho biết các biện pháp cơ bản trong phòng cháy?",
@@ -235,12 +238,12 @@
           "position_image": "Right",
           "question_image": "No",
           "cau_hoi": "Anh (chị) đánh dấu nội dung không chính xác trong kỹ thuật thực hành cố định gẫy xương cẳng tay tay hở?",
-            "phuong_an": {
+          "phuong_an": {
             "a": "Xử lý vết thương:<br/>• Rửa và sát khuẩn vết thương. Thấm khô.<br/>• Đặt gạc vô khuẩn che kín vết thương.<br/>• Băng vết thương:<br/>&nbsp;&nbsp;○ Có vòng cố định ban đầu và kết thúc.<br/>&nbsp;&nbsp;○ Rõ kiểu băng và dấu nhân, vòng băng sau đè 2/3 chiều rộng vòng băng trước",
             "b": "Đặt nẹp: Đặt hai nẹp ở mặt trước và sau cẳng tay, từ khuỷu tới khớp 3 ngón",
             "c": "Đặt đệm lót.",
             "d": "Buộc dây cố định nẹp:<br/>• Buộc trên và dưới ổ gãy.<br/>• Cố định cổ tay - bàn tay kiểu băng vòng xoắn.<br/>• Cố định khớp khuỷu kiểu băng số 8.<br/>• Treo tay tư thế cơ năng."
-            },
+          },
           "dap_an_dung": "d",
           "speech_id_question_num": "YT_SC_TN_2_num.wav",
           "speech_id_question": "YT_SC_TN_2.wav",
