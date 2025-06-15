@@ -1,0 +1,1650 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">    <title>Quản lý Hình ảnh Câu hỏi - ATVSV 2025</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <!-- Prettier for JSON formatting -->
+    <script src="https://unpkg.com/prettier@2.8.8/standalone.js"></script>
+    <script src="https://unpkg.com/prettier@2.8.8/parser-babel.js"></script>
+    <style>
+        .thumbnail-container {
+            width: auto;
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid #e5e7eb;
+            border-radius: 4px;
+            overflow: hidden;
+            background-color: #f9fafb;
+        }
+        
+        .thumbnail-image {
+            height: 80px;
+            width: auto;
+            object-fit: cover;
+        }
+        
+        .placeholder-thumbnail {
+            width: 80px;
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #f3f4f6;
+            color: #6b7280;
+            border-radius: 4px;
+        }
+        
+        .sidebar {
+            width: 300px;
+            height: 400px;
+            overflow-y: auto;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            background-color: white;
+        }
+        
+        .folder-item {
+            padding: 8px 12px;
+            cursor: pointer;
+            border-bottom: 1px solid #f3f4f6;
+        }
+        
+        .folder-item:hover {
+            background-color: #f9fafb;
+        }
+        
+        .folder-item.active {
+            background-color: #dbeafe;
+            color: #1e40af;
+        }
+        
+        .image-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 12px;
+            max-height: 900px;
+            overflow-y: auto;
+            padding: 12px;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            background-color: white;
+        }
+        
+        .image-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 8px;
+            border: 2px solid transparent;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: border-color 0.2s;
+        }
+        
+        .image-item:hover {
+            border-color: #d1d5db;
+        }
+        
+        .image-item.selected {
+            border-color: #3b82f6;
+            background-color: #eff6ff;
+        }
+        
+        .image-item img {
+            width: 100px;
+            height: 56px;
+            object-fit: cover;
+            border-radius: 4px;
+        }
+        
+        .image-item span {
+            font-size: 10px;
+            text-align: center;
+            margin-top: 4px;
+            word-break: break-all;
+        }
+        
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        
+        .modal-content {
+            width: 80%;
+            height: 80%;
+            background-color: white;
+            border-radius: 12px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .batch-edit-panel {
+            display: none;
+            background-color: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+        
+        .question-text {
+            max-width: 300px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Header -->
+    <div class="bg-white shadow-sm border-b">
+        <div class="container mx-auto px-4 py-4">            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-2xl font-bold text-gray-800">
+                        <i class="fas fa-images mr-2"></i>
+                        Quản lý Hình ảnh Câu hỏi
+                    </h1>                    <p class="text-sm text-gray-600 mt-1">
+                        Chỉnh sửa hình ảnh câu hỏi, sau đó click "Save All" để lưu các file đã thay đổi. Gallery tự động cập nhật mỗi 3 giây.
+                    </p>
+                </div>                <div class="flex gap-4">
+                    <button onclick="saveAllFiles()" class="save-all-btn bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-lg opacity-50" disabled>
+                        <i class="fas fa-save mr-2"></i>Save All
+                    </button>
+                    <button onclick="copyAllToClipboard()" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg">
+                        <i class="fas fa-copy mr-2"></i>Copy All
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filters and Controls -->
+    <div class="container mx-auto px-4 py-4">
+        <div class="bg-white rounded-lg shadow-sm p-4 mb-4">
+            <div class="flex items-center justify-between mb-4">
+                <div class="flex items-center gap-4">
+                    <select id="roundFilter" onchange="filterQuestions()" class="border rounded-lg px-3 py-2">
+                        <option value="">Tất cả vòng</option>
+                        <option value="1">Vòng 1</option>
+                        <option value="2">Vòng 2</option>
+                        <option value="3">Vòng 3</option>
+                    </select>
+                    <select id="categoryFilter" onchange="filterQuestions()" class="border rounded-lg px-3 py-2">
+                        <option value="">Tất cả danh mục</option>
+                    </select>
+                </div>
+                <div class="flex items-center gap-4">
+                    <label class="flex items-center">
+                        <input type="checkbox" id="selectAll" onchange="toggleSelectAll()" class="mr-2">
+                        Chọn tất cả
+                    </label>
+                    <button onclick="toggleBatchEdit()" class="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-lg">
+                        <i class="fas fa-edit mr-2"></i>Batch Edit
+                    </button>
+                </div>
+            </div>
+
+            <!-- Batch Edit Panel -->
+            <div id="batchEditPanel" class="batch-edit-panel">
+                <h3 class="text-lg font-semibold mb-4">Chỉnh sửa hàng loạt</h3>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Use Image</label>
+                        <select id="batchUseImage" class="w-full border rounded px-3 py-2">
+                            <option value="">Không thay đổi</option>
+                            <option value="Yes">Yes</option>
+                            <option value="No">No</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Position Image</label>
+                        <select id="batchPositionImage" class="w-full border rounded px-3 py-2">
+                            <option value="">Không thay đổi</option>
+                            <option value="Left">Left</option>
+                            <option value="Right">Right</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Question Image</label>
+                        <select id="batchQuestionImage" class="w-full border rounded px-3 py-2">
+                            <option value="">Không thay đổi</option>
+                            <option value="Yes">Yes</option>
+                            <option value="No">No</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-1">BG Overlay</label>
+                        <select id="batchBgOverlay" class="w-full border rounded px-3 py-2">
+                            <option value="">Không thay đổi</option>
+                            <option value="null">None</option>
+                            <option value="gradient">Gradient</option>
+                            <option value="stripes">Stripes</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="mt-4 flex gap-4">
+                    <button onclick="showImageGallery('batch', 'image_id')" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded">
+                        Gán ảnh chính
+                    </button>
+                    <button onclick="showImageGallery('batch', 'bg_image')" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded">
+                        Gán ảnh nền
+                    </button>
+                    <button onclick="applyBatchEdit()" class="bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded">
+                        Áp dụng
+                    </button>
+                    <button onclick="toggleBatchEdit()" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded">
+                        Hủy
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Questions Table -->
+        <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+            <table class="w-full">                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-4 py-3 text-left"></th>
+                        <th class="px-4 py-3 text-left">ID</th>
+                        <th class="px-4 py-3 text-left">Vòng</th>
+                        <th class="px-4 py-3 text-left">Câu số</th>
+                        <th class="px-4 py-3 text-left">Danh mục</th>
+                        <th class="px-4 py-3 text-left">Câu hỏi</th>
+                        <th class="px-4 py-3 text-left">Ảnh chính</th>
+                        <th class="px-4 py-3 text-left">Ảnh nền</th>
+                        <th class="px-4 py-3 text-left">Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody id="questionsTableBody">
+                    <!-- Questions will be populated here -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Edit Modal -->
+    <div id="editModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="flex items-center justify-between p-4 border-b">
+                <h2 class="text-xl font-semibold">Chỉnh sửa hình ảnh câu hỏi</h2>
+                <button onclick="closeEditModal()" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            <div class="flex-1 p-4 overflow-y-auto">
+                <form id="editForm">
+                    <input type="hidden" id="editIndex">
+                    
+                    <div class="grid grid-cols-2 gap-6">
+                        <div>
+                            <div class="mb-4">
+                                <label class="block text-sm font-medium mb-2">ID câu hỏi</label>
+                                <input type="text" id="editId" readonly class="w-full border rounded-lg px-3 py-2 bg-gray-100">
+                            </div>
+
+                            <div class="mb-4">
+                                <label class="block text-sm font-medium mb-2">Nội dung câu hỏi</label>
+                                <textarea id="editQuestion" readonly rows="3" class="w-full border rounded-lg px-3 py-2 bg-gray-100"></textarea>
+                            </div>
+
+                            <h3 class="text-lg font-semibold mb-3">Cài đặt ảnh</h3>
+
+                            <div class="mb-4">
+                                <label class="flex items-center">
+                                    <input type="checkbox" id="editUseImage" class="mr-2">
+                                    Sử dụng ảnh
+                                </label>
+                            </div>
+
+                            <div class="mb-4">
+                                <label class="block text-sm font-medium mb-2">Ảnh chính</label>
+                                <div class="flex items-center gap-2">
+                                    <div id="editImagePreview" class="thumbnail-container">
+                                        <div class="placeholder-thumbnail">
+                                            <i class="fas fa-image"></i>
+                                        </div>
+                                    </div>
+                                    <button type="button" onclick="showImageGallery('edit', 'image_id')" class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-2 rounded">
+                                        Chọn ảnh
+                                    </button>
+                                </div>
+                                <input type="hidden" id="editImageId">
+                            </div>
+
+                            <div class="mb-4">
+                                <label class="block text-sm font-medium mb-2">Vị trí ảnh</label>
+                                <select id="editPositionImage" class="w-full border rounded-lg px-3 py-2">
+                                    <option value="Left">Left</option>
+                                    <option value="Right">Right</option>
+                                </select>
+                            </div>
+
+                            <div class="mb-4">
+                                <label class="flex items-center">
+                                    <input type="checkbox" id="editQuestionImage" class="mr-2">
+                                    Question Image
+                                </label>
+                            </div>
+                        </div>
+
+                        <div>
+                            <h3 class="text-lg font-semibold mb-3">Cài đặt nền</h3>
+
+                            <div class="mb-4">
+                                <label class="block text-sm font-medium mb-2">Ảnh nền</label>
+                                <div class="flex items-center gap-2">
+                                    <div id="editBgImagePreview" class="thumbnail-container">
+                                        <div class="placeholder-thumbnail">
+                                            <i class="fas fa-image"></i>
+                                        </div>
+                                    </div>
+                                    <button type="button" onclick="showImageGallery('edit', 'bg_image')" class="bg-green-500 hover:bg-green-600 text-white px-3 py-2 rounded">
+                                        Chọn ảnh nền
+                                    </button>
+                                </div>
+                                <input type="hidden" id="editBgImage">
+                            </div>
+
+                            <div class="mb-4">
+                                <label class="block text-sm font-medium mb-2">Overlay nền</label>
+                                <select id="editBgOverlay" class="w-full border rounded-lg px-3 py-2">
+                                    <option value="null">None</option>
+                                    <option value="gradient">Gradient</option>
+                                    <option value="stripes">Stripes</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="p-4 border-t flex justify-end gap-4">
+                <button onclick="closeEditModal()" class="bg-gray-500 hover:bg-gray-600 text-white px-6 py-2 rounded-lg">
+                    Hủy
+                </button>
+                <button onclick="saveQuestion()" class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-lg">
+                    Lưu
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Image Gallery Modal -->
+    <div id="imageGalleryModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="flex items-center justify-between p-4 border-b">
+                <h2 class="text-xl font-semibold">Chọn hình ảnh</h2>
+                <button onclick="closeImageGallery()" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            <div class="flex-1 flex">
+                <!-- Sidebar -->                <div class="w-80 p-4 border-r">
+                    <div class="mb-4">
+                        <button onclick="showLocalFileUpload()" class="w-full bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg mb-2">
+                            <i class="fas fa-upload mr-2"></i>Upload từ máy tính
+                        </button>
+                        <button onclick="manualRefreshGallery()" class="w-full bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg mb-4">
+                            <i class="fas fa-sync mr-2"></i>Refresh Gallery
+                        </button>
+                        <input type="file" id="localFileInput" accept=".jpg,.jpeg,.png,.svg,.webp" style="display: none;" onchange="handleLocalFileUpload()">
+                    </div>
+                    
+                    <h3 class="font-semibold mb-2">Thư mục</h3>
+                    <div id="folderTree" class="sidebar">
+                        <!-- Folder tree will be populated here -->
+                    </div>
+                </div>
+                
+                <!-- Image Grid -->
+                <div class="flex-1 p-4">
+                    <div id="imageGrid" class="image-grid">
+                        <!-- Images will be populated here -->
+                    </div>
+                </div>
+            </div>
+            <div class="p-4 border-t flex justify-end gap-4">
+                <button onclick="closeImageGallery()" class="bg-gray-500 hover:bg-gray-600 text-white px-6 py-2 rounded-lg">
+                    Hủy
+                </button>
+                <button onclick="selectImage()" class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-lg">
+                    Chọn
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast notification -->
+    <div id="toast" class="fixed top-4 right-4 z-50 transform translate-x-full transition-transform duration-300">
+        <div class="bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg">
+            <span id="toastMessage"></span>
+        </div>
+    </div>
+
+    <script>        
+        // Check if Prettier is loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            if (typeof prettier !== 'undefined') {
+                console.log('✅ Prettier loaded successfully');
+            } else {
+                console.warn('⚠️ Prettier failed to load, will fallback to JSON.stringify');
+            }
+        });
+
+        // Global variables
+        let allQuestions = [];
+        let filteredQuestions = [];
+        let vong1Data = null;
+        let vong2Data = null;
+        let vong3Data = null;
+        let selectedQuestions = new Set();
+        let currentEditIndex = -1;
+        let currentGalleryContext = null;
+        let currentGalleryField = null;
+        let selectedImagePath = null;
+        let availableImages = {};
+        
+        // Track original data and changes
+        let originalData = {
+            vong1: null,
+            vong2: null,
+            vong3: null
+        };
+        let changedQuestions = new Set();        // Initialize application
+        async function init() {
+            try {
+                await loadAllQuestions();
+                populateCategoryFilter();
+                displayQuestions();
+                await scanImageFolders();
+                updateSaveButtonState(); // Initialize save button state
+                console.log('Application initialized successfully');
+            } catch (error) {
+                console.error('Error initializing application:', error);
+                showToast('Lỗi khởi tạo ứng dụng: ' + error.message, 'error');
+            }
+        }// Load questions from all JSON files
+        async function loadAllQuestions() {
+            try {
+                // Load question_sets.json first to get question order
+                const questionSetsResponse = await fetch('question_sets.json');
+                const questionSets = await questionSetsResponse.json();
+                
+                // Load all question data files and store original data
+                const vong1Response = await fetch('vong1.json');
+                const vong2Response = await fetch('vong2.json');
+                const vong3Response = await fetch('vong3.json');
+                
+                if (vong1Response.ok) {
+                    originalData.vong1 = await vong1Response.json();
+                    vong1Data = JSON.parse(JSON.stringify(originalData.vong1)); // Deep clone
+                }
+                
+                if (vong2Response.ok) {
+                    originalData.vong2 = await vong2Response.json();
+                    vong2Data = JSON.parse(JSON.stringify(originalData.vong2)); // Deep clone
+                }
+                
+                if (vong3Response.ok) {
+                    originalData.vong3 = await vong3Response.json();
+                    vong3Data = JSON.parse(JSON.stringify(originalData.vong3)); // Deep clone
+                }
+
+                // Create question lookup maps
+                const questionMaps = {
+                    1: createQuestionMap(vong1Data),
+                    2: createQuestionMap(vong2Data),
+                    3: createQuestionMap(vong3Data)
+                };
+
+                // Build ordered questions list based on question_sets.json
+                allQuestions = [];
+                buildOrderedQuestionsList(questionSets, questionMaps);
+
+                filteredQuestions = [...allQuestions];
+                console.log(`Loaded ${allQuestions.length} questions in order from question_sets.json`);
+            } catch (error) {
+                throw new Error('Không thể tải file câu hỏi: ' + error.message);
+            }
+        }// Populate category filter
+        function populateCategoryFilter() {
+            const categoryFilter = document.getElementById('categoryFilter');
+            const categories = [...new Set(allQuestions.map(q => q.category).filter(Boolean))];
+            
+            categories.forEach(category => {
+                const option = document.createElement('option');
+                option.value = category;
+                option.textContent = category;
+                categoryFilter.appendChild(option);
+            });
+        }
+
+        // Filter questions based on selected criteria
+        function filterQuestions() {
+            const roundFilter = document.getElementById('roundFilter').value;
+            const categoryFilter = document.getElementById('categoryFilter').value;
+
+            filteredQuestions = allQuestions.filter(question => {
+                const matchesRound = !roundFilter || question._round.toString() === roundFilter;
+                const matchesCategory = !categoryFilter || question.category === categoryFilter;
+                return matchesRound && matchesCategory;
+            });
+
+            displayQuestions();
+            // Clear selections when filter changes
+            selectedQuestions.clear();
+            document.getElementById('selectAll').checked = false;
+        }        // Display questions in table
+        function displayQuestions() {
+            const tbody = document.getElementById('questionsTableBody');
+            tbody.innerHTML = '';
+
+            filteredQuestions.forEach((question, index) => {
+                const row = document.createElement('tr');
+                row.className = 'border-b hover:bg-gray-50';
+                
+                const originalIndex = allQuestions.indexOf(question);
+                const isSelected = selectedQuestions.has(originalIndex);
+                
+                // Generate question number display
+                let questionNumberDisplay = 'N/A';
+                if (question._round === 3 && question._domain) {
+                    questionNumberDisplay = `${question._domain.toUpperCase()} - ${question._questionNumber}/${question._totalInSet}`;
+                } else if (question._setNumber && question._questionNumber) {
+                    questionNumberDisplay = `Set ${question._setNumber} - ${question._questionNumber}/${question._totalInSet}`;
+                } else if (question._questionNumber) {
+                    questionNumberDisplay = `${question._questionNumber}/${question._totalInSet || '?'}`;
+                }
+                
+                row.innerHTML = `
+                    <td class="px-4 py-3">
+                        <input type="checkbox" ${isSelected ? 'checked' : ''} 
+                               onchange="toggleQuestionSelection(${originalIndex})" 
+                               class="question-checkbox">
+                    </td>
+                    <td class="px-4 py-3 font-mono text-sm">${question.id || 'N/A'}</td>
+                    <td class="px-4 py-3">${question._round}</td>
+                    <td class="px-4 py-3 text-sm font-medium">${questionNumberDisplay}</td>
+                    <td class="px-4 py-3">${question.category || 'N/A'}</td>
+                    <td class="px-4 py-3">
+                        <div class="question-text" title="${question.cau_hoi || ''}">
+                            ${truncateText(question.cau_hoi || '', 100)}
+                        </div>
+                    </td>
+                    <td class="px-4 py-3">
+                        ${createThumbnail(question.image_id)}
+                    </td>
+                    <td class="px-4 py-3">
+                        ${createThumbnail(question.bg_image)}
+                    </td>
+                    <td class="px-4 py-3">
+                        <button onclick="editQuestion(${originalIndex})" 
+                                class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                    </td>
+                `;
+                
+                tbody.appendChild(row);
+            });
+        }// Create thumbnail HTML
+        function createThumbnail(imagePath) {
+            if (!imagePath || imagePath === 'null') {
+                return `<div class="placeholder-thumbnail"><i class="fas fa-image"></i></div>`;
+            }
+            
+            return `
+                <div class="thumbnail-container">
+                    <img src="${imagePath}" 
+                         class="thumbnail-image" 
+                         onload="this.style.display='block'" 
+                         onerror="this.style.display='none'; this.parentElement.innerHTML='<div class=&quot;placeholder-thumbnail&quot;><i class=&quot;fas fa-image&quot;></i></div>'">
+                </div>
+            `;
+        }
+
+        // Truncate text
+        function truncateText(text, maxLength) {
+            if (!text) return '';
+            return text.length > maxLength ? text.substring(0, maxLength) + '...' : text;
+        }
+
+        // Toggle question selection
+        function toggleQuestionSelection(index) {
+            if (selectedQuestions.has(index)) {
+                selectedQuestions.delete(index);
+            } else {
+                selectedQuestions.add(index);
+            }
+            
+            // Update select all checkbox
+            const totalVisible = filteredQuestions.length;
+            const selectedVisible = filteredQuestions.filter(q => selectedQuestions.has(allQuestions.indexOf(q))).length;
+            document.getElementById('selectAll').checked = selectedVisible === totalVisible && totalVisible > 0;
+        }
+
+        // Toggle select all
+        function toggleSelectAll() {
+            const selectAll = document.getElementById('selectAll').checked;
+            
+            if (selectAll) {
+                filteredQuestions.forEach(question => {
+                    selectedQuestions.add(allQuestions.indexOf(question));
+                });
+            } else {
+                filteredQuestions.forEach(question => {
+                    selectedQuestions.delete(allQuestions.indexOf(question));
+                });
+            }
+            
+            displayQuestions();
+        }
+
+        // Toggle batch edit panel
+        function toggleBatchEdit() {
+            const panel = document.getElementById('batchEditPanel');
+            const isVisible = panel.style.display !== 'none';
+            panel.style.display = isVisible ? 'none' : 'block';
+            
+            if (isVisible) {
+                // Reset batch edit form
+                document.getElementById('batchUseImage').value = '';
+                document.getElementById('batchPositionImage').value = '';
+                document.getElementById('batchQuestionImage').value = '';
+                document.getElementById('batchBgOverlay').value = '';
+            }
+        }        // Apply batch edit
+        function applyBatchEdit() {
+            if (selectedQuestions.size === 0) {
+                showToast('Vui lòng chọn ít nhất một câu hỏi', 'error');
+                return;
+            }
+
+            const useImage = document.getElementById('batchUseImage').value;
+            const positionImage = document.getElementById('batchPositionImage').value;
+            const questionImage = document.getElementById('batchQuestionImage').value;
+            const bgOverlay = document.getElementById('batchBgOverlay').value;
+
+            let changedQuestionsCount = 0;
+            selectedQuestions.forEach(index => {
+                const question = allQuestions[index];
+                
+                // Store original values for comparison
+                const originalValues = {
+                    use_image: question.use_image,
+                    position_image: question.position_image,
+                    question_image: question.question_image,
+                    bg_image_overlay: question.bg_image_overlay
+                };
+                
+                // Apply changes
+                if (useImage) {
+                    question.use_image = useImage;
+                }
+                if (positionImage) {
+                    question.position_image = positionImage;
+                }
+                if (questionImage) {
+                    question.question_image = questionImage;
+                }
+                if (bgOverlay) {
+                    question.bg_image_overlay = bgOverlay === 'null' ? null : bgOverlay;
+                }
+                
+                // Check if anything actually changed
+                let hasChanges = false;
+                for (const key in originalValues) {
+                    if (originalValues[key] !== question[key]) {
+                        hasChanges = true;
+                        break;
+                    }
+                }
+                
+                if (hasChanges) {
+                    trackQuestionChange(question.id);
+                    changedQuestionsCount++;
+                }
+            });
+
+            displayQuestions();
+            toggleBatchEdit();
+            showToast(`Đã cập nhật ${changedQuestionsCount} câu hỏi`);
+        }
+
+        // Edit single question
+        function editQuestion(index) {
+            currentEditIndex = index;
+            const question = allQuestions[index];
+            
+            // Populate form
+            document.getElementById('editIndex').value = index;
+            document.getElementById('editId').value = question.id || '';
+            document.getElementById('editQuestion').value = question.cau_hoi || '';
+            document.getElementById('editUseImage').checked = question.use_image === 'Yes';
+            document.getElementById('editImageId').value = question.image_id || '';
+            document.getElementById('editPositionImage').value = question.position_image || 'Right';
+            document.getElementById('editQuestionImage').checked = question.question_image === 'Yes';
+            document.getElementById('editBgImage').value = question.bg_image || '';
+            document.getElementById('editBgOverlay').value = question.bg_image_overlay === null ? 'null' : (question.bg_image_overlay || 'null');
+            
+            // Update image previews
+            updateImagePreview('editImagePreview', question.image_id);
+            updateImagePreview('editBgImagePreview', question.bg_image);
+            
+            // Show modal
+            document.getElementById('editModal').style.display = 'flex';
+        }        // Update image preview
+        function updateImagePreview(containerId, imagePath) {
+            const container = document.getElementById(containerId);
+            if (!imagePath || imagePath === 'null') {
+                container.innerHTML = '<div class="placeholder-thumbnail"><i class="fas fa-image"></i></div>';
+            } else {
+                container.innerHTML = `
+                    <img src="${imagePath}" 
+                         class="thumbnail-image" 
+                         onerror="this.parentElement.innerHTML='<div class=&quot;placeholder-thumbnail&quot;><i class=&quot;fas fa-image&quot;></i></div>'">
+                `;
+            }
+        }        // Save question changes
+        function saveQuestion() {
+            const index = parseInt(document.getElementById('editIndex').value);
+            const question = allQuestions[index];
+            
+            // Store original values for comparison
+            const originalValues = {
+                use_image: question.use_image,
+                image_id: question.image_id,
+                position_image: question.position_image,
+                question_image: question.question_image,
+                bg_image: question.bg_image,
+                bg_image_overlay: question.bg_image_overlay
+            };
+            
+            // Update question properties
+            question.use_image = document.getElementById('editUseImage').checked ? 'Yes' : 'No';
+            question.image_id = document.getElementById('editImageId').value || null;
+            question.position_image = document.getElementById('editPositionImage').value;
+            question.question_image = document.getElementById('editQuestionImage').checked ? 'Yes' : 'No';
+            question.bg_image = document.getElementById('editBgImage').value || null;
+            const bgOverlayValue = document.getElementById('editBgOverlay').value;
+            question.bg_image_overlay = bgOverlayValue === 'null' ? null : bgOverlayValue;
+            
+            // Check if anything actually changed
+            let hasChanges = false;
+            for (const key in originalValues) {
+                if (originalValues[key] !== question[key]) {
+                    hasChanges = true;
+                    break;
+                }
+            }
+            
+            if (hasChanges) {
+                trackQuestionChange(question.id);
+                showToast('Đã lưu thay đổi câu hỏi');
+            } else {
+                showToast('Không có thay đổi nào');
+            }
+            
+            closeEditModal();
+            displayQuestions();
+        }
+
+        // Close edit modal
+        function closeEditModal() {
+            document.getElementById('editModal').style.display = 'none';
+            currentEditIndex = -1;
+        }        // Scan image folders
+        async function scanImageFolders() {
+            // Try to load from image index file first
+            try {
+                const response = await fetch('images_index.json');
+                if (response.ok) {
+                    availableImages = await response.json();
+                    console.log('Loaded images from index file');
+                    return;
+                }
+            } catch (error) {
+                console.log('No image index file found, using fallback method');
+            }
+
+            // Fallback: Use extended mock data with various formats
+            availableImages = {
+                'images': [
+                    'bg1.jpg', 'bg2.jpg', 'bg3.png', 'logo.png', 'icon.svg', 'banner.webp'
+                ],
+                'images/bg': [
+                    'bg1.jpg', 'bg2.jpg', 'bg3.jpg', 'bg4.png', 'bg5.png', 'gradient.svg', 'pattern.webp'
+                ],
+                'images/cauhoi': [
+                    'v1_image1.png', 'v2_image1.png', 'v3_yte.png', 'safety1.jpg', 'safety2.jpg', 'diagram.svg'
+                ],
+                'images/illustrative': [
+                    'icon1.svg', 'icon2.svg', 'warning.png', 'check.png', 'arrow.svg', 'logo.webp'
+                ],
+                'images/image_upload': []
+            };
+            
+            // Try to auto-detect actual images by testing if they exist
+            await tryDetectRealImages();
+        }
+
+        // Try to detect real images in folders
+        async function tryDetectRealImages() {
+            const commonExtensions = ['jpg', 'jpeg', 'png', 'svg', 'webp'];
+            const folders = ['images', 'images/bg', 'images/cauhoi', 'images/illustrative'];
+            
+            for (const folder of folders) {
+                const detectedImages = [];
+                
+                // Test some common filenames with different extensions
+                const commonNames = ['bg1', 'bg2', 'bg3', 'image1', 'image2', 'logo', 'icon', 'safety', 'warning'];
+                
+                for (const name of commonNames) {
+                    for (const ext of commonExtensions) {
+                        const testPath = `${folder}/${name}.${ext}`;
+                        if (await imageExists(testPath)) {
+                            detectedImages.push(`${name}.${ext}`);
+                        }
+                    }
+                }
+                
+                // If we found real images, use them instead of mock data
+                if (detectedImages.length > 0) {
+                    availableImages[folder] = detectedImages;
+                }
+            }
+        }
+
+        // Check if image exists
+        function imageExists(path) {
+            return new Promise((resolve) => {
+                const img = new Image();
+                img.onload = () => resolve(true);
+                img.onerror = () => resolve(false);
+                img.src = path;
+                
+                // Timeout after 1 second
+                setTimeout(() => resolve(false), 1000);
+            });
+        }        // Show image gallery
+        function showImageGallery(context, field) {
+            currentGalleryContext = context;
+            currentGalleryField = field;
+            selectedImagePath = null;
+            
+            populateFolderTree();
+            showImagesInFolder('images');
+            
+            // Start auto-refresh
+            startGalleryAutoRefresh();
+            
+            document.getElementById('imageGalleryModal').style.display = 'flex';
+        }
+
+        // Populate folder tree
+        function populateFolderTree() {
+            const folderTree = document.getElementById('folderTree');
+            folderTree.innerHTML = '';
+            
+            Object.keys(availableImages).forEach(folder => {
+                const folderItem = document.createElement('div');
+                folderItem.className = 'folder-item';
+                folderItem.innerHTML = `
+                    <i class="fas fa-folder mr-2"></i>
+                    ${folder.split('/').pop()}
+                `;
+                folderItem.dataset.folder = folder; // Store folder path in data attribute
+                folderItem.onclick = () => showImagesInFolder(folder);
+                folderTree.appendChild(folderItem);
+            });
+        }
+
+        // Show images in folder
+        function showImagesInFolder(folder) {
+            // Update active folder
+            document.querySelectorAll('.folder-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            event?.target?.classList.add('active');
+            
+            const imageGrid = document.getElementById('imageGrid');
+            imageGrid.innerHTML = '';
+            
+            const images = availableImages[folder] || [];
+            images.forEach(imageName => {
+                const imagePath = `${folder}/${imageName}`;
+                const imageItem = document.createElement('div');
+                imageItem.className = 'image-item';
+                imageItem.onclick = () => selectImageFromGrid(imagePath, imageItem);
+                
+                imageItem.innerHTML = `
+                    <img src="${imagePath}" 
+                         onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjU2IiB2aWV3Qm94PSIwIDAgMTAwIDU2IiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxyZWN0IHdpZHRoPSIxMDAiIGhlaWdodD0iNTYiIGZpbGw9IiNmM2Y0ZjYiLz48dGV4dCB4PSI1MCIgeT0iMzAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZpbGw9IiM2YjcyODAiIGZvbnQtc2l6ZT0iMTIiPk5vIEltYWdlPC90ZXh0Pjwvc3ZnPg=='"
+                         alt="${imageName}">
+                    <span>${imageName}</span>
+                `;
+                
+                imageGrid.appendChild(imageItem);
+            });
+        }
+
+        // Select image from grid
+        function selectImageFromGrid(imagePath, element) {
+            // Remove previous selection
+            document.querySelectorAll('.image-item').forEach(item => {
+                item.classList.remove('selected');
+            });
+            
+            // Add selection to clicked item
+            element.classList.add('selected');
+            selectedImagePath = imagePath;
+        }
+
+        // Select image (confirm selection)
+        function selectImage() {
+            if (!selectedImagePath) {
+                showToast('Vui lòng chọn một hình ảnh', 'error');
+                return;
+            }
+            
+            if (currentGalleryContext === 'edit') {
+                // Update edit form
+                if (currentGalleryField === 'image_id') {
+                    document.getElementById('editImageId').value = selectedImagePath;
+                    updateImagePreview('editImagePreview', selectedImagePath);
+                } else if (currentGalleryField === 'bg_image') {
+                    document.getElementById('editBgImage').value = selectedImagePath;
+                    updateImagePreview('editBgImagePreview', selectedImagePath);
+                }
+            } else if (currentGalleryContext === 'batch') {
+                // Apply to selected questions
+                if (selectedQuestions.size === 0) {
+                    showToast('Vui lòng chọn ít nhất một câu hỏi', 'error');
+                    return;
+                }
+                
+                selectedQuestions.forEach(index => {
+                    const question = allQuestions[index];
+                    question[currentGalleryField] = selectedImagePath;
+                });
+                
+                displayQuestions();
+                showToast(`Đã gán ảnh cho ${selectedQuestions.size} câu hỏi`);
+            }
+            
+            closeImageGallery();
+        }
+
+        // Close image gallery
+        function closeImageGallery() {
+            document.getElementById('imageGalleryModal').style.display = 'none';
+            currentGalleryContext = null;
+            currentGalleryField = null;
+            selectedImagePath = null;
+        }
+
+        // Show local file upload
+        function showLocalFileUpload() {
+            document.getElementById('localFileInput').click();
+        }
+
+        // Handle local file upload
+        async function handleLocalFileUpload() {
+            const fileInput = document.getElementById('localFileInput');
+            const files = Array.from(fileInput.files);
+            
+            if (files.length === 0) return;
+            
+            // Create image_upload folder if not exists
+            if (!availableImages['images/image_upload']) {
+                availableImages['images/image_upload'] = [];
+            }
+            
+            for (const file of files) {
+                const timestamp = Date.now();
+                const newFileName = `upload_${timestamp}_${file.name}`;
+                
+                // In a real implementation, you would upload the file to server
+                // For now, we'll just simulate adding it to the list
+                availableImages['images/image_upload'].push(newFileName);
+                
+                // Create object URL for immediate use
+                const objectURL = URL.createObjectURL(file);
+                // Store the object URL temporarily (in real app, this would be the server path)
+                availableImages[`images/image_upload/${newFileName}`] = objectURL;
+            }
+            
+            // Refresh folder tree and show uploaded images
+            populateFolderTree();
+            showImagesInFolder('images/image_upload');
+            
+            showToast(`Đã upload ${files.length} file`);
+        }        // Save all files
+        async function saveAllFiles() {
+            if (changedQuestions.size === 0) {
+                showToast('Không có thay đổi nào để lưu', 'error');
+                return;
+            }
+            
+            try {
+                const changedFiles = getChangedFilesData();
+                const fileCount = Object.keys(changedFiles).length;
+                
+                if (fileCount === 0) {
+                    showToast('Không có file nào cần lưu', 'error');
+                    return;
+                }
+                
+                // Check if File System Access API is supported
+                if ('showSaveFilePicker' in window) {
+                    for (const [filename, data] of Object.entries(changedFiles)) {
+                        await saveFileWithAPI(filename, data);
+                    }
+                } else {
+                    // Fallback to download
+                    for (const [filename, data] of Object.entries(changedFiles)) {
+                        downloadFile(data, filename);
+                        await new Promise(resolve => setTimeout(resolve, 100)); // Small delay between downloads
+                    }
+                }
+                
+                showToast(`Đã lưu ${fileCount} file đã thay đổi`);
+                
+                // Clear changed tracking after successful save
+                changedQuestions.clear();
+                updateSaveButtonState();
+                
+            } catch (error) {
+                console.error('Error saving files:', error);
+                showToast('Lỗi khi lưu file: ' + error.message, 'error');
+            }
+        }        // Save with File System Access API
+        async function saveWithFileSystemAPI(data, suggestedName) {
+            try {
+                const fileHandle = await window.showSaveFilePicker({
+                    suggestedName: suggestedName,
+                    types: [{
+                        description: 'JSON files',
+                        accept: { 'application/json': ['.json'] }
+                    }]
+                });
+                  const writable = await fileHandle.createWritable();
+                const formattedContent = formatJSONWithPrettier(data);
+                await writable.write(formattedContent);
+                await writable.close();
+                
+                return true;
+            } catch (error) {
+                if (error.name !== 'AbortError') {
+                    throw error;
+                }
+                return false;
+            }
+        }
+
+        // Format JSON với Prettier và custom handling cho arrays ngắn
+        function formatJSONWithPrettier(data) {
+            try {
+                // Prettier config tương tự VS Code
+                const prettierConfig = {
+                    parser: 'json',
+                    tabWidth: 2,
+                    useTabs: false,
+                    printWidth: 80,
+                    trailingComma: 'none',
+                    bracketSpacing: true,
+                    semi: true,
+                    singleQuote: false
+                };
+
+                // Format với Prettier
+                const jsonString = JSON.stringify(data);
+                let formatted = prettier.format(jsonString, prettierConfig);
+                
+                // Custom post-processing để compact short arrays như dap_an_dung
+                formatted = formatted.replace(
+                    /"dap_an_dung":\s*\[\s*\n(\s*"[a-h]",?\s*\n)+\s*\]/g,
+                    (match) => {
+                        const values = match.match(/"[a-h]"/g);
+                        return `"dap_an_dung": [${values.join(', ')}]`;
+                    }
+                );
+                
+                // Compact các arrays ngắn khác (≤ 5 elements, mỗi element ≤ 10 chars)
+                formatted = formatted.replace(
+                    /:\s*\[\s*\n(\s*"[^"]{1,10}",?\s*\n){1,5}\s*\]/g,
+                    (match) => {
+                        const values = match.match(/"[^"]*"/g);
+                        if (values && values.length <= 5) {
+                            const key = match.split(':')[0].trim();
+                            return `${key}: [${values.join(', ')}]`;
+                        }
+                        return match;
+                    }
+                );
+                
+                return formatted;
+            } catch (error) {
+                console.warn('Prettier format failed, fallback to JSON.stringify:', error);
+                return JSON.stringify(data, null, 2);
+            }
+        }        // Helper function to download file
+        function downloadFile(data, filename) {
+            const formattedContent = formatJSONWithPrettier(data);
+            const blob = new Blob([formattedContent], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        // Save round data (kept for backward compatibility)
+        function saveRound(round) {
+            try {
+                let dataToSave;
+                let filename;
+                
+                if (round === 1) {
+                    dataToSave = reconstructVong1Data();
+                    filename = 'vong1.json';
+                } else if (round === 2) {
+                    dataToSave = reconstructVong2Data();
+                    filename = 'vong2.json';
+                } else if (round === 3) {
+                    dataToSave = reconstructVong3Data();
+                    filename = 'vong3.json';
+                }
+                
+                downloadFile(dataToSave, filename);
+                showToast(`Đã lưu ${filename}`);
+            } catch (error) {
+                console.error('Error saving round:', error);
+                showToast('Lỗi khi lưu file: ' + error.message, 'error');
+            }
+        }
+
+        // Reconstruct vong1 data
+        function reconstructVong1Data() {
+            const result = JSON.parse(JSON.stringify(vong1Data));
+            
+            // Update questions in their original positions
+            const vong1Questions = allQuestions.filter(q => q._round === 1);
+            
+            function updateNestedStructure(obj, path = []) {
+                if (Array.isArray(obj)) {
+                    obj.forEach((item, index) => {
+                        const question = vong1Questions.find(q => 
+                            JSON.stringify(q._path) === JSON.stringify(path) && 
+                            q._originalIndex === index
+                        );
+                        if (question) {
+                            // Remove metadata before saving
+                            const cleanQuestion = { ...question };
+                            delete cleanQuestion._round;
+                            delete cleanQuestion._originalIndex;
+                            delete cleanQuestion._path;
+                            Object.assign(item, cleanQuestion);
+                        }
+                    });
+                } else if (obj && typeof obj === 'object') {
+                    for (const [key, value] of Object.entries(obj)) {
+                        updateNestedStructure(value, [...path, key]);
+                    }
+                }
+            }
+            
+            updateNestedStructure(result);
+            return result;
+        }
+
+        // Reconstruct vong2 data
+        function reconstructVong2Data() {
+            const result = JSON.parse(JSON.stringify(vong2Data));
+            
+            const vong2Questions = allQuestions.filter(q => q._round === 2);
+            
+            function updateNestedStructure(obj, path = []) {
+                if (Array.isArray(obj)) {
+                    obj.forEach((item, index) => {
+                        const question = vong2Questions.find(q => 
+                            JSON.stringify(q._path) === JSON.stringify(path) && 
+                            q._originalIndex === index
+                        );
+                        if (question) {
+                            const cleanQuestion = { ...question };
+                            delete cleanQuestion._round;
+                            delete cleanQuestion._originalIndex;
+                            delete cleanQuestion._path;
+                            Object.assign(item, cleanQuestion);
+                        }
+                    });
+                } else if (obj && typeof obj === 'object') {
+                    for (const [key, value] of Object.entries(obj)) {
+                        updateNestedStructure(value, [...path, key]);
+                    }
+                }
+            }
+            
+            updateNestedStructure(result);
+            return result;
+        }
+
+        // Reconstruct vong3 data
+        function reconstructVong3Data() {
+            const result = JSON.parse(JSON.stringify(vong3Data));
+            
+            const vong3Questions = allQuestions.filter(q => q._round === 3);
+            
+            function updateNestedStructure(obj, path = []) {
+                if (Array.isArray(obj)) {
+                    obj.forEach((item, index) => {
+                        const question = vong3Questions.find(q => 
+                            JSON.stringify(q._path) === JSON.stringify(path) && 
+                            q._originalIndex === index
+                        );
+                        if (question) {
+                            const cleanQuestion = { ...question };
+                            delete cleanQuestion._round;
+                            delete cleanQuestion._originalIndex;
+                            delete cleanQuestion._path;
+                            Object.assign(item, cleanQuestion);
+                        }
+                    });
+                } else if (obj && typeof obj === 'object') {
+                    for (const [key, value] of Object.entries(obj)) {
+                        updateNestedStructure(value, [...path, key]);
+                    }
+                }
+            }
+            
+            updateNestedStructure(result);
+            return result;
+        }
+
+        // Create question map from JSON data
+        function createQuestionMap(data) {
+            const questionMap = new Map();
+            
+            function findQuestions(obj, path = []) {
+                if (Array.isArray(obj)) {
+                    obj.forEach((question, index) => {
+                        if (question && typeof question === 'object' && question.id) {
+                            question._originalIndex = index;
+                            question._path = [...path];
+                            questionMap.set(question.id, question);
+                        }
+                    });
+                } else if (obj && typeof obj === 'object') {
+                    for (const [key, value] of Object.entries(obj)) {
+                        findQuestions(value, [...path, key]);
+                    }
+                }
+            }
+            
+            findQuestions(data);
+            return questionMap;
+        }
+
+        // Build ordered questions list based on question_sets.json
+        function buildOrderedQuestionsList(questionSets, questionMaps) {
+            // Process Vong 1
+            if (questionSets.vong1) {
+                Object.entries(questionSets.vong1).forEach(([setNumber, questionIds]) => {
+                    questionIds.forEach((questionId, index) => {
+                        const question = questionMaps[1].get(questionId);
+                        if (question) {
+                            const orderedQuestion = { ...question };
+                            orderedQuestion._round = 1;
+                            orderedQuestion._setNumber = setNumber;
+                            orderedQuestion._questionNumber = index + 1;
+                            orderedQuestion._totalInSet = questionIds.length;
+                            allQuestions.push(orderedQuestion);
+                        } else {
+                            console.warn(`Question ${questionId} not found in vong1 data`);
+                        }
+                    });
+                });
+            }
+
+            // Process Vong 2
+            if (questionSets.vong2) {
+                Object.entries(questionSets.vong2).forEach(([setNumber, questionIds]) => {
+                    questionIds.forEach((questionId, index) => {
+                        const question = questionMaps[2].get(questionId);
+                        if (question) {
+                            const orderedQuestion = { ...question };
+                            orderedQuestion._round = 2;
+                            orderedQuestion._setNumber = setNumber;
+                            orderedQuestion._questionNumber = index + 1;
+                            orderedQuestion._totalInSet = questionIds.length;
+                            allQuestions.push(orderedQuestion);
+                        } else {
+                            console.warn(`Question ${questionId} not found in vong2 data`);
+                        }
+                    });
+                });
+            }
+
+            // Process Vong 3
+            if (questionSets.vong3) {
+                Object.entries(questionSets.vong3).forEach(([domain, questionIds]) => {
+                    questionIds.forEach((questionId, index) => {
+                        const question = questionMaps[3].get(questionId);
+                        if (question) {
+                            const orderedQuestion = { ...question };
+                            orderedQuestion._round = 3;
+                            orderedQuestion._domain = domain;
+                            orderedQuestion._questionNumber = index + 1;
+                            orderedQuestion._totalInSet = questionIds.length;
+                            allQuestions.push(orderedQuestion);
+                        } else {
+                            console.warn(`Question ${questionId} not found in vong3 data`);
+                        }
+                    });
+                });
+            }
+        }
+
+        // Show toast notification
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toastMessage');
+            
+            toastMessage.textContent = message;
+            
+            if (type === 'error') {
+                toast.firstElementChild.className = 'bg-red-500 text-white px-6 py-3 rounded-lg shadow-lg';
+            } else {
+                toast.firstElementChild.className = 'bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg';
+            }
+            
+            toast.style.transform = 'translateX(0)';
+            
+            setTimeout(() => {
+                toast.style.transform = 'translateX(100%)';
+            }, 3000);
+        }
+
+        // Initialize when DOM is ready
+        document.addEventListener('DOMContentLoaded', init);
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            // Add Q key navigation to go back to page3.html
+            if (e.key.toLowerCase() === 'q') {
+                window.location.href = 'page3.html';
+            }
+            if (e.key === 'Escape') {
+                if (document.getElementById('editModal').style.display === 'flex') {
+                    closeEditModal();
+                }
+                if (document.getElementById('imageGalleryModal').style.display === 'flex') {
+                    closeImageGallery();
+                }
+            }
+        });        // Copy all files content to clipboard
+        async function copyAllToClipboard() {
+            try {
+                const vong1DataToSave = reconstructVong1Data();
+                const vong2DataToSave = reconstructVong2Data();
+                const vong3DataToSave = reconstructVong3Data();                const allData = {
+                    'vong1.json': formatJSONWithPrettier(vong1DataToSave),
+                    'vong2.json': formatJSONWithPrettier(vong2DataToSave),
+                    'vong3.json': formatJSONWithPrettier(vong3DataToSave)
+                };
+                
+                const combinedText = Object.entries(allData)
+                    .map(([filename, content]) => `// ========== ${filename} ==========\n${content}`)
+                    .join('\n\n');
+                
+                await navigator.clipboard.writeText(combinedText);
+                showToast('Đã copy tất cả nội dung JSON vào clipboard. Bạn có thể paste vào các file tương ứng.');
+            } catch (error) {
+                console.error('Error copying to clipboard:', error);
+                showToast('Lỗi khi copy vào clipboard: ' + error.message, 'error');
+            }
+        }
+
+        // Track question changes
+        function trackQuestionChange(questionId) {
+            changedQuestions.add(questionId);
+            updateSaveButtonState();
+            console.log(`Question ${questionId} marked as changed. Total changes: ${changedQuestions.size}`);
+        }
+
+        // Update save button state
+        function updateSaveButtonState() {
+            const saveBtn = document.querySelector('.save-all-btn');
+            if (saveBtn) {
+                if (changedQuestions.size > 0) {
+                    saveBtn.innerHTML = `<i class="fas fa-save mr-2"></i>Save All (${changedQuestions.size} thay đổi)`;
+                    saveBtn.disabled = false;
+                    saveBtn.classList.remove('opacity-50');
+                } else {
+                    saveBtn.innerHTML = '<i class="fas fa-save mr-2"></i>Save All';
+                    saveBtn.disabled = true;
+                    saveBtn.classList.add('opacity-50');
+                }
+            }
+        }
+
+        // Function to get changed files and their data
+        function getChangedFilesData() {
+            const changedFiles = {};
+            
+            // Check which rounds have changes
+            const changedRounds = new Set();
+            changedQuestions.forEach(questionId => {
+                const question = allQuestions.find(q => q.id === questionId);
+                if (question) {
+                    changedRounds.add(question._round);
+                }
+            });
+            
+            console.log('Changed rounds:', Array.from(changedRounds));
+            console.log('Changed questions:', Array.from(changedQuestions));
+            
+            // Only include files that have changes
+            changedRounds.forEach(round => {
+                if (round === 1 && originalData.vong1) {
+                    changedFiles['vong1.json'] = updateOriginalData(originalData.vong1, 1);
+                } else if (round === 2 && originalData.vong2) {
+                    changedFiles['vong2.json'] = updateOriginalData(originalData.vong2, 2);
+                } else if (round === 3 && originalData.vong3) {
+                    changedFiles['vong3.json'] = updateOriginalData(originalData.vong3, 3);
+                }
+            });
+            
+            return changedFiles;
+        }
+
+        // Function to update original data structure with changes
+        function updateOriginalData(originalData, round) {
+            const updatedData = JSON.parse(JSON.stringify(originalData)); // Deep clone
+            
+            // Update only changed questions in their original positions
+            function updateNestedStructure(obj, path = []) {
+                for (const key in obj) {
+                    if (Array.isArray(obj[key])) {
+                        // This is an array of questions
+                        obj[key].forEach((item, index) => {
+                            if (item && item.id && changedQuestions.has(item.id)) {
+                                const updatedQuestion = allQuestions.find(q => q.id === item.id);
+                                if (updatedQuestion) {
+                                    // Only update the image-related fields we allow editing
+                                    const fieldsToUpdate = ['image_id', 'use_image', 'position_image', 'question_image', 'bg_image', 'bg_image_overlay'];
+                                    fieldsToUpdate.forEach(field => {
+                                        if (updatedQuestion.hasOwnProperty(field)) {
+                                            obj[key][index][field] = updatedQuestion[field];
+                                        }
+                                    });
+                                }
+                            }
+                        });
+                    } else if (typeof obj[key] === 'object' && obj[key] !== null) {
+                        updateNestedStructure(obj[key], [...path, key]);
+                    }
+                }
+            }
+            
+            updateNestedStructure(updatedData);
+            return updatedData;
+        }
+
+        // Helper function to save file with File System Access API
+        async function saveFileWithAPI(filename, data) {
+            try {
+                const fileHandle = await window.showSaveFilePicker({
+                    suggestedName: filename,
+                    types: [{
+                        description: 'JSON files',
+                        accept: { 'application/json': ['.json'] }
+                    }]                });                  const writable = await fileHandle.createWritable();
+                const formattedContent = formatJSONWithPrettier(data);
+                await writable.write(formattedContent);
+                await writable.close();
+                
+            } catch (error) {
+                if (error.name !== 'AbortError') {
+                    throw error;
+                }
+            }
+        }
+
+        // Auto-refresh gallery when folder changes
+        let galleryRefreshInterval = null;
+        
+        // Function to refresh images list by testing file existence
+        async function refreshImagesList() {
+            console.log('Refreshing images list...');
+            const commonExtensions = ['jpg', 'jpeg', 'png', 'svg', 'webp'];
+            const folders = ['images', 'images/bg', 'images/cauhoi', 'images/illustrative', 'images/index_images'];
+            
+            const newAvailableImages = {};
+            
+            for (const folder of folders) {
+                const detectedImages = [];
+                
+                // Test common filenames with different extensions
+                const testNames = [
+                    // Common background names
+                    'bg', 'bg1', 'bg2', 'bg3', 'bg4', 'bg5', 'bg6', 'bg7', 'bg8', 'bg9', 'bg10',
+                    'bg11', 'bg12', 'bg2.1', 'background', 'wallpaper',
+                    // Common question images
+                    'v1_image1', 'v2_image1', 'v3_yte', 'v3_yte2', 'image1', 'image2', 'image3',
+                    'V2_BV_HA_4', 'V2_BV_HA_9', 'V2_BXV_HA_15', 'V2_BXV_HA_22',
+                    'V2_KTM_HA_10', 'V2_KTM_HA_4', 'ktm_image_4',
+                    'v3_c1', 'v3_c2', 'v3_c3', 'v3_c4', 'v3_c5', 'v3_c6', 'v3_c7', 'v3_c8', 'v3_c9', 'v3_c10',
+                    // Common illustrative images
+                    'illustrative_cspl_tn_1', 'illustrative_cspl_tn_2', 'illustrative_cspl_tn_3',
+                    'illustrative_cspl_tn_5', 'illustrative_yt_sc_tn_3', 'illustrative_yt_th_1',
+                    'icon1', 'icon2', 'logo', 'warning', 'check', 'arrow', 'safety1', 'safety2',
+                    // SVG files
+                    'svg (1)', 'svg (2)', 'svg (3)', 'svg',
+                    // Index images
+                    '1', '2', '3', '4', '5', '6', '7', '8', '9', '10'
+                ];
+                
+                for (const name of testNames) {
+                    for (const ext of commonExtensions) {
+                        const testPath = `${folder}/${name}.${ext}`;
+                        if (await imageExists(testPath)) {
+                            detectedImages.push(`${name}.${ext}`);
+                        }
+                    }
+                }
+                
+                // Also test for any numbered files up to 50
+                for (let i = 1; i <= 50; i++) {
+                    for (const ext of commonExtensions) {
+                        const testPath = `${folder}/${i}.${ext}`;
+                        if (await imageExists(testPath)) {
+                            detectedImages.push(`${i}.${ext}`);
+                        }
+                    }
+                }
+                
+                newAvailableImages[folder] = [...new Set(detectedImages)].sort();
+            }
+            
+            // Keep uploaded images
+            if (availableImages['images/image_upload']) {
+                newAvailableImages['images/image_upload'] = availableImages['images/image_upload'];
+            } else {
+                newAvailableImages['images/image_upload'] = [];
+            }
+            
+            // Update available images
+            const oldCount = Object.values(availableImages).flat().length;
+            availableImages = newAvailableImages;
+            const newCount = Object.values(availableImages).flat().length;
+            
+            if (newCount !== oldCount) {
+                console.log(`Images updated: ${oldCount} → ${newCount}`);
+                
+                // If gallery is open, refresh it
+                if (document.getElementById('imageGalleryModal').style.display === 'flex') {
+                    populateFolderTree();
+                    // Refresh current folder view if any folder is active
+                    const activeFolder = document.querySelector('.folder-item.active');
+                    if (activeFolder) {
+                        const folderPath = activeFolder.dataset.folder;
+                        if (folderPath) {
+                            showImagesInFolder(folderPath);
+                        }
+                    }
+                }
+                
+                return true; // Images changed
+            }
+            
+            return false; // No changes
+        }
+        
+        // Start auto-refresh when gallery opens
+        function startGalleryAutoRefresh() {
+            if (galleryRefreshInterval) {
+                clearInterval(galleryRefreshInterval);
+            }
+            
+            // Refresh every 3 seconds when gallery is open
+            galleryRefreshInterval = setInterval(async () => {
+                if (document.getElementById('imageGalleryModal').style.display === 'flex') {
+                    await refreshImagesList();
+                } else {
+                    // Stop refresh when gallery is closed
+                    clearInterval(galleryRefreshInterval);
+                    galleryRefreshInterval = null;
+                }
+            }, 3000);
+        }
+        
+        // Manual refresh button
+        function manualRefreshGallery() {
+            showToast('Đang quét lại thư mục...', 'info');
+            refreshImagesList().then(changed => {
+                if (changed) {
+                    showToast('Đã cập nhật danh sách ảnh');
+                } else {
+                    showToast('Không có ảnh mới');
+                }
+            });
+        }
+
+        // ...existing code...
+    </script>
+</body>
+</html>

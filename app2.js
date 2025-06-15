@@ -1,4 +1,5 @@
 // npx http-server -o
+// JavaScript file for vong2 slide presentation
 document.addEventListener('DOMContentLoaded', () => {
     // DOM Elements
     const slideContainer = document.getElementById('slideContainer');
@@ -24,41 +25,42 @@ document.addEventListener('DOMContentLoaded', () => {
     // const footerContestInfoEl = document.getElementById('footerContestInfo')?.querySelector('span'); // This element might not exist in the new footer structure or needs re-evaluation
     // const footerTimeScoreEl = document.getElementById('footerTimeScore')?.querySelector('span'); // This element might not exist
     const footerProgressBarEl = document.getElementById('footerProgressBar');
-    const roundInfoDisplayEl = document.getElementById('roundInfoDisplay'); // New element for round info    // Parse query parameters for selected question IDs from question_sets.json
+    const roundInfoDisplayEl = document.getElementById('roundInfoDisplay'); // New element for round info    // Parse query parameters for selected question set from question_sets.json
     function getSelectedIds() {
         const params = new URLSearchParams(window.location.search);
-        const categoryParam = params.get('category');
         const setParam = params.get('set');
         
-        // If no parameters, return empty array (will load all questions)
-        if (!categoryParam || !setParam) return [];
+        // If no set parameter, return empty object (will load all questions)
+        if (!setParam) return {};
         
-        // Return parameters for later use in loadQuestions
-        return { category: categoryParam, set: setParam };
+        // Return set parameter for later use in loadQuestions
+        return { set: setParam };
     }
  
     // Popup
-    const timesUpPopupEl = document.getElementById('timeUpOverlay'); // Updated ID for new overlay
-
-    // --- Configuration ---
-    const DEBUG_MODE = false; // Set to true to enable debug mode
+    const timesUpPopupEl = document.getElementById('timeUpOverlay'); // Updated ID for new overlay    // --- Configuration ---
+    let DEBUG_MODE = 0; // 0 = normal, 1 = no timer, 2 = no timer + no audio
     const USE_SPEECH = true; // Set to false to disable all speech synthesis & audio file playback
     const SHOW_IMAGE_PLACEHOLDER_ON_ERROR = true; // If true, shows a placeholder if an image fails to load
-    const IMAGE_PLACEHOLDER_SVG = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23cbd5e1'%3E%3Cpath d='M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z'/%3E%3C/svg%3E"; // Simple image icon
+    const IMAGE_PLACEHOLDER_SVG = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23cbd5e1'%3E%3Cpath d='M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z'/%3E%3C/svg%3E"; // Simple image icon
     const DELAY_NO_SPEECH_QUESTION = 1000; // ms to wait after showing question if no speech
     const DELAY_NO_SPEECH_OPTION = 500;  // ms to wait after showing an option if no speech
     const DELAY_NO_SPEECH_ANSWER = 1000; // ms to wait after showing answer if no speech
-
-    // State variables
+    
+    // THEME CONFIGURATION - Global variable to control header/footer theme
+    // Options: 'default', 'category', 'round'
+    const THEME_MODE = 'round'; // Change this to switch between theme modes    // State variables
     let allQuestions = [];
     let contestRoundsData = []; // To store data from quy_che_thi.cac_vong_thi
+    let currentRound = 'vong2'; // Default round, will be determined from data
     let currentQuestionIndex = 0;
     let currentQuestionData = null;
-    let timerInterval;
-    let timeLeft = 0; // Will be set per question
+    let timerInterval;    let timeLeft = 0; // Will be set per question
     const DEFAULT_TIME_PER_QUESTION = 60; // Default seconds for Round 2, can be overridden by JSON
     let audioContext;
-    let currentAudio = null;    let sequenceInProgress = false;
+    let currentAudio = null;
+    let currentQuestionNumberAudio = null; // Track question number audio separately
+    let sequenceInProgress = false;
     let answerShown = false;
     let navigationInProgress = false; // Add flag to prevent audio restart during navigation
     const OPTION_KEYS = ['a', 'b', 'c', 'd', 'e', 'g']; // Possible option keys
@@ -78,9 +80,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 progressTextEl.textContent = "Lỗi: Trình duyệt không hỗ trợ âm thanh.";
             }
         }
-    }    // --- Audio Playback ---
+    }
+
+    // --- Audio Playback ---
     async function playAudio(filePath, onEndCallback) {
-        if (!USE_SPEECH || !audioContext || !filePath || navigationInProgress) { // Check navigation flag
+        if (!USE_SPEECH || !audioContext || !filePath || navigationInProgress || DEBUG_MODE === 2) { // Check navigation flag and DEBUG_MODE 2
             if (onEndCallback) onEndCallback();
             return Promise.resolve();
         }
@@ -124,9 +128,85 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
             }
         });
+    }    // Special function for playing question number audio that bypasses navigation check
+    async function playQuestionNumberAudio(filePath, onEndCallback) {
+        if (!USE_SPEECH || !filePath) {
+            if (onEndCallback) onEndCallback();
+            return Promise.resolve();
+        }
+
+        // Initialize audio context if not already done
+        if (!audioContext) {
+            initAudio();
+        }
+
+        // Stop any currently playing question number audio first
+        if (currentQuestionNumberAudio) {
+            try {
+                currentQuestionNumberAudio.pause();
+                currentQuestionNumberAudio.currentTime = 0;
+                currentQuestionNumberAudio.src = '';
+                currentQuestionNumberAudio.load();
+            } catch (e) {
+                console.error('Error stopping previous question number audio:', e);
+            }
+        }
+
+        // Create a new audio object for question number playback
+        const audio = new Audio(filePath);
+        currentQuestionNumberAudio = audio; // Track this audio for stopping later
+
+        return new Promise((resolve, reject) => {
+            audio.oncanplaythrough = () => {
+                audio.play().catch(e => {
+                    console.error(`Error playing question number audio ${filePath}:`, e);
+                    if (onEndCallback) onEndCallback();
+                    resolve(); // Resolve even on error to not block sequence
+                });
+            };
+            audio.onended = () => {
+                if (onEndCallback) onEndCallback();
+                if (currentQuestionNumberAudio === audio) currentQuestionNumberAudio = null; // Clear if it's the one that ended
+                resolve();
+            };
+            audio.onerror = (e) => {
+                console.error(`Error loading question number audio ${filePath}:`, e);
+                if (onEndCallback) onEndCallback();
+                if (currentQuestionNumberAudio === audio) currentQuestionNumberAudio = null;
+                resolve(); // Resolve to not block sequence
+            };
+            // Handle cases where oncanplaythrough might not fire (e.g. cached files)
+            if (audio.readyState >= 3) { // HAVE_FUTURE_DATA or HAVE_ENOUGH_DATA
+                 audio.play().catch(e => {
+                    console.error(`Error playing question number audio ${filePath} (readyState >=3):`, e);
+                    if (onEndCallback) onEndCallback();
+                    resolve();
+                });
+            }
+        });
     }    // Global utility to stop all ongoing timers and audio without navigating away
     function stopAllEvents() {
         console.log('%c[STOP ALL EVENTS] Starting stopAllEvents() in app2.js', 'color: red; font-weight: bold;');
+        
+        // Stop question number audio first
+        if (currentQuestionNumberAudio) {
+            console.log('%c[STOP ALL EVENTS] Stopping question number audio', 'color: red;');
+            try {
+                currentQuestionNumberAudio.pause();
+                currentQuestionNumberAudio.currentTime = 0; // Reset to beginning
+                // Hủy bỏ callbacks
+                currentQuestionNumberAudio.oncanplaythrough = null;
+                currentQuestionNumberAudio.onended = null;
+                currentQuestionNumberAudio.onerror = null;
+                // Reset src và abort request
+                currentQuestionNumberAudio.src = '';
+                currentQuestionNumberAudio.load();
+                currentQuestionNumberAudio = null;
+                console.log('%c[STOP ALL EVENTS] Question number audio stopped successfully', 'color: green;');
+            } catch (e) {
+                console.error('[STOP ALL EVENTS] Error stopping question number audio:', e);
+            }
+        }
         
         // Stop Web Audio API audio
         if (currentAudio && currentAudio.source) {
@@ -141,23 +221,24 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
         
-    // Stop HTML5 Audio elements
-    if (currentAudio) {
-        try {
-            currentAudio.pause();
-            // Hủy bỏ callbacks
-            currentAudio.oncanplaythrough = null;
-            currentAudio.onended        = null;
-            currentAudio.onerror        = null;
-            // Reset src và abort request
-            currentAudio.src = '';
-            currentAudio.load();
-        } catch (e) {
-            console.error('Error fully stopping audio:', e);
+        // Stop HTML5 Audio elements
+        if (currentAudio) {
+            try {
+                currentAudio.pause();
+                currentAudio.currentTime = 0; // Reset to beginning
+                // Hủy bỏ callbacks
+                currentAudio.oncanplaythrough = null;
+                currentAudio.onended        = null;
+                currentAudio.onerror        = null;
+                // Reset src và abort request
+                currentAudio.src = '';
+                currentAudio.load();
+            } catch (e) {
+                console.error('Error fully stopping audio:', e);
+            }
+            currentAudio = null;
+            console.log('[STOP ALL EVENTS] Fully stopped audio element');
         }
-        currentAudio = null;
-        console.log('[STOP ALL EVENTS] Fully stopped audio element');
-    }
         
         // Stop all audio elements on the page (failsafe)
         const allAudioElements = document.querySelectorAll('audio');
@@ -179,11 +260,29 @@ document.addEventListener('DOMContentLoaded', () => {
         if (timesUpPopupEl) {
             timesUpPopupEl.style.display = 'none';
             timesUpPopupEl.style.opacity = '0';
-            timesUpPopupEl.style.animation = 'none';
-        }
+            timesUpPopupEl.style.animation = 'none';        }
         sequenceInProgress = false;
         answerShown = false;
-        navigationInProgress = false; // Reset navigation flag
+        navigationInProgress = false; // Reset navigation flag        // Clean up ResizeObserver and timers if they exist
+        const questionOptionsSection = document.getElementById('questionOptionsArea');
+        if (questionOptionsSection) {
+            if (questionOptionsSection._resizeObserver) {
+                questionOptionsSection._resizeObserver.disconnect();
+                questionOptionsSection._resizeObserver = null;
+                console.log('%c[STOP ALL EVENTS] Cleaned up ResizeObserver', 'color: orange;');
+            }
+            if (questionOptionsSection._debounceTimer) {
+                clearTimeout(questionOptionsSection._debounceTimer);
+                questionOptionsSection._debounceTimer = null;
+                console.log('%c[STOP ALL EVENTS] Cleaned up debounce timer', 'color: orange;');
+            }
+            if (questionOptionsSection._layoutCheckTimer) {
+                clearTimeout(questionOptionsSection._layoutCheckTimer);
+                questionOptionsSection._layoutCheckTimer = null;
+                console.log('%c[STOP ALL EVENTS] Cleaned up layout check timer', 'color: orange;');
+            }
+            questionOptionsSection._isAdjusting = false;
+        }
         
         console.log('%c[STOP ALL EVENTS] stopAllEvents() completed in app2.js', 'color: green; font-weight: bold;');
     }
@@ -219,28 +318,117 @@ document.addEventListener('DOMContentLoaded', () => {
                 console.log(`animateElement: Animation ENDED for ${elementName}, final opacity: ${getComputedStyle(element).opacity}, visibility: ${getComputedStyle(element).visibility}`);
             }, { once: true });
         } else {
-            console.warn('animateElement: Called with null or undefined element for animationClass:', animationClass);
+            console.warn('animateElement: Called with null or undefined element for animationClass:', animationClass);        }
+    }    // Function to dynamically adjust layout based on content overflow
+    function adjustLayoutForOverflow() {
+        const questionOptionsSection = document.getElementById('questionOptionsArea');
+        const imageAreaEl = document.getElementById('imageArea');
+        const mainContentFlexContainer = document.querySelector('.px-8.py-4.flex-grow.flex.overflow-hidden');
+        
+        if (!questionOptionsSection || !imageAreaEl || !mainContentFlexContainer || !currentQuestionData) return;
+        
+        // Prevent recursive calls by checking if we're already adjusting
+        if (questionOptionsSection._isAdjusting) return;
+        questionOptionsSection._isAdjusting = true;
+        
+        // Check if questionOptionsArea has scroll
+        const hasVerticalScroll = questionOptionsSection.scrollHeight > questionOptionsSection.clientHeight;
+        const currentWidth = questionOptionsSection.classList.contains('w-4/5') ? '4/5' : 
+                            questionOptionsSection.classList.contains('w-3/5') ? '3/5' : 
+                            questionOptionsSection.classList.contains('w-2/5') ? '2/5' : 'unknown';
+        
+        if (hasVerticalScroll && !imageAreaEl.classList.contains('hidden') && currentWidth !== '4/5') {
+            // Adjust to give more space to questions/options
+            questionOptionsSection.classList.remove('w-3/5', 'w-2/5');
+            questionOptionsSection.classList.add('w-4/5');
+            imageAreaEl.classList.remove('w-2/5', 'w-3/5');
+            imageAreaEl.classList.add('w-1/5');
+            console.log('Layout adjusted: Questions area expanded due to overflow');
+        } else if (!hasVerticalScroll && !imageAreaEl.classList.contains('hidden') && currentWidth === '4/5') {
+            // Restore original layout when no overflow
+            const isQuestionImage = currentQuestionData && currentQuestionData.question_image === 'Yes';
+            
+            if (isQuestionImage) {
+                questionOptionsSection.classList.remove('w-4/5');
+                questionOptionsSection.classList.add('w-2/5');
+                imageAreaEl.classList.remove('w-1/5');
+                imageAreaEl.classList.add('w-3/5');
+            } else {
+                questionOptionsSection.classList.remove('w-4/5');
+                questionOptionsSection.classList.add('w-3/5');
+                imageAreaEl.classList.remove('w-1/5');
+                imageAreaEl.classList.add('w-2/5');
+            }
+            console.log('Layout restored: Original proportions due to no overflow');
+        }
+        
+        // Reset the flag after a short delay
+        setTimeout(() => {
+            questionOptionsSection._isAdjusting = false;
+        }, 100);    }
+
+    // Function to change theme mode for testing (can be called from console)
+    window.changeThemeMode = function(mode) {
+        if (['default', 'category', 'round'].includes(mode)) {
+            // Use a const override for testing
+            window.THEME_MODE_OVERRIDE = mode;
+            console.log(`Theme mode changed to: ${mode}`);
+            // Re-apply theme with current question
+            if (currentQuestionData) {
+                applyTheme(currentQuestionData.category);
+            }
+        } else {
+            console.log('Invalid theme mode. Use: default, category, or round');
+        }
+    };
+
+    // Function to change current round for testing
+    window.changeCurrentRound = function(round) {
+        if (['vong1', 'vong2', 'vong3'].includes(round)) {
+            currentRound = round;
+            console.log(`Current round changed to: ${round}`);
+            // Re-apply theme if in round mode
+            if ((window.THEME_MODE_OVERRIDE || THEME_MODE) === 'round' && currentQuestionData) {
+                applyTheme(currentQuestionData.category);
+            }
+        } else {
+            console.log('Invalid round. Use: vong1, vong2, or vong3');
+        }
+    };
+
+    // Modified getThemeClass to use override if available
+    function getThemeClassWithOverride(category) {
+        const themeMode = window.THEME_MODE_OVERRIDE || THEME_MODE;
+        switch (themeMode) {
+            case 'round':
+                return `header-footer-theme-${currentRound}`;
+            
+            case 'category':
+                if (!category) return 'header-footer-theme-default';
+                const normalizedCategory = category.toLowerCase().replace(/\s+/g, '-');
+                if (normalizedCategory.includes('chính-sách-pháp-luật')) return 'header-footer-theme-cspl';
+                if (normalizedCategory.includes('phòng-cháy-chữa-cháy')) return 'header-footer-theme-pccc';
+                if (normalizedCategory.includes('y-tế')) return 'header-footer-theme-yte';
+                if (normalizedCategory.includes('khai-thác-mỏ')) return 'header-footer-theme-ktm';
+                if (normalizedCategory.includes('bảo-quản') || normalizedCategory.includes('bốc-xếp') || normalizedCategory.includes('vận-chuyển')) return 'header-footer-theme-bq-bx-vc';
+                return 'header-footer-theme-default';
+            
+            case 'default':
+            default:
+                return 'header-footer-theme-default';
         }
     }
 
     function getThemeClass(category) {
-        if (!category) return 'header-footer-theme-default'; // Default theme for header/footer
-        const normalizedCategory = category.toLowerCase().replace(/\s+/g, '-');
-        if (normalizedCategory.includes('chính-sách-pháp-luật')) return 'header-footer-theme-cspl';
-        if (normalizedCategory.includes('phòng-cháy-chữa-cháy')) return 'header-footer-theme-pccc';
-        if (normalizedCategory.includes('y-tế')) return 'header-footer-theme-yte';
-        if (normalizedCategory.includes('khai-thác-mỏ')) return 'header-footer-theme-ktm';
-        if (normalizedCategory.includes('bảo-quản') || normalizedCategory.includes('bốc-xếp') || normalizedCategory.includes('vận-chuyển')) return 'header-footer-theme-bq-bx-vc';
-        return 'header-footer-theme-default'; // Fallback
-    }
-
-    function applyTheme(category) {
+        return getThemeClassWithOverride(category);
+    }function applyTheme(category) {
         const themeClass = getThemeClass(category);
         // Define all possible theme classes to ensure only one is active on slideContainer
         const allClasses = [
             'header-footer-theme-default', 'header-footer-theme-cspl', 
             'header-footer-theme-pccc', 'header-footer-theme-yte', 
-            'header-footer-theme-ktm', 'header-footer-theme-bq-bx-vc'
+            'header-footer-theme-ktm', 'header-footer-theme-bq-bx-vc',
+            'header-footer-theme-vong1', 'header-footer-theme-vong2', 'header-footer-theme-vong3'
         ];
         // Apply theme to slideContainer, CSS will handle header/footer specifics
         if (slideContainer) {
@@ -248,55 +436,119 @@ document.addEventListener('DOMContentLoaded', () => {
             slideContainer.classList.add(themeClass); // Add the new theme class
         }
     }
+    // Function to render options in 3-column layout
+    function renderThreeColumnOptions(questionData) {
+        const threeColumnsContainer = document.getElementById('threeColumnsContainer');
+        const column1Container = document.getElementById('column1Container');
+        const column2Container = document.getElementById('column2Container');
+        
+        if (!threeColumnsContainer || !column1Container || !column2Container) {
+            console.error('Three columns containers not found');
+            return;
+        }
+        
+        // Clear existing content
+        column1Container.innerHTML = '';
+        column2Container.innerHTML = '';
+        
+        // Track current column (1 for errors, 2 for solutions)
+        let currentColumn = 1;
+        let note1Added = false;
+        let note2Added = false;
+        
+        if (questionData.phuong_an) {
+            Object.entries(questionData.phuong_an).forEach(([key, value]) => {
+                if (value) {                    if (key.toLowerCase() === 'note1') {
+                        // Add Note1 header to column 1
+                        const headerEl = document.createElement('div');
+                        headerEl.classList.add('column-header', 'errors');
+                        headerEl.id = 'note1Header';
+                        headerEl.innerHTML = `<i class="fas fa-exclamation-triangle"></i>${value}`;
+                        column1Container.appendChild(headerEl);
+                        note1Added = true;
+                        currentColumn = 1;
+                    } else if (key.toLowerCase() === 'note2') {
+                        // Add Note2 header to column 2
+                        const headerEl = document.createElement('div');
+                        headerEl.classList.add('column-header', 'solutions');
+                        headerEl.id = 'note2Header';
+                        headerEl.innerHTML = `<i class="fas fa-tools"></i>${value}`;
+                        column2Container.appendChild(headerEl);
+                        note2Added = true;
+                        currentColumn = 2;
+                    } else {
+                        // Regular option - place in appropriate column
+                        const optionKeyUpper = key.toUpperCase();
+                        const optionEl = document.createElement('div');
+                        optionEl.id = `option${optionKeyUpper}`;
+                        optionEl.dataset.optionKey = key;
+                        optionEl.classList.add('option-card', 'rounded-lg', 'p-4', 'border-l-4', 'border-gray-400');
+                        optionEl.style.opacity = '0';
+
+                        const optionCharClass = `option-char-${key.toLowerCase()}`;
+                        optionEl.innerHTML = `
+                            <div class="flex items-center space-x-3">
+                                <div class="option-char ${optionCharClass} text-white rounded-full w-8 h-8 flex items-center justify-center font-bold">${optionKeyUpper}</div>
+                                <span class="text-gray-800 font-medium">${value}</span>
+                            </div>
+                        `;
+                        
+                        // Determine which column to place option in
+                        // Options a-d go to column 1 (errors), e-g go to column 2 (solutions)
+                        const optionLetter = key.toLowerCase();
+                        if (['a', 'b', 'c', 'd'].includes(optionLetter)) {
+                            column1Container.appendChild(optionEl);
+                        } else if (['e', 'f', 'g', 'h', 'i', 'j'].includes(optionLetter)) {
+                            column2Container.appendChild(optionEl);
+                        }
+                    }
+                }
+            });
+        }
+        
+        // Show the three columns container and hide regular options container
+        threeColumnsContainer.classList.remove('hidden');
+        threeColumnsContainer.classList.add('active');
+        
+        const optionsContainer = document.getElementById('optionsContainer');
+        if (optionsContainer) {
+            optionsContainer.style.display = 'none';
+        }
+        
+        console.log('Three column layout rendered successfully');
+    }
+
     function renderSlide(questionData) {
         console.log('--- renderSlide START ---', questionData);
         currentQuestionData = questionData;
         answerShown = false;
         sequenceInProgress = false;
 
-        // Function to apply background image with gradient or stripes overlay
-        const applyBgImage = (bgImage, style) => {
-            if (slideContainer) {
-                // Clear any existing background styles
-                slideContainer.classList.remove(...backgroundStyles);
-                slideContainer.style.backgroundImage = '';
-                slideContainer.classList.remove('bg-gradient-overlay', 'bg-stripes-overlay');
-                
-                // Convert Windows path to web path
-                const webPath = bgImage.replace(/\\/g, '/');
-                
-                if (style === 'gradient') {
-                    // Apply gradient overlay with the specified image
-                    slideContainer.style.backgroundImage = `linear-gradient(to bottom right, rgba(245, 158, 11, 0.7), rgba(255, 255, 255, 0.7)), url('${webPath}')`;
-                } else if (style === 'stripes') {
-                    // Apply diagonal stripes overlay with the specified image
-                    slideContainer.style.backgroundImage = `linear-gradient(45deg,
-                        rgba(245, 158, 11, 0.7) 0%,
-                        rgba(245, 158, 11, 0.7) 33.33%,
-                        rgba(255, 255, 255, 0.7) 33.33%,
-                        rgba(255, 255, 255, 0.7) 66.66%,
-                        rgba(245, 158, 11, 0.7) 66.66%,
-                        rgba(245, 158, 11, 0.7) 100%),
-                        url('${webPath}')`;
-                }
-                
+        // Check for 3-column layout
+        const isThreeColumnLayout = questionData.layout === '3columns';
+        console.log('3-column layout detected:', isThreeColumnLayout);        // Apply background based on bg_image and bg_image_overlay properties
+        if (slideContainer) {
+            // First, remove any existing overlay classes to reset the state
+            slideContainer.classList.remove('overlay-curtain', 'gradient', 'stripes');
+            
+            if (questionData.bg_image) {
+                // Initially apply only the background image without overlay for visual appeal
+                const webPath = questionData.bg_image.replace(/\\/g, '/');
+                slideContainer.style.backgroundImage = `url('${webPath}')`;
                 slideContainer.style.backgroundSize = 'cover';
                 slideContainer.style.backgroundPosition = 'center';
                 slideContainer.style.backgroundRepeat = 'no-repeat';
-            }
-        };
-
-        // Apply background based on bg_image property
-        if (slideContainer) {
-            if (questionData.bg_image) {
-                // Use bg_image from JSON data and alternate between gradient and stripes
-                const imageStyle = currentQuestionIndex % 2 === 0 ? 'gradient' : 'stripes';
-                applyBgImage(questionData.bg_image, imageStyle);
+                slideContainer.classList.remove(...backgroundStyles);
+                
+                // Store overlay info for later use when question sequence starts
+                slideContainer.dataset.bgOverlay = questionData.bg_image_overlay || 'none';
+                slideContainer.dataset.bgImage = webPath;
             } else {
                 // Fallback to default background if no bg_image is specified
                 slideContainer.classList.remove(...backgroundStyles);
                 slideContainer.style.backgroundImage = '';
                 slideContainer.classList.add('bg-default');
+                slideContainer.dataset.bgOverlay = 'none';
             }
         }
  
@@ -331,12 +583,29 @@ document.addEventListener('DOMContentLoaded', () => {
         startSequenceBtn.classList.remove('opacity-50', 'cursor-not-allowed', 'speaking-indicator');
         
         timesUpPopupEl.style.display = 'none';
-        timesUpPopupEl.style.opacity = '0';
-
-
-        // Update header
+        timesUpPopupEl.style.opacity = '0';        // Update header
         if (questionNumberEl) questionNumberEl.textContent = currentQuestionIndex + 1;
         if (questionCategoryEl) questionCategoryEl.textContent = questionData.category || 'Không có danh mục';
+          // Trigger header and footer animations
+        triggerHeaderFooterAnimation();
+          // Initialize audio context if not already initialized (needed for auto-play)
+        if (!audioContext) {
+            initAudio();
+        }
+        
+        // Play question number audio if available (always play, regardless of any state)
+        if (questionData.speech_id_question_num && USE_SPEECH) {
+            const audioPath = `speech/${questionData.speech_id_question_num}`;
+            console.log(`Attempting to play question number audio: ${audioPath}`);
+            // Always play question number audio immediately when question is rendered
+            // Use a small delay to ensure the DOM is ready and previous audio is stopped
+            setTimeout(() => {
+                playQuestionNumberAudio(audioPath).catch(err => {
+                    console.warn('Could not play question number audio:', err);
+                });
+            }, 50);
+        }
+        
         applyTheme(questionData.category);
  
         // Update footer progress bar
@@ -358,11 +627,10 @@ document.addEventListener('DOMContentLoaded', () => {
         
         const questionOptionsSection = document.getElementById('questionOptionsArea');
         // The main content container is the one with class 'px-8.py-4.flex-grow.flex.overflow-hidden'
-        const mainContentFlexContainer = document.querySelector('.px-8.py-4.flex-grow.flex.overflow-hidden');
-
-        // Reset layout classes first
+        const mainContentFlexContainer = document.querySelector('.px-8.py-4.flex-grow.flex.overflow-hidden');        // Reset layout classes first
         if (mainContentFlexContainer) {
             mainContentFlexContainer.classList.remove('flex-col', 'flex-row'); // Remove old direction
+            mainContentFlexContainer.classList.remove('three-columns-layout', 'single-column'); // Remove 3-column layout classes
         }
         if (questionOptionsSection) {
             questionOptionsSection.classList.remove('w-full', 'w-3/5', 'w-2/5', 'pr-6', 'pl-6');
@@ -433,34 +701,86 @@ document.addEventListener('DOMContentLoaded', () => {
                 imageAreaEl.classList.add('w-2/5', 'pl-6');
                 imageAreaEl.style.order = 2;
                 slideImageEl.classList.replace('object-contain', 'object-cover');
-            }
-        } else { // No image to show
+            }        } else { // No image to show
             if(imageAreaEl) imageAreaEl.classList.add('hidden');
             if(questionOptionsSection) questionOptionsSection.classList.add('w-full');
             if(mainContentFlexContainer) mainContentFlexContainer.classList.add('flex-row');
+        }        // Handle layout-specific styling for 3-column layout
+        if (isThreeColumnLayout) {
+            // Apply 3-column layout styling to main container
+            if (mainContentFlexContainer) {
+                mainContentFlexContainer.classList.add('three-columns-layout');
+            }
+            
+            // For 3-column layout, check if image should be hidden
+            if (!questionData.image_id || questionData.image_id === null) {
+                // Hide image area for 3-column questions without images
+                if (imageAreaEl) {
+                    imageAreaEl.classList.add('hidden');
+                }
+                // Adjust grid to single column
+                if (mainContentFlexContainer) {
+                    mainContentFlexContainer.classList.add('single-column');
+                }
+            }
+            
+            console.log('Applied 3-column layout styling');
         }
 
-        if (questionData.phuong_an) {
-            Object.entries(questionData.phuong_an).forEach(([key, value]) => {
-                if (value) {
-                    const optionKeyUpper = key.toUpperCase();
-                    const optionEl = document.createElement('div');                    optionEl.id = `option${optionKeyUpper}`;
-                    optionEl.dataset.optionKey = key;
-                    // Add classes for card styling without white background
-                    optionEl.classList.add('option-card', 'rounded-lg', 'p-4', 'border-l-4', 'border-gray-400');
-                    optionEl.style.opacity = '0';
+        // Reset and hide 3-column containers initially
+        const threeColumnsContainer = document.getElementById('threeColumnsContainer');
+        if (threeColumnsContainer) {
+            threeColumnsContainer.classList.add('hidden');
+            threeColumnsContainer.classList.remove('active');
+        }
 
-                    const optionCharClass = `option-char-${key.toLowerCase()}`;
-                    // Ensure correct inner structure for flex layout and char styling
-                    optionEl.innerHTML = `
-                        <div class="flex items-center space-x-3">
-                            <div class="option-char ${optionCharClass} text-white rounded-full w-8 h-8 flex items-center justify-center font-bold">${optionKeyUpper}</div>
-                            <span class="text-gray-800 font-medium">${value}</span>
-                        </div>
-                    `;
-                    optionsContainerEl.appendChild(optionEl);
-                }
-            });
+        // Render options based on layout type
+        if (isThreeColumnLayout) {
+            // Use 3-column layout
+            renderThreeColumnOptions(questionData);
+        } else {
+            // Use regular layout
+            if (optionsContainerEl) {
+                optionsContainerEl.style.display = 'grid'; // Ensure regular container is visible
+            }
+            
+            if (questionData.phuong_an) {
+                Object.entries(questionData.phuong_an).forEach(([key, value]) => {
+                    if (value) {
+                        // Check if this is a Note (section header)
+                        if (key.toLowerCase().startsWith('note')) {
+                            const noteEl = document.createElement('div');
+                            noteEl.classList.add('note-section', 'mt-4', 'mb-2', 'px-4', 'py-2', 'bg-blue-50', 'border-l-4', 'border-blue-400', 'rounded-r-lg');
+                            noteEl.innerHTML = `
+                                <div class="flex items-center space-x-2">
+                                    <i class="fas fa-info-circle text-blue-600"></i>
+                                    <span class="text-blue-800 font-bold text-lg">${value}</span>
+                                </div>
+                            `;
+                            optionsContainerEl.appendChild(noteEl);
+                        } else {
+                            // Regular option
+                            const optionKeyUpper = key.toUpperCase();
+                            const optionEl = document.createElement('div');
+                            optionEl.id = `option${optionKeyUpper}`;
+                            optionEl.dataset.optionKey = key;
+                            // Add classes for card styling without white background
+                            optionEl.classList.add('option-card', 'rounded-lg', 'p-4', 'border-l-4', 'border-gray-400');
+                            optionEl.style.opacity = '0';
+
+                            const optionCharClass = `option-char-${key.toLowerCase()}`;
+                            // Ensure correct inner structure for flex layout and char styling
+                            optionEl.innerHTML = `
+                                <div class="flex items-center space-x-3">
+                                    <div class="option-char ${optionCharClass} text-white rounded-full w-8 h-8 flex items-center justify-center font-bold">${optionKeyUpper}</div>
+                                    <span class="text-gray-800 font-medium">${value}</span>
+                                </div>
+                            `;
+                            optionsContainerEl.appendChild(optionEl);
+                        }
+                    }
+                });
+            }
         }
         
         // Set timer
@@ -468,20 +788,71 @@ document.addEventListener('DOMContentLoaded', () => {
         if (questionData.type_question === "Thực hành") {
              timeLeft = parseInt(questionData.thoi_gian_chuan_bi) * 60 || 300;
         }
-        timerTextEl.textContent = timeLeft;
-        timerCircleEl.style.strokeDashoffset = '226'; // Reset to full circumference for new timer
+        timerTextEl.textContent = timeLeft;        timerCircleEl.style.strokeDashoffset = '226'; // Reset to full circumference for new timer
         timerCircleEl.classList.remove('warning', 'danger'); // Reset colors
         timerTextEl.classList.remove('warning', 'danger');   // Reset colors
         timerCircleEl.style.stroke = '#fff'; // Default stroke color from Test1.html CSS
-        timerTextEl.style.color = '#fff'; // Default text color
+        timerTextEl.style.color = '#fff'; // Default text color        // Set up a simple check for overflow after animations complete
+        if (questionOptionsSection) {
+            // Clear any existing timers and observers
+            if (questionOptionsSection._resizeObserver) {
+                questionOptionsSection._resizeObserver.disconnect();
+                questionOptionsSection._resizeObserver = null;
+            }
+            if (questionOptionsSection._debounceTimer) {
+                clearTimeout(questionOptionsSection._debounceTimer);
+                questionOptionsSection._debounceTimer = null;
+            }
+            if (questionOptionsSection._layoutCheckTimer) {
+                clearTimeout(questionOptionsSection._layoutCheckTimer);
+            }
+            
+            questionOptionsSection._isAdjusting = false;
+            
+            // Schedule a single layout check after content is fully rendered
+            questionOptionsSection._layoutCheckTimer = setTimeout(() => {
+                adjustLayoutForOverflow();
+            }, 1000); // Wait for animations to complete
+        }
     }
 
+// Function to apply background overlay when question sequence starts
+    function applyBackgroundOverlay() {
+        if (!slideContainer) return;
+        
+        const bgOverlay = slideContainer.dataset.bgOverlay;
+        const bgImage = slideContainer.dataset.bgImage;
+        
+        if (bgOverlay && bgOverlay !== 'none' && bgImage) {
+            // Set the background image directly on slideContainer
+            slideContainer.style.backgroundImage = `url('${bgImage}')`;
+            slideContainer.style.backgroundSize = 'cover';
+            slideContainer.style.backgroundPosition = 'center';
+            slideContainer.style.backgroundRepeat = 'no-repeat';
+            
+            // Remove any existing curtain classes
+            slideContainer.classList.remove('overlay-curtain', 'gradient', 'stripes');
+            
+            // Force reflow to ensure the class removal takes effect
+            void slideContainer.offsetHeight;
+            
+            // Apply curtain drop animation with overlay type
+            setTimeout(() => {
+                slideContainer.classList.add('overlay-curtain');
+                if (bgOverlay === 'gradient') {
+                    slideContainer.classList.add('gradient');
+                    console.log('Applied gradient overlay curtain effect');
+                } else if (bgOverlay === 'stripes') {
+                    slideContainer.classList.add('stripes');
+                    console.log('Applied stripes overlay curtain effect');
+                }
+            }, 100);
+        }
+    }
     // --- Timer Logic ---
     function startTimer() {
-        if (timerInterval) clearInterval(timerInterval);
-
-        if (DEBUG_MODE) {
-            progressTextEl.textContent = 'Chế độ DEBUG: Bỏ qua timer.';
+        if (timerInterval) clearInterval(timerInterval);        if (DEBUG_MODE > 0) {
+            progressTextEl.textContent = `DEBUG MODE ${DEBUG_MODE}: Timer disabled.`;
             timeLeft = 0;
             timerTextEl.textContent = "DEBUG";
             if (currentQuestionData.type_question !== "Thực hành") {
@@ -577,10 +948,11 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
         sequenceInProgress = true;
-        initAudio();
-
-        startSequenceBtn.disabled = true;
+        initAudio();        startSequenceBtn.disabled = true;
         startSequenceBtn.classList.add('opacity-50', 'cursor-not-allowed', 'speaking-indicator');
+
+        // Apply background overlay when question sequence starts
+        applyBackgroundOverlay();
 
         // 1. Show Question and Image simultaneously
         const imageWrapperEl = document.getElementById('imageWrapper'); 
@@ -598,69 +970,297 @@ document.addEventListener('DOMContentLoaded', () => {
         } else {
             console.log(`%cstartQuestionSequence: Image will NOT be animated. Conditions: slideImageEl.src="${slideImageEl.src}", imageAreaEl exists=${!!imageAreaEl}, imageAreaEl.hidden=${imageAreaEl ? imageAreaEl.classList.contains('hidden') : 'N/A'}, imageWrapperEl exists=${!!imageWrapperEl}`, "color: red; font-weight: bold;");
         }
-        
-        // 2. Speak Question (after showing both question and image)
-        if (USE_SPEECH && currentQuestionData.speech_id_question) {
+          // 2. Speak Question (after showing both question and image)
+        if (DEBUG_MODE === 2) {
+            // DEBUG MODE 2: Skip audio, use delay instead
+            await new Promise(r => setTimeout(r, DELAY_NO_SPEECH_QUESTION));
+        } else if (USE_SPEECH && currentQuestionData.speech_id_question) {
             await playAudio(`speech/${currentQuestionData.speech_id_question}`);
         } else {
             await new Promise(r => setTimeout(r, DELAY_NO_SPEECH_QUESTION));
-        }
-
-        // 3. Show & Speak Options (if Trac nghiem)
+        }// 3. Show & Speak Options based on layout type
         if ((currentQuestionData.type_question === "Trắc nghiệm" || currentQuestionData.type_question === "Trắc nghiệm Hình ảnh") && currentQuestionData.phuong_an) {
-            const optionElements = optionsContainerEl.querySelectorAll('.option-card');
-            console.log(`startQuestionSequence: Found ${optionElements.length} option elements to animate.`);
             
-            let animationDelayBase = 0; // For staggering option animations
-            for (let i = 0; i < optionElements.length; i++) {
-                const optionEl = optionElements[i];
-                console.log('startQuestionSequence: Animating option', optionEl.id);
+            // Check if this is a 3-column layout question
+            const isThreeColumnLayout = currentQuestionData.layout === '3columns';
+            
+            if (isThreeColumnLayout) {
+                // Handle 3-column layout sequence: question > Note1 > a,b,c,d > Note2 > e,f,g
+                console.log('startQuestionSequence: Using 3-column audio sequence');
+                  // Step 1: Show Note1 header and play Note1 audio if available
+                const note1Header = document.getElementById('note1Header');
+                if (note1Header) {
+                    console.log('startQuestionSequence: Showing Note1 header');
+                    note1Header.classList.add('show');
+                }
                 
-                // Set animation delay for staggered effect
-                optionEl.style.animationDelay = `${animationDelayBase}s`;
-                animateElement(optionEl, 'option-appear');
-                
-                // Speak option if audio exists
-                const optionKey = optionEl.dataset.optionKey;
-                const speechFileKey = `speech_id_options_${optionKey.toUpperCase()}`;
-                const speechFile = currentQuestionData[speechFileKey];
-                
-                if (USE_SPEECH && speechFile) {
-                    await playAudio(`speech/${speechFile}`);
+                if (USE_SPEECH && currentQuestionData.speech_id_note1) {
+                    await playAudio(`speech/${currentQuestionData.speech_id_note1}`);
                 } else {
                     await new Promise(r => setTimeout(r, DELAY_NO_SPEECH_OPTION));
                 }
+                  // Step 2: Show and speak options a-d (column 1 - errors)
+                const column1Options = ['a', 'b', 'c', 'd'];
+                for (const optionKey of column1Options) {
+                    if (currentQuestionData.phuong_an[optionKey]) {
+                        const optionEl = document.getElementById(`option${optionKey.toUpperCase()}`);
+                        if (optionEl) {
+                            console.log(`startQuestionSequence: Animating 3-column option ${optionKey}`);
+                            animateElement(optionEl, 'option-appear');
+                            
+                            const speechFileKey = `speech_id_options_${optionKey.toUpperCase()}`;
+                            const speechFile = currentQuestionData[speechFileKey];
+                            
+                            if (DEBUG_MODE === 2) {
+                                // DEBUG MODE 2: Skip audio, use delay instead
+                                await new Promise(r => setTimeout(r, DELAY_NO_SPEECH_OPTION));
+                            } else if (USE_SPEECH && speechFile) {
+                                await playAudio(`speech/${speechFile}`);
+                            } else {
+                                await new Promise(r => setTimeout(r, DELAY_NO_SPEECH_OPTION));
+                            }
+                        }
+                    }
+                }
+                  // Step 3: Show Note2 header and play Note2 audio if available
+                const note2Header = document.getElementById('note2Header');
+                if (note2Header) {
+                    console.log('startQuestionSequence: Showing Note2 header');
+                    note2Header.classList.add('show');
+                }
                 
-                animationDelayBase += 0.15; // Stagger next option by 150ms
+                if (USE_SPEECH && currentQuestionData.speech_id_note2) {
+                    await playAudio(`speech/${currentQuestionData.speech_id_note2}`);
+                } else {
+                    await new Promise(r => setTimeout(r, DELAY_NO_SPEECH_OPTION));
+                }
+                  // Step 4: Show and speak options e-g (column 2 - solutions)
+                const column2Options = ['e', 'f', 'g', 'h', 'i', 'j'];
+                for (const optionKey of column2Options) {
+                    if (currentQuestionData.phuong_an[optionKey]) {
+                        const optionEl = document.getElementById(`option${optionKey.toUpperCase()}`);
+                        if (optionEl) {
+                            console.log(`startQuestionSequence: Animating 3-column option ${optionKey}`);
+                            animateElement(optionEl, 'option-appear');
+                            
+                            const speechFileKey = `speech_id_options_${optionKey.toUpperCase()}`;
+                            const speechFile = currentQuestionData[speechFileKey];
+                            
+                            if (DEBUG_MODE === 2) {
+                                // DEBUG MODE 2: Skip audio, use delay instead
+                                await new Promise(r => setTimeout(r, DELAY_NO_SPEECH_OPTION));
+                            } else if (USE_SPEECH && speechFile) {
+                                await playAudio(`speech/${speechFile}`);
+                            } else {
+                                await new Promise(r => setTimeout(r, DELAY_NO_SPEECH_OPTION));
+                            }
+                        }
+                    }
+                }
+                
+            } else {
+                // Regular layout - original logic
+                const optionElements = optionsContainerEl.querySelectorAll('.option-card');
+                console.log(`startQuestionSequence: Found ${optionElements.length} option elements to animate.`);
+                
+                let animationDelayBase = 0; // For staggering option animations
+                for (let i = 0; i < optionElements.length; i++) {
+                    const optionEl = optionElements[i];
+                    console.log('startQuestionSequence: Animating option', optionEl.id);
+                    
+                    // Set animation delay for staggered effect
+                    optionEl.style.animationDelay = `${animationDelayBase}s`;
+                    animateElement(optionEl, 'option-appear');
+                      // Speak option if audio exists
+                    const optionKey = optionEl.dataset.optionKey;
+                    const speechFileKey = `speech_id_options_${optionKey.toUpperCase()}`;
+                    const speechFile = currentQuestionData[speechFileKey];
+                    
+                    if (DEBUG_MODE === 2) {
+                        // DEBUG MODE 2: Skip audio, use delay instead
+                        await new Promise(r => setTimeout(r, DELAY_NO_SPEECH_OPTION));
+                    } else if (USE_SPEECH && speechFile) {
+                        await playAudio(`speech/${speechFile}`);
+                    } else {
+                        await new Promise(r => setTimeout(r, DELAY_NO_SPEECH_OPTION));
+                    }
+                    
+                    animationDelayBase += 0.15; // Stagger next option by 150ms
+                }
             }
-        } else if (currentQuestionData.type_question === "Thực hành") {
+              } else if (currentQuestionData.type_question === "Thực hành") {
             // No options to show/speak for practical questions
             console.log('startQuestionSequence: Thực hành question - no options to show');
         }
 
         // 4. Start Timer
-        if (DEBUG_MODE || timeLeft > 0) {
+        if (DEBUG_MODE === 0 && timeLeft > 0) {
             startTimer();
-        } else if (!DEBUG_MODE && timeLeft <= 0) { 
+        } else if (DEBUG_MODE > 0) {
+            // Debug modes: Skip timer and show answer button if applicable
+            console.log(`DEBUG MODE ${DEBUG_MODE}: Timer skipped`);
+            if (currentQuestionData.type_question !== "Thực hành") {
+                showAnswerBtn.style.display = 'inline-block'; 
+                showAnswerBtn.disabled = false;
+                showAnswerBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+            }
+        } else if (timeLeft <= 0) { 
             showAnswerBtn.style.display = 'inline-block'; 
             showAnswerBtn.disabled = false;
             showAnswerBtn.classList.remove('opacity-50', 'cursor-not-allowed');
         }
         
+        // Check layout after all animations complete
+        setTimeout(() => {
+            adjustLayoutForOverflow();
+        }, 1500);
+        
         startSequenceBtn.classList.remove('speaking-indicator');
         sequenceInProgress = false;
-    }    function highlightCorrectAnswer() {
+    }    // Function to trigger header and footer animations with enhanced effects
+    function triggerHeaderFooterAnimation() {
+        const header = document.querySelector('.header');
+        const footer = document.querySelector('.footer');
+        
+        if (header) {
+            // Remove existing animation class if present
+            header.style.animation = 'none';
+            // Force reflow to ensure animation is reset
+            void header.offsetHeight;
+            // Add animation with a slight delay to ensure proper triggering
+            setTimeout(() => {
+                header.style.animation = 'headerSlideDown 0.8s ease-out';
+            }, 10);
+        }
+        
+        if (footer) {
+            // Remove existing animation class if present
+            footer.style.animation = 'none';
+            // Force reflow to ensure animation is reset
+            void footer.offsetHeight;
+            // Add animation with a slight delay to ensure proper triggering
+            setTimeout(() => {
+                footer.style.animation = 'footerSlideUp 0.8s ease-out';
+            }, 10);
+        }
+        
+        // Trigger enhanced question header animations
+        triggerQuestionHeaderAnimations();
+    }
+      // Function to trigger enhanced question header animations
+    function triggerQuestionHeaderAnimations() {
+        const questionNumberContainer = questionNumberEl?.closest('.question-number');
+        const categoryContainer = questionCategoryEl?.closest('.category-badge');
+        const timerContainer = timerCircleEl?.closest('.timer-circle');
+        
+        // Reset all elements
+        if (questionNumberContainer) {
+            questionNumberContainer.classList.remove('question-number-counter', 'animate');
+        }
+        
+        if (categoryContainer) {
+            categoryContainer.classList.remove('category-badge-appear', 'animate');
+            categoryContainer.style.opacity = '0';
+            categoryContainer.style.transform = 'scale(0) rotate(-180deg)';
+        }
+        
+        if (timerContainer) {
+            timerContainer.classList.remove('timer-circle-delayed', 'animate');
+            timerContainer.style.opacity = '0';
+            timerContainer.style.transform = 'scale(0.3)';
+        }
+        
+        // Force reflow
+        void document.body.offsetHeight;
+        
+        // Step 1: Question Number appears first (counter animation)
+        setTimeout(() => {
+            if (questionNumberContainer && questionNumberEl) {
+                const targetNumber = parseInt(questionNumberEl.textContent) || 1;
+                
+                // Add counter class and trigger animation
+                questionNumberContainer.classList.add('question-number-counter');
+                questionNumberContainer.classList.add('animate');
+                  // Counter animation from 0 to target number
+                let currentNumber = 0;
+                const duration = 500; // Changed from 1500 to 500ms (0.5s)
+                const increment = targetNumber / (duration / 50); // Update every 50ms
+                
+                const counterInterval = setInterval(() => {
+                    currentNumber += increment;
+                    if (currentNumber >= targetNumber) {
+                        currentNumber = targetNumber;
+                        clearInterval(counterInterval);
+                    }
+                    questionNumberEl.textContent = Math.floor(currentNumber);
+                }, 50);
+            }
+        }, 200);
+        
+        // Step 2: Category appears after 1s delay (badge appear effect)
+        setTimeout(() => {
+            if (categoryContainer) {
+                categoryContainer.classList.add('category-badge-appear');
+                categoryContainer.style.opacity = '';
+                categoryContainer.style.transform = '';
+                categoryContainer.classList.add('animate');
+            }
+        }, 1200);
+        
+        // Step 3: Timer appears last after 1.8s delay
+        setTimeout(() => {
+            if (timerContainer) {
+                timerContainer.classList.add('timer-circle-delayed');
+                timerContainer.style.opacity = '';
+                timerContainer.style.transform = '';
+                timerContainer.classList.add('animate');
+            }
+        }, 2000);
+    }
+
+    function highlightCorrectAnswer() {
         if (!currentQuestionData || !currentQuestionData.dap_an_dung) return;
 
         const correctAnswers = Array.isArray(currentQuestionData.dap_an_dung) 
                                ? currentQuestionData.dap_an_dung 
                                : [currentQuestionData.dap_an_dung];
 
+        // Calculate points per correct answer for Round 2
+        // If 4 correct answers: 2.5 points each
+        // If 5 correct answers: 2 points each
+        const totalCorrectAnswers = correctAnswers.length;
+        const pointsPerAnswer = totalCorrectAnswers === 4 ? 2.5 : 2;
+
+        // Check if this is a 3-column layout question
+        const isThreeColumnLayout = currentQuestionData.layout === '3columns';
+        
         correctAnswers.forEach(correctKey => {
-            const correctOptionEl = optionsContainerEl.querySelector(`[data-option-key="${correctKey.toLowerCase()}"]`);
+            let correctOptionEl;
+            
+            if (isThreeColumnLayout) {
+                // For 3-column layout, search in both column containers
+                const threeColumnsContainer = document.getElementById('threeColumnsContainer');
+                if (threeColumnsContainer) {
+                    correctOptionEl = threeColumnsContainer.querySelector(`[data-option-key="${correctKey.toLowerCase()}"]`);
+                }
+            } else {
+                // For regular layout, search in optionsContainer
+                correctOptionEl = optionsContainerEl.querySelector(`[data-option-key="${correctKey.toLowerCase()}"]`);
+            }
+            
             if (correctOptionEl) {
                 // Add the correct-answer class which handles all styling
                 correctOptionEl.classList.add('correct-answer');
+
+                // Add score badge to the option
+                const scoreBadge = document.createElement('div');
+                scoreBadge.classList.add('score-badge', 'ml-2', 'px-2', 'py-1', 'bg-amber-500', 'text-white', 'rounded-full', 'text-sm', 'font-bold', 'inline-flex', 'items-center');
+                scoreBadge.innerHTML = `<i class="fas fa-star mr-1"></i>+${pointsPerAnswer}đ`;
+                  // Find the option content and append the score badge
+                const optionContent = correctOptionEl.querySelector('.flex.items-center.space-x-3');
+                if (optionContent) {
+                    optionContent.appendChild(scoreBadge);
+                }
                 
                 // Ensure the option is visible and smoothly animated
                 correctOptionEl.style.transition = 'all 0.5s ease';
@@ -678,12 +1278,10 @@ document.addEventListener('DOMContentLoaded', () => {
     
 async function displayAnswer() {
         if (answerShown || !currentQuestionData) return;
-        answerShown = true;
-
-        if (timerInterval) clearInterval(timerInterval);
+        answerShown = true;        if (timerInterval) clearInterval(timerInterval);
         
         // Immediately hide time-up overlay without delay or animation
-        if (!DEBUG_MODE && timesUpPopupEl) {
+        if (DEBUG_MODE === 0 && timesUpPopupEl) {
             timesUpPopupEl.style.display = 'none';
             timesUpPopupEl.style.opacity = '0';
             timesUpPopupEl.style.animation = 'none'; // Stop any ongoing animations
@@ -691,14 +1289,19 @@ async function displayAnswer() {
 
         showAnswerBtn.disabled = true;
         showAnswerBtn.classList.add('opacity-50', 'cursor-not-allowed');
-        
-        let answerDisplayString = "";
+          let answerDisplayString = "";
         if (currentQuestionData.type_question === "Trắc nghiệm" || currentQuestionData.type_question === "Trắc nghiệm Hình ảnh") {
             if (currentQuestionData.dap_an_dung) {
                 const correctKeys = Array.isArray(currentQuestionData.dap_an_dung) 
                                     ? currentQuestionData.dap_an_dung 
                                     : [currentQuestionData.dap_an_dung];
-                answerDisplayString = "Đáp án: " + correctKeys.map(k => k.toUpperCase()).join(', ');
+                
+                // Calculate scoring info for Round 2
+                const totalCorrectAnswers = correctKeys.length;
+                const pointsPerAnswer = totalCorrectAnswers === 4 ? 2.5 : 2;
+                const maxPoints = totalCorrectAnswers * pointsPerAnswer;
+                
+                answerDisplayString = `Đáp án: ${correctKeys.map(k => k.toUpperCase()).join(', ')} | Điểm tối đa: ${maxPoints} điểm (${pointsPerAnswer}đ/câu)`;
                 highlightCorrectAnswer();
             } else {
                 answerDisplayString = "Không có đáp án cho câu này.";
@@ -715,23 +1318,40 @@ async function displayAnswer() {
             }
              else {
                 answerDisplayString = "Đáp án được trình bày bởi BGK/Tài liệu.";
-            }
-        } else if (currentQuestionData.type_question === "Thực hành") {
+            }        } else if (currentQuestionData.type_question === "Thực hành") {
             answerDisplayString = "Ban giám khảo chấm điểm thực hành.";
         }
 
         progressTextEl.innerHTML = answerDisplayString; // Use innerHTML for potential HTML in answer
         progressTextEl.classList.add('answer-text-highlight'); // Add highlight class
  
-        if (USE_SPEECH && currentQuestionData.speech_id_answer) {
+        if (DEBUG_MODE === 2) {
+            // DEBUG MODE 2: Skip audio, use delay instead
+            await new Promise(r => setTimeout(r, DELAY_NO_SPEECH_ANSWER));        } else if (USE_SPEECH && currentQuestionData.speech_id_answer) {
             await playAudio(`speech/${currentQuestionData.speech_id_answer}`);
         } else if (!USE_SPEECH) {
             await new Promise(r => setTimeout(r, DELAY_NO_SPEECH_ANSWER));
         }
-    }    // --- Navigation ---
+    }
+
+    // --- Navigation ---
     function nextQuestion() {
+<<<<<<< HEAD
         navigationInProgress = true; // Set flag to prevent audio restart
         stopAllEvents();        if (currentQuestionIndex < allQuestions.length - 1) {
+=======
+        console.log('nextQuestion: Starting navigation to next question');
+        
+        // Stop all ongoing events immediately
+        stopAllEvents();
+        
+        // Reset states
+        sequenceInProgress = false;
+        answerShown = false;
+        navigationInProgress = true; // Set flag to prevent other audio during transition
+
+        if (currentQuestionIndex < allQuestions.length - 1) {
+>>>>>>> v4
             currentQuestionIndex++;
             renderSlide(allQuestions[currentQuestionIndex]);
         } else {
@@ -742,15 +1362,31 @@ async function displayAnswer() {
             }
         }
         
-        // Clear navigation flag after a short delay to allow page rendering
+        // Clear navigation flag after a short delay to allow audio to start
         setTimeout(() => {
             navigationInProgress = false;
+            console.log('nextQuestion: Navigation flag cleared, ready for new audio');
         }, 100);
+<<<<<<< HEAD
     }
 
     function previousQuestion() {
         navigationInProgress = true; // Set flag to prevent audio restart
         stopAllEvents();        if (currentQuestionIndex > 0) {
+=======
+    }    function previousQuestion() {
+        console.log('previousQuestion: Starting navigation to previous question');
+        
+        // Stop all ongoing events immediately
+        stopAllEvents();
+        
+        // Reset states
+        sequenceInProgress = false;
+        answerShown = false;
+        navigationInProgress = true; // Set flag to prevent other audio during transition
+
+        if (currentQuestionIndex > 0) {
+>>>>>>> v4
             currentQuestionIndex--;
             renderSlide(allQuestions[currentQuestionIndex]);
         } else {
@@ -762,9 +1398,10 @@ async function displayAnswer() {
             }
         }
         
-        // Clear navigation flag after a short delay to allow page rendering
+        // Clear navigation flag after a short delay to allow audio to start
         setTimeout(() => {
             navigationInProgress = false;
+            console.log('previousQuestion: Navigation flag cleared, ready for new audio');
         }, 100);
     }
 
@@ -794,8 +1431,23 @@ async function displayAnswer() {
             if (!questionSetsResponse.ok) {
                 throw new Error(`HTTP error loading question_sets.json! status: ${questionSetsResponse.status}`);
             }
-            const questionSetsData = await questionSetsResponse.json();
-            console.log('Loaded question_sets.json:', questionSetsData);
+            const questionSetsData = await questionSetsResponse.json();            console.log('Loaded question_sets.json:', questionSetsData);
+
+            // Determine current round from question_sets.json and URL parameters
+            const selectedParams = getSelectedIds();
+            if (selectedParams && selectedParams.set) {
+                // Try to find which round contains the selected set
+                for (const roundKey in questionSetsData) {
+                    if (questionSetsData[roundKey] && questionSetsData[roundKey][selectedParams.set]) {
+                        currentRound = roundKey;
+                        break;
+                    }
+                }
+            } else {
+                // Default to vong2 (this page is specifically for vong2)
+                currentRound = 'vong2';
+            }
+            console.log('Current round determined:', currentRound);
 
             // Load Round 2 questions from vong2.json
             const response = await fetch('vong2.json');
@@ -829,43 +1481,47 @@ async function displayAnswer() {
                     if (Array.isArray(category[typeKey])) {
                         allAvailableQuestions = allAvailableQuestions.concat(category[typeKey]);
                     }
-                }
-            }
-
-            // Get selected category and set from URL parameters
-            const selectedParams = getSelectedIds();
+                }            }            // Get selected set from URL parameters  
             console.log('Selected parameters:', selectedParams);
             
             // Filter questions based on question_sets.json configuration
             allQuestions = [];
             
-            if (selectedParams && selectedParams.category && selectedParams.set) {
-                // Load specific category and set from question_sets.json
-                const categoryConfig = questionSetsData.vong2?.[selectedParams.category];
-                if (categoryConfig) {
-                    const questionIds = categoryConfig[selectedParams.set];
-                    if (questionIds && Array.isArray(questionIds)) {
-                        console.log(`Loading questions for category "${selectedParams.category}", set "${selectedParams.set}":`, questionIds);
-                        
-                        // Filter questions based on IDs from question_sets.json
-                        questionIds.forEach(questionId => {
-                            const question = allAvailableQuestions.find(q => q.id === questionId);
-                            if (question) {
-                                allQuestions.push(question);
-                            } else {
-                                console.warn(`Question with ID "${questionId}" not found in vong2.json`);
-                            }
-                        });
-                    } else {
-                        console.error(`Set "${selectedParams.set}" not found in category "${selectedParams.category}"`);
-                    }
+            if (selectedParams && selectedParams.set) {
+                // Load specific set from question_sets.json (new structure: vong2[set])
+                const questionIds = questionSetsData.vong2?.[selectedParams.set];                if (questionIds && Array.isArray(questionIds)) {
+                    console.log(`Loading questions for set "${selectedParams.set}":`, questionIds);
+                    
+                    // Filter questions based on IDs from question_sets.json
+                    // Use map to preserve order, then filter out null results
+                    allQuestions = questionIds.map(questionId => {
+                        const question = allAvailableQuestions.find(q => q.id === questionId);
+                        if (!question) {
+                            console.warn(`Question with ID "${questionId}" not found in vong2.json`);
+                        }
+                        return question;
+                    }).filter(q => q !== null && q !== undefined);
                 } else {
-                    console.error(`Category "${selectedParams.category}" not found in question_sets.json`);
+                    console.error(`Set "${selectedParams.set}" not found in question_sets.json for vong2`);
+                    // Fallback to all questions if set not found
+                    allQuestions = allAvailableQuestions;
+                }            } else {
+                // No specific set selected, load questions from question_sets.json set "1" as default
+                console.log('No specific set selected, loading default set "1" from question_sets.json');
+                const defaultQuestionIds = questionSetsData.vong2?.["1"];
+                if (defaultQuestionIds && Array.isArray(defaultQuestionIds)) {
+                    console.log('Loading default set "1":', defaultQuestionIds);
+                    allQuestions = defaultQuestionIds.map(questionId => {
+                        const question = allAvailableQuestions.find(q => q.id === questionId);
+                        if (!question) {
+                            console.warn(`Question with ID "${questionId}" not found in vong2.json`);
+                        }
+                        return question;
+                    }).filter(q => q !== null && q !== undefined);
+                } else {
+                    console.warn('Default set "1" not found in question_sets.json, loading all questions');
+                    allQuestions = allAvailableQuestions;
                 }
-            } else {
-                // No specific selection, load all questions (fallback behavior)
-                console.log('No specific category/set selected, loading all questions');
-                allQuestions = allAvailableQuestions;
             }
 
             if (allQuestions.length > 0) {
@@ -878,12 +1534,20 @@ async function displayAnswer() {
             }
         } catch (error) {
             console.error("Could not load questions:", error);
-            progressTextEl.textContent = "Lỗi tải dữ liệu câu hỏi. Vui lòng kiểm tra file vong2.json, question_sets.json và console.";
-        }
+            progressTextEl.textContent = "Lỗi tải dữ liệu câu hỏi. Vui lòng kiểm tra file vong2.json, question_sets.json và console.";        }
     }
 
     // --- Emergency Exit Function ---
     function emergencyExitToPage3() {
+        // Stop question number audio
+        if (currentQuestionNumberAudio) {
+            currentQuestionNumberAudio.pause();
+            currentQuestionNumberAudio.currentTime = 0;
+            currentQuestionNumberAudio.src = '';
+            currentQuestionNumberAudio.load();
+            currentQuestionNumberAudio = null;
+        }
+        
         // Stop all audio
         if (currentAudio && currentAudio.source) {
             currentAudio.source.stop();
@@ -913,15 +1577,17 @@ async function displayAnswer() {
     showAnswerBtn.addEventListener('click', displayAnswer);
     if (slideImageEl && imageModalEl && modalImageEl) {
         slideImageEl.addEventListener('click', () => {
-            if (!slideImageEl.src) return;
-            modalImageEl.src = slideImageEl.src;
+            if (!slideImageEl.src) return;            modalImageEl.src = slideImageEl.src;
             imageModalEl.classList.remove('hidden');
         });
+
         imageModalEl.addEventListener('click', () => {
             imageModalEl.classList.add('hidden');
             modalImageEl.src = '';
         });
-    }    document.addEventListener('keydown', (e) => {
+    }
+
+    document.addEventListener('keydown', (e) => {
         console.log('Key pressed in app2.js:', e.key); // Debug log
         if (e.key === 'ArrowRight') {
             e.preventDefault();
@@ -932,8 +1598,7 @@ async function displayAnswer() {
             e.preventDefault();
             console.log('Arrow Left pressed - calling previousQuestion()');
             stopAllEvents();
-            previousQuestion();
-        } else if (e.key === ' ' || e.key === 'Spacebar') {
+            previousQuestion();        } else if (e.key === ' ' || e.key === 'Spacebar') {
             e.preventDefault(); 
             if (!startSequenceBtn.disabled) {
                 startQuestionSequence();
@@ -942,12 +1607,20 @@ async function displayAnswer() {
             if (!showAnswerBtn.disabled && showAnswerBtn.style.display !== 'none') {
                 e.preventDefault();
                 displayAnswer();
-            }        } else if (e.key.toLowerCase() === 'd' && e.ctrlKey) { // Ctrl+D to toggle debug
+            }
+        } else if (e.key === '0' && e.ctrlKey) { // Ctrl+0 for DEBUG mode 1
             e.preventDefault();
-            // This is a simple way to toggle, for a real app, you might want a UI element
-            // For now, this requires manual change of DEBUG_MODE constant and reload.
-            // Or, we can make DEBUG_MODE a let and toggle it here, then re-render.
-            console.log("Debug mode toggle attempted. Reload page if DEBUG_MODE constant was changed.");        } else if (e.key.toLowerCase() === 'q') { // Q key for emergency exit
+            DEBUG_MODE = 1;
+            console.log('DEBUG MODE 1 activated: Timer disabled');
+            progressTextEl.textContent = 'DEBUG MODE 1: Timer disabled';        } else if (e.key === '9' && e.ctrlKey) { // Ctrl+9 for DEBUG mode 2
+            e.preventDefault();
+            DEBUG_MODE = 2;
+            console.log('DEBUG MODE 2 activated: Timer and audio disabled');
+            progressTextEl.textContent = 'DEBUG MODE 2: Timer and audio disabled';
+        } else if (e.key.toLowerCase() === 'd' && e.ctrlKey) { // Ctrl+D to toggle debug
+            e.preventDefault();
+            console.log("Debug mode toggle attempted. Use Ctrl+0 or Ctrl+9 for specific debug modes.");
+        } else if (e.key.toLowerCase() === 'q') { // Q key for emergency exit
             e.preventDefault();
             emergencyExitToPage3();        } else if (e.key === '2') { // Number 2 key to go to info page for round 2
             e.preventDefault();
@@ -960,5 +1633,7 @@ async function displayAnswer() {
     });
 
     // --- Initialization ---
+    // Initialize audio context early for auto-play to work
+    initAudio();
     loadQuestions();
 });

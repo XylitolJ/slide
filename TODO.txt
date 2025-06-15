@@ -1,5 +1,12 @@
-- Tăng phông chữ cho các câu hỏi ngắn
-- ở vòng 2 các phương án trả lời khá dài, bỏ đi hiệu ứng scale nổi
-- vòng 2 đang không hiển thị hết các phương án trả lời
-- vòng 2 thời gian đang sai, đúng là 60s, hiện tại là 30s
-- tạo lại âm thanh cho vòng 3: thêm từ Câu hỏi vào.
+- ☐ Tăng phông chữ cho các câu hỏi ngắn
+- ☐ ở vòng 2 các phương án trả lời khá dài, bỏ đi hiệu ứng scale nổi
+- ☐ vòng 2 đang không hiển thị hết các phương án trả lời
+- ☐ vòng 2 thời gian đang sai, đúng là 60s, hiện tại là 30s
+- ☐ tạo lại âm thanh cho vòng 3: thêm từ Câu hỏi vào.
+#########
+
+Cho đồng hồ nổi lên khi bắt đầu tính giờ, Có âm thanh báo khi tính giờ hay hết giờ rõ ràng hơn
+Lỗi tải file âm thanh: V2_KTM_HA_10_F.wav
+Đồng hồ cần nổi bật hơn, và có tiếng ting khi bắt đầu
+Bỏ đi hiệu ứng animate câu hỏi số
+có một ảnh kích thước khá nhỏ, báo lại với Hoàng

@@ -29,31 +29,38 @@ document.addEventListener('DOMContentLoaded', () => {
     // Popup
     const timesUpPopupEl = document.getElementById('timeUpOverlay'); // Updated ID for new overlay
 
-    // --- Configuration ---
-    const DEBUG_MODE = false; // Set to true to enable debug mode
+    // --- Configuration --- 
+    let DEBUG_MODE = 0; // 0 = normal, 1 = no timer, 2 = no timer + no audio
     const USE_SPEECH = localStorage.getItem("useSpeech") !== "false";
     const SHOW_IMAGE_PLACEHOLDER_ON_ERROR = true; // If true, shows a placeholder if an image fails to load
     const IMAGE_PLACEHOLDER_SVG = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23cbd5e1'%3E%3Cpath d='M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z'/%3E%3C/svg%3E"; // Simple image icon
+
     const DELAY_NO_SPEECH_QUESTION = 1000; // ms to wait after showing question if no speech
     const DELAY_NO_SPEECH_OPTION = 500;  // ms to wait after showing an option if no speech
     const DELAY_NO_SPEECH_ANSWER = 1000; // ms to wait after showing answer if no speech
+    
+    // THEME CONFIGURATION - Global variable to control header/footer theme
+    // Options: 'default', 'category', 'round'
+    const THEME_MODE = 'round'; // Change this to switch between theme modes
 
     function applyFontSettings(){
         const qSize = localStorage.getItem("fontSizeQuestion");
         const oSize = localStorage.getItem("fontSizeOption");
         if(qSize) document.documentElement.style.setProperty("--question-font-size", qSize+"px");
         if(oSize) document.documentElement.style.setProperty("--option-font-size", oSize+"px");
-    }
-
-    // State variables
+    }    // State variables
     let allQuestions = [];
     let contestRoundsData = []; // To store data from quy_che_thi.cac_vong_thi
+    let currentRound = 'vong1'; // Default round for vong1.html
     let currentQuestionIndex = 0;
     let currentQuestionData = null;
     let timerInterval;
     let timeLeft = 0; // Will be set per question
     const DEFAULT_TIME_PER_QUESTION = 30; // Default seconds, can be overridden by JSON
-    let audioContext;    let currentAudio = null;    let sequenceInProgress = false;
+    let audioContext;
+    let currentAudio = null;
+    let currentQuestionNumberAudio = null; // Track question number audio separately
+    let sequenceInProgress = false;
     let answerShown = false;
     let navigationInProgress = false; // Add flag to prevent audio restart during navigation
 
@@ -72,11 +79,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 console.error("Web Audio API is not supported in this browser.", e);
                 progressTextEl.textContent = "Lỗi: Trình duyệt không hỗ trợ âm thanh.";
             }
-        }    }
-
-        // --- Audio Playback ---
+        }    }        // --- Audio Playback ---
     async function playAudio(filePath, onEndCallback) {
-        if (!USE_SPEECH || !audioContext || !filePath || navigationInProgress) { // Check navigation flag
+        if (!USE_SPEECH || !audioContext || !filePath || navigationInProgress || DEBUG_MODE === 2) { // Check navigation flag and DEBUG_MODE 2
             if (onEndCallback) onEndCallback();
             return Promise.resolve();
         }
@@ -122,6 +127,163 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // Special function for playing question number audio that bypasses navigation check
+    async function playQuestionNumberAudio(filePath, onEndCallback) {
+        if (!USE_SPEECH || !filePath) {
+            if (onEndCallback) onEndCallback();
+            return Promise.resolve();
+        }
+
+        // Initialize audio context if not already done
+        if (!audioContext) {
+            initAudio();
+        }
+
+        // Stop any currently playing question number audio first
+        if (currentQuestionNumberAudio) {
+            try {
+                currentQuestionNumberAudio.pause();
+                currentQuestionNumberAudio.currentTime = 0;
+                currentQuestionNumberAudio.src = '';
+                currentQuestionNumberAudio.load();
+            } catch (e) {
+                console.error('Error stopping previous question number audio:', e);
+            }
+        }
+
+        // Create a new audio object for question number playback
+        const audio = new Audio(filePath);
+        currentQuestionNumberAudio = audio; // Track this audio for stopping later
+
+        return new Promise((resolve, reject) => {
+            audio.oncanplaythrough = () => {
+                audio.play().catch(e => {
+                    console.error(`Error playing question number audio ${filePath}:`, e);
+                    if (onEndCallback) onEndCallback();
+                    resolve(); // Resolve even on error to not block sequence
+                });
+            };
+            audio.onended = () => {
+                if (onEndCallback) onEndCallback();
+                if (currentQuestionNumberAudio === audio) currentQuestionNumberAudio = null; // Clear if it's the one that ended
+                resolve();
+            };
+            audio.onerror = (e) => {
+                console.error(`Error loading question number audio ${filePath}:`, e);
+                if (onEndCallback) onEndCallback();
+                if (currentQuestionNumberAudio === audio) currentQuestionNumberAudio = null;
+                resolve(); // Resolve to not block sequence
+            };
+            // Handle cases where oncanplaythrough might not fire (e.g. cached files)
+            if (audio.readyState >= 3) { // HAVE_FUTURE_DATA or HAVE_ENOUGH_DATA
+                 audio.play().catch(e => {
+                    console.error(`Error playing question number audio ${filePath} (readyState >=3):`, e);
+                    if (onEndCallback) onEndCallback();
+                    resolve();
+                });
+            }
+        });
+    }    // Function to trigger header and footer animations with enhanced effects
+    function triggerHeaderFooterAnimation() {
+        const header = document.querySelector('.header');
+        const footer = document.querySelector('.footer');
+        
+        if (header) {
+            // Remove existing animation class if present
+            header.style.animation = 'none';
+            // Force reflow to ensure animation is reset
+            void header.offsetHeight;
+            // Add animation with a slight delay to ensure proper triggering
+            setTimeout(() => {
+                header.style.animation = 'headerSlideDown 0.8s ease-out';
+            }, 10);
+        }
+        
+        if (footer) {
+            // Remove existing animation class if present
+            footer.style.animation = 'none';
+            // Force reflow to ensure animation is reset
+            void footer.offsetHeight;
+            // Add animation with a slight delay to ensure proper triggering
+            setTimeout(() => {
+                footer.style.animation = 'footerSlideUp 0.8s ease-out';
+            }, 10);
+        }
+        
+        // Trigger enhanced question header animations
+        triggerQuestionHeaderAnimations();
+    }
+      // Function to trigger enhanced question header animations
+    function triggerQuestionHeaderAnimations() {
+        const questionNumberContainer = questionNumberEl?.closest('.question-number');
+        const categoryContainer = questionCategoryEl?.closest('.category-badge');
+        const timerContainer = timerCircleEl?.closest('.timer-circle');
+        
+        // Reset all elements
+        if (questionNumberContainer) {
+            questionNumberContainer.classList.remove('question-number-counter', 'animate');
+        }
+        
+        if (categoryContainer) {
+            categoryContainer.classList.remove('category-badge-appear', 'animate');
+            categoryContainer.style.opacity = '0';
+            categoryContainer.style.transform = 'scale(0) rotate(-180deg)';
+        }
+        
+        if (timerContainer) {
+            timerContainer.classList.remove('timer-circle-delayed', 'animate');
+            timerContainer.style.opacity = '0';
+            timerContainer.style.transform = 'scale(0.3)';
+        }
+        
+        // Force reflow
+        void document.body.offsetHeight;
+        
+        // Step 1: Question Number appears first (counter animation)
+        setTimeout(() => {
+            if (questionNumberContainer && questionNumberEl) {
+                const targetNumber = parseInt(questionNumberEl.textContent) || 1;
+                
+                // Add counter class and trigger animation
+                questionNumberContainer.classList.add('question-number-counter');
+                questionNumberContainer.classList.add('animate');
+                  // Counter animation from 0 to target number
+                let currentNumber = 0;
+                const duration = 500; // Changed from 1500 to 500ms (0.5s)
+                const increment = targetNumber / (duration / 50); // Update every 50ms
+                
+                const counterInterval = setInterval(() => {
+                    currentNumber += increment;
+                    if (currentNumber >= targetNumber) {
+                        currentNumber = targetNumber;
+                        clearInterval(counterInterval);
+                    }
+                    questionNumberEl.textContent = Math.floor(currentNumber);
+                }, 50);
+            }
+        }, 200);
+        
+        // Step 2: Category appears after 1s delay (badge appear effect)
+        setTimeout(() => {
+            if (categoryContainer) {
+                categoryContainer.classList.add('category-badge-appear');
+                categoryContainer.style.opacity = '';
+                categoryContainer.style.transform = '';
+                categoryContainer.classList.add('animate');
+            }
+        }, 1200);
+        
+        // Step 3: Timer appears last after 1.8s delay
+        setTimeout(() => {
+            if (timerContainer) {
+                timerContainer.classList.add('timer-circle-delayed');
+                timerContainer.style.opacity = '';
+                timerContainer.style.transform = '';
+                timerContainer.classList.add('animate');
+            }
+        }, 2000);
+    }
+
     // --- UI Updates & Animations ---
     function animateElement(element, animationClass) {
         if (element) {
@@ -155,26 +317,68 @@ document.addEventListener('DOMContentLoaded', () => {
         } else {
             console.warn('animateElement: Called with null or undefined element for animationClass:', animationClass);
         }
+    }    // Function to change theme mode for testing (can be called from console)
+    window.changeThemeMode = function(mode) {
+        if (['default', 'category', 'round'].includes(mode)) {
+            // Use a const override for testing
+            window.THEME_MODE_OVERRIDE = mode;
+            console.log(`Theme mode changed to: ${mode}`);
+            // Re-apply theme with current question
+            if (currentQuestionData) {
+                applyTheme(currentQuestionData.category);
+            }
+        } else {
+            console.log('Invalid theme mode. Use: default, category, or round');
+        }
+    };
+
+    // Function to change current round for testing
+    window.changeCurrentRound = function(round) {
+        if (['vong1', 'vong2', 'vong3'].includes(round)) {
+            currentRound = round;
+            console.log(`Current round changed to: ${round}`);
+            // Re-apply theme if in round mode
+            if ((window.THEME_MODE_OVERRIDE || THEME_MODE) === 'round' && currentQuestionData) {
+                applyTheme(currentQuestionData.category);
+            }
+        } else {
+            console.log('Invalid round. Use: vong1, vong2, or vong3');
+        }
+    };
+
+    // Modified getThemeClass to use override if available
+    function getThemeClassWithOverride(category) {
+        const themeMode = window.THEME_MODE_OVERRIDE || THEME_MODE;
+        switch (themeMode) {
+            case 'round':
+                return `header-footer-theme-${currentRound}`;
+            
+            case 'category':
+                if (!category) return 'header-footer-theme-default';
+                const normalizedCategory = category.toLowerCase().replace(/\s+/g, '-');
+                if (normalizedCategory.includes('chính-sách-pháp-luật')) return 'header-footer-theme-cspl';
+                if (normalizedCategory.includes('phòng-cháy-chữa-cháy')) return 'header-footer-theme-pccc';
+                if (normalizedCategory.includes('y-tế')) return 'header-footer-theme-yte';
+                if (normalizedCategory.includes('khai-thác-mỏ')) return 'header-footer-theme-ktm';
+                if (normalizedCategory.includes('bảo-quản') || normalizedCategory.includes('bốc-xếp') || normalizedCategory.includes('vận-chuyển')) return 'header-footer-theme-bq-bx-vc';
+                return 'header-footer-theme-default';
+            
+            case 'default':
+            default:
+                return 'header-footer-theme-default';
+        }
     }
 
     function getThemeClass(category) {
-        if (!category) return 'header-footer-theme-default'; // Default theme for header/footer
-        const normalizedCategory = category.toLowerCase().replace(/\s+/g, '-');
-        if (normalizedCategory.includes('chính-sách-pháp-luật')) return 'header-footer-theme-cspl';
-        if (normalizedCategory.includes('phòng-cháy-chữa-cháy')) return 'header-footer-theme-pccc';
-        if (normalizedCategory.includes('y-tế')) return 'header-footer-theme-yte';
-        if (normalizedCategory.includes('khai-thác-mỏ')) return 'header-footer-theme-ktm';
-        if (normalizedCategory.includes('bảo-quản') || normalizedCategory.includes('bốc-xếp') || normalizedCategory.includes('vận-chuyển')) return 'header-footer-theme-bq-bx-vc';
-        return 'header-footer-theme-default'; // Fallback
-    }
-
-    function applyTheme(category) {
+        return getThemeClassWithOverride(category);
+    }    function applyTheme(category) {
         const themeClass = getThemeClass(category);
         // Define all possible theme classes to ensure only one is active on slideContainer
         const allClasses = [
             'header-footer-theme-default', 'header-footer-theme-cspl', 
             'header-footer-theme-pccc', 'header-footer-theme-yte', 
-            'header-footer-theme-ktm', 'header-footer-theme-bq-bx-vc'
+            'header-footer-theme-ktm', 'header-footer-theme-bq-bx-vc',
+            'header-footer-theme-vong1', 'header-footer-theme-vong2', 'header-footer-theme-vong3'
         ];
         // Apply theme to slideContainer, CSS will handle header/footer specifics
         if (slideContainer) {
@@ -186,51 +390,29 @@ document.addEventListener('DOMContentLoaded', () => {
         console.log('--- renderSlide START ---', questionData);
         currentQuestionData = questionData;
         answerShown = false;
-        sequenceInProgress = false;
-
-        // Function to apply background image with gradient or stripes overlay
-        const applyBgImage = (bgImage, style) => {
-            if (slideContainer) {
-                // Clear any existing background styles
-                slideContainer.classList.remove(...backgroundStyles);
-                slideContainer.style.backgroundImage = '';
-                slideContainer.classList.remove('bg-gradient-overlay', 'bg-stripes-overlay');
-                
-                // Convert Windows path to web path
-                const webPath = bgImage.replace(/\\/g, '/');
-                
-                if (style === 'gradient') {
-                    // Apply gradient overlay with the specified image
-                    slideContainer.style.backgroundImage = `linear-gradient(to bottom right, rgba(245, 158, 11, 0.7), rgba(255, 255, 255, 0.7)), url('${webPath}')`;
-                } else if (style === 'stripes') {
-                    // Apply diagonal stripes overlay with the specified image
-                    slideContainer.style.backgroundImage = `linear-gradient(45deg,
-                        rgba(245, 158, 11, 0.7) 0%,
-                        rgba(245, 158, 11, 0.7) 33.33%,
-                        rgba(255, 255, 255, 0.7) 33.33%,
-                        rgba(255, 255, 255, 0.7) 66.66%,
-                        rgba(245, 158, 11, 0.7) 66.66%,
-                        rgba(245, 158, 11, 0.7) 100%),
-                        url('${webPath}')`;
-                }
-                
+        sequenceInProgress = false;        // Apply background based on bg_image and bg_image_overlay properties
+        if (slideContainer) {
+            // First, remove any existing overlay classes to reset the state
+            slideContainer.classList.remove('overlay-curtain', 'gradient', 'stripes');
+            
+            if (questionData.bg_image) {
+                // Initially apply only the background image without overlay for visual appeal
+                const webPath = questionData.bg_image.replace(/\\/g, '/');
+                slideContainer.style.backgroundImage = `url('${webPath}')`;
                 slideContainer.style.backgroundSize = 'cover';
                 slideContainer.style.backgroundPosition = 'center';
                 slideContainer.style.backgroundRepeat = 'no-repeat';
-            }
-        };
-
-        // Apply background based on bg_image property
-        if (slideContainer) {
-            if (questionData.bg_image) {
-                // Use bg_image from JSON data and alternate between gradient and stripes
-                const imageStyle = currentQuestionIndex % 2 === 0 ? 'gradient' : 'stripes';
-                applyBgImage(questionData.bg_image, imageStyle);
+                slideContainer.classList.remove(...backgroundStyles);
+                
+                // Store overlay info for later use when question sequence starts
+                slideContainer.dataset.bgOverlay = questionData.bg_image_overlay || 'none';
+                slideContainer.dataset.bgImage = webPath;
             } else {
                 // Fallback to default background if no bg_image is specified
                 slideContainer.classList.remove(...backgroundStyles);
                 slideContainer.style.backgroundImage = '';
                 slideContainer.classList.add('bg-default');
+                slideContainer.dataset.bgOverlay = 'none';
             }
         }
         const imageWrapperEl = document.getElementById('imageWrapper');
@@ -264,12 +446,31 @@ document.addEventListener('DOMContentLoaded', () => {
         startSequenceBtn.classList.remove('opacity-50', 'cursor-not-allowed', 'speaking-indicator');
         
         timesUpPopupEl.style.display = 'none';
-        timesUpPopupEl.style.opacity = '0';
-
-
-        // Update header
+        timesUpPopupEl.style.opacity = '0';        // Update header
         if (questionNumberEl) questionNumberEl.textContent = currentQuestionIndex + 1;
         if (questionCategoryEl) questionCategoryEl.textContent = questionData.category || 'Không có danh mục';
+        
+        // Trigger header and footer animations
+        triggerHeaderFooterAnimation();
+        
+        // Initialize audio context if not already initialized (needed for auto-play)
+        if (!audioContext) {
+            initAudio();
+        }
+        
+        // Play question number audio if available (always play, regardless of any state)
+        if (questionData.speech_id_question_num && USE_SPEECH) {
+            const audioPath = `speech/${questionData.speech_id_question_num}`;
+            console.log(`Attempting to play question number audio: ${audioPath}`);
+            // Always play question number audio immediately when question is rendered
+            // Use a small delay to ensure the DOM is ready and previous audio is stopped
+            setTimeout(() => {
+                playQuestionNumberAudio(audioPath).catch(err => {
+                    console.warn('Could not play question number audio:', err);
+                });
+            }, 50);
+        }
+        
         applyTheme(questionData.category);
  
         // Update footer progress bar
@@ -424,10 +625,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Timer Logic ---
     function startTimer() {
-        if (timerInterval) clearInterval(timerInterval);
-
-        if (DEBUG_MODE) {
-            progressTextEl.textContent = 'Chế độ DEBUG: Bỏ qua timer.';
+        if (timerInterval) clearInterval(timerInterval);        if (DEBUG_MODE > 0) {
+            progressTextEl.textContent = `DEBUG MODE ${DEBUG_MODE}: Timer disabled.`;
             timeLeft = 0;
             timerTextEl.textContent = "DEBUG";
             if (currentQuestionData.type_question !== "Thực hành") {
@@ -523,10 +722,11 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
         sequenceInProgress = true;
-        initAudio();
-
-        startSequenceBtn.disabled = true;
+        initAudio();        startSequenceBtn.disabled = true;
         startSequenceBtn.classList.add('opacity-50', 'cursor-not-allowed', 'speaking-indicator');
+
+        // Apply background overlay when question sequence starts
+        applyBackgroundOverlay();
 
         // 1. Show Question and Image simultaneously
         const imageWrapperEl = document.getElementById('imageWrapper'); 
@@ -544,9 +744,11 @@ document.addEventListener('DOMContentLoaded', () => {
         } else {
             console.log(`%cstartQuestionSequence: Image will NOT be animated. Conditions: slideImageEl.src="${slideImageEl.src}", imageAreaEl exists=${!!imageAreaEl}, imageAreaEl.hidden=${imageAreaEl ? imageAreaEl.classList.contains('hidden') : 'N/A'}, imageWrapperEl exists=${!!imageWrapperEl}`, "color: red; font-weight: bold;");
         }
-        
-        // 2. Speak Question (after showing both question and image)
-        if (USE_SPEECH && currentQuestionData.speech_id_question) {
+          // 2. Speak Question (after showing both question and image)
+        if (DEBUG_MODE === 2) {
+            // DEBUG MODE 2: Skip audio, use delay instead
+            await new Promise(r => setTimeout(r, DELAY_NO_SPEECH_QUESTION));
+        } else if (USE_SPEECH && currentQuestionData.speech_id_question) {
             await playAudio(`speech/${currentQuestionData.speech_id_question}`);
         } else {
             await new Promise(r => setTimeout(r, DELAY_NO_SPEECH_QUESTION));
@@ -565,13 +767,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Set animation delay for staggered effect
                 optionEl.style.animationDelay = `${animationDelayBase}s`;
                 animateElement(optionEl, 'option-appear');
-                
-                // Speak option if audio exists
+                  // Speak option if audio exists
                 const optionKey = optionEl.dataset.optionKey;
                 const speechFileKey = `speech_id_options_${optionKey.toUpperCase()}`;
                 const speechFile = currentQuestionData[speechFileKey];
                 
-                if (USE_SPEECH && speechFile) {
+                if (DEBUG_MODE === 2) {
+                    // DEBUG MODE 2: Skip audio, use delay instead
+                    await new Promise(r => setTimeout(r, DELAY_NO_SPEECH_OPTION));
+                } else if (USE_SPEECH && speechFile) {
                     await playAudio(`speech/${speechFile}`);
                 } else {
                     await new Promise(r => setTimeout(r, DELAY_NO_SPEECH_OPTION));
@@ -582,12 +786,18 @@ document.addEventListener('DOMContentLoaded', () => {
         } else if (currentQuestionData.type_question === "Thực hành") {
             // No options to show/speak for practical questions
             console.log('startQuestionSequence: Thực hành question - no options to show');
-        }
-
-        // 4. Start Timer
-        if (DEBUG_MODE || timeLeft > 0) {
+        }        // 4. Start Timer
+        if (DEBUG_MODE === 0 && timeLeft > 0) {
             startTimer();
-        } else if (!DEBUG_MODE && timeLeft <= 0) { 
+        } else if (DEBUG_MODE > 0) {
+            // Debug modes: Skip timer and show answer button if applicable
+            console.log(`DEBUG MODE ${DEBUG_MODE}: Timer skipped`);
+            if (currentQuestionData.type_question !== "Thực hành") {
+                showAnswerBtn.style.display = 'inline-block'; 
+                showAnswerBtn.disabled = false;
+                showAnswerBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+            }
+        } else if (timeLeft <= 0) { 
             showAnswerBtn.style.display = 'inline-block'; 
             showAnswerBtn.disabled = false;
             showAnswerBtn.classList.remove('opacity-50', 'cursor-not-allowed');
@@ -602,11 +812,29 @@ document.addEventListener('DOMContentLoaded', () => {
                                ? currentQuestionData.dap_an_dung 
                                : [currentQuestionData.dap_an_dung];
 
+        // For Round 1, total points per question is 10, divided equally among correct answers
+        const totalPoints = 10;
+        const numberOfCorrectAnswers = correctAnswers.length;
+        const pointsPerAnswer = Math.round((totalPoints / numberOfCorrectAnswers) * 10) / 10; // Round to 1 decimal place
+
         correctAnswers.forEach(correctKey => {
             const correctOptionEl = optionsContainerEl.querySelector(`[data-option-key="${correctKey.toLowerCase()}"]`);
             if (correctOptionEl) {
                 // Add the correct-answer class which handles all styling
                 correctOptionEl.classList.add('correct-answer');
+
+                // Add score badge to the option
+                const scoreBadge = document.createElement('div');
+                scoreBadge.classList.add('score-badge');
+                // Format points to show decimal only if needed
+                const formattedPoints = pointsPerAnswer % 1 === 0 ? pointsPerAnswer.toString() : pointsPerAnswer.toFixed(1);
+                scoreBadge.innerHTML = `<i class="fas fa-star mr-1"></i>+${formattedPoints}đ`;
+                
+                // Find the option content and append the score badge
+                const optionContent = correctOptionEl.querySelector('.flex.items-center.space-x-3');
+                if (optionContent) {
+                    optionContent.appendChild(scoreBadge);
+                }
                 
                 // Ensure the option is visible and smoothly animated
                 correctOptionEl.style.transition = 'all 0.5s ease';
@@ -624,10 +852,8 @@ document.addEventListener('DOMContentLoaded', () => {
     
 async function displayAnswer() {
         if (answerShown || !currentQuestionData) return;
-        answerShown = true;
-
-        if (timerInterval) clearInterval(timerInterval);
-        if (!DEBUG_MODE && timesUpPopupEl) {
+        answerShown = true;        if (timerInterval) clearInterval(timerInterval);
+        if (DEBUG_MODE === 0 && timesUpPopupEl) {
             timesUpPopupEl.style.display = 'none';
             timesUpPopupEl.style.opacity = '0';
             timesUpPopupEl.style.animation = 'none'; // Stop any ongoing animations
@@ -635,14 +861,20 @@ async function displayAnswer() {
 
         showAnswerBtn.disabled = true;
         showAnswerBtn.classList.add('opacity-50', 'cursor-not-allowed');
-        
-        let answerDisplayString = "";
+          let answerDisplayString = "";
         if (currentQuestionData.type_question === "Trắc nghiệm") {
             if (currentQuestionData.dap_an_dung) {
                 const correctKeys = Array.isArray(currentQuestionData.dap_an_dung) 
                                     ? currentQuestionData.dap_an_dung 
                                     : [currentQuestionData.dap_an_dung];
-                answerDisplayString = "Đáp án: " + correctKeys.map(k => k.toUpperCase()).join(', ');
+                
+                // Calculate points distribution for Round 1
+                const totalPoints = 10;
+                const numberOfCorrectAnswers = correctKeys.length;
+                const pointsPerAnswer = Math.round((totalPoints / numberOfCorrectAnswers) * 10) / 10;
+                const formattedPoints = pointsPerAnswer % 1 === 0 ? pointsPerAnswer.toString() : pointsPerAnswer.toFixed(1);
+                
+                answerDisplayString = `Đáp án: ${correctKeys.map(k => k.toUpperCase()).join(', ')} | Điểm tối đa: ${totalPoints} điểm (${formattedPoints}đ/câu)`;
                 highlightCorrectAnswer();
             } else {
                 answerDisplayString = "Không có đáp án cho câu này.";
@@ -666,12 +898,13 @@ async function displayAnswer() {
             }
         } else if (currentQuestionData.type_question === "Thực hành") {
             answerDisplayString = "Ban giám khảo chấm điểm thực hành.";
-        }
-
-        progressTextEl.innerHTML = answerDisplayString; // Use innerHTML for potential HTML in answer
+        }        progressTextEl.innerHTML = answerDisplayString; // Use innerHTML for potential HTML in answer
         progressTextEl.classList.add('answer-text-highlight'); // Add highlight class
  
-        if (USE_SPEECH && currentQuestionData.speech_id_answer) {
+        if (DEBUG_MODE === 2) {
+            // DEBUG MODE 2: Skip audio, use delay instead
+            await new Promise(r => setTimeout(r, DELAY_NO_SPEECH_ANSWER));
+        } else if (USE_SPEECH && currentQuestionData.speech_id_answer) {
             await playAudio(`speech/${currentQuestionData.speech_id_answer}`);
         } else if (!USE_SPEECH) {
             await new Promise(r => setTimeout(r, DELAY_NO_SPEECH_ANSWER));
@@ -831,6 +1064,26 @@ async function displayAnswer() {
     function stopAllEvents() {
         console.log('%c[STOP ALL EVENTS] Starting stopAllEvents()', 'color: red; font-weight: bold;');
         
+        // Stop question number audio first
+        if (currentQuestionNumberAudio) {
+            console.log('%c[STOP ALL EVENTS] Stopping question number audio', 'color: red;');
+            try {
+                currentQuestionNumberAudio.pause();
+                currentQuestionNumberAudio.currentTime = 0; // Reset to beginning
+                // Hủy bỏ callbacks
+                currentQuestionNumberAudio.oncanplaythrough = null;
+                currentQuestionNumberAudio.onended = null;
+                currentQuestionNumberAudio.onerror = null;
+                // Reset src và abort request
+                currentQuestionNumberAudio.src = '';
+                currentQuestionNumberAudio.load();
+                currentQuestionNumberAudio = null;
+                console.log('%c[STOP ALL EVENTS] Question number audio stopped successfully', 'color: green;');
+            } catch (e) {
+                console.error('[STOP ALL EVENTS] Error stopping question number audio:', e);
+            }
+        }
+        
         // Stop Web Audio API audio
         if (currentAudio && currentAudio.source) {
             console.log('%c[STOP ALL EVENTS] Stopping Web Audio API audio', 'color: red;');
@@ -848,6 +1101,7 @@ async function displayAnswer() {
     if (currentAudio) {
         try {
             currentAudio.pause();
+            currentAudio.currentTime = 0; // Reset to beginning
             // Hủy bỏ callbacks
             currentAudio.oncanplaythrough = null;
             currentAudio.onended        = null;
@@ -915,12 +1169,19 @@ async function displayAnswer() {
             if (!showAnswerBtn.disabled && showAnswerBtn.style.display !== 'none') {
                 e.preventDefault();
                 displayAnswer();
-            }        } else if (e.key.toLowerCase() === 'd' && e.ctrlKey) { // Ctrl+D to toggle debug
+            }        } else if (e.key === '0' && e.ctrlKey) { // Ctrl+0 for DEBUG mode 1
             e.preventDefault();
-            // This is a simple way to toggle, for a real app, you might want a UI element
-            // For now, this requires manual change of DEBUG_MODE constant and reload.
-            // Or, we can make DEBUG_MODE a let and toggle it here, then re-render.
-            console.log("Debug mode toggle attempted. Reload page if DEBUG_MODE constant was changed.");        } else if (e.key.toLowerCase() === 'q') { // Q key for emergency exit
+            DEBUG_MODE = 1;
+            console.log('DEBUG MODE 1 activated: Timer disabled');
+            progressTextEl.textContent = 'DEBUG MODE 1: Timer disabled';
+        } else if (e.key === '9' && e.ctrlKey) { // Ctrl+9 for DEBUG mode 2
+            e.preventDefault();
+            DEBUG_MODE = 2;
+            console.log('DEBUG MODE 2 activated: Timer and audio disabled');
+            progressTextEl.textContent = 'DEBUG MODE 2: Timer and audio disabled';
+        } else if (e.key.toLowerCase() === 'd' && e.ctrlKey) { // Ctrl+D to toggle debug
+            e.preventDefault();
+            console.log("Debug mode toggle attempted. Use Ctrl+0 or Ctrl+9 for specific debug modes.");} else if (e.key.toLowerCase() === 'q') { // Q key for emergency exit
             e.preventDefault();
             emergencyExitToPage3();        } else if (e.key === '1') { // Number 1 key to go to info page for round 1
             e.preventDefault();
@@ -935,3 +1196,37 @@ async function displayAnswer() {
     // --- Initialization ---
     loadQuestions();
 });
+
+// Function to apply background overlay when question sequence starts
+    function applyBackgroundOverlay() {
+        if (!slideContainer) return;
+        
+        const bgOverlay = slideContainer.dataset.bgOverlay;
+        const bgImage = slideContainer.dataset.bgImage;
+        
+        if (bgOverlay && bgOverlay !== 'none' && bgImage) {
+            // Set the background image directly on slideContainer
+            slideContainer.style.backgroundImage = `url('${bgImage}')`;
+            slideContainer.style.backgroundSize = 'cover';
+            slideContainer.style.backgroundPosition = 'center';
+            slideContainer.style.backgroundRepeat = 'no-repeat';
+            
+            // Remove any existing curtain classes
+            slideContainer.classList.remove('overlay-curtain', 'gradient', 'stripes');
+            
+            // Force reflow to ensure the class removal takes effect
+            void slideContainer.offsetHeight;
+            
+            // Apply curtain drop animation with overlay type
+            setTimeout(() => {
+                slideContainer.classList.add('overlay-curtain');
+                if (bgOverlay === 'gradient') {
+                    slideContainer.classList.add('gradient');
+                    console.log('Applied gradient overlay curtain effect');
+                } else if (bgOverlay === 'stripes') {
+                    slideContainer.classList.add('stripes');
+                    console.log('Applied stripes overlay curtain effect');
+                }
+            }, 100);
+        }
+    }

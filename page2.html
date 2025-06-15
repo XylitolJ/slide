@@ -8,6 +8,13 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --color-1: #F1F3F9; /* very light background */
+            --color-2: #2A558C; /* blue */
+            --color-3: #F2C53D; /* yellow */
+            --color-4: #F2A341; /* orange */
+            --color-5: #F26E50; /* red/orange */
+        }
         * {
             font-family: 'Inter', sans-serif;
             margin: 0;
@@ -18,6 +25,8 @@
         html, body {
             height: 100vh;
             overflow: hidden;
+            background: var(--color-1);
+            color: var(--color-2);
         }
         
         .slide-container {
@@ -27,7 +36,7 @@
             flex-direction: column;
         }
         .gradient-bg {
-            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 30%, #60a5fa 70%, #dbeafe 100%);
+            background: linear-gradient(120deg, var(--color-1) 0%, var(--color-3) 40%, var(--color-4) 80%, var(--color-5) 100%);
         }
         .text-shadow {
             text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
@@ -35,6 +44,8 @@
         .card-hover {
             transition: all 0.3s ease;
             transform: translateY(0);
+            background: var(--color-1);
+            border: 2px solid var(--color-2);
         }
         .card-hover:hover {
             transform: translateY(-5px);
@@ -83,9 +94,11 @@
         .progress-bar {
             position: relative;
             overflow: hidden;
+            background: var(--color-3);
         }
         .progress-fill {
             animation: progressFill 2s ease-in-out forwards;
+            background: var(--color-2);
         }
         @keyframes progressFill {
             0% { width: 0%; }
@@ -102,6 +115,43 @@
         }
         .content-wrapper::-webkit-scrollbar {
             display: none;
+        }
+
+        /* Override colors for specific elements */
+        .slide-container .text-shadow, .slide-container h1, .slide-container h3 {
+            color: var(--color-2) !important;
+            text-shadow: 1px 1px 0 var(--color-1), 2px 2px 4px rgba(0,0,0,0.08);
+        }
+        .slide-container .bg-yellow-400, .slide-container .w-32.h-1 {
+            background: var(--color-3) !important;
+        }
+        .slide-container .bg-blue-600, .slide-container .text-blue-800 {
+            background: var(--color-2) !important;
+            color: var(--color-1) !important;
+        }
+        .slide-container .bg-green-600, .slide-container .text-green-800 {
+            background: var(--color-4) !important;
+            color: var(--color-1) !important;
+        }
+        .slide-container .bg-red-600, .slide-container .text-red-800 {
+            background: var(--color-5) !important;
+            color: var(--color-1) !important;
+        }
+        .slide-container .bg-purple-600, .slide-container .text-purple-800 {
+            background: var(--color-2) !important;
+            color: var(--color-1) !important;
+        }
+        .slide-container .bg-blue-100, .slide-container .bg-green-100, .slide-container .bg-red-100, .slide-container .bg-purple-100 {
+            background: var(--color-3) !important;
+            color: var(--color-2) !important;
+        }
+        .fade-in, .slide-in-left, .slide-in-right, .slide-in-up {
+            background: rgba(255,255,255,0.95) !important;
+            border-radius: 1rem;
+        }
+        /* Make sure all text is readable on colored backgrounds */
+        .slide-container h1, .slide-container h3, .slide-container p, .slide-container span, .slide-container .text-center {
+            text-shadow: 0 1px 2px rgba(0,0,0,0.08);
         }
     </style>
 </head>
@@ -271,4 +321,4 @@
     </script>
     <script src="navigation.js"></script>
 </body>
-</html></div>
+</html>

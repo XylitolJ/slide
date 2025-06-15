@@ -16,22 +16,12 @@ document.addEventListener('DOMContentLoaded', () => {    // URL Parameter handli
         
         // If no set parameter, return null (will load all questions)
         return setParam;
-    }
-
-    // Function to find question by ID and category
-    function findQuestionById(questionId, category, subcategory) {
+    }    // Function to find question by ID
+    function findQuestionById(questionId) {
         if (!allQuestions || !questionId) return null;
         
-        return allQuestions.find(q => {
-            const matchesId = q.cau_hoi_so.toString() === questionId.toString();
-            const matchesCategory = category ? q.category.toLowerCase().includes(category.toLowerCase()) : true;
-            const matchesSubcategory = subcategory ? q.subcategory.toLowerCase().includes(subcategory.toLowerCase()) : true;
-            
-            return matchesId && matchesCategory && matchesSubcategory;
-        });
-    }
-
-    // DOM Elements
+        return allQuestions.find(q => q.id === questionId);
+    }    // DOM Elements
     const slideContainer = document.getElementById('slideContainer');
     // Header elements
     const headerEl = document.querySelector('.header');    
@@ -39,61 +29,45 @@ document.addEventListener('DOMContentLoaded', () => {    // URL Parameter handli
     const questionCategoryEl = document.getElementById('newQuestionCategory');
     const timerCircleEl = document.getElementById('timerProgress');
     const timerTextEl = document.getElementById('timer');
+    const headerProgressBarEl = document.getElementById('headerProgressBar');
     // Main content elements
     const questionSectionEl = document.getElementById('questionSection'); 
     const questionTextContentEl = document.getElementById('questionTextContent');
-    const questionDisplayAreaEl = document.getElementById('questionDisplayArea');
-    // Footer elements
+    const questionDisplayAreaEl = document.getElementById('questionDisplayArea');    // Footer elements
     const footerEl = document.querySelector('.footer'); 
     const progressTextEl = document.getElementById('progressText');
     const startSequenceBtn = document.getElementById('startSequenceBtn');
-    const nextQuestionBtn = document.getElementById('nextQuestionBtn');
-    const backToThuchanhBtn = document.getElementById('backToThuchanhBtn');
     const footerProgressBarEl = document.getElementById('footerProgressBar');
-    const roundInfoDisplayEl = document.getElementById('roundInfoDisplay');
+    const roundInfoDisplayEl = document.getElementById('roundInfoDisplay');// --- Configuration ---
+    let DEBUG_MODE = 0; // 0 = normal, 1 = no timer, 2 = no timer + no audio
+    const USE_SPEECH = false; // Disable speech functionality for Round 3
     const DELAY_NO_SPEECH_ANSWER = 1000; // ms to wait after showing answer if no speech
-    const USE_SPEECH = true; // Enable speech functionality
-    const DEBUG_MODE = false; // Set to true to disable timer and auto-progression
     const DELAY_NO_SPEECH_QUESTION = 500; // ms to wait if no speech for question
+    
+    // THEME CONFIGURATION - Global variable to control header/footer theme
+    // Options: 'default', 'category', 'round'
+    const THEME_MODE = 'round'; // Change this to switch between theme modes
 
     // Popup elements
-    const timesUpPopupEl = document.getElementById('timesUpPopup') || { style: { display: 'none', opacity: '0' } };
-
-    // State variables
+    const timesUpPopupEl = document.getElementById('timesUpPopup') || { style: { display: 'none', opacity: '0' } };    // State variables
     let allQuestions = [];
+    let questionCategoryMapping = {}; // To store mapping of question ID to category order
     let contestRoundsData = []; // To store data from quy_che_thi.cac_vong_thi
+    let currentRound = 'vong3'; // Default round for vong3.html
     let currentQuestionIndex = 0;
-    let currentQuestionData = null;
-    let timerInterval;
+    let currentQuestionData = null;let timerInterval;
     let timeLeft = 0; // Will be set per question
     const DEFAULT_TIME_PER_QUESTION = 300; // Default 5 minutes for Round 3 practical exams
-    let audioContext;    let currentAudio = null;
     let sequenceInProgress = false;
     let navigationInProgress = false; // Add flag to prevent audio restart during navigation// Background styles for cleanup purposes only
     const backgroundStyles = [
         'bg-default', 'bg-abstract', 'bg-wave', 'bg-svg-pattern-1', 'bg-svg-pattern-2', 'bg-svg-pattern-3'
-    ];    // Initialize AudioContext
-    function initAudio() {
-        if (!audioContext) {
-            try {
-                audioContext = new (window.AudioContext || window.webkitAudioContext)();
-            } catch (e) {
-                console.error("Web Audio API is not supported in this browser.", e);
-                progressTextEl.textContent = "Lỗi: Trình duyệt không hỗ trợ âm thanh.";
-            }
-        }
-    }
-
-    // --- Emergency Exit Function ---
+    ];    // --- Audio functions removed for Round 3 ---
+    // No audio functionality needed for practical examination round    // --- Emergency Exit Function ---
     function emergencyExitToPage3() {
         console.log('Emergency exit function called');
-        // Stop all audio
-        if (currentAudio && currentAudio.source) {
-            currentAudio.source.stop();
-            currentAudio.source.disconnect();
-            currentAudio = null;
-        }
-          // Clear all timers
+        
+        // Clear all timers
         if (timerInterval) {
             clearInterval(timerInterval);
             timerInterval = null;
@@ -101,6 +75,7 @@ document.addEventListener('DOMContentLoaded', () => {    // URL Parameter handli
         
         // Reset all flags
         sequenceInProgress = false;
+<<<<<<< HEAD
         answerShown = false;
           // Navigate to page3.html
         console.log('Navigating to page3.html');
@@ -112,50 +87,15 @@ document.addEventListener('DOMContentLoaded', () => {    // URL Parameter handli
     }
 
     // Utility to stop all ongoing timers and audio without navigating away
+=======
+        
+        // Navigate to page3.html
+        console.log('Navigating to page3.html');
+        window.location.href = 'page3.html';
+    }// Utility to stop all ongoing timers without audio (Round 3 doesn't use audio)
+>>>>>>> v4
     function stopAllEvents() {
         console.log('%c[STOP ALL EVENTS] Starting stopAllEvents() in app3.js', 'color: red; font-weight: bold;');
-        
-        // Stop Web Audio API audio
-        if (currentAudio && currentAudio.source) {
-            console.log('%c[STOP ALL EVENTS] Stopping Web Audio API audio', 'color: red;');
-            try {
-                currentAudio.source.stop();
-                currentAudio.source.disconnect();
-                currentAudio = null;
-                console.log('%c[STOP ALL EVENTS] Web Audio API audio stopped successfully', 'color: green;');
-            } catch (e) {
-                console.error('[STOP ALL EVENTS] Error stopping Web Audio API:', e);
-            }
-        }
-        
-    // Stop HTML5 Audio elements
-    if (currentAudio) {
-        try {
-            currentAudio.pause();
-            // Hủy bỏ callbacks
-            currentAudio.oncanplaythrough = null;
-            currentAudio.onended        = null;
-            currentAudio.onerror        = null;
-            // Reset src và abort request
-            currentAudio.src = '';
-            currentAudio.load();
-        } catch (e) {
-            console.error('Error fully stopping audio:', e);
-        }
-        currentAudio = null;
-        console.log('[STOP ALL EVENTS] Fully stopped audio element');
-    }
-        
-        // Stop all audio elements on the page (failsafe)
-        const allAudioElements = document.querySelectorAll('audio');
-        console.log(`%c[STOP ALL EVENTS] Found ${allAudioElements.length} audio elements on page`, 'color: orange;');
-        allAudioElements.forEach((audio, index) => {
-            if (!audio.paused) {
-                console.log(`%c[STOP ALL EVENTS] Stopping audio element ${index + 1}: ${audio.src}`, 'color: red;');
-                audio.pause();
-                audio.currentTime = 0;
-            }
-        });
         
         if (timerInterval) {
             console.log('%c[STOP ALL EVENTS] Clearing timer interval', 'color: red;');
@@ -169,57 +109,9 @@ document.addEventListener('DOMContentLoaded', () => {    // URL Parameter handli
             timesUpPopupEl.style.animation = 'none';
         }
         sequenceInProgress = false;
-        answerShown = false;
         navigationInProgress = false; // Reset navigation flag
         
-        console.log('%c[STOP ALL EVENTS] stopAllEvents() completed in app3.js', 'color: green; font-weight: bold;');
-    }// --- Audio Playback ---
-    async function playAudio(filePath, onEndCallback) {
-        if (!USE_SPEECH || !audioContext || !filePath || navigationInProgress) { // Check navigation flag
-            if (onEndCallback) onEndCallback();
-            return Promise.resolve();
-        }
-
-        // Stop any currently playing audio
-        if (currentAudio && currentAudio.source) {
-            currentAudio.source.stop();
-            currentAudio.source.disconnect();
-        }
-        
-        // Create a new audio object for each playback to handle 'ended' event correctly
-        const audio = new Audio(filePath);
-        currentAudio = audio; // Keep track of the current audio for potential interruption
-
-        return new Promise((resolve, reject) => {
-            audio.oncanplaythrough = () => {
-                audio.play().catch(e => {
-                    console.error(`Error playing audio ${filePath}:`, e);
-                    if (onEndCallback) onEndCallback();
-                    resolve(); // Resolve even on error to not block sequence
-                });
-            };
-            audio.onended = () => {
-                if (onEndCallback) onEndCallback();
-                if (currentAudio === audio) currentAudio = null; // Clear if it's the one that ended
-                resolve();
-            };
-            audio.onerror = (e) => {
-                console.error(`Error loading audio ${filePath}:`, e);
-                progressTextEl.textContent = `Lỗi tải file âm thanh: ${filePath.split('/').pop()}`;
-                if (onEndCallback) onEndCallback();
-                if (currentAudio === audio) currentAudio = null;
-                resolve(); // Resolve to not block sequence
-            };
-            // Handle cases where oncanplaythrough might not fire (e.g. cached files)
-            if (audio.readyState >= 3) { // HAVE_FUTURE_DATA or HAVE_ENOUGH_DATA
-                 audio.play().catch(e => {
-                    console.error(`Error playing audio ${filePath} (readyState >=3):`, e);
-                    if (onEndCallback) onEndCallback();
-                    resolve();
-                });
-            }
-        });
-    }
+        console.log('%c[STOP ALL EVENTS] stopAllEvents() completed in app3.js', 'color: green; font-weight: bold;');    }
 
     // --- UI Updates & Animations ---
     function animateElement(element, animationClass) {
@@ -237,95 +129,132 @@ document.addEventListener('DOMContentLoaded', () => {    // URL Parameter handli
             element.style.opacity = '1';
             element.style.visibility = 'visible';
             element.style.display = 'block';
+        }    }
+
+    // Function to change theme mode for testing (can be called from console)
+    window.changeThemeMode = function(mode) {
+        if (['default', 'category', 'round'].includes(mode)) {
+            // Use a const override for testing
+            window.THEME_MODE_OVERRIDE = mode;
+            console.log(`Theme mode changed to: ${mode}`);
+            // Re-apply theme with current question
+            if (currentQuestionData) {
+                applyTheme(currentQuestionData.category);
+            }
+        } else {
+            console.log('Invalid theme mode. Use: default, category, or round');
+        }
+    };
+
+    // Function to change current round for testing
+    window.changeCurrentRound = function(round) {
+        if (['vong1', 'vong2', 'vong3'].includes(round)) {
+            currentRound = round;
+            console.log(`Current round changed to: ${round}`);
+            // Re-apply theme if in round mode
+            if ((window.THEME_MODE_OVERRIDE || THEME_MODE) === 'round' && currentQuestionData) {
+                applyTheme(currentQuestionData.category);
+            }
+        } else {
+            console.log('Invalid round. Use: vong1, vong2, or vong3');
+        }
+    };
+
+    // Modified getThemeClass to use override if available
+    function getThemeClassWithOverride(category) {
+        const themeMode = window.THEME_MODE_OVERRIDE || THEME_MODE;
+        switch (themeMode) {
+            case 'round':
+                return `header-footer-theme-${currentRound}`;
+            
+            case 'category':
+                if (!category) return 'header-footer-theme-default';
+                const normalizedCategory = category.toLowerCase().replace(/\s+/g, '-');
+                if (normalizedCategory.includes('chính-sách-pháp-luật')) return 'header-footer-theme-cspl';
+                if (normalizedCategory.includes('phòng-cháy-chữa-cháy')) return 'header-footer-theme-pccc';
+                if (normalizedCategory.includes('y-tế')) return 'header-footer-theme-yte';
+                if (normalizedCategory.includes('khai-thác-mỏ')) return 'header-footer-theme-ktm';
+                if (normalizedCategory.includes('bảo-quản') || normalizedCategory.includes('bốc-xếp') || normalizedCategory.includes('vận-chuyển')) return 'header-footer-theme-bq-bx-vc';
+                return 'header-footer-theme-default';
+            
+            case 'default':
+            default:
+                return 'header-footer-theme-default';
         }
     }
 
     function getThemeClass(category) {
-        if (!category) return 'theme-default';
-        const normalizedCategory = category.toLowerCase();
-        if (normalizedCategory.includes('y tế') || normalizedCategory.includes('sơ cấp cứu')) {
-            return 'theme-medical';
-        } else if (normalizedCategory.includes('phòng cháy') || normalizedCategory.includes('pccc')) {
-            return 'theme-fire';
-        } else if (normalizedCategory.includes('kỹ thuật') || normalizedCategory.includes('an toàn')) {
-            return 'theme-safety';
-        } else {
-            return 'theme-default';
+        return getThemeClassWithOverride(category);
+    }    function applyTheme(category) {
+        const themeClass = getThemeClass(category);
+        // Define all possible theme classes to ensure only one is active on slideContainer
+        const allClasses = [
+            'header-footer-theme-default', 'header-footer-theme-cspl', 
+            'header-footer-theme-pccc', 'header-footer-theme-yte', 
+            'header-footer-theme-ktm', 'header-footer-theme-bq-bx-vc',
+            'header-footer-theme-vong1', 'header-footer-theme-vong2', 'header-footer-theme-vong3',
+            // Remove old theme classes for backward compatibility
+            'theme-default', 'theme-medical', 'theme-fire', 'theme-safety'        ];
+        // Apply theme to slideContainer, CSS will handle header/footer specifics
+        if (slideContainer) {
+            slideContainer.classList.remove(...allClasses); // Remove all theme classes
+            slideContainer.classList.add(themeClass); // Add the new theme class
         }
     }
 
-    function applyTheme(category) {
-        const themeClass = getThemeClass(category);
-        
-        // Remove all existing theme classes
-        slideContainer.classList.remove('theme-default', 'theme-medical', 'theme-fire', 'theme-safety');
-        
-        // Add the new theme class
-        slideContainer.classList.add(themeClass);
-    }    function renderSlide(questionData) {
+    function renderSlide(questionData) {
         console.log('--- renderSlide START ---', questionData);
         currentQuestionData = questionData;
-        sequenceInProgress = false;
-
-        // Function to apply background image with gradient or stripes overlay
-        const applyBgImage = (bgImage, style) => {
-            if (slideContainer) {
-                // Clear any existing background styles
-                slideContainer.classList.remove(...backgroundStyles);
-                slideContainer.style.backgroundImage = '';
-                slideContainer.classList.remove('bg-gradient-overlay', 'bg-stripes-overlay');
-                
-                // Convert Windows path to web path
-                const webPath = bgImage.replace(/\\/g, '/');
-                
-                if (style === 'gradient') {
-                    // Apply gradient overlay with the specified image
-                    slideContainer.style.backgroundImage = `linear-gradient(to bottom right, rgba(245, 158, 11, 0.7), rgba(255, 255, 255, 0.7)), url('${webPath}')`;
-                } else if (style === 'stripes') {
-                    // Apply diagonal stripes overlay with the specified image
-                    slideContainer.style.backgroundImage = `linear-gradient(45deg,
-                        rgba(245, 158, 11, 0.7) 0%,
-                        rgba(245, 158, 11, 0.7) 33.33%,
-                        rgba(255, 255, 255, 0.7) 33.33%,
-                        rgba(255, 255, 255, 0.7) 66.66%,
-                        rgba(245, 158, 11, 0.7) 66.66%,
-                        rgba(245, 158, 11, 0.7) 100%),
-                        url('${webPath}')`;
-                }
-                
+        sequenceInProgress = false;        // Apply background based on bg_image and bg_image_overlay properties
+        if (slideContainer) {
+            // First, remove any existing overlay classes to reset the state
+            slideContainer.classList.remove('overlay-curtain', 'gradient', 'stripes');
+            
+            if (questionData.bg_image) {
+                // Initially apply only the background image without overlay for visual appeal
+                const webPath = questionData.bg_image.replace(/\\/g, '/');
+                slideContainer.style.backgroundImage = `url('${webPath}')`;
                 slideContainer.style.backgroundSize = 'cover';
                 slideContainer.style.backgroundPosition = 'center';
                 slideContainer.style.backgroundRepeat = 'no-repeat';
-            }
-        };
-
-        // Apply background based on bg_image property
-        if (slideContainer) {
-            if (questionData.bg_image) {
-                // Use bg_image from JSON data and alternate between gradient and stripes
-                const imageStyle = currentQuestionIndex % 2 === 0 ? 'gradient' : 'stripes';
-                applyBgImage(questionData.bg_image, imageStyle);
+                slideContainer.classList.remove(...backgroundStyles);
+                
+                // Store overlay info for later use when question sequence starts
+                slideContainer.dataset.bgOverlay = questionData.bg_image_overlay || 'none';
+                slideContainer.dataset.bgImage = webPath;
             } else {
                 // Fallback to default background if no bg_image is specified
                 slideContainer.classList.remove(...backgroundStyles);
                 slideContainer.style.backgroundImage = '';
                 slideContainer.classList.add('bg-default');
+                slideContainer.dataset.bgOverlay = 'none';
             }
-        }
-
-        // Reset UI state
+        }// Reset UI state
         progressTextEl.textContent = '';
-        nextQuestionBtn.style.display = 'none';
         startSequenceBtn.disabled = false;
         startSequenceBtn.classList.remove('opacity-50', 'cursor-not-allowed', 'speaking-indicator');
         
         timesUpPopupEl.style.display = 'none';
-        timesUpPopupEl.style.opacity = '0';
-
-        // Update header
-        if (questionNumberEl) questionNumberEl.textContent = currentQuestionIndex + 1;
-        if (questionCategoryEl) questionCategoryEl.textContent = questionData.category || 'Không có danh mục';
+        timesUpPopupEl.style.opacity = '0';        // Update header
+        const categoryInfo = questionCategoryMapping[questionData.id];
+        if (questionNumberEl) {
+            if (categoryInfo) {
+                questionNumberEl.textContent = categoryInfo.categoryOrder;
+            } else {
+                questionNumberEl.textContent = currentQuestionIndex + 1;
+            }
+        }
+        if (questionCategoryEl) {
+            if (categoryInfo) {
+                questionCategoryEl.textContent = categoryInfo.categoryName;
+            } else {
+                questionCategoryEl.textContent = questionData.category || 'Không có danh mục';
+            }
+        }
         applyTheme(questionData.category);
+        
+        // Trigger enhanced question header animations
+        triggerQuestionHeaderAnimations();
  
         // Update footer progress bar
         if (footerProgressBarEl) footerProgressBarEl.style.width = `${((currentQuestionIndex + 1) / allQuestions.length) * 100}%`;        // Update footer round information
@@ -349,9 +278,7 @@ document.addEventListener('DOMContentLoaded', () => {    // URL Parameter handli
             questionTextContentEl.style.display = 'block';
             questionTextContentEl.style.visibility = 'visible';
             questionTextContentEl.style.opacity = '1';
-        }
-
-        // Set timer
+        }        // Set timer
         timeLeft = questionData.time_per_question || DEFAULT_TIME_PER_QUESTION;
         if (timerTextEl) timerTextEl.textContent = timeLeft;
 
@@ -359,6 +286,11 @@ document.addEventListener('DOMContentLoaded', () => {    // URL Parameter handli
         if (timerCircleEl) {
             timerCircleEl.style.strokeDasharray = `${2 * Math.PI * 45}`;
             timerCircleEl.style.strokeDashoffset = '0';
+        }
+
+        // Reset header progress bar
+        if (headerProgressBarEl) {
+            headerProgressBarEl.style.width = '0%';
         }
 
         // For Round 3 practical questions, show the question section immediately
@@ -379,8 +311,7 @@ document.addEventListener('DOMContentLoaded', () => {    // URL Parameter handli
         
         const totalTime = timeLeft;
         const circumference = 2 * Math.PI * 45; // r=45% from CSS
-        
-        timerInterval = setInterval(() => {
+          timerInterval = setInterval(() => {
             timeLeft--;
             
             if (timerTextEl) {
@@ -400,11 +331,12 @@ document.addEventListener('DOMContentLoaded', () => {    // URL Parameter handli
                 const offset = circumference * progress;
                 timerCircleEl.style.strokeDashoffset = offset;
             }
-            
-            if (timeLeft <= 0) {
+
+            // Update header progress bar
+            updateHeaderProgress();if (timeLeft <= 0) {
                 clearInterval(timerInterval);
                 
-                if (!DEBUG_MODE) {
+                if (DEBUG_MODE === 0) {
                     // Show time's up overlay
                     timesUpPopupEl.style.display = 'block';
                     timesUpPopupEl.style.opacity = '1';
@@ -416,13 +348,48 @@ document.addEventListener('DOMContentLoaded', () => {    // URL Parameter handli
                 } else {
                     console.log("DEBUG MODE: Timer reached 0");
                 }
-                
-                // Show next question button
-                nextQuestionBtn.style.display = 'inline-block';
-                nextQuestionBtn.disabled = false;
-                nextQuestionBtn.classList.remove('opacity-50', 'cursor-not-allowed');
-            }
-        }, 1000);
+            }        }, 1000);
+    }    // Function to apply background overlay when question sequence starts
+    function applyBackgroundOverlay() {
+        if (!slideContainer) return;
+        
+        const bgOverlay = slideContainer.dataset.bgOverlay;
+        const bgImage = slideContainer.dataset.bgImage;
+        
+        if (bgOverlay && bgOverlay !== 'none' && bgImage) {
+            // Set the background image directly on slideContainer
+            slideContainer.style.backgroundImage = `url('${bgImage}')`;
+            slideContainer.style.backgroundSize = 'cover';
+            slideContainer.style.backgroundPosition = 'center';
+            slideContainer.style.backgroundRepeat = 'no-repeat';
+            
+            // Remove any existing curtain classes
+            slideContainer.classList.remove('overlay-curtain', 'gradient', 'stripes');
+            
+            // Force reflow to ensure the class removal takes effect
+            void slideContainer.offsetHeight;
+            
+            // Apply curtain drop animation with overlay type
+            setTimeout(() => {
+                slideContainer.classList.add('overlay-curtain');
+                if (bgOverlay === 'gradient') {
+                    slideContainer.classList.add('gradient');
+                    console.log('Applied gradient overlay curtain effect');
+                } else if (bgOverlay === 'stripes') {
+                    slideContainer.classList.add('stripes');
+                    console.log('Applied stripes overlay curtain effect');
+                }
+            }, 100);
+        }
+    }
+
+    // Function to update header progress bar during timer countdown
+    function updateHeaderProgress() {
+        if (!headerProgressBarEl) return;
+        
+        const totalTime = currentQuestionData?.time_per_question || DEFAULT_TIME_PER_QUESTION;
+        const progress = Math.max(0, (totalTime - timeLeft) / totalTime * 100);
+        headerProgressBarEl.style.width = `${progress}%`;
     }
 
     // --- Main Sequence Logic ---
@@ -432,35 +399,24 @@ document.addEventListener('DOMContentLoaded', () => {    // URL Parameter handli
             console.log('startQuestionSequence: Aborted - sequenceInProgress:', sequenceInProgress);
             return;
         }
-        sequenceInProgress = true;
-        initAudio();
+        sequenceInProgress = true;        startSequenceBtn.disabled = true;
+        startSequenceBtn.classList.add('opacity-50', 'cursor-not-allowed');
 
-        startSequenceBtn.disabled = true;
-        startSequenceBtn.classList.add('opacity-50', 'cursor-not-allowed', 'speaking-indicator');
+        // Apply background overlay when question sequence starts
+        applyBackgroundOverlay();
 
-        // 1. Show Question
+        // 1. Show Question (no audio for Round 3)
         if (questionSectionEl) questionSectionEl.classList.remove('u-hidden-initially');
-        animateElement(questionSectionEl, 'question-appear');
-
-        // 2. Speak Question if audio available
-        if (USE_SPEECH && currentQuestionData.speech_id_question) {
-            await playAudio(`speech/${currentQuestionData.speech_id_question}`);
-        } else {
-            await new Promise(r => setTimeout(r, DELAY_NO_SPEECH_QUESTION));
-        }
-
-        // 3. Start Timer (for practical questions, this is the time to complete the task)
-        if (DEBUG_MODE || timeLeft > 0) {
+        animateElement(questionSectionEl, 'question-appear');        // 2. Start Timer immediately (for practical questions, this is the time to complete the task)
+        if (DEBUG_MODE === 0 && timeLeft > 0) {
             startTimer();
-        } else if (!DEBUG_MODE && timeLeft <= 0) { 
-            nextQuestionBtn.style.display = 'inline-block'; 
-            nextQuestionBtn.disabled = false;
-            nextQuestionBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+        } else if (DEBUG_MODE > 0) {
+            console.log(`DEBUG MODE ${DEBUG_MODE}: Timer skipped`);
         }
         
         startSequenceBtn.classList.remove('speaking-indicator');
         sequenceInProgress = false;
-    }    // --- Navigation ---
+    }// --- Navigation ---
     function nextQuestion() {
         navigationInProgress = true; // Set flag to prevent audio restart
         stopAllEvents();        if (currentQuestionIndex < allQuestions.length - 1) {
@@ -542,74 +498,81 @@ document.addEventListener('DOMContentLoaded', () => {    // URL Parameter handli
                 }
             } catch (rulesError) {
                 console.warn("Could not load contest rules:", rulesError);
-            }
-
-            // Extract all questions from vong3.json structure first
+            }            // Extract all questions from vong3.json structure
             const vong3Data = data.vong_3;
             let allAvailableQuestions = [];
             
-            for (const categoryKey in vong3Data) {
-                const category = vong3Data[categoryKey];
-                for (const typeKey in category) {
-                    if (Array.isArray(category[typeKey])) {
-                        allAvailableQuestions = allAvailableQuestions.concat(category[typeKey]);
-                    }
-                }
+            // Create a lookup map for questions by ID
+            const questionLookup = {};
+            
+            // Process Y tế (Medical) category - only "thuc_hanh" questions
+            if (vong3Data.y_te && vong3Data.y_te.thuc_hanh) {
+                vong3Data.y_te.thuc_hanh.forEach(q => {
+                    questionLookup[q.id] = q;
+                    allAvailableQuestions.push(q);
+                });
+            }
+            
+            // Process PCCC category - "ly_thuyet_thuc_hanh" questions  
+            if (vong3Data.phong_chay_chua_chay && vong3Data.phong_chay_chua_chay.ly_thuyet_thuc_hanh) {
+                vong3Data.phong_chay_chua_chay.ly_thuyet_thuc_hanh.forEach(q => {
+                    questionLookup[q.id] = q;
+                    allAvailableQuestions.push(q);
+                });
             }
 
-            // Get selected set from URL parameters
-            const selectedSet = getSelectedSet();
-            console.log('Selected set:', selectedSet);
-            
-            // Filter questions based on question_sets.json configuration
+            // Get vong3 configuration from question_sets.json
+            const vong3Config = questionSetsData.vong3;
+            if (!vong3Config) {
+                throw new Error('Vong3 configuration not found in question_sets.json');
+            }            // Build questions array based on question_sets.json configuration
             allQuestions = [];
+            questionCategoryMapping = {}; // Reset the mapping
             
-            if (selectedSet) {
-                // Load specific set from question_sets.json
-                const questionIds = questionSetsData.vong3?.[selectedSet];
-                if (questionIds && Array.isArray(questionIds)) {
-                    console.log(`Loading questions for set "${selectedSet}":`, questionIds);
-                    
-                    // Filter questions based on IDs from question_sets.json
-                    questionIds.forEach(questionId => {
-                        const question = allAvailableQuestions.find(q => q.id === questionId);
-                        if (question) {
-                            allQuestions.push(question);
-                        } else {
-                            console.warn(`Question with ID "${questionId}" not found in vong3.json`);
-                        }
-                    });
-                } else {
-                    console.error(`Set "${selectedSet}" not found in question_sets.json for vong3`);
-                    // Fallback to all questions if set not found
-                    allQuestions = allAvailableQuestions;
-                }
-            } else {
-                // No specific set selected, load all questions (fallback behavior)
-                console.log('No specific set selected, loading all questions');
-                allQuestions = allAvailableQuestions;
+            // Add Y tế questions in configured order
+            if (vong3Config.y_te && Array.isArray(vong3Config.y_te)) {
+                vong3Config.y_te.forEach((questionId, index) => {
+                    const question = questionLookup[questionId];
+                    if (question) {
+                        allQuestions.push(question);
+                        // Store the category-specific order (1-based)
+                        questionCategoryMapping[questionId] = {
+                            category: 'y_te',
+                            categoryOrder: index + 1,
+                            categoryName: 'Y tế'
+                        };
+                    } else {
+                        console.warn(`Y tế question with ID ${questionId} not found in vong3.json`);
+                    }
+                });
             }
-
-            if (allQuestions.length > 0) {
+            
+            // Add PCCC questions in configured order
+            if (vong3Config.pccc && Array.isArray(vong3Config.pccc)) {
+                vong3Config.pccc.forEach((questionId, index) => {
+                    const question = questionLookup[questionId];
+                    if (question) {
+                        allQuestions.push(question);
+                        // Store the category-specific order (1-based)
+                        questionCategoryMapping[questionId] = {
+                            category: 'pccc',
+                            categoryOrder: index + 1,
+                            categoryName: 'Phòng cháy chữa cháy'
+                        };
+                    } else {
+                        console.warn(`PCCC question with ID ${questionId} not found in vong3.json`);
+                    }
+                });
+            }if (allQuestions.length > 0) {
                 console.log(`Loaded ${allQuestions.length} questions for vong3 based on question_sets.json configuration`);
                 
                 // Check if we need to load a specific question from URL parameters
                 const urlParams = getUrlParameters();
                 if (urlParams.questionId) {
-                    // Show back button when coming from thuchanh.html
-                    if (backToThuchanhBtn) {
-                        backToThuchanhBtn.style.display = 'block';
-                    }
-                      const specificQuestion = findQuestionById(urlParams.questionId, urlParams.category, urlParams.subcategory);
+                    const specificQuestion = findQuestionById(urlParams.questionId);
                     if (specificQuestion) {
-                        // Find the index of the specific question using both ID and category/subcategory
-                        currentQuestionIndex = allQuestions.findIndex(q => {
-                            const matchesId = q.cau_hoi_so.toString() === urlParams.questionId.toString();
-                            const matchesCategory = urlParams.category ? q.category.toLowerCase().includes(urlParams.category.toLowerCase()) : true;
-                            const matchesSubcategory = urlParams.subcategory ? q.subcategory.toLowerCase().includes(urlParams.subcategory.toLowerCase()) : true;
-                            
-                            return matchesId && matchesCategory && matchesSubcategory;
-                        });
+                        // Find the index of the specific question using ID
+                        currentQuestionIndex = allQuestions.findIndex(q => q.id === urlParams.questionId);
                         if (currentQuestionIndex === -1) {
                             currentQuestionIndex = 0;
                         }
@@ -627,14 +590,14 @@ document.addEventListener('DOMContentLoaded', () => {    // URL Parameter handli
                         progressTextEl.textContent = `Không tìm thấy câu hỏi ${urlParams.questionId}. Hiển thị câu hỏi đầu tiên.`;
                     }
                 } else {
-                    const setInfo = selectedSet ? ` cho bộ ${selectedSet}` : '';
-                    progressTextEl.textContent = `Đã tải ${allQuestions.length} câu hỏi thực hành${setInfo}. Nhấn "Bắt đầu" để bắt đầu.`;
+                    progressTextEl.textContent = `Đã tải ${allQuestions.length} câu hỏi thực hành. Nhấn "Bắt đầu" để bắt đầu.`;
                 }
                 
                 // Update round info display
                 updateRoundInfoDisplay();
                 renderSlide(allQuestions[currentQuestionIndex]);
-                  // Ensure the question content is visible for Round 3 practical questions
+                
+                // Ensure the question content is visible for Round 3 practical questions
                 if (questionSectionEl) {
                     questionSectionEl.style.display = 'block';
                     questionSectionEl.style.opacity = '1';
@@ -642,21 +605,13 @@ document.addEventListener('DOMContentLoaded', () => {    // URL Parameter handli
                 }
             } else {
                 progressTextEl.textContent = "Không tìm thấy câu hỏi phù hợp theo cấu hình trong question_sets.json.";
-            }
-        } catch (error) {
+            }        } catch (error) {
             console.error("Could not load questions:", error);
             progressTextEl.textContent = "Lỗi tải dữ liệu câu hỏi. Vui lòng kiểm tra file vong3.json, question_sets.json và console.";
         }
     }
     
-    startSequenceBtn.addEventListener('click', startQuestionSequence);
-    nextQuestionBtn.addEventListener('click', nextQuestion);
-      // Back to thuchanh.html button functionality
-    if (backToThuchanhBtn) {
-        backToThuchanhBtn.addEventListener('click', () => {
-            window.location.href = 'thuchanh.html';
-        });
-    }    document.addEventListener('keydown', (e) => {
+    startSequenceBtn.addEventListener('click', startQuestionSequence);    document.addEventListener('keydown', (e) => {
         console.log('Key pressed in app3.js:', e.key); // Debug log
         if (e.key === 'ArrowRight') {
             e.preventDefault();
@@ -673,14 +628,20 @@ document.addEventListener('DOMContentLoaded', () => {    // URL Parameter handli
             if (!startSequenceBtn.disabled) {
                 startQuestionSequence();
             }
-        } else if (e.key === 'Enter') {
-            if (!nextQuestionBtn.disabled && nextQuestionBtn.style.display !== 'none') {
-                e.preventDefault();
-                nextQuestion();
-            }
+        } else if (e.key === '0' && e.ctrlKey) { // Ctrl+0 for DEBUG mode 1
+            e.preventDefault();
+            DEBUG_MODE = 1;
+            console.log('DEBUG MODE 1 activated: Timer disabled');
+            progressTextEl.textContent = 'DEBUG MODE 1: Timer disabled';
+        } else if (e.key === '9' && e.ctrlKey) { // Ctrl+9 for DEBUG mode 2
+            e.preventDefault();
+            DEBUG_MODE = 2;
+            console.log('DEBUG MODE 2 activated: Timer and audio disabled');
+            progressTextEl.textContent = 'DEBUG MODE 2: Timer and audio disabled';
         } else if (e.key.toLowerCase() === 'd' && e.ctrlKey) { // Ctrl+D to toggle debug
             e.preventDefault();
-            console.log("Debug mode toggle attempted. Reload page if DEBUG_MODE constant was changed.");        } else if (e.key.toLowerCase() === 'q') { // Q key for emergency exit
+            console.log("Debug mode toggle attempted. Use Ctrl+0 or Ctrl+9 for specific debug modes.");
+        } else if (e.key.toLowerCase() === 'q') { // Q key for emergency exit
             e.preventDefault();
             console.log('Q key pressed - Emergency exit activated');
             emergencyExitToPage3();        } else if (e.key === '3') { // Number 3 key to go to info page for round 3
@@ -691,8 +652,80 @@ document.addEventListener('DOMContentLoaded', () => {    // URL Parameter handli
                 window.location.href = 'infovong3.html';
             }
         }
-    });
+    });    // --- Initialization ---
+    loadQuestions();
+    
+    // Function to trigger enhanced question header animations
+    function triggerQuestionHeaderAnimations() {
+        const questionNumberContainer = questionNumberEl?.closest('.question-number');
+        const categoryContainer = questionCategoryEl?.closest('.category-badge');
+        const timerContainer = timerCircleEl?.closest('.timer-circle');
+        
+        // Reset all elements
+        if (questionNumberContainer) {
+            questionNumberContainer.classList.remove('question-number-counter', 'animate');
+        }
+        
+        if (categoryContainer) {
+            categoryContainer.classList.remove('category-badge-appear', 'animate');
+            categoryContainer.style.opacity = '0';
+            categoryContainer.style.transform = 'scale(0) rotate(-180deg)';
+        }
+        
+        if (timerContainer) {
+            timerContainer.classList.remove('timer-circle-delayed', 'animate');
+            timerContainer.style.opacity = '0';
+            timerContainer.style.transform = 'scale(0.3)';
+        }
+        
+        // Force reflow
+        void document.body.offsetHeight;
+        
+        // Step 1: Question Number appears first (counter animation)
+        setTimeout(() => {
+            if (questionNumberContainer && questionNumberEl) {
+                const targetNumber = parseInt(questionNumberEl.textContent) || 1;
+                
+                // Add counter class and trigger animation
+                questionNumberContainer.classList.add('question-number-counter');
+                questionNumberContainer.classList.add('animate');
+                
+                // Counter animation from 0 to target number
+                let currentNumber = 0;
+                const duration = 500; // Changed from 1500 to 500ms (0.5s)
+                const increment = targetNumber / (duration / 50); // Update every 50ms
+                
+                const counterInterval = setInterval(() => {
+                    currentNumber += increment;
+                    if (currentNumber >= targetNumber) {
+                        currentNumber = targetNumber;
+                        clearInterval(counterInterval);
+                    }
+                    questionNumberEl.textContent = Math.floor(currentNumber);
+                }, 50);
+            }
+        }, 200);
+        
+        // Step 2: Category appears after 1s delay (badge appear effect)
+        setTimeout(() => {
+            if (categoryContainer) {
+                categoryContainer.classList.add('category-badge-appear');
+                categoryContainer.style.opacity = '';
+                categoryContainer.style.transform = '';
+                categoryContainer.classList.add('animate');
+            }
+        }, 1200);
+        
+        // Step 3: Timer appears last after 1.8s delay
+        setTimeout(() => {
+            if (timerContainer) {
+                timerContainer.classList.add('timer-circle-delayed');
+                timerContainer.style.opacity = '';
+                timerContainer.style.transform = '';
+                timerContainer.classList.add('animate');
+            }
+        }, 2000);
+    }
+});
 
     // --- Initialization ---
-    loadQuestions();
-});

@@ -3,11 +3,93 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quản Lý Vòng Thi - ATVSV 2025</title>
+    <title>Quản Lý Vòng Thi - ATVSV 2025 V2</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
-    <style>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">    <style>        /* ===== THEME SYSTEM ===== */
+        /* 🎨 THAY ĐỔI THEME TẠI ĐÂY: 1, 2, 3, 4, hoặc 5 */
+        :root {
+            --current-theme: 1;
+        }
+
+        /* Default Theme (fallback) */
+        :root {
+            --primary: #1FA2B8;
+            --secondary: #52C4A0; 
+            --accent: #7CB342;
+            --highlight: #FFD54F;
+            --text-dark: #263238;
+            --text-light: #37474F;
+            --background: #F8FFFE;
+            --card-bg: #FFFFFF;
+            --shadow: rgba(31, 162, 184, 0.2);
+        }
+
+        /* Theme 1: Business Professional */
+        body[data-theme="1"] {
+            --primary: #1FA2B8;
+            --secondary: #52C4A0; 
+            --accent: #7CB342;
+            --highlight: #FFD54F;
+            --text-dark: #263238;
+            --text-light: #37474F;
+            --background: #F8FFFE;
+            --card-bg: #FFFFFF;
+            --shadow: rgba(31, 162, 184, 0.2);
+        }
+
+        /* Theme 2: Vibrant Energy */
+        body[data-theme="2"] {
+            --primary: #FF6B35;
+            --secondary: #F7931E;
+            --accent: #FFD23F;
+            --highlight: #FF4757;
+            --text-dark: #2C3E50;
+            --text-light: #34495E;
+            --background: #FFF8F0;
+            --card-bg: #FFFFFF;
+            --shadow: rgba(255, 107, 53, 0.2);
+        }
+
+        /* Theme 3: Corporate Modern */
+        body[data-theme="3"] {
+            --primary: #2C3E50;
+            --secondary: #FF6B35;
+            --accent: #F39C12;
+            --highlight: #E74C3C;
+            --text-dark: #2C3E50;
+            --text-light: #34495E;
+            --background: #F7F9FC;
+            --card-bg: #FFFFFF;
+            --shadow: rgba(44, 62, 80, 0.2);
+        }
+
+        /* Theme 4: Tech Innovation */
+        body[data-theme="4"] {
+            --primary: #3498DB;
+            --secondary: #2980B9;
+            --accent: #F1C40F;
+            --highlight: #E67E22;
+            --text-dark: #2C3E50;
+            --text-light: #34495E;
+            --background: #F4F6F9;
+            --card-bg: #FFFFFF;
+            --shadow: rgba(52, 152, 219, 0.2);
+        }
+
+        /* Theme 5: Fresh Workflow */
+        body[data-theme="5"] {
+            --primary: #26D0CE;
+            --secondary: #6BCF7F;
+            --accent: #FFB74D;
+            --highlight: #FF6B6B;
+            --text-dark: #37474F;
+            --text-light: #546E7A;
+            --background: #F1F8F6;
+            --card-bg: #FFFFFF;
+            --shadow: rgba(38, 208, 206, 0.2);
+        }
+        
         * {
             font-family: 'Inter', sans-serif;
             margin: 0;
@@ -19,18 +101,26 @@
             height: 100vh;
             overflow: hidden;
         }
-        
-        .slide-container {
+          .slide-container {
             width: 100vw;
             height: 100vh;
             display: flex;
             flex-direction: column;
+            background: var(--background);
+            transition: all 0.5s ease;
         }
         
         .gradient-bg {
-            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 30%, #60a5fa 70%, #dbeafe 100%);
+            background: linear-gradient(135deg, 
+                var(--background) 0%, 
+                rgba(255, 255, 255, 0.9) 30%, 
+                var(--primary)10 70%, 
+                var(--accent)05 100%);
+            position: relative;
+            overflow: hidden;
         }
         
+        /* Advanced floating particles with theme colors */
         .floating-particles {
             position: absolute;
             top: 0;
@@ -43,21 +133,43 @@
         
         .particle {
             position: absolute;
-            background: rgba(255, 255, 255, 0.1);
             border-radius: 50%;
-            animation: float 8s infinite linear;
+            animation: float 12s infinite linear;
+            opacity: 0.6;
         }
         
-        .particle:nth-child(1) { width: 8px; height: 8px; left: 10%; animation-delay: 0s; }
-        .particle:nth-child(2) { width: 12px; height: 12px; left: 20%; animation-delay: 1s; }
-        .particle:nth-child(3) { width: 6px; height: 6px; left: 30%; animation-delay: 2s; }
-        .particle:nth-child(4) { width: 10px; height: 10px; left: 40%; animation-delay: 3s; }
-        .particle:nth-child(5) { width: 14px; height: 14px; left: 50%; animation-delay: 4s; }
-        .particle:nth-child(6) { width: 8px; height: 8px; left: 60%; animation-delay: 5s; }
-        .particle:nth-child(7) { width: 12px; height: 12px; left: 70%; animation-delay: 6s; }
-        .particle:nth-child(8) { width: 6px; height: 6px; left: 80%; animation-delay: 7s; }
-        
-        @keyframes float {
+        .particle:nth-child(1) { 
+            width: 8px; height: 8px; left: 10%; animation-delay: 0s;
+            background: var(--primary);
+        }
+        .particle:nth-child(2) { 
+            width: 12px; height: 12px; left: 20%; animation-delay: 1s;
+            background: var(--secondary);
+        }
+        .particle:nth-child(3) { 
+            width: 6px; height: 6px; left: 30%; animation-delay: 2s;
+            background: var(--accent);
+        }
+        .particle:nth-child(4) { 
+            width: 10px; height: 10px; left: 40%; animation-delay: 3s;
+            background: var(--highlight);
+        }
+        .particle:nth-child(5) { 
+            width: 14px; height: 14px; left: 50%; animation-delay: 4s;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+        }
+        .particle:nth-child(6) { 
+            width: 8px; height: 8px; left: 60%; animation-delay: 5s;
+            background: var(--primary);
+        }
+        .particle:nth-child(7) { 
+            width: 12px; height: 12px; left: 70%; animation-delay: 6s;
+            background: var(--accent);
+        }
+        .particle:nth-child(8) { 
+            width: 6px; height: 6px; left: 80%; animation-delay: 7s;
+            background: var(--highlight);
+        }        @keyframes float {
             0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
             10% { opacity: 1; }
             90% { opacity: 1; }
@@ -71,105 +183,208 @@
             display: flex;
             flex-direction: column;
         }
-          .round-card {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border-radius: 24px;
-            padding: 3rem;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            cursor: pointer;
+        
+        /* Circular Round Cards */
+        .rounds-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 4rem;
+            flex: 1;
+            padding: 2rem;
+        }        /* Circular Round Cards with Advanced Design */
+        .round-circle {
             position: relative;
-            overflow: hidden;
-            min-height: 300px;
+            width: 320px;
+            height: 320px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             text-align: center;
-        }
-          .round-card:hover {
-            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.15);
+            overflow: hidden;
+            border: 4px solid var(--primary);
+            backdrop-filter: blur(15px);
+            box-shadow: 0 12px 40px var(--shadow);
+            transform-style: preserve-3d;
         }
         
-        .round-card::before {
+        .round-circle::before {
             content: '';
             position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
-            transition: left 0.6s;
-        }
-        
-        .round-card:hover::before {
-            left: 100%;
-        }
-          .round-indicator {
-            position: absolute;
-            top: 1rem;
-            right: 1rem;
-            width: 60px;
-            height: 60px;
+            top: -3px;
+            left: -3px;
+            right: -3px;
+            bottom: -3px;
             border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 800;
-            font-size: 1.5rem;
+            background: linear-gradient(45deg, var(--primary), var(--secondary), var(--accent), var(--highlight));
+            z-index: -1;
+            animation: rotate 4s linear infinite;
+        }
+        
+        .round-circle::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, transparent 0%, var(--primary)05 50%, transparent 100%);
+            transform: translate(-50%, -50%);
+            animation: pulse-bg 3s ease-in-out infinite;
+            z-index: -2;
+        }
+          @keyframes rotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        @keyframes pulse-bg {
+            0%, 100% { opacity: 0.3; transform: translate(-50%, -50%) scale(1); }
+            50% { opacity: 0.6; transform: translate(-50%, -50%) scale(1.2); }
+        }
+        
+        .round-circle:hover {
+            transform: scale(1.15) translateY(-15px) rotateY(5deg);
+            box-shadow: 0 25px 60px var(--shadow);
+        }
+        
+        /* Dynamic round themes */
+        .round-1 {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+        }
+        
+        .round-2 {
+            background: linear-gradient(135deg, var(--secondary), var(--accent));
+        }
+        
+        .round-3 {
+            background: linear-gradient(135deg, var(--accent), var(--highlight));
+        }        .round-icon {
+            font-size: 5rem;
             color: white;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-            cursor: pointer;
+            margin-bottom: 1rem;
+            text-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+            filter: drop-shadow(0 4px 8px var(--shadow));
             transition: all 0.3s ease;
-            z-index: 20;
+            animation: icon-float 3s ease-in-out infinite;
         }
         
-        .round-indicator:hover {
-            transform: scale(1.1);
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        @keyframes icon-float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
         }
         
-        .round-indicator:active {
-            transform: scale(0.95);
+        .round-title {
+            color: white;
+            font-size: 1.6rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+            text-shadow: 0 3px 6px rgba(0, 0, 0, 0.4);
+            letter-spacing: 0.5px;
         }
         
-        .round-1 .round-indicator { background: linear-gradient(135deg, #059669, #10b981); }
-        .round-2 .round-indicator { background: linear-gradient(135deg, #dc2626, #ef4444); }
-        .round-3 .round-indicator { background: linear-gradient(135deg, #7c3aed, #a855f7); }
-  
-        
-        .pulse-animation {
-            animation: pulse 2s infinite;
+        .round-description {
+            color: rgba(255, 255, 255, 0.95);
+            font-size: 1.1rem;
+            font-weight: 500;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            line-height: 1.3;
         }
         
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
+        /* Enhanced Arrow Connectors */
+        .arrow-connector {
+            position: relative;
+            z-index: 5;
+            color: var(--primary);
+            font-size: 3.5rem;
+            animation: pulse-arrow 2s infinite;
+            transition: all 0.3s ease;
         }
         
+        @keyframes pulse-arrow {
+            0%, 100% { 
+                opacity: 0.7; 
+                transform: scale(1); 
+                color: var(--primary); 
+            }
+            50% { 
+                opacity: 1; 
+                transform: scale(1.3); 
+                color: var(--highlight); 
+            }
+        }
+        
+        /* Enhanced animations */
+        .slide-in-left {
+            animation: slideInLeft 1s ease-out;
+        }
+        
+        .slide-in-center {
+            animation: slideInCenter 1s ease-out;
+        }
+        
+        .slide-in-right {
+            animation: slideInRight 1s ease-out;
+        }
+        
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-100px) rotate(-180deg) scale(0.5);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0) rotate(0deg) scale(1);
+            }
+        }
+        
+        @keyframes slideInCenter {
+            from {
+                opacity: 0;
+                transform: translateY(-100px) scale(0.3);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+        
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(100px) rotate(180deg) scale(0.5);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0) rotate(0deg) scale(1);
+            }
+        }        /* Modern Navigation & UI Elements */
         .navigation-hint {
             position: fixed;
             bottom: 2rem;
             left: 50%;
             transform: translateX(-50%);
-            background: rgba(0, 0, 0, 0.8);
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
             color: white;
             padding: 1rem 2rem;
             border-radius: 50px;
             font-size: 0.9rem;
             z-index: 100;
             opacity: 0.9;
+            box-shadow: 0 6px 25px var(--shadow);
+            backdrop-filter: blur(10px);
         }
         
         .loading-spinner {
             display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 2px solid #f3f3f3;
-            border-top: 2px solid #3b82f6;
+            width: 24px;
+            height: 24px;
+            border: 3px solid var(--background);
+            border-top: 3px solid var(--primary);
             border-radius: 50%;
             animation: spin 1s linear infinite;
         }
@@ -178,64 +393,127 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
-          .fade-in {
-            animation: fadeIn 0.6s ease-in-out;
+        
+        .fade-in {
+            animation: fadeIn 1s ease-in-out;
         }
         
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
+        }        /* Enhanced Main Title */
+        .main-title {
+            background: linear-gradient(45deg, var(--primary), var(--secondary), var(--accent));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-align: center;
+            font-size: 3.5rem;
+            font-weight: 900;
+            margin-bottom: 2rem;
+            text-shadow: 0 4px 8px var(--shadow);
+            animation: title-glow 3s ease-in-out infinite;
         }
         
-        /* Enhanced slide-in animations for cards */
-        .slide-in-left {
-            animation: slideInLeft 0.8s ease-out;
+        @keyframes title-glow {
+            0%, 100% { filter: brightness(1); }
+            50% { filter: brightness(1.1); }
+        }
+
+        /* Modern Question Styling */
+        .question-list {
+            max-height: 65vh;
+            overflow-y: auto;
+            scroll-behavior: smooth;
         }
         
-        .slide-in-center {
-            animation: slideInCenter 0.8s ease-out;
+        .question-item {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+            border: 2px solid transparent;
+            transition: all 0.4s ease;
+            box-shadow: 0 4px 20px var(--shadow);
+            position: relative;
+            overflow: hidden;
         }
         
-        .slide-in-right {
-            animation: slideInRight 0.8s ease-out;
+        .question-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary), var(--accent));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .question-item:hover {
+            box-shadow: 0 12px 40px var(--shadow);
+            transform: translateY(-5px);
+            border-color: var(--accent);
         }
         
-        @keyframes slideInLeft {
-            from { 
-                opacity: 0; 
-                transform: translateX(-100px) scale(0.9); 
-            }
-            to { 
-                opacity: 1; 
-                transform: translateX(0) scale(1); 
-            }
+        .question-item:hover::before {
+            opacity: 1;
         }
         
-        @keyframes slideInCenter {
-            from { 
-                opacity: 0; 
-                transform: translateY(-100px) scale(0.9); 
-            }
-            to { 
-                opacity: 1; 
-                transform: translateY(0) scale(1); 
-            }
+        /* Enhanced Header Styling */
+        .header-info {
+            color: var(--text-dark);
+        }
+
+        .header-subtitle {
+            color: var(--text-light);
+            font-weight: 600;
+        }
+
+        .header-details {
+            color: var(--text-light);
+            font-weight: 500;
         }
         
-        @keyframes slideInRight {
-            from { 
-                opacity: 0; 
-                transform: translateX(100px) scale(0.9); 
-            }
-            to { 
-                opacity: 1; 
-                transform: translateX(0) scale(1); 
-            }
+        /* Dynamic Round Hover Effects */
+        .round-1:hover {
+            box-shadow: 0 25px 60px var(--shadow);
+        }
+        
+        .round-2:hover {
+            box-shadow: 0 25px 60px var(--shadow);
+        }
+        
+        .round-3:hover {
+            box-shadow: 0 25px 60px var(--shadow);
+        }
+          /* Enhanced Button Styles */
+        #backToRounds:hover {
+            background-color: var(--primary) !important;
+            color: white !important;
         }
     </style>
 </head>
-<body>
-    <div class="slide-container gradient-bg">
+<body data-theme="1">
+<!-- 
+========================================
+🎨 HƯỚNG DẪN THAY ĐỔI THEME
+========================================
+Để thay đổi theme, tìm dòng này trong CSS:
+--current-theme: 4;
+
+Thay đổi số 4 thành:
+1 = Business Professional (Xanh dương - Mint - Xanh lá)
+2 = Vibrant Energy (Cam - Đỏ - Vàng) 
+3 = Corporate Modern (Navy - Cam - Vàng)
+4 = Tech Innovation (Xanh dương - Vàng) 
+5 = Fresh Workflow (Mint - Xanh lá - Cam - Đỏ)
+
+VD: --current-theme: 3; để dùng theme Corporate Modern
+Lưu file và refresh trang để thấy thay đổi
+========================================
+--><div class="slide-container gradient-bg">
         <!-- Floating particles background -->
         <div class="floating-particles">
             <div class="particle"></div>
@@ -246,17 +524,14 @@
             <div class="particle"></div>
             <div class="particle"></div>
             <div class="particle"></div>
-        </div>
-
-        <div class="content-layer">
-            <!-- Header -->
-            <header class="text-center py-8 text-white">
-                <h1 class="text-5xl font-bold mb-4 drop-shadow-lg">
-                    <i class="fas fa-trophy mr-4 text-yellow-300"></i>
+        </div>        <div class="content-layer">        <!-- Header -->
+            <header class="text-center py-8">
+                <h1 class="main-title fade-in">
+                    <i class="fas fa-trophy mr-4" style="color: var(--accent);"></i>
                     HỘI THI ATVSV GIỎI 2025
                 </h1>
-                <p class="text-xl opacity-90 mb-2">Công ty Công nghiệp Hóa chất mỏ Thái Nguyên</p>
-                <p class="text-lg opacity-75">
+                <p class="text-xl header-subtitle fade-in mb-2">Công ty Công nghiệp Hóa chất mỏ Thái Nguyên</p>
+                <p class="text-lg header-details fade-in">
                     <i class="fas fa-calendar-alt mr-2"></i>25/06/2025
                     <span class="mx-4">|</span>
                     <i class="fas fa-map-marker-alt mr-2"></i>Hội trường tầng 5
@@ -264,18 +539,16 @@
             </header>
 
             <!-- Main Content -->
-            <main class="flex-1 px-8 pb-8">
-                <div class="max-w-7xl mx-auto">
-                    <!-- Round Selection -->
-                    <div id="roundSelection" class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
-                        <!-- Round cards will be injected here -->
-                    </div>
-
-                    <!-- Question Container -->
-                    <div id="questionContainer" class="fade-in" style="display: none;">
-                        <div class="bg-white bg-opacity-90 rounded-2xl p-6 backdrop-filter backdrop-blur-sm">
+            <main class="flex-1">
+                <!-- Round Selection -->
+                <div class="rounds-container" id="roundSelection">
+                    <!-- Round cards will be injected here -->
+                </div>                <!-- Question Container -->
+                <div id="questionContainer" class="fade-in px-8" style="display: none;">
+                    <div class="max-w-7xl mx-auto">
+                        <div class="rounded-2xl p-6 backdrop-filter backdrop-blur-sm border-2 shadow-xl" style="background: var(--card-bg); border-color: var(--accent);">
                             <div class="flex items-center justify-between mb-6">
-                                <button id="backToRounds" class="flex items-center text-blue-600 hover:text-blue-800 font-semibold transition-colors">
+                                <button id="backToRounds" class="flex items-center font-semibold transition-colors px-4 py-2 rounded-lg hover:opacity-80" style="color: var(--primary); background-color: var(--primary)20;">
                                     <i class="fas fa-arrow-left mr-2"></i>Quay lại danh sách vòng thi
                                 </button>
                                 <div id="questionStats" class="text-gray-600 font-medium">
@@ -290,17 +563,19 @@
                 </div>
             </main>
         </div>
-    </div>
-
-    <script>
+          <!-- Navigation hint -->
+        <!-- <div class="navigation-hint">
+            <i class="fas fa-keyboard mr-2"></i>
+            Phím số 1, 2, 3 để chọn vòng thi | Q để quay lại | ← Trang chủ
+        </div> -->
+    </div>    <script>
         let roundsData = null;
         let questionsData = {};
 
         // Load rounds data on page load
         async function loadRounds() {
-            try {
-                const roundSelection = document.getElementById('roundSelection');
-                roundSelection.innerHTML = '<div class="col-span-3 text-center text-white"><div class="loading-spinner mx-auto mb-4"></div><p>Đang tải dữ liệu...</p></div>';
+            try {                const roundSelection = document.getElementById('roundSelection');
+                roundSelection.innerHTML = '<div class="text-center" style="color: var(--color-2);"><div class="loading-spinner mx-auto mb-4"></div><p>Đang tải dữ liệu...</p></div>';
 
                 const response = await fetch('quyche.json');
                 const data = await response.json();
@@ -311,22 +586,38 @@
 
                 // Create round cards
                 roundSelection.innerHTML = '';
+                
+                // Create the rounds container with arrows
+                const roundsContainer = document.createElement('div');
+                roundsContainer.className = 'rounds-container';
+                
                 roundsData.forEach((round, index) => {
-                    const roundCard = createRoundCard(round, index + 1);
-                    roundSelection.appendChild(roundCard);
-                });                // Add enhanced slide-in animation for cards
-                const cards = roundSelection.querySelectorAll('.round-card');
+                    const roundNumber = index + 1;
+                    const roundCard = createRoundCard(round, roundNumber);
+                    roundsContainer.appendChild(roundCard);
+                    
+                    // Add arrow connector (except after the last round)
+                    if (index < roundsData.length - 1) {
+                        const arrow = document.createElement('div');
+                        arrow.className = 'arrow-connector';
+                        arrow.innerHTML = '<i class="fas fa-chevron-right"></i>';
+                        roundsContainer.appendChild(arrow);
+                    }
+                });
+                
+                roundSelection.appendChild(roundsContainer);
+
+                // Add enhanced slide-in animation for cards
+                const cards = roundSelection.querySelectorAll('.round-circle');
                 const animationClasses = ['slide-in-left', 'slide-in-center', 'slide-in-right'];
                 cards.forEach((card, index) => {
                     setTimeout(() => {
                         card.classList.add(animationClasses[index] || 'slide-in-center');
                     }, index * 300);
-                });
-
-            } catch (error) {
+                });            } catch (error) {
                 console.error('Error loading rounds:', error);
                 const roundSelection = document.getElementById('roundSelection');
-                roundSelection.innerHTML = '<div class="col-span-3 text-center text-red-600"><i class="fas fa-exclamation-triangle text-4xl mb-4"></i><p>Không thể tải dữ liệu. Vui lòng thử lại.</p></div>';
+                roundSelection.innerHTML = '<div class="text-center" style="color: var(--color-5);"><i class="fas fa-exclamation-triangle text-4xl mb-4"></i><p>Không thể tải dữ liệu. Vui lòng thử lại.</p></div>';
             }
         }
 
@@ -378,13 +669,15 @@
                 }
             }
             return count;
-        }        // Create round card element
+        }
+
+        // Create round card element with circular design
         function createRoundCard(round, roundNumber) {
             const card = document.createElement('div');
-            card.className = `round-card round-${roundNumber}`;
+            card.className = `round-circle round-${roundNumber}`;
+            card.dataset.round = roundNumber;
             
             const icon = getRoundIcon(roundNumber);
-            const color = getRoundColor(roundNumber);
             
             // Define round titles
             const roundTitles = {
@@ -392,8 +685,15 @@
                 2: 'Thi hiểu biết về kỹ thuật an toàn trong khai thác mỏ',
                 3: 'Thi thực hành kỹ năng an toàn, sơ cấp cứu và PCCC'
             };
+
+            const roundShortTitles = {
+                1: 'Chính sách & Pháp luật',
+                2: 'Kỹ thuật An toàn',
+                3: 'Thực hành & Kỹ năng'
+            };
             
             card.innerHTML = `
+<<<<<<< HEAD
                 <div class="round-indicator" data-round="${roundNumber}">${roundNumber}</div>
                 <div class="text-6xl ${color} mb-6">${icon}</div>
                 <h3 class="text-2xl font-bold text-gray-800 mb-4">Vòng ${roundNumber}</h3>
@@ -401,6 +701,17 @@
             `;            // Click on card navigates to info page
             card.addEventListener('click', () => {
                 navigateToPage(`infovong${roundNumber}.html`);
+=======
+                <i class="${icon} round-icon"></i>
+                <div class="round-title">VÒNG ${roundNumber}</div>
+                <div class="round-description">${roundShortTitles[roundNumber]}</div>
+            `;
+
+            // Add click handler for round indicator navigation
+            card.addEventListener('click', (e) => {
+                // Check if click is on the main card area for info page
+                window.location.href = `infovong${roundNumber}.html`;
+>>>>>>> v4
             });
 
             return card;
@@ -409,13 +720,14 @@
         // Get icon for each round
         function getRoundIcon(roundNumber) {
             const icons = {
-                1: '<i class="fas fa-gavel"></i>',
-                2: '<i class="fas fa-hard-hat"></i>',
-                3: '<i class="fas fa-hands-helping"></i>'
+                1: 'fas fa-gavel',
+                2: 'fas fa-hard-hat', 
+                3: 'fas fa-hands-helping'
             };
-            return icons[roundNumber] || '<i class="fas fa-question"></i>';
+            return icons[roundNumber] || 'fas fa-question';
         }
 
+<<<<<<< HEAD
         // Get color class for each round
         function getRoundColor(roundNumber) {
             const colors = {
@@ -436,6 +748,8 @@
             return gradients[roundNumber] || 'from-blue-500 to-blue-600';
         }
         
+=======
+>>>>>>> v4
         // Load and display questions for selected round
         async function loadQuestions(roundNumber) {
             try {
@@ -488,11 +802,9 @@
                     if (data.vong_3?.phong_chay_chua_chay?.ly_thuyet_thuc_hanh) {
                         allQuestions = allQuestions.concat(data.vong_3.phong_chay_chua_chay.ly_thuyet_thuc_hanh);
                     }
-                }
-
-                // Update question stats
+                }                // Update question stats
                 document.getElementById('questionStats').innerHTML = `
-                    <span class="inline-flex items-center px-4 py-2 rounded-full bg-blue-100 text-blue-800">
+                    <span class="inline-flex items-center px-4 py-2 rounded-full text-white" style="background: linear-gradient(135deg, var(--color-2), var(--color-4));">
                         <i class="fas fa-list-ol mr-2"></i>
                         ${allQuestions.length} câu hỏi
                     </span>
@@ -501,49 +813,49 @@
                 // Display questions
                 const questionList = document.getElementById('questionList');
                 if (allQuestions.length > 0) {
-                    questionList.innerHTML = allQuestions.map((question, index) => `
-                        <div class="question-item" data-question-id="${question.id}">
+                    questionList.innerHTML = allQuestions.map((question, index) => `                        <div class="question-item" data-question-id="${question.id}">
                             <div class="flex items-start justify-between">
                                 <div class="flex-1">
                                     <div class="flex items-center mb-2">
-                                        <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-blue-100 text-blue-800 text-sm font-semibold mr-3">
+                                        <span class="inline-flex items-center justify-center w-8 h-8 rounded-full text-white text-sm font-semibold mr-3" style="background: linear-gradient(135deg, var(--color-2), var(--color-4));">
                                             ${index + 1}
                                         </span>
-                                        <div class="text-sm text-gray-500">
+                                        <div class="text-sm" style="color: var(--color-2);">
                                             ID: ${question.id} | ${question.category}
                                         </div>
                                     </div>
-                                    <p class="text-gray-800 font-medium leading-relaxed">${question.cau_hoi}</p>
+                                    <p class="font-medium leading-relaxed" style="color: #1f2937;">${question.cau_hoi}</p>
                                     ${question.subcategory ? `
                                         <div class="mt-2">
-                                            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs bg-gray-100 text-gray-700">
+                                            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs text-white" style="background: var(--color-3);">
                                                 ${question.subcategory}
                                             </span>
                                         </div>
                                     ` : ''}
                                 </div>
                                 <div class="ml-4 flex items-center space-x-2">
-                                    ${question.use_image === 'Yes' ? '<i class="fas fa-image text-green-600" title="Có hình ảnh"></i>' : ''}
-                                    ${question.speech_id_question ? '<i class="fas fa-volume-up text-blue-600" title="Có âm thanh"></i>' : ''}
+                                    ${question.use_image === 'Yes' ? `<i class="fas fa-image" style="color: var(--color-3);" title="Có hình ảnh"></i>` : ''}
+                                    ${question.speech_id_question ? `<i class="fas fa-volume-up" style="color: var(--color-2);" title="Có âm thanh"></i>` : ''}
                                 </div>
                             </div>
                         </div>
-                    `).join('');
-                } else {
-                    questionList.innerHTML = '<div class="text-center py-8 text-gray-500"><i class="fas fa-exclamation-circle text-4xl mb-4"></i><p>Không tìm thấy câu hỏi cho vòng thi này.</p></div>';
+                    `).join('');                } else {
+                    questionList.innerHTML = '<div class="text-center py-8" style="color: var(--color-2);"><i class="fas fa-exclamation-circle text-4xl mb-4"></i><p>Không tìm thấy câu hỏi cho vòng thi này.</p></div>';
                 }
 
             } catch (error) {
                 console.error('Error loading questions:', error);
-                document.getElementById('questionList').innerHTML = '<div class="text-center py-8 text-red-600"><i class="fas fa-exclamation-triangle text-4xl mb-4"></i><p>Không thể tải câu hỏi. Vui lòng thử lại.</p></div>';
+                document.getElementById('questionList').innerHTML = '<div class="text-center py-8" style="color: var(--color-5);"><i class="fas fa-exclamation-triangle text-4xl mb-4"></i><p>Không thể tải câu hỏi. Vui lòng thử lại.</p></div>';
             }
         }
 
         // Back to rounds button handler
         document.getElementById('backToRounds').addEventListener('click', () => {
             document.getElementById('questionContainer').style.display = 'none';
-            document.getElementById('roundSelection').style.display = 'grid';
-        });        // Keyboard navigation
+            document.getElementById('roundSelection').style.display = 'flex';
+        });
+
+        // Keyboard navigation
         document.addEventListener('keydown', (e) => {
             if (e.key === 'ArrowLeft') {
                 // Navigate to index.html
@@ -565,8 +877,14 @@
                     document.getElementById('backToRounds').click();
                 }
             } else if (e.key.toLowerCase() === 'q') {
+<<<<<<< HEAD
                 // Stay on page3.html (already here)
                 console.log('Already on page3.html');            } else if (e.key === '1') {
+=======
+                // Navigate to index.html (same as arrow left)
+                window.location.href = 'index.html';
+            } else if (e.key === '1') {
+>>>>>>> v4
                 // Navigate to vong1.html (equivalent to clicking round 1 indicator)
                 if (typeof navigateToPage === 'function') {
                     navigateToPage('vong1.html');
@@ -588,10 +906,109 @@
                     window.location.href = 'vong3.html';
                 }
             }
+        });        // ===== THEME MANAGEMENT SYSTEM =====
+        const THEMES = {
+            1: 'Business Professional',
+            2: 'Vibrant Energy', 
+            3: 'Corporate Modern',
+            4: 'Tech Innovation',
+            5: 'Fresh Workflow'
+        };
+        
+        // Read theme from CSS variable
+        function getCurrentThemeFromCSS() {
+            const rootStyle = getComputedStyle(document.documentElement);
+            const themeValue = rootStyle.getPropertyValue('--current-theme').trim();
+            const themeNumber = parseInt(themeValue) || 1;
+            console.log(`📖 Reading theme from CSS: ${themeNumber}`);
+            return themeNumber;
+        }
+        
+        function switchTheme(themeNumber) {
+            if (themeNumber >= 1 && themeNumber <= 5) {
+                document.body.setAttribute('data-theme', themeNumber.toString());
+                console.log(`🎨 Theme switched to: ${THEMES[themeNumber]} (Theme ${themeNumber})`);
+                
+                // Add theme transition effect
+                document.body.style.transition = 'all 0.5s ease';
+                setTimeout(() => {
+                    document.body.style.transition = '';
+                }, 500);
+                
+                // Force update CSS variables by triggering a repaint
+                document.body.style.display = 'none';
+                document.body.offsetHeight; // Trigger reflow
+                document.body.style.display = '';
+            }
+        }
+        
+        // Initialize theme on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            const currentTheme = getCurrentThemeFromCSS();
+            switchTheme(currentTheme);
         });
+        
+        // Also apply immediately
+        const currentTheme = getCurrentThemeFromCSS();
+        switchTheme(currentTheme);
+        
+        // ===== ENHANCED ANIMATIONS =====
+        function addAdvancedAnimations() {
+            // Staggered card animations
+            const cards = document.querySelectorAll('.round-circle');
+            cards.forEach((card, index) => {
+                card.style.animationDelay = `${index * 0.2}s`;
+                card.style.animation = 'slideInScale 0.8s ease-out forwards';
+            });
+            
+            // Particle enhancement
+            const particles = document.querySelectorAll('.particle');
+            particles.forEach((particle, index) => {
+                particle.style.animationDuration = `${8 + Math.random() * 4}s`;
+            });
+        }
+        
+        // Add CSS for enhanced animations
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideInScale {
+                0% {
+                    opacity: 0;
+                    transform: translateY(50px) scale(0.8);
+                }
+                100% {
+                    opacity: 1;
+                    transform: translateY(0) scale(1);
+                }
+            }
+            
+            .rounds-container {
+                perspective: 1000px;
+            }
+            
+            .round-circle {
+                transform-style: preserve-3d;
+            }
+        `;
+        document.head.appendChild(style);
         // Initialize on page load
+<<<<<<< HEAD
         document.addEventListener('DOMContentLoaded', loadRounds);    </script>
     <script src="navigation.js"></script>
     <a href="control.html" id="openSettings" class="fixed bottom-4 left-4 text-gray-600 opacity-60 hover:opacity-100 z-50"><i class="fas fa-cog fa-lg"></i></a>
+=======
+        document.addEventListener('DOMContentLoaded', loadRounds);
+        
+        // Debug: Log current CSS variables
+        setTimeout(() => {
+            const style = getComputedStyle(document.documentElement);
+            console.log('🔍 CSS Debug:');
+            console.log('--current-theme:', style.getPropertyValue('--current-theme'));
+            console.log('--primary:', style.getPropertyValue('--primary'));
+            console.log('--background:', style.getPropertyValue('--background'));
+            console.log('body data-theme:', document.body.getAttribute('data-theme'));
+        }, 1000);
+    </script>    <a href="image-manager.html" id="openSettings" class="fixed bottom-4 left-4 opacity-60 hover:opacity-100 z-50" style="color: var(--color-2);"><i class="fas fa-cog fa-lg"></i></a>
+>>>>>>> v4
 </body>
 </html>
