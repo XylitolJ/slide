@@ -1,4 +1,5 @@
 // npx http-server -o
+// JavaScript file for vong2 slide presentation
 document.addEventListener('DOMContentLoaded', () => {
     // DOM Elements
     const slideContainer = document.getElementById('slideContainer');
@@ -54,11 +55,11 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentRound = 'vong2'; // Default round, will be determined from data
     let currentQuestionIndex = 0;
     let currentQuestionData = null;
-    let timerInterval;
-    let timeLeft = 0; // Will be set per question
+    let timerInterval;    let timeLeft = 0; // Will be set per question
     const DEFAULT_TIME_PER_QUESTION = 60; // Default seconds for Round 2, can be overridden by JSON
     let audioContext;
     let currentAudio = null;
+    let currentQuestionNumberAudio = null; // Track question number audio separately
     let sequenceInProgress = false;
     let answerShown = false;
     let navigationInProgress = false; // Add flag to prevent audio restart during navigation
@@ -137,8 +138,21 @@ document.addEventListener('DOMContentLoaded', () => {
             initAudio();
         }
 
+        // Stop any currently playing question number audio first
+        if (currentQuestionNumberAudio) {
+            try {
+                currentQuestionNumberAudio.pause();
+                currentQuestionNumberAudio.currentTime = 0;
+                currentQuestionNumberAudio.src = '';
+                currentQuestionNumberAudio.load();
+            } catch (e) {
+                console.error('Error stopping previous question number audio:', e);
+            }
+        }
+
         // Create a new audio object for question number playback
         const audio = new Audio(filePath);
+        currentQuestionNumberAudio = audio; // Track this audio for stopping later
 
         return new Promise((resolve, reject) => {
             audio.oncanplaythrough = () => {
@@ -150,11 +164,13 @@ document.addEventListener('DOMContentLoaded', () => {
             };
             audio.onended = () => {
                 if (onEndCallback) onEndCallback();
+                if (currentQuestionNumberAudio === audio) currentQuestionNumberAudio = null; // Clear if it's the one that ended
                 resolve();
             };
             audio.onerror = (e) => {
                 console.error(`Error loading question number audio ${filePath}:`, e);
                 if (onEndCallback) onEndCallback();
+                if (currentQuestionNumberAudio === audio) currentQuestionNumberAudio = null;
                 resolve(); // Resolve to not block sequence
             };
             // Handle cases where oncanplaythrough might not fire (e.g. cached files)
@@ -169,6 +185,26 @@ document.addEventListener('DOMContentLoaded', () => {
     }    // Global utility to stop all ongoing timers and audio without navigating away
     function stopAllEvents() {
         console.log('%c[STOP ALL EVENTS] Starting stopAllEvents() in app2.js', 'color: red; font-weight: bold;');
+        
+        // Stop question number audio first
+        if (currentQuestionNumberAudio) {
+            console.log('%c[STOP ALL EVENTS] Stopping question number audio', 'color: red;');
+            try {
+                currentQuestionNumberAudio.pause();
+                currentQuestionNumberAudio.currentTime = 0; // Reset to beginning
+                // Hủy bỏ callbacks
+                currentQuestionNumberAudio.oncanplaythrough = null;
+                currentQuestionNumberAudio.onended = null;
+                currentQuestionNumberAudio.onerror = null;
+                // Reset src và abort request
+                currentQuestionNumberAudio.src = '';
+                currentQuestionNumberAudio.load();
+                currentQuestionNumberAudio = null;
+                console.log('%c[STOP ALL EVENTS] Question number audio stopped successfully', 'color: green;');
+            } catch (e) {
+                console.error('[STOP ALL EVENTS] Error stopping question number audio:', e);
+            }
+        }
         
         // Stop Web Audio API audio
         if (currentAudio && currentAudio.source) {
@@ -1407,12 +1443,20 @@ async function displayAnswer() {
             }
         } catch (error) {
             console.error("Could not load questions:", error);
-            progressTextEl.textContent = "Lỗi tải dữ liệu câu hỏi. Vui lòng kiểm tra file vong2.json, question_sets.json và console.";
-        }
+            progressTextEl.textContent = "Lỗi tải dữ liệu câu hỏi. Vui lòng kiểm tra file vong2.json, question_sets.json và console.";        }
     }
 
     // --- Emergency Exit Function ---
     function emergencyExitToPage3() {
+        // Stop question number audio
+        if (currentQuestionNumberAudio) {
+            currentQuestionNumberAudio.pause();
+            currentQuestionNumberAudio.currentTime = 0;
+            currentQuestionNumberAudio.src = '';
+            currentQuestionNumberAudio.load();
+            currentQuestionNumberAudio = null;
+        }
+        
         // Stop all audio
         if (currentAudio && currentAudio.source) {
             currentAudio.source.stop();
@@ -1442,12 +1486,13 @@ async function displayAnswer() {
             if (!slideImageEl.src) return;
             modalImageEl.src = slideImageEl.src;
             imageModalEl.classList.remove('hidden');
-        });
-        imageModalEl.addEventListener('click', () => {
+        });        imageModalEl.addEventListener('click', () => {
             imageModalEl.classList.add('hidden');
             modalImageEl.src = '';
         });
-    }    document.addEventListener('keydown', (e) => {
+    }
+
+    document.addEventListener('keydown', (e) => {
         console.log('Key pressed in app2.js:', e.key); // Debug log
         if (e.key === 'ArrowRight') {
             e.preventDefault();
@@ -1463,24 +1508,26 @@ async function displayAnswer() {
             e.preventDefault(); 
             if (!startSequenceBtn.disabled) {
                 startQuestionSequence();
-            }
-        } else if (e.key === 'Enter') {
+            }        } else if (e.key === 'Enter') {
             if (!showAnswerBtn.disabled && showAnswerBtn.style.display !== 'none') {
                 e.preventDefault();
                 displayAnswer();
-            }        } else if (e.key.toLowerCase() === 'd' && e.ctrlKey) { // Ctrl+D to toggle debug
+            }
+        } else if (e.key.toLowerCase() === 'd' && e.ctrlKey) { // Ctrl+D to toggle debug
             e.preventDefault();
             // This is a simple way to toggle, for a real app, you might want a UI element
             // For now, this requires manual change of DEBUG_MODE constant and reload.
             // Or, we can make DEBUG_MODE a let and toggle it here, then re-render.
-            console.log("Debug mode toggle attempted. Reload page if DEBUG_MODE constant was changed.");        } else if (e.key.toLowerCase() === 'q') { // Q key for emergency exit
+            console.log("Debug mode toggle attempted. Reload page if DEBUG_MODE constant was changed.");
+        } else if (e.key.toLowerCase() === 'q') { // Q key for emergency exit
             e.preventDefault();
-            emergencyExitToPage3();
-        } else if (e.key === '2') { // Number 2 key to go to info page for round 2
+            emergencyExitToPage3();        } else if (e.key === '2') { // Number 2 key to go to info page for round 2
             e.preventDefault();
             window.location.href = 'infovong2.html';
         }
-    });    // --- Initialization ---
+    });
+
+    // --- Initialization ---
     // Initialize audio context early for auto-play to work
     initAudio();
     loadQuestions();
