@@ -247,10 +247,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Add counter class and trigger animation
                 questionNumberContainer.classList.add('question-number-counter');
                 questionNumberContainer.classList.add('animate');
-                
-                // Counter animation from 0 to target number
+                  // Counter animation from 0 to target number
                 let currentNumber = 0;
-                const duration = 1500; // 1.5 seconds
+                const duration = 500; // Changed from 1500 to 500ms (0.5s)
                 const increment = targetNumber / (duration / 50); // Update every 50ms
                 
                 const counterInterval = setInterval(() => {

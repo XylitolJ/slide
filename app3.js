@@ -629,11 +629,10 @@ document.addEventListener('DOMContentLoaded', () => {    // URL Parameter handli
             e.preventDefault();
             window.location.href = 'infovong3.html';
         }
-    });
-
-    // --- Initialization ---
+    });    // --- Initialization ---
     loadQuestions();
-});    // Function to trigger enhanced question header animations
+    
+    // Function to trigger enhanced question header animations
     function triggerQuestionHeaderAnimations() {
         const questionNumberContainer = questionNumberEl?.closest('.question-number');
         const categoryContainer = questionCategoryEl?.closest('.category-badge');
@@ -670,7 +669,7 @@ document.addEventListener('DOMContentLoaded', () => {    // URL Parameter handli
                 
                 // Counter animation from 0 to target number
                 let currentNumber = 0;
-                const duration = 1500; // 1.5 seconds
+                const duration = 500; // Changed from 1500 to 500ms (0.5s)
                 const increment = targetNumber / (duration / 50); // Update every 50ms
                 
                 const counterInterval = setInterval(() => {
@@ -704,5 +703,6 @@ document.addEventListener('DOMContentLoaded', () => {    // URL Parameter handli
             }
         }, 2000);
     }
+});
 
     // --- Initialization ---
