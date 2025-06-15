@@ -1252,26 +1252,166 @@ body, html {
     100% { background-position: 200% 0; }
 }
 
-/* Responsive animations for smaller screens */
-@media (max-width: 768px) {
-    .header {
-        animation: headerSlideDown 0.8s ease-out;
+/* Custom Background Overlay Animations */
+.slide-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: transparent;
+    transform: translateY(-100%);
+    transition: none;
+    z-index: 1;
+    pointer-events: none;
+    opacity: 0;
+}
+
+.slide-container.overlay-curtain::before {
+    opacity: 1;
+    animation: curtainDrop 3s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+/* Gradient overlay curtain */
+.slide-container.overlay-curtain.gradient::before {
+    background: linear-gradient(180deg, rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0.51));
+}
+
+/* Stripes overlay curtain */
+.slide-container.overlay-curtain.stripes::before {
+    background: linear-gradient(45deg,
+        rgba(245, 158, 11, 0.7) 0%,
+        rgba(245, 158, 11, 0.7) 33.33%,
+        rgba(255, 255, 255, 0.7) 33.33%,
+        rgba(255, 255, 255, 0.7) 66.66%,
+        rgba(245, 158, 11, 0.7) 66.66%,
+        rgba(245, 158, 11, 0.7) 100%
+    );
+}
+
+@keyframes curtainDrop {
+    0% {
+        transform: translateY(-100%);
     }
-    
-    .footer {
-        animation: footerSlideUp 0.8s ease-out;
+    20% {
+        transform: translateY(-80%);
     }
-    
-    .contest-info h1,
-    .contest-info p,
-    .question-number,
-    .category-badge,
-    .timer-circle,
-    .footer-left h3,
-    .footer-left p,
-    .footer-controls,
-    .footer-right .date,
-    .footer-right .location {
-        animation-duration: 0.8s;
+    80% {
+        transform: translateY(-5%);
     }
+    100% {
+        transform: translateY(0%);
+    }
+}
+
+/* Question Number Counter Effect */
+.question-number-counter {
+    display: inline-block;
+    perspective: 1000px;
+}
+
+.question-number-counter span {
+    display: inline-block;
+    transform-style: preserve-3d;
+    transition: all 0.3s ease;
+}
+
+.question-number-counter.animate span {
+    animation: counterGlow 2s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+}
+
+@keyframes counterGlow {
+    0% {
+        transform: scale(0.8);
+        opacity: 0.5;
+        text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+    }
+    25% {
+        transform: scale(1.2);
+        opacity: 0.8;
+        text-shadow: 0 0 20px rgba(255, 255, 255, 0.8);
+    }
+    50% {
+        transform: scale(1.1);
+        opacity: 0.9;
+        text-shadow: 0 0 25px rgba(255, 255, 255, 1);
+    }
+    75% {
+        transform: scale(1.05);
+        opacity: 0.95;
+        text-shadow: 0 0 15px rgba(255, 255, 255, 0.8);
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+        text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+    }
+}
+
+/* Category Badge Appear Effect */
+.category-badge-appear {
+    transform: scale(0) rotate(-180deg);
+    opacity: 0;
+    transform-origin: center;
+    transition: all 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.category-badge-appear.animate {
+    animation: badgeAppear 1s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+}
+
+@keyframes badgeAppear {
+    0% {
+        transform: scale(0) rotate(-180deg);
+        opacity: 0;
+    }
+    30% {
+        transform: scale(0.3) rotate(-120deg);
+        opacity: 0.3;
+    }
+    60% {
+        transform: scale(1.1) rotate(-30deg);
+        opacity: 0.8;
+    }
+    80% {
+        transform: scale(1.05) rotate(10deg);
+        opacity: 0.95;
+    }
+    100% {
+        transform: scale(1) rotate(0deg);
+        opacity: 1;
+    }
+}
+
+/* Timer Circle Delayed Appear Effect */
+.timer-circle-delayed {
+    opacity: 0;
+    transform: scale(0.3);
+    transition: all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.timer-circle-delayed.animate {
+    animation: timerAppear 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+}
+
+@keyframes timerAppear {
+    0% {
+        opacity: 0;
+        transform: scale(0.3);
+    }
+    50% {
+        opacity: 0.7;
+        transform: scale(1.1);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* Additional styling to prevent flash */
+.question-header > * {
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
 }

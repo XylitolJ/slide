@@ -183,9 +183,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
             }
         });
-    }
-
-    // Function to trigger header and footer animations
+    }    // Function to trigger header and footer animations with enhanced effects
     function triggerHeaderFooterAnimation() {
         const header = document.querySelector('.header');
         const footer = document.querySelector('.footer');
@@ -211,6 +209,80 @@ document.addEventListener('DOMContentLoaded', () => {
                 footer.style.animation = 'footerSlideUp 0.8s ease-out';
             }, 10);
         }
+        
+        // Trigger enhanced question header animations
+        triggerQuestionHeaderAnimations();
+    }
+      // Function to trigger enhanced question header animations
+    function triggerQuestionHeaderAnimations() {
+        const questionNumberContainer = questionNumberEl?.closest('.question-number');
+        const categoryContainer = questionCategoryEl?.closest('.category-badge');
+        const timerContainer = timerCircleEl?.closest('.timer-circle');
+        
+        // Reset all elements
+        if (questionNumberContainer) {
+            questionNumberContainer.classList.remove('question-number-counter', 'animate');
+        }
+        
+        if (categoryContainer) {
+            categoryContainer.classList.remove('category-badge-appear', 'animate');
+            categoryContainer.style.opacity = '0';
+            categoryContainer.style.transform = 'scale(0) rotate(-180deg)';
+        }
+        
+        if (timerContainer) {
+            timerContainer.classList.remove('timer-circle-delayed', 'animate');
+            timerContainer.style.opacity = '0';
+            timerContainer.style.transform = 'scale(0.3)';
+        }
+        
+        // Force reflow
+        void document.body.offsetHeight;
+        
+        // Step 1: Question Number appears first (counter animation)
+        setTimeout(() => {
+            if (questionNumberContainer && questionNumberEl) {
+                const targetNumber = parseInt(questionNumberEl.textContent) || 1;
+                
+                // Add counter class and trigger animation
+                questionNumberContainer.classList.add('question-number-counter');
+                questionNumberContainer.classList.add('animate');
+                
+                // Counter animation from 0 to target number
+                let currentNumber = 0;
+                const duration = 1500; // 1.5 seconds
+                const increment = targetNumber / (duration / 50); // Update every 50ms
+                
+                const counterInterval = setInterval(() => {
+                    currentNumber += increment;
+                    if (currentNumber >= targetNumber) {
+                        currentNumber = targetNumber;
+                        clearInterval(counterInterval);
+                    }
+                    questionNumberEl.textContent = Math.floor(currentNumber);
+                }, 50);
+            }
+        }, 200);
+        
+        // Step 2: Category appears after 1s delay (badge appear effect)
+        setTimeout(() => {
+            if (categoryContainer) {
+                categoryContainer.classList.add('category-badge-appear');
+                categoryContainer.style.opacity = '';
+                categoryContainer.style.transform = '';
+                categoryContainer.classList.add('animate');
+            }
+        }, 1200);
+        
+        // Step 3: Timer appears last after 1.8s delay
+        setTimeout(() => {
+            if (timerContainer) {
+                timerContainer.classList.add('timer-circle-delayed');
+                timerContainer.style.opacity = '';
+                timerContainer.style.transform = '';
+                timerContainer.classList.add('animate');
+            }
+        }, 2000);
     }
 
     // --- UI Updates & Animations ---
@@ -1121,22 +1193,29 @@ async function displayAnswer() {
         const bgOverlay = slideContainer.dataset.bgOverlay;
         const bgImage = slideContainer.dataset.bgImage;
         
-        if (bgOverlay && bgOverlay !== 'none' && bgImage) {            if (bgOverlay === 'gradient') {
-                slideContainer.style.backgroundImage = `linear-gradient(180deg, rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0.51)), url('${bgImage}')`;
-                console.log('Applied gradient overlay to background');
-            } else if (bgOverlay === 'stripes') {
-                slideContainer.style.backgroundImage = `
-                    linear-gradient(45deg,
-                        rgba(245, 158, 11, 0.7) 0%,
-                        rgba(245, 158, 11, 0.7) 33.33%,
-                        rgba(255, 255, 255, 0.7) 33.33%,
-                        rgba(255, 255, 255, 0.7) 66.66%,
-                        rgba(245, 158, 11, 0.7) 66.66%,
-                        rgba(245, 158, 11, 0.7) 100%
-                    ),
-                    url('${bgImage}')
-                `;
-                console.log('Applied stripes overlay to background');
-            }
+        if (bgOverlay && bgOverlay !== 'none' && bgImage) {
+            // Set the background image directly on slideContainer
+            slideContainer.style.backgroundImage = `url('${bgImage}')`;
+            slideContainer.style.backgroundSize = 'cover';
+            slideContainer.style.backgroundPosition = 'center';
+            slideContainer.style.backgroundRepeat = 'no-repeat';
+            
+            // Remove any existing curtain classes
+            slideContainer.classList.remove('overlay-curtain', 'gradient', 'stripes');
+            
+            // Force reflow to ensure the class removal takes effect
+            void slideContainer.offsetHeight;
+            
+            // Apply curtain drop animation with overlay type
+            setTimeout(() => {
+                slideContainer.classList.add('overlay-curtain');
+                if (bgOverlay === 'gradient') {
+                    slideContainer.classList.add('gradient');
+                    console.log('Applied gradient overlay curtain effect');
+                } else if (bgOverlay === 'stripes') {
+                    slideContainer.classList.add('stripes');
+                    console.log('Applied stripes overlay curtain effect');
+                }
+            }, 100);
         }
     }
