@@ -51,6 +51,7 @@ document.addEventListener('DOMContentLoaded', () => {    // URL Parameter handli
     // Popup elements
     const timesUpPopupEl = document.getElementById('timesUpPopup') || { style: { display: 'none', opacity: '0' } };    // State variables
     let allQuestions = [];
+    let questionCategoryMapping = {}; // To store mapping of question ID to category order
     let contestRoundsData = []; // To store data from quy_che_thi.cac_vong_thi
     let currentRound = 'vong3'; // Default round for vong3.html
     let currentQuestionIndex = 0;
@@ -249,11 +250,22 @@ document.addEventListener('DOMContentLoaded', () => {    // URL Parameter handli
         startSequenceBtn.classList.remove('opacity-50', 'cursor-not-allowed', 'speaking-indicator');
         
         timesUpPopupEl.style.display = 'none';
-        timesUpPopupEl.style.opacity = '0';
-
-        // Update header
-        if (questionNumberEl) questionNumberEl.textContent = currentQuestionIndex + 1;
-        if (questionCategoryEl) questionCategoryEl.textContent = questionData.category || 'Không có danh mục';
+        timesUpPopupEl.style.opacity = '0';        // Update header
+        const categoryInfo = questionCategoryMapping[questionData.id];
+        if (questionNumberEl) {
+            if (categoryInfo) {
+                questionNumberEl.textContent = categoryInfo.categoryOrder;
+            } else {
+                questionNumberEl.textContent = currentQuestionIndex + 1;
+            }
+        }
+        if (questionCategoryEl) {
+            if (categoryInfo) {
+                questionCategoryEl.textContent = categoryInfo.categoryName;
+            } else {
+                questionCategoryEl.textContent = questionData.category || 'Không có danh mục';
+            }
+        }
         applyTheme(questionData.category);
  
         // Update footer progress bar
@@ -516,17 +528,22 @@ document.addEventListener('DOMContentLoaded', () => {    // URL Parameter handli
             const vong3Config = questionSetsData.vong3;
             if (!vong3Config) {
                 throw new Error('Vong3 configuration not found in question_sets.json');
-            }
-
-            // Build questions array based on question_sets.json configuration
+            }            // Build questions array based on question_sets.json configuration
             allQuestions = [];
+            questionCategoryMapping = {}; // Reset the mapping
             
             // Add Y tế questions in configured order
             if (vong3Config.y_te && Array.isArray(vong3Config.y_te)) {
-                vong3Config.y_te.forEach(questionId => {
+                vong3Config.y_te.forEach((questionId, index) => {
                     const question = questionLookup[questionId];
                     if (question) {
                         allQuestions.push(question);
+                        // Store the category-specific order (1-based)
+                        questionCategoryMapping[questionId] = {
+                            category: 'y_te',
+                            categoryOrder: index + 1,
+                            categoryName: 'Y tế'
+                        };
                     } else {
                         console.warn(`Y tế question with ID ${questionId} not found in vong3.json`);
                     }
@@ -535,15 +552,21 @@ document.addEventListener('DOMContentLoaded', () => {    // URL Parameter handli
             
             // Add PCCC questions in configured order
             if (vong3Config.pccc && Array.isArray(vong3Config.pccc)) {
-                vong3Config.pccc.forEach(questionId => {
+                vong3Config.pccc.forEach((questionId, index) => {
                     const question = questionLookup[questionId];
                     if (question) {
                         allQuestions.push(question);
+                        // Store the category-specific order (1-based)
+                        questionCategoryMapping[questionId] = {
+                            category: 'pccc',
+                            categoryOrder: index + 1,
+                            categoryName: 'Phòng cháy chữa cháy'
+                        };
                     } else {
                         console.warn(`PCCC question with ID ${questionId} not found in vong3.json`);
                     }
                 });
-            }            if (allQuestions.length > 0) {
+            }if (allQuestions.length > 0) {
                 console.log(`Loaded ${allQuestions.length} questions for vong3 based on question_sets.json configuration`);
                 
                 // Check if we need to load a specific question from URL parameters
