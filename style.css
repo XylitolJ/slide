@@ -1433,3 +1433,36 @@ body, html {
     backface-visibility: hidden;
     -webkit-backface-visibility: hidden;
 }
+
+/* Question number scale and glow animation */
+.question-number-scale {
+    transform: scale(1);
+    transition: all 0.3s ease-out;
+}
+
+.question-number-scale.animate {
+    animation: questionNumberGlow 1.2s ease-out forwards;
+}
+
+@keyframes questionNumberGlow {
+    0% {
+        transform: scale(1);
+        text-shadow: none;
+        filter: brightness(1);
+    }
+    30% {
+        transform: scale(1.3);
+        text-shadow: 0 0 15px rgba(255, 255, 255, 0.8), 0 0 25px rgba(255, 255, 255, 0.6);
+        filter: brightness(1.4);
+    }
+    60% {
+        transform: scale(1.2);
+        text-shadow: 0 0 20px rgba(255, 255, 255, 0.9), 0 0 30px rgba(255, 255, 255, 0.7);
+        filter: brightness(1.5);
+    }
+    100% {
+        transform: scale(1);
+        text-shadow: 0 0 8px rgba(255, 255, 255, 0.4);
+        filter: brightness(1.1);
+    }
+}

@@ -1152,10 +1152,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const questionNumberContainer = questionNumberEl?.closest('.question-number');
         const categoryContainer = questionCategoryEl?.closest('.category-badge');
         const timerContainer = timerCircleEl?.closest('.timer-circle');
-        
-        // Reset all elements
+          // Reset all elements
         if (questionNumberContainer) {
-            questionNumberContainer.classList.remove('question-number-counter', 'animate');
+            questionNumberContainer.classList.remove('question-number-scale', 'animate');
         }
         
         if (categoryContainer) {
@@ -1172,28 +1171,12 @@ document.addEventListener('DOMContentLoaded', () => {
         
         // Force reflow
         void document.body.offsetHeight;
-        
-        // Step 1: Question Number appears first (counter animation)
+          // Step 1: Question Number appears first (scale and glow animation)
         setTimeout(() => {
             if (questionNumberContainer && questionNumberEl) {
-                const targetNumber = parseInt(questionNumberEl.textContent) || 1;
-                
-                // Add counter class and trigger animation
-                questionNumberContainer.classList.add('question-number-counter');
+                // Add scale and glow animation
+                questionNumberContainer.classList.add('question-number-scale');
                 questionNumberContainer.classList.add('animate');
-                  // Counter animation from 0 to target number
-                let currentNumber = 0;
-                const duration = 500; // Changed from 1500 to 500ms (0.5s)
-                const increment = targetNumber / (duration / 50); // Update every 50ms
-                
-                const counterInterval = setInterval(() => {
-                    currentNumber += increment;
-                    if (currentNumber >= targetNumber) {
-                        currentNumber = targetNumber;
-                        clearInterval(counterInterval);
-                    }
-                    questionNumberEl.textContent = Math.floor(currentNumber);
-                }, 50);
             }
         }, 200);
         
