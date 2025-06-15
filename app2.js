@@ -526,10 +526,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Check for 3-column layout
         const isThreeColumnLayout = questionData.layout === '3columns';
-        console.log('3-column layout detected:', isThreeColumnLayout);
-
-        // Apply background based on bg_image and bg_image_overlay properties
+        console.log('3-column layout detected:', isThreeColumnLayout);        // Apply background based on bg_image and bg_image_overlay properties
         if (slideContainer) {
+            // First, remove any existing overlay classes to reset the state
+            slideContainer.classList.remove('overlay-curtain', 'gradient', 'stripes');
+            
             if (questionData.bg_image) {
                 // Initially apply only the background image without overlay for visual appeal
                 const webPath = questionData.bg_image.replace(/\\/g, '/');

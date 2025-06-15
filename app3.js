@@ -191,10 +191,11 @@ document.addEventListener('DOMContentLoaded', () => {    // URL Parameter handli
     function renderSlide(questionData) {
         console.log('--- renderSlide START ---', questionData);
         currentQuestionData = questionData;
-        sequenceInProgress = false;
-
-        // Apply background based on bg_image and bg_image_overlay properties
+        sequenceInProgress = false;        // Apply background based on bg_image and bg_image_overlay properties
         if (slideContainer) {
+            // First, remove any existing overlay classes to reset the state
+            slideContainer.classList.remove('overlay-curtain', 'gradient', 'stripes');
+            
             if (questionData.bg_image) {
                 // Initially apply only the background image without overlay for visual appeal
                 const webPath = questionData.bg_image.replace(/\\/g, '/');
