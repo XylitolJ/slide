@@ -21,9 +21,7 @@ document.addEventListener('DOMContentLoaded', () => {    // URL Parameter handli
         if (!allQuestions || !questionId) return null;
         
         return allQuestions.find(q => q.id === questionId);
-    }
-
-    // DOM Elements
+    }    // DOM Elements
     const slideContainer = document.getElementById('slideContainer');
     // Header elements
     const headerEl = document.querySelector('.header');    
@@ -31,6 +29,7 @@ document.addEventListener('DOMContentLoaded', () => {    // URL Parameter handli
     const questionCategoryEl = document.getElementById('newQuestionCategory');
     const timerCircleEl = document.getElementById('timerProgress');
     const timerTextEl = document.getElementById('timer');
+    const headerProgressBarEl = document.getElementById('headerProgressBar');
     // Main content elements
     const questionSectionEl = document.getElementById('questionSection'); 
     const questionTextContentEl = document.getElementById('questionTextContent');
@@ -39,9 +38,10 @@ document.addEventListener('DOMContentLoaded', () => {    // URL Parameter handli
     const progressTextEl = document.getElementById('progressText');
     const startSequenceBtn = document.getElementById('startSequenceBtn');
     const footerProgressBarEl = document.getElementById('footerProgressBar');
-    const roundInfoDisplayEl = document.getElementById('roundInfoDisplay');const DELAY_NO_SPEECH_ANSWER = 1000; // ms to wait after showing answer if no speech
+    const roundInfoDisplayEl = document.getElementById('roundInfoDisplay');// --- Configuration ---
+    let DEBUG_MODE = 0; // 0 = normal, 1 = no timer, 2 = no timer + no audio
     const USE_SPEECH = false; // Disable speech functionality for Round 3
-    const DEBUG_MODE = false; // Set to true to disable timer and auto-progression
+    const DELAY_NO_SPEECH_ANSWER = 1000; // ms to wait after showing answer if no speech
     const DELAY_NO_SPEECH_QUESTION = 500; // ms to wait if no speech for question
     
     // THEME CONFIGURATION - Global variable to control header/footer theme
@@ -278,9 +278,7 @@ document.addEventListener('DOMContentLoaded', () => {    // URL Parameter handli
             questionTextContentEl.style.display = 'block';
             questionTextContentEl.style.visibility = 'visible';
             questionTextContentEl.style.opacity = '1';
-        }
-
-        // Set timer
+        }        // Set timer
         timeLeft = questionData.time_per_question || DEFAULT_TIME_PER_QUESTION;
         if (timerTextEl) timerTextEl.textContent = timeLeft;
 
@@ -288,6 +286,11 @@ document.addEventListener('DOMContentLoaded', () => {    // URL Parameter handli
         if (timerCircleEl) {
             timerCircleEl.style.strokeDasharray = `${2 * Math.PI * 45}`;
             timerCircleEl.style.strokeDashoffset = '0';
+        }
+
+        // Reset header progress bar
+        if (headerProgressBarEl) {
+            headerProgressBarEl.style.width = '0%';
         }
 
         // For Round 3 practical questions, show the question section immediately
@@ -308,8 +311,7 @@ document.addEventListener('DOMContentLoaded', () => {    // URL Parameter handli
         
         const totalTime = timeLeft;
         const circumference = 2 * Math.PI * 45; // r=45% from CSS
-        
-        timerInterval = setInterval(() => {
+          timerInterval = setInterval(() => {
             timeLeft--;
             
             if (timerTextEl) {
@@ -329,10 +331,12 @@ document.addEventListener('DOMContentLoaded', () => {    // URL Parameter handli
                 const offset = circumference * progress;
                 timerCircleEl.style.strokeDashoffset = offset;
             }
-              if (timeLeft <= 0) {
+
+            // Update header progress bar
+            updateHeaderProgress();if (timeLeft <= 0) {
                 clearInterval(timerInterval);
                 
-                if (!DEBUG_MODE) {
+                if (DEBUG_MODE === 0) {
                     // Show time's up overlay
                     timesUpPopupEl.style.display = 'block';
                     timesUpPopupEl.style.opacity = '1';
@@ -344,9 +348,47 @@ document.addEventListener('DOMContentLoaded', () => {    // URL Parameter handli
                 } else {
                     console.log("DEBUG MODE: Timer reached 0");
                 }
+            }        }, 1000);
+    }
+
+    // Function to apply background overlay when question sequence starts
+    function applyBackgroundOverlay() {
+        if (!slideContainer) return;
+        
+        const bgOverlay = slideContainer.dataset.bgOverlay;
+        const bgImage = slideContainer.dataset.bgImage;
+        
+        if (bgOverlay && bgOverlay !== 'none' && bgImage) {
+            if (bgOverlay === 'gradient') {
+                slideContainer.style.backgroundImage = `linear-gradient(180deg, rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0.51)), url('${bgImage}')`;
+                console.log('Applied gradient overlay to background');
+            } else if (bgOverlay === 'stripes') {
+                slideContainer.style.backgroundImage = `
+                    linear-gradient(45deg,
+                        rgba(245, 158, 11, 0.7) 0%,
+                        rgba(245, 158, 11, 0.7) 33.33%,
+                        rgba(255, 255, 255, 0.7) 33.33%,
+                        rgba(255, 255, 255, 0.7) 66.66%,
+                        rgba(245, 158, 11, 0.7) 66.66%,
+                        rgba(245, 158, 11, 0.7) 100%
+                    ),
+                    url('${bgImage}')
+                `;
+                console.log('Applied stripes overlay to background');
             }
-        }, 1000);
-    }    // --- Main Sequence Logic ---
+        }
+    }
+
+    // Function to update header progress bar during timer countdown
+    function updateHeaderProgress() {
+        if (!headerProgressBarEl) return;
+        
+        const totalTime = currentQuestionData?.time_per_question || DEFAULT_TIME_PER_QUESTION;
+        const progress = Math.max(0, (totalTime - timeLeft) / totalTime * 100);
+        headerProgressBarEl.style.width = `${progress}%`;
+    }
+
+    // --- Main Sequence Logic ---
     async function startQuestionSequence() {
         console.log('--- startQuestionSequence START ---');
         if (sequenceInProgress) {
@@ -362,8 +404,10 @@ document.addEventListener('DOMContentLoaded', () => {    // URL Parameter handli
         // 1. Show Question (no audio for Round 3)
         if (questionSectionEl) questionSectionEl.classList.remove('u-hidden-initially');
         animateElement(questionSectionEl, 'question-appear');        // 2. Start Timer immediately (for practical questions, this is the time to complete the task)
-        if (DEBUG_MODE || timeLeft > 0) {
+        if (DEBUG_MODE === 0 && timeLeft > 0) {
             startTimer();
+        } else if (DEBUG_MODE > 0) {
+            console.log(`DEBUG MODE ${DEBUG_MODE}: Timer skipped`);
         }
         
         startSequenceBtn.classList.remove('speaking-indicator');
@@ -547,9 +591,7 @@ document.addEventListener('DOMContentLoaded', () => {    // URL Parameter handli
         }
     }
     
-    startSequenceBtn.addEventListener('click', startQuestionSequence);
-
-    document.addEventListener('keydown', (e) => {
+    startSequenceBtn.addEventListener('click', startQuestionSequence);    document.addEventListener('keydown', (e) => {
         console.log('Key pressed in app3.js:', e.key); // Debug log
         if (e.key === 'ArrowRight') {
             e.preventDefault();
@@ -566,9 +608,19 @@ document.addEventListener('DOMContentLoaded', () => {    // URL Parameter handli
             if (!startSequenceBtn.disabled) {
                 startQuestionSequence();
             }
+        } else if (e.key === '0' && e.ctrlKey) { // Ctrl+0 for DEBUG mode 1
+            e.preventDefault();
+            DEBUG_MODE = 1;
+            console.log('DEBUG MODE 1 activated: Timer disabled');
+            progressTextEl.textContent = 'DEBUG MODE 1: Timer disabled';
+        } else if (e.key === '9' && e.ctrlKey) { // Ctrl+9 for DEBUG mode 2
+            e.preventDefault();
+            DEBUG_MODE = 2;
+            console.log('DEBUG MODE 2 activated: Timer and audio disabled');
+            progressTextEl.textContent = 'DEBUG MODE 2: Timer and audio disabled';
         } else if (e.key.toLowerCase() === 'd' && e.ctrlKey) { // Ctrl+D to toggle debug
             e.preventDefault();
-            console.log("Debug mode toggle attempted. Reload page if DEBUG_MODE constant was changed.");
+            console.log("Debug mode toggle attempted. Use Ctrl+0 or Ctrl+9 for specific debug modes.");
         } else if (e.key.toLowerCase() === 'q') { // Q key for emergency exit
             e.preventDefault();
             console.log('Q key pressed - Emergency exit activated');

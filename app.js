@@ -27,10 +27,8 @@ document.addEventListener('DOMContentLoaded', () => {
  
  
     // Popup
-    const timesUpPopupEl = document.getElementById('timeUpOverlay'); // Updated ID for new overlay
-
-    // --- Configuration ---
-    const DEBUG_MODE = false; // Set to true to enable debug mode
+    const timesUpPopupEl = document.getElementById('timeUpOverlay'); // Updated ID for new overlay    // --- Configuration --- 
+    let DEBUG_MODE = 0; // 0 = normal, 1 = no timer, 2 = no timer + no audio
     const USE_SPEECH = localStorage.getItem("useSpeech") !== "false";
     const SHOW_IMAGE_PLACEHOLDER_ON_ERROR = true; // If true, shows a placeholder if an image fails to load
     const IMAGE_PLACEHOLDER_SVG = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23cbd5e1'%3E%3Cpath d='M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z'/%3E%3C/svg%3E"; // Simple image icon    const DELAY_NO_SPEECH_QUESTION = 1000; // ms to wait after showing question if no speech
@@ -77,11 +75,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 console.error("Web Audio API is not supported in this browser.", e);
                 progressTextEl.textContent = "Lỗi: Trình duyệt không hỗ trợ âm thanh.";
             }
-        }    }
-
-        // --- Audio Playback ---
+        }    }        // --- Audio Playback ---
     async function playAudio(filePath, onEndCallback) {
-        if (!USE_SPEECH || !audioContext || !filePath || navigationInProgress) { // Check navigation flag
+        if (!USE_SPEECH || !audioContext || !filePath || navigationInProgress || DEBUG_MODE === 2) { // Check navigation flag and DEBUG_MODE 2
             if (onEndCallback) onEndCallback();
             return Promise.resolve();
         }
@@ -583,10 +579,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Timer Logic ---
     function startTimer() {
-        if (timerInterval) clearInterval(timerInterval);
-
-        if (DEBUG_MODE) {
-            progressTextEl.textContent = 'Chế độ DEBUG: Bỏ qua timer.';
+        if (timerInterval) clearInterval(timerInterval);        if (DEBUG_MODE > 0) {
+            progressTextEl.textContent = `DEBUG MODE ${DEBUG_MODE}: Timer disabled.`;
             timeLeft = 0;
             timerTextEl.textContent = "DEBUG";
             if (currentQuestionData.type_question !== "Thực hành") {
@@ -704,9 +698,11 @@ document.addEventListener('DOMContentLoaded', () => {
         } else {
             console.log(`%cstartQuestionSequence: Image will NOT be animated. Conditions: slideImageEl.src="${slideImageEl.src}", imageAreaEl exists=${!!imageAreaEl}, imageAreaEl.hidden=${imageAreaEl ? imageAreaEl.classList.contains('hidden') : 'N/A'}, imageWrapperEl exists=${!!imageWrapperEl}`, "color: red; font-weight: bold;");
         }
-        
-        // 2. Speak Question (after showing both question and image)
-        if (USE_SPEECH && currentQuestionData.speech_id_question) {
+          // 2. Speak Question (after showing both question and image)
+        if (DEBUG_MODE === 2) {
+            // DEBUG MODE 2: Skip audio, use delay instead
+            await new Promise(r => setTimeout(r, DELAY_NO_SPEECH_QUESTION));
+        } else if (USE_SPEECH && currentQuestionData.speech_id_question) {
             await playAudio(`speech/${currentQuestionData.speech_id_question}`);
         } else {
             await new Promise(r => setTimeout(r, DELAY_NO_SPEECH_QUESTION));
@@ -725,13 +721,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Set animation delay for staggered effect
                 optionEl.style.animationDelay = `${animationDelayBase}s`;
                 animateElement(optionEl, 'option-appear');
-                
-                // Speak option if audio exists
+                  // Speak option if audio exists
                 const optionKey = optionEl.dataset.optionKey;
                 const speechFileKey = `speech_id_options_${optionKey.toUpperCase()}`;
                 const speechFile = currentQuestionData[speechFileKey];
                 
-                if (USE_SPEECH && speechFile) {
+                if (DEBUG_MODE === 2) {
+                    // DEBUG MODE 2: Skip audio, use delay instead
+                    await new Promise(r => setTimeout(r, DELAY_NO_SPEECH_OPTION));
+                } else if (USE_SPEECH && speechFile) {
                     await playAudio(`speech/${speechFile}`);
                 } else {
                     await new Promise(r => setTimeout(r, DELAY_NO_SPEECH_OPTION));
@@ -742,12 +740,18 @@ document.addEventListener('DOMContentLoaded', () => {
         } else if (currentQuestionData.type_question === "Thực hành") {
             // No options to show/speak for practical questions
             console.log('startQuestionSequence: Thực hành question - no options to show');
-        }
-
-        // 4. Start Timer
-        if (DEBUG_MODE || timeLeft > 0) {
+        }        // 4. Start Timer
+        if (DEBUG_MODE === 0 && timeLeft > 0) {
             startTimer();
-        } else if (!DEBUG_MODE && timeLeft <= 0) { 
+        } else if (DEBUG_MODE > 0) {
+            // Debug modes: Skip timer and show answer button if applicable
+            console.log(`DEBUG MODE ${DEBUG_MODE}: Timer skipped`);
+            if (currentQuestionData.type_question !== "Thực hành") {
+                showAnswerBtn.style.display = 'inline-block'; 
+                showAnswerBtn.disabled = false;
+                showAnswerBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+            }
+        } else if (timeLeft <= 0) { 
             showAnswerBtn.style.display = 'inline-block'; 
             showAnswerBtn.disabled = false;
             showAnswerBtn.classList.remove('opacity-50', 'cursor-not-allowed');
@@ -802,10 +806,8 @@ document.addEventListener('DOMContentLoaded', () => {
     
 async function displayAnswer() {
         if (answerShown || !currentQuestionData) return;
-        answerShown = true;
-
-        if (timerInterval) clearInterval(timerInterval);
-        if (!DEBUG_MODE && timesUpPopupEl) {
+        answerShown = true;        if (timerInterval) clearInterval(timerInterval);
+        if (DEBUG_MODE === 0 && timesUpPopupEl) {
             timesUpPopupEl.style.display = 'none';
             timesUpPopupEl.style.opacity = '0';
             timesUpPopupEl.style.animation = 'none'; // Stop any ongoing animations
@@ -850,12 +852,13 @@ async function displayAnswer() {
             }
         } else if (currentQuestionData.type_question === "Thực hành") {
             answerDisplayString = "Ban giám khảo chấm điểm thực hành.";
-        }
-
-        progressTextEl.innerHTML = answerDisplayString; // Use innerHTML for potential HTML in answer
+        }        progressTextEl.innerHTML = answerDisplayString; // Use innerHTML for potential HTML in answer
         progressTextEl.classList.add('answer-text-highlight'); // Add highlight class
  
-        if (USE_SPEECH && currentQuestionData.speech_id_answer) {
+        if (DEBUG_MODE === 2) {
+            // DEBUG MODE 2: Skip audio, use delay instead
+            await new Promise(r => setTimeout(r, DELAY_NO_SPEECH_ANSWER));
+        } else if (USE_SPEECH && currentQuestionData.speech_id_answer) {
             await playAudio(`speech/${currentQuestionData.speech_id_answer}`);
         } else if (!USE_SPEECH) {
             await new Promise(r => setTimeout(r, DELAY_NO_SPEECH_ANSWER));
@@ -1112,12 +1115,19 @@ async function displayAnswer() {
             if (!showAnswerBtn.disabled && showAnswerBtn.style.display !== 'none') {
                 e.preventDefault();
                 displayAnswer();
-            }        } else if (e.key.toLowerCase() === 'd' && e.ctrlKey) { // Ctrl+D to toggle debug
+            }        } else if (e.key === '0' && e.ctrlKey) { // Ctrl+0 for DEBUG mode 1
             e.preventDefault();
-            // This is a simple way to toggle, for a real app, you might want a UI element
-            // For now, this requires manual change of DEBUG_MODE constant and reload.
-            // Or, we can make DEBUG_MODE a let and toggle it here, then re-render.
-            console.log("Debug mode toggle attempted. Reload page if DEBUG_MODE constant was changed.");        } else if (e.key.toLowerCase() === 'q') { // Q key for emergency exit
+            DEBUG_MODE = 1;
+            console.log('DEBUG MODE 1 activated: Timer disabled');
+            progressTextEl.textContent = 'DEBUG MODE 1: Timer disabled';
+        } else if (e.key === '9' && e.ctrlKey) { // Ctrl+9 for DEBUG mode 2
+            e.preventDefault();
+            DEBUG_MODE = 2;
+            console.log('DEBUG MODE 2 activated: Timer and audio disabled');
+            progressTextEl.textContent = 'DEBUG MODE 2: Timer and audio disabled';
+        } else if (e.key.toLowerCase() === 'd' && e.ctrlKey) { // Ctrl+D to toggle debug
+            e.preventDefault();
+            console.log("Debug mode toggle attempted. Use Ctrl+0 or Ctrl+9 for specific debug modes.");} else if (e.key.toLowerCase() === 'q') { // Q key for emergency exit
             e.preventDefault();
             emergencyExitToPage3();
         } else if (e.key === '1') { // Number 1 key to go to info page for round 1

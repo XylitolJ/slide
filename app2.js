@@ -39,10 +39,10 @@ document.addEventListener('DOMContentLoaded', () => {
  
     // Popup
     const timesUpPopupEl = document.getElementById('timeUpOverlay'); // Updated ID for new overlay    // --- Configuration ---
-    const DEBUG_MODE = false; // Set to true to enable debug mode
+    let DEBUG_MODE = 0; // 0 = normal, 1 = no timer, 2 = no timer + no audio
     const USE_SPEECH = true; // Set to false to disable all speech synthesis & audio file playback
     const SHOW_IMAGE_PLACEHOLDER_ON_ERROR = true; // If true, shows a placeholder if an image fails to load
-    const IMAGE_PLACEHOLDER_SVG = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23cbd5e1'%3E%3Cpath d='M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z'/%3E%3C/svg%3E"; // Simple image icon
+    const IMAGE_PLACEHOLDER_SVG = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23cbd5e1'%3E%3Cpath d='M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z'/%3E%3C/svg%3E"; // Simple image icon
     const DELAY_NO_SPEECH_QUESTION = 1000; // ms to wait after showing question if no speech
     const DELAY_NO_SPEECH_OPTION = 500;  // ms to wait after showing an option if no speech
     const DELAY_NO_SPEECH_ANSWER = 1000; // ms to wait after showing answer if no speech
@@ -80,9 +80,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 progressTextEl.textContent = "Lỗi: Trình duyệt không hỗ trợ âm thanh.";
             }
         }
-    }    // --- Audio Playback ---
+    }
+
+    // --- Audio Playback ---
     async function playAudio(filePath, onEndCallback) {
-        if (!USE_SPEECH || !audioContext || !filePath || navigationInProgress) { // Check navigation flag
+        if (!USE_SPEECH || !audioContext || !filePath || navigationInProgress || DEBUG_MODE === 2) { // Check navigation flag and DEBUG_MODE 2
             if (onEndCallback) onEndCallback();
             return Promise.resolve();
         }
@@ -871,10 +873,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     // --- Timer Logic ---
     function startTimer() {
-        if (timerInterval) clearInterval(timerInterval);
-
-        if (DEBUG_MODE) {
-            progressTextEl.textContent = 'Chế độ DEBUG: Bỏ qua timer.';
+        if (timerInterval) clearInterval(timerInterval);        if (DEBUG_MODE > 0) {
+            progressTextEl.textContent = `DEBUG MODE ${DEBUG_MODE}: Timer disabled.`;
             timeLeft = 0;
             timerTextEl.textContent = "DEBUG";
             if (currentQuestionData.type_question !== "Thực hành") {
@@ -992,13 +992,15 @@ document.addEventListener('DOMContentLoaded', () => {
         } else {
             console.log(`%cstartQuestionSequence: Image will NOT be animated. Conditions: slideImageEl.src="${slideImageEl.src}", imageAreaEl exists=${!!imageAreaEl}, imageAreaEl.hidden=${imageAreaEl ? imageAreaEl.classList.contains('hidden') : 'N/A'}, imageWrapperEl exists=${!!imageWrapperEl}`, "color: red; font-weight: bold;");
         }
-        
-        // 2. Speak Question (after showing both question and image)
-        if (USE_SPEECH && currentQuestionData.speech_id_question) {
+          // 2. Speak Question (after showing both question and image)
+        if (DEBUG_MODE === 2) {
+            // DEBUG MODE 2: Skip audio, use delay instead
+            await new Promise(r => setTimeout(r, DELAY_NO_SPEECH_QUESTION));
+        } else if (USE_SPEECH && currentQuestionData.speech_id_question) {
             await playAudio(`speech/${currentQuestionData.speech_id_question}`);
         } else {
             await new Promise(r => setTimeout(r, DELAY_NO_SPEECH_QUESTION));
-        }        // 3. Show & Speak Options based on layout type
+        }// 3. Show & Speak Options based on layout type
         if ((currentQuestionData.type_question === "Trắc nghiệm" || currentQuestionData.type_question === "Trắc nghiệm Hình ảnh") && currentQuestionData.phuong_an) {
             
             // Check if this is a 3-column layout question
@@ -1019,8 +1021,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 } else {
                     await new Promise(r => setTimeout(r, DELAY_NO_SPEECH_OPTION));
                 }
-                
-                // Step 2: Show and speak options a-d (column 1 - errors)
+                  // Step 2: Show and speak options a-d (column 1 - errors)
                 const column1Options = ['a', 'b', 'c', 'd'];
                 for (const optionKey of column1Options) {
                     if (currentQuestionData.phuong_an[optionKey]) {
@@ -1032,7 +1033,10 @@ document.addEventListener('DOMContentLoaded', () => {
                             const speechFileKey = `speech_id_options_${optionKey.toUpperCase()}`;
                             const speechFile = currentQuestionData[speechFileKey];
                             
-                            if (USE_SPEECH && speechFile) {
+                            if (DEBUG_MODE === 2) {
+                                // DEBUG MODE 2: Skip audio, use delay instead
+                                await new Promise(r => setTimeout(r, DELAY_NO_SPEECH_OPTION));
+                            } else if (USE_SPEECH && speechFile) {
                                 await playAudio(`speech/${speechFile}`);
                             } else {
                                 await new Promise(r => setTimeout(r, DELAY_NO_SPEECH_OPTION));
@@ -1052,8 +1056,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 } else {
                     await new Promise(r => setTimeout(r, DELAY_NO_SPEECH_OPTION));
                 }
-                
-                // Step 4: Show and speak options e-g (column 2 - solutions)
+                  // Step 4: Show and speak options e-g (column 2 - solutions)
                 const column2Options = ['e', 'f', 'g', 'h', 'i', 'j'];
                 for (const optionKey of column2Options) {
                     if (currentQuestionData.phuong_an[optionKey]) {
@@ -1065,7 +1068,10 @@ document.addEventListener('DOMContentLoaded', () => {
                             const speechFileKey = `speech_id_options_${optionKey.toUpperCase()}`;
                             const speechFile = currentQuestionData[speechFileKey];
                             
-                            if (USE_SPEECH && speechFile) {
+                            if (DEBUG_MODE === 2) {
+                                // DEBUG MODE 2: Skip audio, use delay instead
+                                await new Promise(r => setTimeout(r, DELAY_NO_SPEECH_OPTION));
+                            } else if (USE_SPEECH && speechFile) {
                                 await playAudio(`speech/${speechFile}`);
                             } else {
                                 await new Promise(r => setTimeout(r, DELAY_NO_SPEECH_OPTION));
@@ -1087,13 +1093,15 @@ document.addEventListener('DOMContentLoaded', () => {
                     // Set animation delay for staggered effect
                     optionEl.style.animationDelay = `${animationDelayBase}s`;
                     animateElement(optionEl, 'option-appear');
-                    
-                    // Speak option if audio exists
+                      // Speak option if audio exists
                     const optionKey = optionEl.dataset.optionKey;
                     const speechFileKey = `speech_id_options_${optionKey.toUpperCase()}`;
                     const speechFile = currentQuestionData[speechFileKey];
                     
-                    if (USE_SPEECH && speechFile) {
+                    if (DEBUG_MODE === 2) {
+                        // DEBUG MODE 2: Skip audio, use delay instead
+                        await new Promise(r => setTimeout(r, DELAY_NO_SPEECH_OPTION));
+                    } else if (USE_SPEECH && speechFile) {
                         await playAudio(`speech/${speechFile}`);
                     } else {
                         await new Promise(r => setTimeout(r, DELAY_NO_SPEECH_OPTION));
@@ -1102,14 +1110,23 @@ document.addEventListener('DOMContentLoaded', () => {
                     animationDelayBase += 0.15; // Stagger next option by 150ms
                 }
             }
-            
-        } else if (currentQuestionData.type_question === "Thực hành") {
+              } else if (currentQuestionData.type_question === "Thực hành") {
             // No options to show/speak for practical questions
             console.log('startQuestionSequence: Thực hành question - no options to show');
-        }// 4. Start Timer
-        if (DEBUG_MODE || timeLeft > 0) {
+        }
+
+        // 4. Start Timer
+        if (DEBUG_MODE === 0 && timeLeft > 0) {
             startTimer();
-        } else if (!DEBUG_MODE && timeLeft <= 0) { 
+        } else if (DEBUG_MODE > 0) {
+            // Debug modes: Skip timer and show answer button if applicable
+            console.log(`DEBUG MODE ${DEBUG_MODE}: Timer skipped`);
+            if (currentQuestionData.type_question !== "Thực hành") {
+                showAnswerBtn.style.display = 'inline-block'; 
+                showAnswerBtn.disabled = false;
+                showAnswerBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+            }
+        } else if (timeLeft <= 0) { 
             showAnswerBtn.style.display = 'inline-block'; 
             showAnswerBtn.disabled = false;
             showAnswerBtn.classList.remove('opacity-50', 'cursor-not-allowed');
@@ -1122,7 +1139,9 @@ document.addEventListener('DOMContentLoaded', () => {
         
         startSequenceBtn.classList.remove('speaking-indicator');
         sequenceInProgress = false;
-    }    // Function to trigger header and footer animations
+    }
+
+    // Function to trigger header and footer animations
     function triggerHeaderFooterAnimation() {
         const header = document.querySelector('.header');
         const footer = document.querySelector('.footer');
@@ -1210,12 +1229,10 @@ document.addEventListener('DOMContentLoaded', () => {
     
 async function displayAnswer() {
         if (answerShown || !currentQuestionData) return;
-        answerShown = true;
-
-        if (timerInterval) clearInterval(timerInterval);
+        answerShown = true;        if (timerInterval) clearInterval(timerInterval);
         
         // Immediately hide time-up overlay without delay or animation
-        if (!DEBUG_MODE && timesUpPopupEl) {
+        if (DEBUG_MODE === 0 && timesUpPopupEl) {
             timesUpPopupEl.style.display = 'none';
             timesUpPopupEl.style.opacity = '0';
             timesUpPopupEl.style.animation = 'none'; // Stop any ongoing animations
@@ -1252,20 +1269,23 @@ async function displayAnswer() {
             }
              else {
                 answerDisplayString = "Đáp án được trình bày bởi BGK/Tài liệu.";
-            }
-        } else if (currentQuestionData.type_question === "Thực hành") {
+            }        } else if (currentQuestionData.type_question === "Thực hành") {
             answerDisplayString = "Ban giám khảo chấm điểm thực hành.";
         }
 
         progressTextEl.innerHTML = answerDisplayString; // Use innerHTML for potential HTML in answer
         progressTextEl.classList.add('answer-text-highlight'); // Add highlight class
  
-        if (USE_SPEECH && currentQuestionData.speech_id_answer) {
+        if (DEBUG_MODE === 2) {
+            // DEBUG MODE 2: Skip audio, use delay instead
+            await new Promise(r => setTimeout(r, DELAY_NO_SPEECH_ANSWER));        } else if (USE_SPEECH && currentQuestionData.speech_id_answer) {
             await playAudio(`speech/${currentQuestionData.speech_id_answer}`);
         } else if (!USE_SPEECH) {
             await new Promise(r => setTimeout(r, DELAY_NO_SPEECH_ANSWER));
         }
-    }    // --- Navigation ---
+    }
+
+    // --- Navigation ---
     function nextQuestion() {
         console.log('nextQuestion: Starting navigation to next question');
         
@@ -1483,10 +1503,11 @@ async function displayAnswer() {
     showAnswerBtn.addEventListener('click', displayAnswer);
     if (slideImageEl && imageModalEl && modalImageEl) {
         slideImageEl.addEventListener('click', () => {
-            if (!slideImageEl.src) return;
-            modalImageEl.src = slideImageEl.src;
+            if (!slideImageEl.src) return;            modalImageEl.src = slideImageEl.src;
             imageModalEl.classList.remove('hidden');
-        });        imageModalEl.addEventListener('click', () => {
+        });
+
+        imageModalEl.addEventListener('click', () => {
             imageModalEl.classList.add('hidden');
             modalImageEl.src = '';
         });
@@ -1503,25 +1524,32 @@ async function displayAnswer() {
             e.preventDefault();
             console.log('Arrow Left pressed - calling previousQuestion()');
             stopAllEvents();
-            previousQuestion();
-        } else if (e.key === ' ' || e.key === 'Spacebar') {
+            previousQuestion();        } else if (e.key === ' ' || e.key === 'Spacebar') {
             e.preventDefault(); 
             if (!startSequenceBtn.disabled) {
                 startQuestionSequence();
-            }        } else if (e.key === 'Enter') {
+            }
+        } else if (e.key === 'Enter') {
             if (!showAnswerBtn.disabled && showAnswerBtn.style.display !== 'none') {
                 e.preventDefault();
                 displayAnswer();
             }
+        } else if (e.key === '0' && e.ctrlKey) { // Ctrl+0 for DEBUG mode 1
+            e.preventDefault();
+            DEBUG_MODE = 1;
+            console.log('DEBUG MODE 1 activated: Timer disabled');
+            progressTextEl.textContent = 'DEBUG MODE 1: Timer disabled';        } else if (e.key === '9' && e.ctrlKey) { // Ctrl+9 for DEBUG mode 2
+            e.preventDefault();
+            DEBUG_MODE = 2;
+            console.log('DEBUG MODE 2 activated: Timer and audio disabled');
+            progressTextEl.textContent = 'DEBUG MODE 2: Timer and audio disabled';
         } else if (e.key.toLowerCase() === 'd' && e.ctrlKey) { // Ctrl+D to toggle debug
             e.preventDefault();
-            // This is a simple way to toggle, for a real app, you might want a UI element
-            // For now, this requires manual change of DEBUG_MODE constant and reload.
-            // Or, we can make DEBUG_MODE a let and toggle it here, then re-render.
-            console.log("Debug mode toggle attempted. Reload page if DEBUG_MODE constant was changed.");
+            console.log("Debug mode toggle attempted. Use Ctrl+0 or Ctrl+9 for specific debug modes.");
         } else if (e.key.toLowerCase() === 'q') { // Q key for emergency exit
             e.preventDefault();
-            emergencyExitToPage3();        } else if (e.key === '2') { // Number 2 key to go to info page for round 2
+            emergencyExitToPage3();
+        } else if (e.key === '2') { // Number 2 key to go to info page for round 2
             e.preventDefault();
             window.location.href = 'infovong2.html';
         }
