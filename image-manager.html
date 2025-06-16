@@ -845,12 +845,11 @@
             currentGalleryContext = context;
             currentGalleryField = field;
             selectedImagePath = null;
-            
-            populateFolderTree();
+              populateFolderTree();
             showImagesInFolder('images');
             
-            // Start auto-refresh
-            startGalleryAutoRefresh();
+            // Auto-refresh disabled for performance
+            console.log('Auto-refresh disabled for performance optimization');
             
             document.getElementById('imageGalleryModal').style.display = 'flex';
         }
@@ -1472,203 +1471,21 @@
 
         // Enhanced refresh images list function
         async function enhancedRefreshImagesList() {
-            console.log('🔄 Enhanced auto-refreshing images list...');
-            
-            const commonExtensions = ['jpg', 'jpeg', 'png', 'svg', 'webp', 'gif'];
-            const imageFolders = Object.keys(availableImages);
-            
-            const newAvailableImages = {};
-            let hasChanges = false;
-            
-            for (const folder of imageFolders) {
-                const oldImages = availableImages[folder] || [];
-                const newImages = [];                  // Only test a subset of patterns for auto-refresh (performance)
-                const quickTestPatterns = [
-                    // Most common patterns - expanded for better coverage
-                    ...Array.from({length: 30}, (_, i) => `bg${i + 1}`), // Extended to bg30
-                    ...Array.from({length: 15}, (_, i) => `image${i + 1}`),
-                    ...Array.from({length: 15}, (_, i) => `v3_c${i + 1}`),
-                    ...Array.from({length: 10}, (_, i) => `v3_yte${i + 1}`), // v3_yte1 to v3_yte10
-                    ...Array.from({length: 25}, (_, i) => `${i + 1}`), // Extended numbered files
-                    'v3_yte', 'v3_yte2', 'v3_yte3', 'v3_yte4', 'v3_yte5', // explicit v3_yte patterns
-                    'logo', 'icon', 'bg', 'bg2.1'
-                ];
-                
-                // Test existing images first (faster)
-                for (const existingImage of oldImages) {
-                    const testPath = `${folder}/${existingImage}`;
-                    if (await imageExists(testPath)) {
-                        newImages.push(existingImage);
-                    }
-                }
-                
-                // Then test for new images with quick patterns
-                for (const pattern of quickTestPatterns) {
-                    for (const ext of commonExtensions) {
-                        const fileName = `${pattern}.${ext}`;
-                        const testPath = `${folder}/${fileName}`;
-                        
-                        if (!newImages.includes(fileName) && await imageExists(testPath)) {
-                            newImages.push(fileName);
-                        }
-                    }                }
-                
-                // Sort images
-                newImages.sort((a, b) => {
-                    const aNum = parseInt(a.match(/^\d+/)?.[0]);
-                    const bNum = parseInt(b.match(/^\d+/)?.[0]);
-                    
-                    if (aNum && bNum) return aNum - bNum;
-                    if (aNum && !bNum) return -1;
-                    if (!aNum && bNum) return 1;
-                    return a.localeCompare(b);
-                });
-                
-                newAvailableImages[folder] = newImages;
-                
-                // Check if this folder has changes
-                if (oldImages.length !== newImages.length || 
-                    !oldImages.every(img => newImages.includes(img))) {
-                    hasChanges = true;
-                    console.log(`📁 ${folder}: ${oldImages.length} → ${newImages.length} images`);
-                }
-            }
-            
-            if (hasChanges) {
-                const oldTotal = Object.values(availableImages).flat().length;
-                availableImages = newAvailableImages;
-                const newTotal = Object.values(availableImages).flat().length;
-                
-                console.log(`✅ Images updated: ${oldTotal} → ${newTotal}`);
-                
-                // Update gallery if open
-                if (document.getElementById('imageGalleryModal').style.display === 'flex') {
-                    populateFolderTree();
-                    const activeFolder = document.querySelector('.folder-item.active');
-                    if (activeFolder && activeFolder.dataset.folder) {
-                        showImagesInFolder(activeFolder.dataset.folder);
-                    }
-                }
-                
-                // Show subtle notification for auto-updates
-                showToast(`🔄 Cập nhật: ${newTotal} ảnh`, 'info');
-                return true;
-            }
-            
-            return false; // No changes
+            console.log('🔄 Enhanced refresh - using index only...');
+            return await loadImagesFromIndex();
         }
-        
-        // Smart scanning that combines index file + new file detection
+
+        // Smart scanning - SIMPLIFIED to use index only
         async function smartImageDetection() {
-            console.log('🧠 Starting smart image detection...');
-            
-            // First, try to load from index file
-            let baseImages = {};
-            try {
-                const response = await fetch('images_index.json?t=' + Date.now());
-                if (response.ok) {
-                    baseImages = await response.json();
-                    console.log('📋 Loaded base images from index file');
-                }
-            } catch (error) {
-                console.log('⚠️ No index file found, starting fresh scan');
-            }
-              const commonExtensions = ['jpg', 'jpeg', 'png', 'svg', 'webp', 'gif', 'bmp'];
-            const imageFolders = [
-                'images',
-                'images/bg', 
-                'images/cauhoi',
-                'images/illustrative',
-                'images/index_images'
-            ];
-            
-            const newAvailableImages = {};
-            let totalFound = 0;
-            
-            for (const folder of imageFolders) {
-                console.log(`🔍 Smart scanning folder: ${folder}`);
-                const detectedImages = [];
-                const baseImagesInFolder = baseImages[folder] || [];
-                
-                // First, verify existing images from index
-                for (const existingImage of baseImagesInFolder) {
-                    const testPath = `${folder}/${existingImage}`;
-                    if (await imageExists(testPath)) {
-                        detectedImages.push(existingImage);
-                    }
-                }
-                
-                // Then look for new images with extended patterns
-                const extendedPatterns = [
-                    // Extended background images (up to 50)
-                    ...Array.from({length: 50}, (_, i) => `bg${i + 1}`),
-                    'bg', 'bg2.1', 'background',
-                    
-                    // Extended question images
-                    ...Array.from({length: 30}, (_, i) => `image${i + 1}`),
-                    ...Array.from({length: 30}, (_, i) => `v3_c${i + 1}`),
-                    
-                    // Extended numbered files
-                    ...Array.from({length: 50}, (_, i) => `${i + 1}`),
-                      // Common names - mở rộng v3_yte patterns
-                    ...Array.from({length: 10}, (_, i) => `v3_yte${i + 1}`), // v3_yte1, v3_yte2, ..., v3_yte10
-                    'v3_yte', 'v3_yte2', 'v3_yte3', 'v3_yte4', 'v3_yte5', // explicit
-                    'logo', 'icon', 'ktm_image_4',
-                    'V2_BV_HA_4', 'V2_BV_HA_9', 'V2_BXV_HA_15', 'V2_BXV_HA_22',
-                    'V2_KTM_HA_10', 'V2_KTM_HA_4'
-                ];
-                
-                // Test for new images
-                for (const pattern of extendedPatterns) {
-                    for (const ext of commonExtensions) {
-                        const fileName = `${pattern}.${ext}`;
-                        const testPath = `${folder}/${fileName}`;
-                        
-                        if (!detectedImages.includes(fileName) && await imageExists(testPath)) {
-                            detectedImages.push(fileName);
-                            console.log(`🆕 Found new image: ${fileName} in ${folder}`);
-                        }
-                    }
-                }
-                
-                // Sort images intelligently
-                detectedImages.sort((a, b) => {
-                    const aNum = parseInt(a.match(/bg?(\d+)/)?.[1] || a.match(/^\d+/)?.[0]);
-                    const bNum = parseInt(b.match(/bg?(\d+)/)?.[1] || b.match(/^\d+/)?.[0]);
-                    
-                    if (aNum && bNum) return aNum - bNum;
-                    if (aNum && !bNum) return -1;
-                    if (!aNum && bNum) return 1;
-                    return a.localeCompare(b);
-                });
-                
-                newAvailableImages[folder] = detectedImages;
-                totalFound += detectedImages.length;
-                console.log(`📁 ${folder}: ${detectedImages.length} images (${detectedImages.length - baseImagesInFolder.length} new)`);
-            }
-            
-            availableImages = newAvailableImages;
-            console.log(`✅ Smart scan complete: ${totalFound} total images found`);
-            showToast(`🧠 Smart scan: ${totalFound} ảnh (bao gồm cả ảnh mới)`);
+            console.log('🧠 Smart detection - using index only...');
+            return await loadImagesFromIndex();
         }
 
         // Auto-refresh system
         let globalRefreshInterval = null;
-        
-        // Start global auto-refresh (runs even when gallery is closed)
+          // Start global auto-refresh - DISABLED for performance
         function startGlobalAutoRefresh() {
-            if (globalRefreshInterval) return;
-            
-            // Auto-refresh every 10 seconds globally
-            globalRefreshInterval = setInterval(async () => {
-                try {
-                    await enhancedRefreshImagesList();
-                } catch (error) {
-                    console.error('Auto-refresh error:', error);
-                }
-            }, 10000);
-            
-            console.log('🔄 Global auto-refresh started (10s interval)');
+            console.log('🔄 Global auto-refresh disabled for performance');
         }
         
         // Stop global auto-refresh
@@ -1934,116 +1751,15 @@
 
         // Auto-refresh gallery when folder changes
         let galleryRefreshInterval = null;
-        
-        // Function to refresh images list by testing file existence
+          // Function to refresh images list - SIMPLIFIED to use index only
         async function refreshImagesList() {
-            console.log('Refreshing images list...');
-            const commonExtensions = ['jpg', 'jpeg', 'png', 'svg', 'webp'];
-            const folders = ['images', 'images/bg', 'images/cauhoi', 'images/illustrative', 'images/index_images'];
-            
-            const newAvailableImages = {};
-            
-            for (const folder of folders) {
-                const detectedImages = [];
-                
-                // Test common filenames with different extensions
-                const testNames = [
-                    // Common background names
-                    'bg', 'bg1', 'bg2', 'bg3', 'bg4', 'bg5', 'bg6', 'bg7', 'bg8', 'bg9', 'bg10',
-                    'bg11', 'bg12', 'bg2.1', 'background', 'wallpaper',
-                    // Common question images
-                    'v1_image1', 'v2_image1', 'v3_yte', 'v3_yte2', 'image1', 'image2', 'image3',                    'V2_BV_HA_4', 'V2_BV_HA_9', 'V2_BXV_HA_15', 'V2_BXV_HA_22',
-                    'V2_KTM_HA_10', 'V2_KTM_HA_4', 'ktm_image_4',
-                    'v3_c1', 'v3_c2', 'v3_c3', 'v3_c4', 'v3_c5', 'v3_c6', 'v3_c7', 'v3_c8', 'v3_c9', 'v3_c10',
-                    // v3_yte patterns - mở rộng
-                    'v3_yte', 'v3_yte2', 'v3_yte3', 'v3_yte4', 'v3_yte5', 'v3_yte6', 'v3_yte7', 'v3_yte8', 'v3_yte9', 'v3_yte10',
-                    // Common illustrative images
-                    'illustrative_cspl_tn_1', 'illustrative_cspl_tn_2', 'illustrative_cspl_tn_3',
-                    'illustrative_cspl_tn_5', 'illustrative_yt_sc_tn_3', 'illustrative_yt_th_1',
-                    'icon1', 'icon2', 'logo', 'warning', 'check', 'arrow', 'safety1', 'safety2',
-                    // SVG files
-                    'svg (1)', 'svg (2)', 'svg (3)', 'svg',
-                    // Index images
-                    '1', '2', '3', '4', '5', '6', '7', '8', '9', '10'
-                ];
-                
-                for (const name of testNames) {
-                    for (const ext of commonExtensions) {
-                        const testPath = `${folder}/${name}.${ext}`;
-                        if (await imageExists(testPath)) {
-                            detectedImages.push(`${name}.${ext}`);
-                        }
-                    }
-                }
-                  // Also test for any numbered files up to 50
-                for (let i = 1; i <= 50; i++) {
-                    for (const ext of commonExtensions) {
-                        const testPath = `${folder}/${i}.${ext}`;
-                        if (await imageExists(testPath)) {
-                            detectedImages.push(`${i}.${ext}`);
-                        }
-                    }
-                }
-                
-                // Additional test for v3_yte patterns specifically (trong cauhoi folder)
-                if (folder === 'images/cauhoi') {
-                    for (let i = 1; i <= 10; i++) {
-                        for (const ext of commonExtensions) {
-                            const testPath = `${folder}/v3_yte${i}.${ext}`;
-                            const fileName = `v3_yte${i}.${ext}`;
-                            if (!detectedImages.includes(fileName) && await imageExists(testPath)) {
-                                detectedImages.push(fileName);
-                                console.log(`🎯 Found v3_yte pattern: ${fileName}`);
-                            }
-                        }
-                    }
-                }
-                  newAvailableImages[folder] = [...new Set(detectedImages)].sort();
-            }
-            
-            // Update available images
-            const oldCount = Object.values(availableImages).flat().length;
-            availableImages = newAvailableImages;
-            const newCount = Object.values(availableImages).flat().length;
-            
-            if (newCount !== oldCount) {
-                console.log(`Images updated: ${oldCount} → ${newCount}`);
-                
-                // If gallery is open, refresh it
-                if (document.getElementById('imageGalleryModal').style.display === 'flex') {
-                    populateFolderTree();
-                    // Refresh current folder view if any folder is active
-                    const activeFolder = document.querySelector('.folder-item.active');
-                    if (activeFolder) {
-                        const folderPath = activeFolder.dataset.folder;
-                        if (folderPath) {
-                            showImagesInFolder(folderPath);
-                        }
-                    }
-                }
-                
-                return true; // Images changed
-            }
-            
-            return false; // No changes
+            console.log('🔄 Refreshing images from index...');
+            return await loadImagesFromIndex();
         }
-        
-        // Start auto-refresh when gallery opens
+          // Start auto-refresh when gallery opens - DISABLED for performance
         function startGalleryAutoRefresh() {
-            if (galleryRefreshInterval) {
-                clearInterval(galleryRefreshInterval);
-            }
-            
-            // Refresh every 3 seconds when gallery is open
-            galleryRefreshInterval = setInterval(async () => {
-                if (document.getElementById('imageGalleryModal').style.display === 'flex') {
-                    await refreshImagesList();
-                } else {
-                    // Stop refresh when gallery is closed
-                    clearInterval(galleryRefreshInterval);
-                    galleryRefreshInterval = null;
-                }
-            }, 3000);
+            // Auto-refresh disabled - manual refresh only via button
+            console.log('Auto-refresh disabled for performance');
         }
         
         // Manual refresh button
