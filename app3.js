@@ -49,7 +49,8 @@ document.addEventListener('DOMContentLoaded', () => {    // URL Parameter handli
     const THEME_MODE = 'round'; // Change this to switch between theme modes
 
     // Popup elements
-    const timesUpPopupEl = document.getElementById('timesUpPopup') || { style: { display: 'none', opacity: '0' } };    // State variables
+    const timesUpPopupEl = document.getElementById('timeUpOverlay') || { style: { display: 'none', opacity: '0' } };
+    const startTimerPopupEl = document.getElementById('startTimerPopup'); // Start timer popup element    // State variables
     let allQuestions = [];
     let questionCategoryMapping = {}; // To store mapping of question ID to category order
     let contestRoundsData = []; // To store data from quy_che_thi.cac_vong_thi
@@ -393,8 +394,9 @@ document.addEventListener('DOMContentLoaded', () => {    // URL Parameter handli
 
         // 1. Show Question (no audio for Round 3)
         if (questionSectionEl) questionSectionEl.classList.remove('u-hidden-initially');
-        animateElement(questionSectionEl, 'question-appear');        // 2. Start Timer immediately (for practical questions, this is the time to complete the task)
+        animateElement(questionSectionEl, 'question-appear');        // 2. Show "Bắt đầu!" popup and play bell sound before starting timer
         if (DEBUG_MODE === 0 && timeLeft > 0) {
+            await showStartTimerPopup();
             startTimer();
         } else if (DEBUG_MODE > 0) {
             console.log(`DEBUG MODE ${DEBUG_MODE}: Timer skipped`);
@@ -689,3 +691,35 @@ document.addEventListener('DOMContentLoaded', () => {    // URL Parameter handli
 });
 
     // --- Initialization ---
+
+// --- Show Start Timer Popup ---
+    async function showStartTimerPopup() {
+        if (!startTimerPopupEl) return;
+        
+        // Show popup with animation
+        startTimerPopupEl.style.display = 'flex';
+        // Force reflow before adding show class for smooth animation
+        void startTimerPopupEl.offsetHeight;
+        startTimerPopupEl.classList.add('show');
+        
+        // For Round 3, we don't use speech but can still play the bell sound
+        // However, since USE_SPEECH is false for Round 3, we'll create the bell audio directly
+        if (DEBUG_MODE !== 2) {
+            try {
+                const bellAudio = new Audio('speech/bell.mp3');
+                bellAudio.play().catch(error => {
+                    console.warn('Could not play bell sound:', error);
+                });
+            } catch (error) {
+                console.warn('Could not create bell audio:', error);
+            }
+        }
+        
+        // Wait for animation and sound to complete (minimum 1.5 seconds)
+        await new Promise(resolve => setTimeout(resolve, 800));
+        
+        // Hide popup with animation
+        startTimerPopupEl.classList.remove('show');
+        await new Promise(resolve => setTimeout(resolve, 200)); // Wait for fade out
+        startTimerPopupEl.style.display = 'none';
+    }

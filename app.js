@@ -23,11 +23,9 @@ document.addEventListener('DOMContentLoaded', () => {
     // const footerContestInfoEl = document.getElementById('footerContestInfo')?.querySelector('span'); // This element might not exist in the new footer structure or needs re-evaluation
     // const footerTimeScoreEl = document.getElementById('footerTimeScore')?.querySelector('span'); // This element might not exist
     const footerProgressBarEl = document.getElementById('footerProgressBar');
-    const roundInfoDisplayEl = document.getElementById('roundInfoDisplay'); // New element for round info
- 
- 
-    // Popup
+    const roundInfoDisplayEl = document.getElementById('roundInfoDisplay'); // New element for round info    // Popup elements
     const timesUpPopupEl = document.getElementById('timeUpOverlay'); // Updated ID for new overlay
+    const startTimerPopupEl = document.getElementById('startTimerPopup'); // Start timer popup element
 
     // --- Configuration --- 
     let DEBUG_MODE = 0; // 0 = normal, 1 = no timer, 2 = no timer + no audio
@@ -181,9 +179,47 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (onEndCallback) onEndCallback();
                     resolve();
                 });
+            }        });
+    }
+
+    // --- Show Start Timer Popup ---
+    async function showStartTimerPopup() {
+        console.log('showStartTimerPopup called');
+        const popupEl = document.getElementById('startTimerPopup');
+        if (!popupEl) {
+            console.error('Start timer popup element not found!');
+            return;
+        }
+        
+        console.log('Start timer popup element found, showing popup');
+        
+        // Show popup with animation
+        popupEl.style.display = 'flex';
+        // Force reflow before adding show class for smooth animation
+        void popupEl.offsetHeight;
+        popupEl.classList.add('show');
+        
+        // Play bell sound
+        if (USE_SPEECH && DEBUG_MODE !== 2) {
+            try {
+                await playAudio('speech/bell.mp3');
+            } catch (error) {
+                console.warn('Could not play bell sound:', error);
             }
-        });
-    }    // Function to trigger header and footer animations with enhanced effects
+        }
+        
+        // Wait for animation and sound to complete (minimum 1.5 seconds)
+        await new Promise(resolve => setTimeout(resolve, 800));
+        
+        // Hide popup with animation
+        popupEl.classList.remove('show');
+        await new Promise(resolve => setTimeout(resolve, 200)); // Wait for fade out
+        popupEl.style.display = 'none';
+        
+        console.log('Start timer popup hidden');
+    }
+
+    // Function to trigger header and footer animations with enhanced effects
     function triggerHeaderFooterAnimation() {
         const header = document.querySelector('.header');
         const footer = document.querySelector('.footer');
@@ -620,8 +656,8 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        if (USE_SPEECH && (currentQuestionData.speech_id_timer || 'speech/30s.wav')) {
-            playAudio(currentQuestionData.speech_id_timer || 'speech/30s.wav');
+        if (USE_SPEECH && (currentQuestionData.speech_id_timer || 'speech/30s.mp3')) {
+            playAudio(currentQuestionData.speech_id_timer || 'speech/30s.mp3');
         }
 
         const totalDuration = parseInt(currentQuestionData.thoi_gian_tra_loi) || DEFAULT_TIME_PER_QUESTION;
@@ -769,8 +805,9 @@ document.addEventListener('DOMContentLoaded', () => {
         } else if (currentQuestionData.type_question === "Thực hành") {
             // No options to show/speak for practical questions
             console.log('startQuestionSequence: Thực hành question - no options to show');
-        }        // 4. Start Timer
+        }        // 4. Show "Bắt đầu!" popup and play bell sound before starting timer
         if (DEBUG_MODE === 0 && timeLeft > 0) {
+            await showStartTimerPopup();
             startTimer();
         } else if (DEBUG_MODE > 0) {
             // Debug modes: Skip timer and show answer button if applicable
@@ -1163,13 +1200,10 @@ async function displayAnswer() {
             e.preventDefault();
             window.location.href = 'infovong1.html';
         }
-    });
-
-    // --- Initialization ---
+    });    // --- Initialization ---
     loadQuestions();
-});
 
-// Function to apply background overlay when question sequence starts
+    // Function to apply background overlay when question sequence starts
     function applyBackgroundOverlay() {
         if (!slideContainer) return;
         
@@ -1202,3 +1236,4 @@ async function displayAnswer() {
             }, 100);
         }
     }
+});

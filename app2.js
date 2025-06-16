@@ -35,10 +35,9 @@ document.addEventListener('DOMContentLoaded', () => {
         
         // Return set parameter for later use in loadQuestions
         return { set: setParam };
-    }
- 
-    // Popup
-    const timesUpPopupEl = document.getElementById('timeUpOverlay'); // Updated ID for new overlay    // --- Configuration ---
+    }    // Popup
+    const timesUpPopupEl = document.getElementById('timeUpOverlay'); // Updated ID for new overlay
+    const startTimerPopupEl = document.getElementById('startTimerPopup'); // Start timer popup element// --- Configuration ---
     let DEBUG_MODE = 0; // 0 = normal, 1 = no timer, 2 = no timer + no audio
     const USE_SPEECH = true; // Set to false to disable all speech synthesis & audio file playback
     const SHOW_IMAGE_PLACEHOLDER_ON_ERROR = true; // If true, shows a placeholder if an image fails to load
@@ -863,8 +862,8 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        if (USE_SPEECH && (currentQuestionData.speech_id_timer || 'speech/60s.wav')) {
-            playAudio(currentQuestionData.speech_id_timer || 'speech/60s.wav');
+        if (USE_SPEECH && (currentQuestionData.speech_id_timer || 'speech/60s.mp3')) {
+            playAudio(currentQuestionData.speech_id_timer || 'speech/60s.mp3');
         }
 
         const totalDuration = parseInt(currentQuestionData.thoi_gian_tra_loi) || DEFAULT_TIME_PER_QUESTION;
@@ -1091,10 +1090,9 @@ document.addEventListener('DOMContentLoaded', () => {
               } else if (currentQuestionData.type_question === "Thực hành") {
             // No options to show/speak for practical questions
             console.log('startQuestionSequence: Thực hành question - no options to show');
-        }
-
-        // 4. Start Timer
+        }        // 4. Show "Bắt đầu!" popup and play bell sound before starting timer
         if (DEBUG_MODE === 0 && timeLeft > 0) {
+            await showStartTimerPopup();
             startTimer();
         } else if (DEBUG_MODE > 0) {
             // Debug modes: Skip timer and show answer button if applicable
@@ -1510,6 +1508,7 @@ async function displayAnswer() {
         }
         
         // Stop all audio
+       
         if (currentAudio && currentAudio.source) {
             currentAudio.source.stop();
             currentAudio.source.disconnect();
@@ -1528,6 +1527,34 @@ async function displayAnswer() {
         
         // Navigate to page3.html
         window.location.href = 'page3.html';
+    }
+
+    // --- Show Start Timer Popup ---
+    async function showStartTimerPopup() {
+        if (!startTimerPopupEl) return;
+        
+        // Show popup with animation
+        startTimerPopupEl.style.display = 'flex';
+        // Force reflow before adding show class for smooth animation
+        void startTimerPopupEl.offsetHeight;
+        startTimerPopupEl.classList.add('show');
+        
+        // Play bell sound
+        if (USE_SPEECH && DEBUG_MODE !== 2) {
+            try {
+                await playAudio('speech/bell.mp3');
+            } catch (error) {
+                console.warn('Could not play bell sound:', error);
+            }
+        }
+        
+        // Wait for animation and sound to complete (minimum 1.5 seconds)
+        await new Promise(resolve => setTimeout(resolve, 800));
+        
+        // Hide popup with animation
+        startTimerPopupEl.classList.remove('show');
+        await new Promise(resolve => setTimeout(resolve, 200)); // Wait for fade out
+        startTimerPopupEl.style.display = 'none';
     }
 
     // --- Event Listeners ---
