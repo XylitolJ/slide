@@ -157,9 +157,14 @@
                         <i class="fas fa-images mr-2"></i>
                         Quản lý Hình ảnh Câu hỏi
                     </h1>                    <p class="text-sm text-gray-600 mt-1">
-                        Chỉnh sửa hình ảnh câu hỏi, sau đó click "Save All" để lưu các file đã thay đổi. Gallery tự động cập nhật mỗi 3 giây.
+                        Chỉnh sửa hình ảnh câu hỏi, sau đó click "Save All" để lưu các file đã thay đổi. 
+                        <span class="text-orange-600 font-medium">Hệ thống tự động quét ảnh mới mỗi 10 giây.</span>
                     </p>
                 </div>                <div class="flex gap-4">
+                    <button onclick="refreshImagesLibrary()" class="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-lg flex items-center gap-2">
+                        <i class="fas fa-sync-alt"></i>
+                        <span>Refresh Images</span>
+                    </button>
                     <button onclick="saveAllFiles()" class="save-all-btn bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-lg opacity-50" disabled>
                         <i class="fas fa-save mr-2"></i>Save All
                     </button>
@@ -382,9 +387,11 @@
 
     <!-- Image Gallery Modal -->
     <div id="imageGalleryModal" class="modal" style="display: none;">
-        <div class="modal-content">
-            <div class="flex items-center justify-between p-4 border-b">
-                <h2 class="text-xl font-semibold">Chọn hình ảnh</h2>
+        <div class="modal-content">            <div class="flex items-center justify-between p-4 border-b">
+                <div>
+                    <h2 class="text-xl font-semibold">Chọn hình ảnh</h2>
+                    <p class="text-sm text-gray-500 mt-1">Gallery tự động cập nhật mỗi 5 giây khi mở</p>
+                </div>
                 <button onclick="closeImageGallery()" class="text-gray-500 hover:text-gray-700">
                     <i class="fas fa-times text-xl"></i>
                 </button>
@@ -392,13 +399,14 @@
             <div class="flex-1 flex">
                 <!-- Sidebar -->                <div class="w-80 p-4 border-r">
                     <div class="mb-4">
-                        <button onclick="showLocalFileUpload()" class="w-full bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg mb-2">
+                        <button onclick="showLocalFileUpload()" class="w-full bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg mb-4">
                             <i class="fas fa-upload mr-2"></i>Upload từ máy tính
                         </button>
-                        <button onclick="manualRefreshGallery()" class="w-full bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg mb-4">
-                            <i class="fas fa-sync mr-2"></i>Refresh Gallery
-                        </button>
-                        <input type="file" id="localFileInput" accept=".jpg,.jpeg,.png,.svg,.webp" style="display: none;" onchange="handleLocalFileUpload()">
+                        <input type="file" id="localFileInput" accept=".jpg,.jpeg,.png,.svg,.webp,.gif" multiple style="display: none;" onchange="handleLocalFileUpload()">
+                        <div class="text-xs text-gray-500 mb-4 p-2 bg-blue-50 rounded">
+                            <i class="fas fa-info-circle mr-1"></i>
+                            Thư viện ảnh tự động refresh mỗi 5 giây
+                        </div>
                     </div>
                     
                     <h3 class="font-semibold mb-2">Thư mục</h3>
@@ -806,78 +814,177 @@
             currentEditIndex = -1;
         }        // Scan image folders
         async function scanImageFolders() {
-            // Try to load from image index file first
-            try {
-                const response = await fetch('images_index.json');
-                if (response.ok) {
-                    availableImages = await response.json();
-                    console.log('Loaded images from index file');
-                    return;
-                }
-            } catch (error) {
-                console.log('No image index file found, using fallback method');
-            }
-
-            // Fallback: Use extended mock data with various formats
-            availableImages = {
-                'images': [
-                    'bg1.jpg', 'bg2.jpg', 'bg3.png', 'logo.png', 'icon.svg', 'banner.webp'
-                ],
-                'images/bg': [
-                    'bg1.jpg', 'bg2.jpg', 'bg3.jpg', 'bg4.png', 'bg5.png', 'gradient.svg', 'pattern.webp'
-                ],
-                'images/cauhoi': [
-                    'v1_image1.png', 'v2_image1.png', 'v3_yte.png', 'safety1.jpg', 'safety2.jpg', 'diagram.svg'
-                ],
-                'images/illustrative': [
-                    'icon1.svg', 'icon2.svg', 'warning.png', 'check.png', 'arrow.svg', 'logo.webp'
-                ],
-                'images/image_upload': []
-            };
+            showToast('Đang quét thư mục ảnh...', 'info');
             
-            // Try to auto-detect actual images by testing if they exist
-            await tryDetectRealImages();
+            // Try smart detection first (combines index + new detection)
+            await smartImageDetection();
         }
 
-        // Try to detect real images in folders
-        async function tryDetectRealImages() {
-            const commonExtensions = ['jpg', 'jpeg', 'png', 'svg', 'webp'];
-            const folders = ['images', 'images/bg', 'images/cauhoi', 'images/illustrative'];
+        // Enhanced image detection method
+        async function enhancedImageDetection() {
+            const commonExtensions = ['jpg', 'jpeg', 'png', 'svg', 'webp', 'gif', 'bmp'];
+            const imageFolders = [
+                'images',
+                'images/bg', 
+                'images/cauhoi',
+                'images/illustrative',
+                'images/index_images',
+                'images/image_upload'
+            ];
             
-            for (const folder of folders) {
+            const newAvailableImages = {};
+            let totalFound = 0;
+            
+            for (const folder of imageFolders) {
+                console.log(`🔍 Scanning folder: ${folder}`);
                 const detectedImages = [];
+                  // Comprehensive test patterns for different image types
+                const testPatterns = [
+                    // Background images - expanded range
+                    ...Array.from({length: 50}, (_, i) => `bg${i + 1}`),
+                    ...Array.from({length: 20}, (_, i) => `bg${i + 1}.1`),
+                    'bg', 'background', 'bgd',
+                    
+                    // Question images
+                    ...Array.from({length: 50}, (_, i) => `image${i + 1}`),
+                    ...Array.from({length: 50}, (_, i) => `v1_image${i + 1}`),
+                    ...Array.from({length: 50}, (_, i) => `v2_image${i + 1}`),
+                    ...Array.from({length: 50}, (_, i) => `v3_image${i + 1}`),
+                    
+                    // KTM (Kiến thức môi trường) images
+                    ...Array.from({length: 50}, (_, i) => `ktm_image_${i + 1}`),
+                    ...Array.from({length: 50}, (_, i) => `V2_KTM_HA_${i + 1}`),
+                    
+                    // BV (Bảo vệ) images
+                    ...Array.from({length: 50}, (_, i) => `V2_BV_HA_${i + 1}`),
+                    
+                    // BXV (Bảo vệ xã viên) images  
+                    ...Array.from({length: 50}, (_, i) => `V2_BXV_HA_${i + 1}`),
+                    
+                    // Vong 3 images
+                    ...Array.from({length: 30}, (_, i) => `v3_c${i + 1}`),
+                    'v3_yte', 'v3_yte2',
+                    
+                    // Illustrative images
+                    'illustrative_cspl_tn_1', 'illustrative_cspl_tn_2', 'illustrative_cspl_tn_3',
+                    'illustrative_cspl_tn_5', 'illustrative_yt_sc_tn_3', 'illustrative_yt_th_1',
+                    
+                    // SVG files
+                    'svg (1)', 'svg (2)', 'svg (3)', 'svg',
+                    
+                    // Index images (numbered)
+                    ...Array.from({length: 100}, (_, i) => `${i + 1}`),
+                    
+                    // Common image names
+                    'logo', 'icon', 'banner', 'header', 'footer', 'warning', 'check', 'arrow',
+                    'safety1', 'safety2', 'diagram', 'chart', 'graph'
+                ];
                 
-                // Test some common filenames with different extensions
-                const commonNames = ['bg1', 'bg2', 'bg3', 'image1', 'image2', 'logo', 'icon', 'safety', 'warning'];
-                
-                for (const name of commonNames) {
-                    for (const ext of commonExtensions) {
-                        const testPath = `${folder}/${name}.${ext}`;
-                        if (await imageExists(testPath)) {
-                            detectedImages.push(`${name}.${ext}`);
+                // Test each pattern with each extension
+                const batchSize = 10; // Process in batches to avoid blocking UI
+                for (let i = 0; i < testPatterns.length; i += batchSize) {
+                    const batch = testPatterns.slice(i, i + batchSize);
+                    
+                    await Promise.all(batch.map(async (pattern) => {
+                        for (const ext of commonExtensions) {
+                            const testPath = `${folder}/${pattern}.${ext}`;
+                            if (await imageExists(testPath)) {
+                                const fileName = `${pattern}.${ext}`;
+                                if (!detectedImages.includes(fileName)) {
+                                    detectedImages.push(fileName);
+                                }
+                            }
                         }
+                    }));
+                    
+                    // Small delay to prevent blocking
+                    if (i % (batchSize * 3) === 0) {
+                        await new Promise(resolve => setTimeout(resolve, 10));
                     }
                 }
                 
-                // If we found real images, use them instead of mock data
-                if (detectedImages.length > 0) {
-                    availableImages[folder] = detectedImages;
-                }
+                // Sort and store results
+                newAvailableImages[folder] = detectedImages.sort((a, b) => {
+                    // Custom sort: numbers first, then alphabetical
+                    const aNum = parseInt(a.match(/^\d+/)?.[0]);
+                    const bNum = parseInt(b.match(/^\d+/)?.[0]);
+                    
+                    if (aNum && bNum) return aNum - bNum;
+                    if (aNum && !bNum) return -1;
+                    if (!aNum && bNum) return 1;
+                    return a.localeCompare(b);
+                });
+                
+                totalFound += detectedImages.length;
+                console.log(`📁 ${folder}: Found ${detectedImages.length} images`);
             }
-        }
-
-        // Check if image exists
+            
+            availableImages = newAvailableImages;
+            console.log(`✅ Total images detected: ${totalFound}`);
+            showToast(`Đã quét xong: tìm thấy ${totalFound} ảnh trong ${imageFolders.length} thư mục`);
+        }        // Check if image exists with improved timeout and caching
         function imageExists(path) {
             return new Promise((resolve) => {
                 const img = new Image();
-                img.onload = () => resolve(true);
-                img.onerror = () => resolve(false);
-                img.src = path;
                 
-                // Timeout after 1 second
-                setTimeout(() => resolve(false), 1000);
+                // Set up timeout
+                const timeout = setTimeout(() => {
+                    img.onload = null;
+                    img.onerror = null;
+                    resolve(false);
+                }, 800); // Reduced timeout for faster scanning
+                
+                img.onload = () => {
+                    clearTimeout(timeout);
+                    resolve(true);
+                };
+                
+                img.onerror = () => {
+                    clearTimeout(timeout);
+                    resolve(false);
+                };
+                
+                // Add cache busting for more accurate detection
+                img.src = path + '?t=' + Date.now();
             });
-        }        // Show image gallery
+        }        // Main refresh function for images library
+        async function refreshImagesLibrary() {
+            const refreshBtn = document.querySelector('button[onclick="refreshImagesLibrary()"]');
+            const originalContent = refreshBtn.innerHTML;
+            
+            // Show loading state
+            refreshBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> <span>Đang quét...</span>';
+            refreshBtn.disabled = true;
+            
+            try {
+                await scanImageFolders();
+                
+                // Show debug info in console
+                showScanDebugInfo();
+                
+                // Update gallery if it's open
+                if (document.getElementById('imageGalleryModal').style.display === 'flex') {
+                    populateFolderTree();
+                    // Refresh current folder view
+                    const activeFolder = document.querySelector('.folder-item.active');
+                    if (activeFolder && activeFolder.dataset.folder) {
+                        showImagesInFolder(activeFolder.dataset.folder);
+                    }
+                }
+                
+                const total = Object.values(availableImages).flat().length;
+                showToast(`✅ Đã refresh thành công: ${total} ảnh`);
+                
+            } catch (error) {
+                console.error('Error refreshing images:', error);
+                showToast('❌ Lỗi khi refresh ảnh: ' + error.message, 'error');
+                
+            } finally {
+                // Restore button state
+                refreshBtn.innerHTML = originalContent;
+                refreshBtn.disabled = false;
+            }
+        }// Show image gallery
         function showImageGallery(context, field) {
             currentGalleryContext = context;
             currentGalleryField = field;
@@ -915,8 +1022,10 @@
             // Update active folder
             document.querySelectorAll('.folder-item').forEach(item => {
                 item.classList.remove('active');
+                if (item.dataset.folder === folder) {
+                    item.classList.add('active');
+                }
             });
-            event?.target?.classList.add('active');
             
             const imageGrid = document.getElementById('imageGrid');
             imageGrid.innerHTML = '';
@@ -1358,7 +1467,39 @@
             }
         }
 
-        // Show toast notification
+        // Debug function to show scan results
+        function showScanDebugInfo() {
+            console.log('📊 Current image scan results:');
+            console.log('='.repeat(50));
+            
+            Object.keys(availableImages).forEach(folder => {
+                const images = availableImages[folder] || [];
+                console.log(`📁 ${folder}: ${images.length} images`);
+                
+                if (images.length > 0) {
+                    // Show first few and last few
+                    const preview = images.length > 10 
+                        ? [...images.slice(0, 5), '...', ...images.slice(-5)]
+                        : images;
+                    console.log(`   └── ${preview.join(', ')}`);
+                }
+            });
+            
+            const total = Object.values(availableImages).flat().length;
+            console.log('='.repeat(50));
+            console.log(`📊 Total: ${total} images across ${Object.keys(availableImages).length} folders`);
+            
+            return { 
+                folders: Object.keys(availableImages).length,
+                total: total,
+                details: availableImages 
+            };
+        }
+
+        // Add to window for manual debugging
+        window.debugImageScan = showScanDebugInfo;
+
+        // Toast notification
         function showToast(message, type = 'success') {
             const toast = document.getElementById('toast');
             const toastMessage = document.getElementById('toastMessage');
@@ -1376,6 +1517,233 @@
             setTimeout(() => {
                 toast.style.transform = 'translateX(100%)';
             }, 3000);
+        }        // Initialize when DOM is ready
+        document.addEventListener('DOMContentLoaded', () => {
+            init();
+            // Start global auto-refresh on page load
+            startGlobalAutoRefresh();
+        });
+
+        // Clean up on page unload
+        window.addEventListener('beforeunload', () => {
+            stopGlobalAutoRefresh();
+        });
+
+        // Enhanced refresh images list function
+        async function enhancedRefreshImagesList() {
+            console.log('🔄 Enhanced auto-refreshing images list...');
+            
+            const commonExtensions = ['jpg', 'jpeg', 'png', 'svg', 'webp', 'gif'];
+            const imageFolders = Object.keys(availableImages);
+            
+            const newAvailableImages = {};
+            let hasChanges = false;
+            
+            for (const folder of imageFolders) {
+                const oldImages = availableImages[folder] || [];
+                const newImages = [];
+                  // Only test a subset of patterns for auto-refresh (performance)
+                const quickTestPatterns = [
+                    // Most common patterns - expanded for better coverage
+                    ...Array.from({length: 30}, (_, i) => `bg${i + 1}`), // Extended to bg30
+                    ...Array.from({length: 15}, (_, i) => `image${i + 1}`),
+                    ...Array.from({length: 15}, (_, i) => `v3_c${i + 1}`),
+                    ...Array.from({length: 25}, (_, i) => `${i + 1}`), // Extended numbered files
+                    'v3_yte', 'v3_yte2', 'logo', 'icon', 'bg', 'bg2.1'
+                ];
+                
+                // Test existing images first (faster)
+                for (const existingImage of oldImages) {
+                    const testPath = `${folder}/${existingImage}`;
+                    if (await imageExists(testPath)) {
+                        newImages.push(existingImage);
+                    }
+                }
+                
+                // Then test for new images with quick patterns
+                for (const pattern of quickTestPatterns) {
+                    for (const ext of commonExtensions) {
+                        const fileName = `${pattern}.${ext}`;
+                        const testPath = `${folder}/${fileName}`;
+                        
+                        if (!newImages.includes(fileName) && await imageExists(testPath)) {
+                            newImages.push(fileName);
+                        }
+                    }
+                }
+                
+                // Check for uploaded images in upload folder
+                if (folder === 'images/image_upload') {
+                    // Keep uploaded images from previous state
+                    newImages.push(...(availableImages[folder] || []));
+                }
+                
+                // Sort images
+                newImages.sort((a, b) => {
+                    const aNum = parseInt(a.match(/^\d+/)?.[0]);
+                    const bNum = parseInt(b.match(/^\d+/)?.[0]);
+                    
+                    if (aNum && bNum) return aNum - bNum;
+                    if (aNum && !bNum) return -1;
+                    if (!aNum && bNum) return 1;
+                    return a.localeCompare(b);
+                });
+                
+                newAvailableImages[folder] = newImages;
+                
+                // Check if this folder has changes
+                if (oldImages.length !== newImages.length || 
+                    !oldImages.every(img => newImages.includes(img))) {
+                    hasChanges = true;
+                    console.log(`📁 ${folder}: ${oldImages.length} → ${newImages.length} images`);
+                }
+            }
+            
+            if (hasChanges) {
+                const oldTotal = Object.values(availableImages).flat().length;
+                availableImages = newAvailableImages;
+                const newTotal = Object.values(availableImages).flat().length;
+                
+                console.log(`✅ Images updated: ${oldTotal} → ${newTotal}`);
+                
+                // Update gallery if open
+                if (document.getElementById('imageGalleryModal').style.display === 'flex') {
+                    populateFolderTree();
+                    const activeFolder = document.querySelector('.folder-item.active');
+                    if (activeFolder && activeFolder.dataset.folder) {
+                        showImagesInFolder(activeFolder.dataset.folder);
+                    }
+                }
+                
+                // Show subtle notification for auto-updates
+                showToast(`🔄 Cập nhật: ${newTotal} ảnh`, 'info');
+                return true;
+            }
+            
+            return false; // No changes
+        }
+        
+        // Smart scanning that combines index file + new file detection
+        async function smartImageDetection() {
+            console.log('🧠 Starting smart image detection...');
+            
+            // First, try to load from index file
+            let baseImages = {};
+            try {
+                const response = await fetch('images_index.json?t=' + Date.now());
+                if (response.ok) {
+                    baseImages = await response.json();
+                    console.log('📋 Loaded base images from index file');
+                }
+            } catch (error) {
+                console.log('⚠️ No index file found, starting fresh scan');
+            }
+            
+            const commonExtensions = ['jpg', 'jpeg', 'png', 'svg', 'webp', 'gif', 'bmp'];
+            const imageFolders = [
+                'images',
+                'images/bg', 
+                'images/cauhoi',
+                'images/illustrative',
+                'images/index_images',
+                'images/image_upload'
+            ];
+            
+            const newAvailableImages = {};
+            let totalFound = 0;
+            
+            for (const folder of imageFolders) {
+                console.log(`🔍 Smart scanning folder: ${folder}`);
+                const detectedImages = [];
+                const baseImagesInFolder = baseImages[folder] || [];
+                
+                // First, verify existing images from index
+                for (const existingImage of baseImagesInFolder) {
+                    const testPath = `${folder}/${existingImage}`;
+                    if (await imageExists(testPath)) {
+                        detectedImages.push(existingImage);
+                    }
+                }
+                
+                // Then look for new images with extended patterns
+                const extendedPatterns = [
+                    // Extended background images (up to 50)
+                    ...Array.from({length: 50}, (_, i) => `bg${i + 1}`),
+                    'bg', 'bg2.1', 'background',
+                    
+                    // Extended question images
+                    ...Array.from({length: 30}, (_, i) => `image${i + 1}`),
+                    ...Array.from({length: 30}, (_, i) => `v3_c${i + 1}`),
+                    
+                    // Extended numbered files
+                    ...Array.from({length: 50}, (_, i) => `${i + 1}`),
+                    
+                    // Common names
+                    'v3_yte', 'v3_yte2', 'logo', 'icon', 'ktm_image_4',
+                    'V2_BV_HA_4', 'V2_BV_HA_9', 'V2_BXV_HA_15', 'V2_BXV_HA_22',
+                    'V2_KTM_HA_10', 'V2_KTM_HA_4'
+                ];
+                
+                // Test for new images
+                for (const pattern of extendedPatterns) {
+                    for (const ext of commonExtensions) {
+                        const fileName = `${pattern}.${ext}`;
+                        const testPath = `${folder}/${fileName}`;
+                        
+                        if (!detectedImages.includes(fileName) && await imageExists(testPath)) {
+                            detectedImages.push(fileName);
+                            console.log(`🆕 Found new image: ${fileName} in ${folder}`);
+                        }
+                    }
+                }
+                
+                // Sort images intelligently
+                detectedImages.sort((a, b) => {
+                    const aNum = parseInt(a.match(/bg?(\d+)/)?.[1] || a.match(/^\d+/)?.[0]);
+                    const bNum = parseInt(b.match(/bg?(\d+)/)?.[1] || b.match(/^\d+/)?.[0]);
+                    
+                    if (aNum && bNum) return aNum - bNum;
+                    if (aNum && !bNum) return -1;
+                    if (!aNum && bNum) return 1;
+                    return a.localeCompare(b);
+                });
+                
+                newAvailableImages[folder] = detectedImages;
+                totalFound += detectedImages.length;
+                console.log(`📁 ${folder}: ${detectedImages.length} images (${detectedImages.length - baseImagesInFolder.length} new)`);
+            }
+            
+            availableImages = newAvailableImages;
+            console.log(`✅ Smart scan complete: ${totalFound} total images found`);
+            showToast(`🧠 Smart scan: ${totalFound} ảnh (bao gồm cả ảnh mới)`);
+        }
+
+        // Auto-refresh system
+        let globalRefreshInterval = null;
+        
+        // Start global auto-refresh (runs even when gallery is closed)
+        function startGlobalAutoRefresh() {
+            if (globalRefreshInterval) return;
+            
+            // Auto-refresh every 10 seconds globally
+            globalRefreshInterval = setInterval(async () => {
+                try {
+                    await enhancedRefreshImagesList();
+                } catch (error) {
+                    console.error('Auto-refresh error:', error);
+                }
+            }, 10000);
+            
+            console.log('🔄 Global auto-refresh started (10s interval)');
+        }
+        
+        // Stop global auto-refresh
+        function stopGlobalAutoRefresh() {
+            if (globalRefreshInterval) {
+                clearInterval(globalRefreshInterval);
+                globalRefreshInterval = null;
+                console.log('⏹️ Global auto-refresh stopped');
+            }
         }
 
         // Initialize when DOM is ready
@@ -1512,6 +1880,7 @@
                     types: [{
                         description: 'JSON files',
                         accept: { 'application/json': ['.json'] }
+
                     }]                });                  const writable = await fileHandle.createWritable();
                 const formattedContent = formatJSONWithPrettier(data);
                 await writable.write(formattedContent);
