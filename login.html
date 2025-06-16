@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng nhập - Hội thi ATVSV 2025</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <style>        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center">
+    <div class="bg-white rounded-2xl shadow-2xl p-8 max-w-md w-full mx-4">
+        <div class="text-center mb-8">
+            <i class="fas fa-presentation text-6xl text-blue-600 mb-4"></i>
+            <h1 class="text-3xl font-bold text-gray-800 mb-2">Hội thi ATVSV 2025</h1>
+        </div>
+        
+        <form id="loginForm">
+            <div class="mb-6">
+                <label class="block text-gray-700 text-sm font-bold mb-2">
+                    <i class="fas fa-lock mr-2"></i>Mật khẩu
+                </label>
+                <input type="password" id="password" 
+                       class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                       placeholder="Nhập mật khẩu truy cập">
+            </div>
+            
+            <div class="text-red-600 text-sm mb-4 hidden" id="error">
+                Mật khẩu không đúng!
+            </div>
+            
+            <button type="submit" 
+                    class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg font-semibold transition-colors">
+                <i class="fas fa-sign-in-alt mr-2"></i>Đăng nhập
+            </button>        </form>
+    </div>
+
+    <script src="auth.js"></script>
+    <script>        const loginForm = document.getElementById('loginForm');
+        const passwordInput = document.getElementById('password');
+        const errorDiv = document.getElementById('error');
+
+        // Lấy trang cần redirect từ URL parameter
+        const urlParams = new URLSearchParams(window.location.search);
+        const redirectPage = urlParams.get('redirect') || 'index.html';
+
+        // Kiểm tra nếu đã đăng nhập
+        if (window.slideAuth.checkAuth()) {
+            // Nếu có redirect parameter, chuyển đến trang đó
+            window.location.href = redirectPage;
+        }
+
+        loginForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const password = passwordInput.value;
+            if (window.slideAuth.login(password)) {
+                errorDiv.classList.add('hidden');
+                // Chuyển đến trang được yêu cầu hoặc trang mặc định
+                window.location.href = redirectPage;
+            } else {
+                errorDiv.classList.remove('hidden');
+                passwordInput.value = '';
+                passwordInput.focus();
+            }
+        });
+
+        passwordInput.focus();
+    </script>
+</body>
+</html>
