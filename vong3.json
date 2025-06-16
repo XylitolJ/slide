@@ -29,7 +29,7 @@
           "question_image": "No",
           "cau_hoi": "Anh (chị) thực hành cố định gẫy xương cẳng tay tay hở",
           "speech_id_question": "V3_YT_SC_TH_2.wav",
-          "bg_image": "images/cauhoi/v3_yte4.jpg",
+          "bg_image": "images/cauhoi/v3_yte21.png",
           "bg_image_overlay": "gradient"
         },
         {
@@ -44,7 +44,7 @@
           "question_image": "No",
           "cau_hoi": "Anh (chị) thực hành cố định Gãy xương đùi kín phương pháp 2 nẹp",
           "speech_id_question": "V3_YT_SC_TH_3.wav",
-          "bg_image": "images\\cauhoi\\v3_yte.png",
+          "bg_image": "images/cauhoi/v3_yte20.jpg",
           "bg_image_overlay": "gradient"
         },
         {
@@ -59,7 +59,7 @@
           "question_image": "No",
           "cau_hoi": "Anh (chị) thực hành băng vết thương mặt trước khuỷu tay",
           "speech_id_question": "V3_YT_SC_TH_4.wav",
-          "bg_image": "images\\cauhoi\\v3_yte.png",
+          "bg_image": "images/cauhoi/v3_yte23.jpg",
           "bg_image_overlay": "gradient"
         },
         {
@@ -74,7 +74,7 @@
           "question_image": "No",
           "cau_hoi": "Anh (chị) thực hành cố định cột sống cổ bằng nẹp nhựa trong trường hợp nạn nhân ngồi.",
           "speech_id_question": "V3_YT_SC_TH_5.wav",
-          "bg_image": "images\\cauhoi\\v3_yte.png",
+          "bg_image": "images/cauhoi/v3_yte19.png",
           "bg_image_overlay": "gradient"
         },
         {
@@ -89,7 +89,7 @@
           "question_image": "No",
           "cau_hoi": "Anh (chị) thực hành cố định gẫy xương hở: Gãy xương cẳng chân",
           "speech_id_question": "V3_YT_SC_TH_6.wav",
-          "bg_image": "images\\cauhoi\\v3_yte.png",
+          "bg_image": "images/cauhoi/v3_yte20.jpg",
           "bg_image_overlay": "gradient"
         }
       ]
