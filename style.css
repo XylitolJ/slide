@@ -445,7 +445,7 @@ body, html {
     color: white;
     padding: 0.5vh 1.2vw; /* Reduced padding */
     border-radius: 15px; /* Slightly smaller radius */
-    font-size: 1vw; /* Reduced font size */
+    font-size: 1.3vw; /* Reduced font size */
     font-weight: 700;
     box-shadow: 0 4px 15px rgba(242, 92, 5, 0.3); /* Adjusted shadow */
     animation: pulse 2s infinite; /* This is a new 'pulse' animation */
@@ -1543,4 +1543,17 @@ body, html {
 @keyframes iconBounce {
     0%, 100% { transform: translateY(0); }
     50% { transform: translateY(-5px); }
+}
+
+/* Remove borders and shadows for transparent PNG images */
+#imageWrapper {
+    border: none !important;
+    box-shadow: none !important;
+    background: transparent !important;
+}
+
+#imageWrapper img {
+    border: none !important;
+    box-shadow: none !important;
+    background: transparent !important;
 }

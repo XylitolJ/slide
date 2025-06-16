@@ -455,7 +455,6 @@ document.addEventListener('DOMContentLoaded', () => {
         questionTextContentEl.textContent = '';
         optionsContainerEl.innerHTML = ''; 
         slideImageEl.src = '';
-        slideImageEl.alt = 'Hình ảnh minh họa';
         if(imageAreaEl) imageAreaEl.classList.add('hidden'); 
         
         progressTextEl.textContent = '';
