@@ -164,12 +164,10 @@
                     <button onclick="refreshImagesLibrary()" class="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-lg flex items-center gap-2">
                         <i class="fas fa-sync-alt"></i>
                         <span>Refresh Images</span>
-                    </button>
-                    <button onclick="saveAllFiles()" class="save-all-btn bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-lg opacity-50" disabled>
+                    </button>                    <button onclick="saveAllFiles()" class="save-all-btn bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-lg opacity-50" disabled>
                         <i class="fas fa-save mr-2"></i>Save All
-                    </button>
-                    <button onclick="copyAllToClipboard()" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg">
-                        <i class="fas fa-copy mr-2"></i>Copy All
+                    </button>                    <button onclick="manualRefreshImages()" class="bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded-lg">
+                        <i class="fas fa-refresh mr-2"></i>Reload Images
                     </button>
                 </div>
             </div>
@@ -398,11 +396,7 @@
             </div>
             <div class="flex-1 flex">
                 <!-- Sidebar -->                <div class="w-80 p-4 border-r">
-                    <div class="mb-4">
-                        <button onclick="showLocalFileUpload()" class="w-full bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg mb-4">
-                            <i class="fas fa-upload mr-2"></i>Upload từ máy tính
-                        </button>
-                        <input type="file" id="localFileInput" accept=".jpg,.jpeg,.png,.svg,.webp,.gif" multiple style="display: none;" onchange="handleLocalFileUpload()">
+                    <div class="mb-4">                        <!-- Upload functionality removed -->
                         <div class="text-xs text-gray-500 mb-4 p-2 bg-blue-50 rounded">
                             <i class="fas fa-info-circle mr-1"></i>
                             Thư viện ảnh tự động refresh mỗi 5 giây
@@ -475,11 +469,11 @@
                 await loadAllQuestions();
                 populateCategoryFilter();
                 displayQuestions();
-                await scanImageFolders();
+                await loadImagesFromIndex(); // Load images from index file only
                 updateSaveButtonState(); // Initialize save button state
-                console.log('Application initialized successfully');
+                console.log('✅ Application initialized successfully');
             } catch (error) {
-                console.error('Error initializing application:', error);
+                console.error('❌ Error initializing application:', error);
                 showToast('Lỗi khởi tạo ứng dụng: ' + error.message, 'error');
             }
         }// Load questions from all JSON files
@@ -812,117 +806,13 @@
         function closeEditModal() {
             document.getElementById('editModal').style.display = 'none';
             currentEditIndex = -1;
-        }        // Scan image folders
+        }        // Simplified: just load from index file
         async function scanImageFolders() {
-            showToast('Đang quét thư mục ảnh...', 'info');
-            
-            // Try smart detection first (combines index + new detection)
-            await smartImageDetection();
+            showToast('📋 Đang tải danh sách ảnh...', 'info');
+            return await loadImagesFromIndex();
         }
 
-        // Enhanced image detection method
-        async function enhancedImageDetection() {
-            const commonExtensions = ['jpg', 'jpeg', 'png', 'svg', 'webp', 'gif', 'bmp'];
-            const imageFolders = [
-                'images',
-                'images/bg', 
-                'images/cauhoi',
-                'images/illustrative',
-                'images/index_images',
-                'images/image_upload'
-            ];
-            
-            const newAvailableImages = {};
-            let totalFound = 0;
-            
-            for (const folder of imageFolders) {
-                console.log(`🔍 Scanning folder: ${folder}`);
-                const detectedImages = [];
-                  // Comprehensive test patterns for different image types
-                const testPatterns = [
-                    // Background images - expanded range
-                    ...Array.from({length: 50}, (_, i) => `bg${i + 1}`),
-                    ...Array.from({length: 20}, (_, i) => `bg${i + 1}.1`),
-                    'bg', 'background', 'bgd',
-                    
-                    // Question images
-                    ...Array.from({length: 50}, (_, i) => `image${i + 1}`),
-                    ...Array.from({length: 50}, (_, i) => `v1_image${i + 1}`),
-                    ...Array.from({length: 50}, (_, i) => `v2_image${i + 1}`),
-                    ...Array.from({length: 50}, (_, i) => `v3_image${i + 1}`),
-                    
-                    // KTM (Kiến thức môi trường) images
-                    ...Array.from({length: 50}, (_, i) => `ktm_image_${i + 1}`),
-                    ...Array.from({length: 50}, (_, i) => `V2_KTM_HA_${i + 1}`),
-                    
-                    // BV (Bảo vệ) images
-                    ...Array.from({length: 50}, (_, i) => `V2_BV_HA_${i + 1}`),
-                    
-                    // BXV (Bảo vệ xã viên) images  
-                    ...Array.from({length: 50}, (_, i) => `V2_BXV_HA_${i + 1}`),
-                    
-                    // Vong 3 images
-                    ...Array.from({length: 30}, (_, i) => `v3_c${i + 1}`),
-                    'v3_yte', 'v3_yte2',
-                    
-                    // Illustrative images
-                    'illustrative_cspl_tn_1', 'illustrative_cspl_tn_2', 'illustrative_cspl_tn_3',
-                    'illustrative_cspl_tn_5', 'illustrative_yt_sc_tn_3', 'illustrative_yt_th_1',
-                    
-                    // SVG files
-                    'svg (1)', 'svg (2)', 'svg (3)', 'svg',
-                    
-                    // Index images (numbered)
-                    ...Array.from({length: 100}, (_, i) => `${i + 1}`),
-                    
-                    // Common image names
-                    'logo', 'icon', 'banner', 'header', 'footer', 'warning', 'check', 'arrow',
-                    'safety1', 'safety2', 'diagram', 'chart', 'graph'
-                ];
-                
-                // Test each pattern with each extension
-                const batchSize = 10; // Process in batches to avoid blocking UI
-                for (let i = 0; i < testPatterns.length; i += batchSize) {
-                    const batch = testPatterns.slice(i, i + batchSize);
-                    
-                    await Promise.all(batch.map(async (pattern) => {
-                        for (const ext of commonExtensions) {
-                            const testPath = `${folder}/${pattern}.${ext}`;
-                            if (await imageExists(testPath)) {
-                                const fileName = `${pattern}.${ext}`;
-                                if (!detectedImages.includes(fileName)) {
-                                    detectedImages.push(fileName);
-                                }
-                            }
-                        }
-                    }));
-                    
-                    // Small delay to prevent blocking
-                    if (i % (batchSize * 3) === 0) {
-                        await new Promise(resolve => setTimeout(resolve, 10));
-                    }
-                }
-                
-                // Sort and store results
-                newAvailableImages[folder] = detectedImages.sort((a, b) => {
-                    // Custom sort: numbers first, then alphabetical
-                    const aNum = parseInt(a.match(/^\d+/)?.[0]);
-                    const bNum = parseInt(b.match(/^\d+/)?.[0]);
-                    
-                    if (aNum && bNum) return aNum - bNum;
-                    if (aNum && !bNum) return -1;
-                    if (!aNum && bNum) return 1;
-                    return a.localeCompare(b);
-                });
-                
-                totalFound += detectedImages.length;
-                console.log(`📁 ${folder}: Found ${detectedImages.length} images`);
-            }
-            
-            availableImages = newAvailableImages;
-            console.log(`✅ Total images detected: ${totalFound}`);
-            showToast(`Đã quét xong: tìm thấy ${totalFound} ảnh trong ${imageFolders.length} thư mục`);
-        }        // Check if image exists with improved timeout and caching
+        // Check if image exists with improved timeout and caching
         function imageExists(path) {
             return new Promise((resolve) => {
                 const img = new Image();
@@ -947,43 +837,9 @@
                 // Add cache busting for more accurate detection
                 img.src = path + '?t=' + Date.now();
             });
-        }        // Main refresh function for images library
+        }        // Simplified refresh - just reload from index
         async function refreshImagesLibrary() {
-            const refreshBtn = document.querySelector('button[onclick="refreshImagesLibrary()"]');
-            const originalContent = refreshBtn.innerHTML;
-            
-            // Show loading state
-            refreshBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> <span>Đang quét...</span>';
-            refreshBtn.disabled = true;
-            
-            try {
-                await scanImageFolders();
-                
-                // Show debug info in console
-                showScanDebugInfo();
-                
-                // Update gallery if it's open
-                if (document.getElementById('imageGalleryModal').style.display === 'flex') {
-                    populateFolderTree();
-                    // Refresh current folder view
-                    const activeFolder = document.querySelector('.folder-item.active');
-                    if (activeFolder && activeFolder.dataset.folder) {
-                        showImagesInFolder(activeFolder.dataset.folder);
-                    }
-                }
-                
-                const total = Object.values(availableImages).flat().length;
-                showToast(`✅ Đã refresh thành công: ${total} ảnh`);
-                
-            } catch (error) {
-                console.error('Error refreshing images:', error);
-                showToast('❌ Lỗi khi refresh ảnh: ' + error.message, 'error');
-                
-            } finally {
-                // Restore button state
-                refreshBtn.innerHTML = originalContent;
-                refreshBtn.disabled = false;
-            }
+            return await manualRefreshImages(); // Delegate to the manual refresh function
         }// Show image gallery
         function showImageGallery(context, field) {
             currentGalleryContext = context;
@@ -1101,45 +957,7 @@
             currentGalleryContext = null;
             currentGalleryField = null;
             selectedImagePath = null;
-        }
-
-        // Show local file upload
-        function showLocalFileUpload() {
-            document.getElementById('localFileInput').click();
-        }
-
-        // Handle local file upload
-        async function handleLocalFileUpload() {
-            const fileInput = document.getElementById('localFileInput');
-            const files = Array.from(fileInput.files);
-            
-            if (files.length === 0) return;
-            
-            // Create image_upload folder if not exists
-            if (!availableImages['images/image_upload']) {
-                availableImages['images/image_upload'] = [];
-            }
-            
-            for (const file of files) {
-                const timestamp = Date.now();
-                const newFileName = `upload_${timestamp}_${file.name}`;
-                
-                // In a real implementation, you would upload the file to server
-                // For now, we'll just simulate adding it to the list
-                availableImages['images/image_upload'].push(newFileName);
-                
-                // Create object URL for immediate use
-                const objectURL = URL.createObjectURL(file);
-                // Store the object URL temporarily (in real app, this would be the server path)
-                availableImages[`images/image_upload/${newFileName}`] = objectURL;
-            }
-            
-            // Refresh folder tree and show uploaded images
-            populateFolderTree();
-            showImagesInFolder('images/image_upload');
-            
-            showToast(`Đã upload ${files.length} file`);
-        }        // Save all files
+        }        // Upload functionality removed for performance optimization// Save all files
         async function saveAllFiles() {
             if (changedQuestions.size === 0) {
                 showToast('Không có thay đổi nào để lưu', 'error');
@@ -1664,15 +1482,16 @@
             
             for (const folder of imageFolders) {
                 const oldImages = availableImages[folder] || [];
-                const newImages = [];
-                  // Only test a subset of patterns for auto-refresh (performance)
+                const newImages = [];                  // Only test a subset of patterns for auto-refresh (performance)
                 const quickTestPatterns = [
                     // Most common patterns - expanded for better coverage
                     ...Array.from({length: 30}, (_, i) => `bg${i + 1}`), // Extended to bg30
                     ...Array.from({length: 15}, (_, i) => `image${i + 1}`),
                     ...Array.from({length: 15}, (_, i) => `v3_c${i + 1}`),
+                    ...Array.from({length: 10}, (_, i) => `v3_yte${i + 1}`), // v3_yte1 to v3_yte10
                     ...Array.from({length: 25}, (_, i) => `${i + 1}`), // Extended numbered files
-                    'v3_yte', 'v3_yte2', 'logo', 'icon', 'bg', 'bg2.1'
+                    'v3_yte', 'v3_yte2', 'v3_yte3', 'v3_yte4', 'v3_yte5', // explicit v3_yte patterns
+                    'logo', 'icon', 'bg', 'bg2.1'
                 ];
                 
                 // Test existing images first (faster)
@@ -1692,14 +1511,7 @@
                         if (!newImages.includes(fileName) && await imageExists(testPath)) {
                             newImages.push(fileName);
                         }
-                    }
-                }
-                
-                // Check for uploaded images in upload folder
-                if (folder === 'images/image_upload') {
-                    // Keep uploaded images from previous state
-                    newImages.push(...(availableImages[folder] || []));
-                }
+                    }                }
                 
                 // Sort images
                 newImages.sort((a, b) => {
@@ -1761,15 +1573,13 @@
             } catch (error) {
                 console.log('⚠️ No index file found, starting fresh scan');
             }
-            
-            const commonExtensions = ['jpg', 'jpeg', 'png', 'svg', 'webp', 'gif', 'bmp'];
+              const commonExtensions = ['jpg', 'jpeg', 'png', 'svg', 'webp', 'gif', 'bmp'];
             const imageFolders = [
                 'images',
                 'images/bg', 
                 'images/cauhoi',
                 'images/illustrative',
-                'images/index_images',
-                'images/image_upload'
+                'images/index_images'
             ];
             
             const newAvailableImages = {};
@@ -1800,9 +1610,10 @@
                     
                     // Extended numbered files
                     ...Array.from({length: 50}, (_, i) => `${i + 1}`),
-                    
-                    // Common names
-                    'v3_yte', 'v3_yte2', 'logo', 'icon', 'ktm_image_4',
+                      // Common names - mở rộng v3_yte patterns
+                    ...Array.from({length: 10}, (_, i) => `v3_yte${i + 1}`), // v3_yte1, v3_yte2, ..., v3_yte10
+                    'v3_yte', 'v3_yte2', 'v3_yte3', 'v3_yte4', 'v3_yte5', // explicit
+                    'logo', 'icon', 'ktm_image_4',
                     'V2_BV_HA_4', 'V2_BV_HA_9', 'V2_BXV_HA_15', 'V2_BXV_HA_22',
                     'V2_KTM_HA_10', 'V2_KTM_HA_4'
                 ];
@@ -1886,26 +1697,72 @@
                     closeImageGallery();
                 }
             }
-        });        // Copy all files content to clipboard
-        async function copyAllToClipboard() {
+        });
+
+        // Simple image loading from index file only
+        async function loadImagesFromIndex() {
             try {
-                const vong1DataToSave = reconstructVong1Data();
-                const vong2DataToSave = reconstructVong2Data();
-                const vong3DataToSave = reconstructVong3Data();                const allData = {
-                    'vong1.json': formatJSONWithPrettier(vong1DataToSave),
-                    'vong2.json': formatJSONWithPrettier(vong2DataToSave),
-                    'vong3.json': formatJSONWithPrettier(vong3DataToSave)
-                };
-                
-                const combinedText = Object.entries(allData)
-                    .map(([filename, content]) => `// ========== ${filename} ==========\n${content}`)
-                    .join('\n\n');
-                
-                await navigator.clipboard.writeText(combinedText);
-                showToast('Đã copy tất cả nội dung JSON vào clipboard. Bạn có thể paste vào các file tương ứng.');
+                console.log('📋 Loading images from index file...');
+                const response = await fetch('images_index.json?t=' + Date.now());
+                if (response.ok) {
+                    availableImages = await response.json();
+                    console.log(`✅ Loaded images from index: ${Object.values(availableImages).flat().length} total images`);
+                    return true;
+                } else {
+                    throw new Error('Failed to load images index');
+                }
             } catch (error) {
-                console.error('Error copying to clipboard:', error);
-                showToast('Lỗi khi copy vào clipboard: ' + error.message, 'error');
+                console.error('❌ Error loading images index:', error);
+                // Fallback to empty structure
+                availableImages = {
+                    'images': [],
+                    'images/bg': [],
+                    'images/cauhoi': [],
+                    'images/index_images': []
+                };
+                return false;
+            }
+        }
+
+        // Manual refresh images - now just reloads from index
+        async function manualRefreshImages() {
+            const refreshBtn = document.querySelector('button[onclick="manualRefreshImages()"]');
+            const originalContent = refreshBtn.innerHTML;
+            
+            // Show loading state
+            refreshBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Loading...';
+            refreshBtn.disabled = true;
+            
+            try {
+                showToast('� Đang tải danh sách ảnh từ index...', 'info');
+                
+                const success = await loadImagesFromIndex();
+                
+                if (success) {
+                    // Update gallery if it's open
+                    if (document.getElementById('imageGalleryModal').style.display === 'flex') {
+                        populateFolderTree();
+                        // Refresh current folder view
+                        const activeFolder = document.querySelector('.folder-item.active');
+                        if (activeFolder && activeFolder.dataset.folder) {
+                            showImagesInFolder(activeFolder.dataset.folder);
+                        }
+                    }
+                    
+                    const total = Object.values(availableImages).flat().length;
+                    showToast(`✅ Đã tải thành công: ${total} ảnh từ index`);
+                } else {
+                    showToast('❌ Không thể tải images index file', 'error');
+                }
+                
+            } catch (error) {
+                console.error('Error in manual refresh:', error);
+                showToast('❌ Lỗi khi tải ảnh: ' + error.message, 'error');
+                
+            } finally {
+                // Restore button state
+                refreshBtn.innerHTML = originalContent;
+                refreshBtn.disabled = false;
             }
         }
 
@@ -2095,10 +1952,11 @@
                     'bg', 'bg1', 'bg2', 'bg3', 'bg4', 'bg5', 'bg6', 'bg7', 'bg8', 'bg9', 'bg10',
                     'bg11', 'bg12', 'bg2.1', 'background', 'wallpaper',
                     // Common question images
-                    'v1_image1', 'v2_image1', 'v3_yte', 'v3_yte2', 'image1', 'image2', 'image3',
-                    'V2_BV_HA_4', 'V2_BV_HA_9', 'V2_BXV_HA_15', 'V2_BXV_HA_22',
+                    'v1_image1', 'v2_image1', 'v3_yte', 'v3_yte2', 'image1', 'image2', 'image3',                    'V2_BV_HA_4', 'V2_BV_HA_9', 'V2_BXV_HA_15', 'V2_BXV_HA_22',
                     'V2_KTM_HA_10', 'V2_KTM_HA_4', 'ktm_image_4',
                     'v3_c1', 'v3_c2', 'v3_c3', 'v3_c4', 'v3_c5', 'v3_c6', 'v3_c7', 'v3_c8', 'v3_c9', 'v3_c10',
+                    // v3_yte patterns - mở rộng
+                    'v3_yte', 'v3_yte2', 'v3_yte3', 'v3_yte4', 'v3_yte5', 'v3_yte6', 'v3_yte7', 'v3_yte8', 'v3_yte9', 'v3_yte10',
                     // Common illustrative images
                     'illustrative_cspl_tn_1', 'illustrative_cspl_tn_2', 'illustrative_cspl_tn_3',
                     'illustrative_cspl_tn_5', 'illustrative_yt_sc_tn_3', 'illustrative_yt_th_1',
@@ -2117,8 +1975,7 @@
                         }
                     }
                 }
-                
-                // Also test for any numbered files up to 50
+                  // Also test for any numbered files up to 50
                 for (let i = 1; i <= 50; i++) {
                     for (const ext of commonExtensions) {
                         const testPath = `${folder}/${i}.${ext}`;
@@ -2128,14 +1985,20 @@
                     }
                 }
                 
-                newAvailableImages[folder] = [...new Set(detectedImages)].sort();
-            }
-            
-            // Keep uploaded images
-            if (availableImages['images/image_upload']) {
-                newAvailableImages['images/image_upload'] = availableImages['images/image_upload'];
-            } else {
-                newAvailableImages['images/image_upload'] = [];
+                // Additional test for v3_yte patterns specifically (trong cauhoi folder)
+                if (folder === 'images/cauhoi') {
+                    for (let i = 1; i <= 10; i++) {
+                        for (const ext of commonExtensions) {
+                            const testPath = `${folder}/v3_yte${i}.${ext}`;
+                            const fileName = `v3_yte${i}.${ext}`;
+                            if (!detectedImages.includes(fileName) && await imageExists(testPath)) {
+                                detectedImages.push(fileName);
+                                console.log(`🎯 Found v3_yte pattern: ${fileName}`);
+                            }
+                        }
+                    }
+                }
+                  newAvailableImages[folder] = [...new Set(detectedImages)].sort();
             }
             
             // Update available images
