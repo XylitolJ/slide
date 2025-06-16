@@ -1596,11 +1596,11 @@ async function displayAnswer() {
             e.preventDefault();
             DEBUG_MODE = 1;
             console.log('DEBUG MODE 1 activated: Timer disabled');
-            progressTextEl.textContent = 'DEBUG MODE 1: Timer disabled';        } else if (e.key === '9' && e.ctrlKey) { // Ctrl+9 for DEBUG mode 2
+            progressTextEl.textContent = 'Timer disabled';        } else if (e.key === '9' && e.ctrlKey) { // Ctrl+9 for DEBUG mode 2
             e.preventDefault();
             DEBUG_MODE = 2;
             console.log('DEBUG MODE 2 activated: Timer and audio disabled');
-            progressTextEl.textContent = 'DEBUG MODE 2: Timer and audio disabled';
+            progressTextEl.textContent = 'Timer and audio disabled';
         } else if (e.key.toLowerCase() === 'd' && e.ctrlKey) { // Ctrl+D to toggle debug
             e.preventDefault();
             console.log("Debug mode toggle attempted. Use Ctrl+0 or Ctrl+9 for specific debug modes.");

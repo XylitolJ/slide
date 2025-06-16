@@ -615,12 +615,12 @@ document.addEventListener('DOMContentLoaded', () => {    // URL Parameter handli
             e.preventDefault();
             DEBUG_MODE = 1;
             console.log('DEBUG MODE 1 activated: Timer disabled');
-            progressTextEl.textContent = 'DEBUG MODE 1: Timer disabled';
+            progressTextEl.textContent = 'Timer disabled';
         } else if (e.key === '9' && e.ctrlKey) { // Ctrl+9 for DEBUG mode 2
             e.preventDefault();
             DEBUG_MODE = 2;
             console.log('DEBUG MODE 2 activated: Timer and audio disabled');
-            progressTextEl.textContent = 'DEBUG MODE 2: Timer and audio disabled';
+            progressTextEl.textContent = 'Timer and audio disabled';
         } else if (e.key.toLowerCase() === 'd' && e.ctrlKey) { // Ctrl+D to toggle debug
             e.preventDefault();
             console.log("Debug mode toggle attempted. Use Ctrl+0 or Ctrl+9 for specific debug modes.");
@@ -632,9 +632,38 @@ document.addEventListener('DOMContentLoaded', () => {    // URL Parameter handli
             e.preventDefault();
             window.location.href = 'infovong3.html';
         }
-    });    // --- Initialization ---
-    loadQuestions();
-    
+    });    // --- Show Start Timer Popup ---
+    async function showStartTimerPopup() {
+        if (!startTimerPopupEl) return;
+        
+        // Show popup with animation
+        startTimerPopupEl.style.display = 'flex';
+        // Force reflow before adding show class for smooth animation
+        void startTimerPopupEl.offsetHeight;
+        startTimerPopupEl.classList.add('show');
+        
+        // For Round 3, we don't use speech but can still play the bell sound
+        // However, since USE_SPEECH is false for Round 3, we'll create the bell audio directly
+        if (DEBUG_MODE !== 2) {
+            try {
+                const bellAudio = new Audio('speech/bell.mp3');
+                bellAudio.play().catch(error => {
+                    console.warn('Could not play bell sound:', error);
+                });
+            } catch (error) {
+                console.warn('Could not create bell audio:', error);
+            }
+        }
+        
+        // Wait for animation and sound to complete (minimum 1.5 seconds)
+        await new Promise(resolve => setTimeout(resolve, 800));
+        
+        // Hide popup with animation
+        startTimerPopupEl.classList.remove('show');
+        await new Promise(resolve => setTimeout(resolve, 200)); // Wait for fade out
+        startTimerPopupEl.style.display = 'none';
+    }
+
     // Function to trigger enhanced question header animations
     function triggerQuestionHeaderAnimations() {
         const questionNumberContainer = questionNumberEl?.closest('.question-number');
@@ -688,38 +717,7 @@ document.addEventListener('DOMContentLoaded', () => {    // URL Parameter handli
             }
         }, 2000);
     }
-});
 
     // --- Initialization ---
-
-// --- Show Start Timer Popup ---
-    async function showStartTimerPopup() {
-        if (!startTimerPopupEl) return;
-        
-        // Show popup with animation
-        startTimerPopupEl.style.display = 'flex';
-        // Force reflow before adding show class for smooth animation
-        void startTimerPopupEl.offsetHeight;
-        startTimerPopupEl.classList.add('show');
-        
-        // For Round 3, we don't use speech but can still play the bell sound
-        // However, since USE_SPEECH is false for Round 3, we'll create the bell audio directly
-        if (DEBUG_MODE !== 2) {
-            try {
-                const bellAudio = new Audio('speech/bell.mp3');
-                bellAudio.play().catch(error => {
-                    console.warn('Could not play bell sound:', error);
-                });
-            } catch (error) {
-                console.warn('Could not create bell audio:', error);
-            }
-        }
-        
-        // Wait for animation and sound to complete (minimum 1.5 seconds)
-        await new Promise(resolve => setTimeout(resolve, 800));
-        
-        // Hide popup with animation
-        startTimerPopupEl.classList.remove('show');
-        await new Promise(resolve => setTimeout(resolve, 200)); // Wait for fade out
-        startTimerPopupEl.style.display = 'none';
-    }
+    loadQuestions();
+});

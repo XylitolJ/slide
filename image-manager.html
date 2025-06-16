@@ -186,19 +186,19 @@
         }
     </style>
 </head>
-<body class="bg-gray-50">
-    <!-- Header -->
-    <div class="bg-white shadow-sm border-b">
-        <div class="container mx-auto px-4 py-4">            <div class="flex items-center justify-between">
+<body class="bg-gray-50">    <!-- Header -->
+    <div class="bg-white shadow-sm border-b sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-4"><div class="flex items-center justify-between">
                 <div>
                     <h1 class="text-2xl font-bold text-gray-800">
                         <i class="fas fa-images mr-2"></i>
                         Quản lý Hình ảnh Câu hỏi
-                    </h1>                    <p class="text-sm text-gray-600 mt-1">
-                        Chỉnh sửa hình ảnh câu hỏi, sau đó click "Save All" để lưu các file đã thay đổi. 
-                        <span class="text-orange-600 font-medium">Hệ thống tự động quét ảnh mới mỗi 10 giây.</span>
+                    </h1>
+                    <p class="text-sm text-gray-600 mt-1"</p>>
+                        Chỉnh sửa hình ảnh câu hỏi, sau đó click "Save All" để lưu các file đã thay đổi.
+                        <span class="text-orange-600 font-medium">Chỉ hoạt động trên local</span>
                     </p>
-                </div>                <div class="flex gap-4">
+                </div>                <div class="flex gap-4"</div>>
                     <button onclick="refreshImagesLibrary()" class="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-lg flex items-center gap-2">
                         <i class="fas fa-sync-alt"></i>
                         <span>Refresh Images</span>
@@ -215,16 +215,12 @@
     <!-- Filters and Controls -->
     <div class="container mx-auto px-4 py-4">
         <div class="bg-white rounded-lg shadow-sm p-4 mb-4">
-            <div class="flex items-center justify-between mb-4">
-                <div class="flex items-center gap-4">
+            <div class="flex items-center justify-between mb-4">                <div class="flex items-center gap-4">
                     <select id="roundFilter" onchange="filterQuestions()" class="border rounded-lg px-3 py-2">
                         <option value="">Tất cả vòng</option>
                         <option value="1">Vòng 1</option>
                         <option value="2">Vòng 2</option>
                         <option value="3">Vòng 3</option>
-                    </select>
-                    <select id="categoryFilter" onchange="filterQuestions()" class="border rounded-lg px-3 py-2">
-                        <option value="">Tất cả danh mục</option>
                     </select>
                 </div>
                 <div class="flex items-center gap-4">
@@ -295,13 +291,11 @@
 
         <!-- Questions Table -->
         <div class="bg-white rounded-lg shadow-sm overflow-hidden">
-            <table class="w-full">                <thead class="bg-gray-50">
-                    <tr>
+            <table class="w-full">                <thead class="bg-gray-50">                    <tr>
                         <th class="px-4 py-3 text-left"></th>
                         <th class="px-4 py-3 text-left">ID</th>
                         <th class="px-4 py-3 text-left">Vòng</th>
                         <th class="px-4 py-3 text-left">Câu số</th>
-                        <th class="px-4 py-3 text-left">Danh mục</th>
                         <th class="px-4 py-3 text-left">Câu hỏi</th>
                         <th class="px-4 py-3 text-left">Ảnh chính</th>
                         <th class="px-4 py-3 text-left">Ảnh nền</th>
@@ -327,19 +321,8 @@
             <div class="flex-1 p-4 overflow-y-auto">
                 <form id="editForm">
                     <input type="hidden" id="editIndex">
-                    
-                    <div class="grid grid-cols-2 gap-6">
+                      <div class="grid grid-cols-2 gap-6">
                         <div>
-                            <div class="mb-4">
-                                <label class="block text-sm font-medium mb-2">ID câu hỏi</label>
-                                <input type="text" id="editId" readonly class="w-full border rounded-lg px-3 py-2 bg-gray-100">
-                            </div>
-
-                            <div class="mb-4">
-                                <label class="block text-sm font-medium mb-2">Nội dung câu hỏi</label>
-                                <textarea id="editQuestion" readonly rows="3" class="w-full border rounded-lg px-3 py-2 bg-gray-100"></textarea>
-                            </div>
-
                             <h3 class="text-lg font-semibold mb-3">Cài đặt ảnh</h3>
 
                             <div class="mb-4">
@@ -365,19 +348,18 @@
                             </div>
 
                             <div class="mb-4">
-                                <label class="block text-sm font-medium mb-2">Vị trí ảnh</label>
-                                <select id="editPositionImage" class="w-full border rounded-lg px-3 py-2">
-                                    <option value="Left">Left</option>
-                                    <option value="Right">Right</option>
-                                </select>
-                            </div>
+                                <label class="flex items-center">
+                                    <input type="checkbox" id="editPositionRight" class="mr-2">
+                                    Vị trí ảnh bên phải
+                                </label>
+                     </label>       </div>
 
                             <div class="mb-4">
                                 <label class="flex items-center">
                                     <input type="checkbox" id="editQuestionImage" class="mr-2">
                                     Question Image
                                 </label>
-                            </div>
+                            </div></label>
                         </div>
 
                         <div>
@@ -399,14 +381,19 @@
                             </div>
 
                             <div class="mb-4">
-                                <label class="block text-sm font-medium mb-2">Overlay nền</label>
-                                <select id="editBgOverlay" class="w-full border rounded-lg px-3 py-2">
-                                    <option value="null">None</option>
-                                    <option value="gradient">Gradient</option>
-                                    <option value="stripes">Stripes</option>
-                                </select>
+                                <label class="flex items-center">
+                                    <input type="checkbox" id="editGradientOverlay" class="mr-2">
+                                    Gradient Overlay
+                                </label>
                             </div>
-                        </div>
+
+                            <div class="mb-4">
+                                <label class="flex items-center">
+                                    <input type="checkbox" id="editStripesOverlay" class="mr-2">
+                                    Stripes Overlay
+                                </label>
+                            </div>
+                      </label>  </div>
                     </div>
                 </form>
             </div>
@@ -423,10 +410,9 @@
 
     <!-- Image Gallery Modal -->
     <div id="imageGalleryModal" class="modal" style="display: none;">
-        <div class="modal-content">            <div class="flex items-center justify-between p-4 border-b">
+        <div class="modal-content">            <div class="flex </button>items-center justify-between p-4 border-b">
                 <div>
                     <h2 class="text-xl font-semibold">Chọn hình ảnh</h2>
-                    <p class="text-sm text-gray-500 mt-1">Gallery tự động cập nhật mỗi 5 giây khi mở</p>
                 </div>
                 <button onclick="closeImageGallery()" class="text-gray-500 hover:text-gray-700">
                     <i class="fas fa-times text-xl"></i>
@@ -434,10 +420,6 @@
             </div>            <div class="flex-1 flex min-h-0">
                 <!-- Sidebar -->                <div class="w-80 p-4 border-r flex-shrink-0">
                     <div class="mb-4">                        <!-- Upload functionality removed -->
-                        <div class="text-xs text-gray-500 mb-4 p-2 bg-blue-50 rounded">
-                            <i class="fas fa-info-circle mr-1"></i>
-                            Thư viện ảnh tự động refresh mỗi 5 giây
-                        </div>
                     </div>
                     
                     <h3 class="font-semibold mb-2">Thư mục</h3>
@@ -453,7 +435,7 @@
                     </div>
                 </div>
             </div>            <div class="p-4 border-t flex justify-end gap-4 modal-footer">
-                <button onclick="closeImageGallery()" class="bg-gray-500 hover:bg-gray-600 text-white px-6 py-2 rounded-lg">
+        </div>        <button onclick="closeImageGallery()" class="bg-gray-500 hover:bg-gray-600 text-white px-6 py-2 rounded-lg">
                     Hủy
                 </button>
                 <button onclick="selectImage()" class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-lg">
@@ -465,7 +447,7 @@
 
     <!-- Toast notification -->
     <div id="toast" class="fixed top-4 right-4 z-50 transform translate-x-full transition-transform duration-300">
-        <div class="bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg">
+        <div class="bg-green-500 text-white px-</button>6 py-3 rounded-lg shadow-lg">
             <span id="toastMessage"></span>
         </div>
     </div>
@@ -499,11 +481,12 @@
             vong2: null,
             vong3: null
         };
-        let changedQuestions = new Set();        // Initialize application
+        let changedQuestions = new Set();
+        
+        // Initialize application
         async function init() {
             try {
                 await loadAllQuestions();
-                populateCategoryFilter();
                 displayQuestions();
                 await loadImagesFromIndex(); // Load images from index file only
                 updateSaveButtonState(); // Initialize save button state
@@ -512,7 +495,9 @@
                 console.error('❌ Error initializing application:', error);
                 showToast('Lỗi khởi tạo ứng dụng: ' + error.message, 'error');
             }
-        }// Load questions from all JSON files
+        }
+        
+        // Load questions from all JSON files
         async function loadAllQuestions() {
             try {
                 // Load question_sets.json first to get question order
@@ -554,29 +539,15 @@
                 console.log(`Loaded ${allQuestions.length} questions in order from question_sets.json`);
             } catch (error) {
                 throw new Error('Không thể tải file câu hỏi: ' + error.message);
-            }
-        }// Populate category filter
-        function populateCategoryFilter() {
-            const categoryFilter = document.getElementById('categoryFilter');
-            const categories = [...new Set(allQuestions.map(q => q.category).filter(Boolean))];
-            
-            categories.forEach(category => {
-                const option = document.createElement('option');
-                option.value = category;
-                option.textContent = category;
-                categoryFilter.appendChild(option);
-            });
-        }
+            }        }
 
         // Filter questions based on selected criteria
         function filterQuestions() {
             const roundFilter = document.getElementById('roundFilter').value;
-            const categoryFilter = document.getElementById('categoryFilter').value;
 
             filteredQuestions = allQuestions.filter(question => {
                 const matchesRound = !roundFilter || question._round.toString() === roundFilter;
-                const matchesCategory = !categoryFilter || question.category === categoryFilter;
-                return matchesRound && matchesCategory;
+                return matchesRound;
             });
 
             displayQuestions();
@@ -594,18 +565,16 @@
                 
                 const originalIndex = allQuestions.indexOf(question);
                 const isSelected = selectedQuestions.has(originalIndex);
-                
-                // Generate question number display
+                  // Generate question number display
                 let questionNumberDisplay = 'N/A';
                 if (question._round === 3 && question._domain) {
                     questionNumberDisplay = `${question._domain.toUpperCase()} - ${question._questionNumber}/${question._totalInSet}`;
                 } else if (question._setNumber && question._questionNumber) {
-                    questionNumberDisplay = `Set ${question._setNumber} - ${question._questionNumber}/${question._totalInSet}`;
+                    questionNumberDisplay = `${question._questionNumber}/${question._totalInSet}`;
                 } else if (question._questionNumber) {
                     questionNumberDisplay = `${question._questionNumber}/${question._totalInSet || '?'}`;
                 }
-                
-                row.innerHTML = `
+                  row.innerHTML = `
                     <td class="px-4 py-3">
                         <input type="checkbox" ${isSelected ? 'checked' : ''} 
                                onchange="toggleQuestionSelection(${originalIndex})" 
@@ -614,7 +583,6 @@
                     <td class="px-4 py-3 font-mono text-sm">${question.id || 'N/A'}</td>
                     <td class="px-4 py-3">${question._round}</td>
                     <td class="px-4 py-3 text-sm font-medium">${questionNumberDisplay}</td>
-                    <td class="px-4 py-3">${question.category || 'N/A'}</td>
                     <td class="px-4 py-3">
                         <div class="question-text" title="${question.cau_hoi || ''}">
                             ${truncateText(question.cau_hoi || '', 100)}
@@ -758,31 +726,32 @@
             displayQuestions();
             toggleBatchEdit();
             showToast(`Đã cập nhật ${changedQuestionsCount} câu hỏi`);
-        }
-
-        // Edit single question
+        }        // Edit single question
         function editQuestion(index) {
             currentEditIndex = index;
             const question = allQuestions[index];
             
             // Populate form
             document.getElementById('editIndex').value = index;
-            document.getElementById('editId').value = question.id || '';
-            document.getElementById('editQuestion').value = question.cau_hoi || '';
             document.getElementById('editUseImage').checked = question.use_image === 'Yes';
             document.getElementById('editImageId').value = question.image_id || '';
-            document.getElementById('editPositionImage').value = question.position_image || 'Right';
+            document.getElementById('editPositionRight').checked = question.position_image === 'Right';
             document.getElementById('editQuestionImage').checked = question.question_image === 'Yes';
             document.getElementById('editBgImage').value = question.bg_image || '';
-            document.getElementById('editBgOverlay').value = question.bg_image_overlay === null ? 'null' : (question.bg_image_overlay || 'null');
+            
+            // Handle overlay checkboxes
+            document.getElementById('editGradientOverlay').checked = question.bg_image_overlay === 'gradient';
+            document.getElementById('editStripesOverlay').checked = question.bg_image_overlay === 'stripes';
             
             // Update image previews
             updateImagePreview('editImagePreview', question.image_id);
             updateImagePreview('editBgImagePreview', question.bg_image);
-            
-            // Show modal
+              // Show modal
             document.getElementById('editModal').style.display = 'flex';
-        }        // Update image preview
+            
+            // Setup overlay checkboxes after modal is shown
+            setupOverlayCheckboxes();
+        }// Update image preview
         function updateImagePreview(containerId, imagePath) {
             const container = document.getElementById(containerId);
             if (!imagePath || imagePath === 'null') {
@@ -812,11 +781,18 @@
             // Update question properties
             question.use_image = document.getElementById('editUseImage').checked ? 'Yes' : 'No';
             question.image_id = document.getElementById('editImageId').value || null;
-            question.position_image = document.getElementById('editPositionImage').value;
+            question.position_image = document.getElementById('editPositionRight').checked ? 'Right' : 'Left';
             question.question_image = document.getElementById('editQuestionImage').checked ? 'Yes' : 'No';
             question.bg_image = document.getElementById('editBgImage').value || null;
-            const bgOverlayValue = document.getElementById('editBgOverlay').value;
-            question.bg_image_overlay = bgOverlayValue === 'null' ? null : bgOverlayValue;
+            
+            // Handle overlay checkboxes
+            let bgOverlay = null;
+            if (document.getElementById('editGradientOverlay').checked) {
+                bgOverlay = 'gradient';
+            } else if (document.getElementById('editStripesOverlay').checked) {
+                bgOverlay = 'stripes';
+            }
+            question.bg_image_overlay = bgOverlay;
             
             // Check if anything actually changed
             let hasChanges = false;
@@ -1808,6 +1784,26 @@
                     showToast('Không có ảnh mới');
                 }
             });
+        }
+
+        // Handle overlay checkbox mutual exclusivity
+        function setupOverlayCheckboxes() {
+            const gradientCheckbox = document.getElementById('editGradientOverlay');
+            const stripesCheckbox = document.getElementById('editStripesOverlay');
+            
+            if (gradientCheckbox && stripesCheckbox) {
+                gradientCheckbox.addEventListener('change', function() {
+                    if (this.checked) {
+                        stripesCheckbox.checked = false;
+                    }
+                });
+                
+                stripesCheckbox.addEventListener('change', function() {
+                    if (this.checked) {
+                        gradientCheckbox.checked = false;
+                    }
+                });
+            }
         }
 
         // ...existing code...

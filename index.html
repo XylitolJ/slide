@@ -430,15 +430,23 @@
             }
             scale(pulseScale);
             
-            // Gradient-like effect using multiple text layers
-            for (let i = 3; i >= 0; i--) {
-                fill(255, 119 + i * 20, 51, mainTitleOpacity * (1 - i * 0.1));
-                textAlign(CENTER, CENTER);
-                textSize(72);
-                textStyle(BOLD);
-                textFont('Oswald');
-                text("NĂM 2025", i * 2, i * 2);
-            }
+            // Year text with subtle shadow effect
+            drawingContext.shadowBlur = 1;
+            drawingContext.shadowColor = `rgba(0, 0, 0, ${mainTitleOpacity/255 * 0.3})`;
+            drawingContext.shadowOffsetX = 1;
+            drawingContext.shadowOffsetY = 1;
+            
+            fill(255, 119, 51, mainTitleOpacity);
+            textAlign(CENTER, CENTER);
+            textSize(72);
+            textStyle(BOLD);
+            textFont('Oswald');
+            text("NĂM 2025", 0, 0);
+            
+            // Reset shadow
+            drawingContext.shadowBlur = 0;
+            drawingContext.shadowOffsetX = 0;
+            drawingContext.shadowOffsetY = 0;
             
             // Animated underline that stops after pulse effect
             stroke(255, 119, 51, mainTitleOpacity);

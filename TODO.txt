@@ -8,6 +8,6 @@
 Cho đồng hồ nổi lên khi bắt đầu tính giờ
 ✅ Có âm thanh báo khi tính giờ
 ✅ Lỗi tải file âm thanh: V2_KTM_HA_10_F.wav
- Đồng hồ cần nổi bật hơn
+✅ Đồng hồ cần nổi bật hơn
 ✅ Bỏ đi hiệu ứng animate câu hỏi số
 có một ảnh kích thước khá nhỏ, báo lại với Hoàng
