@@ -692,9 +692,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 timerTextEl.style.color = '#FFA500';
                  if (headerProgressBarEl) headerProgressBarEl.style.background = '#FFA500';
             } else {
-                timerCircleEl.style.stroke = '#10b981'; // Green
-                timerTextEl.style.color = '#10b981';
-                 if (headerProgressBarEl) headerProgressBarEl.style.background = '#10b981';
+                timerCircleEl.style.stroke = '#ffffff'; // Green
+                timerTextEl.style.color = '#ffffff';
+                 if (headerProgressBarEl) headerProgressBarEl.style.background = '#ffffff';
             }
 
             if (headerProgressBarEl) headerProgressBarEl.style.width = `${progressPercentage}%`;
@@ -894,7 +894,7 @@ async function displayAnswer() {
                 const pointsPerAnswer = Math.round((totalPoints / numberOfCorrectAnswers) * 10) / 10;
                 const formattedPoints = pointsPerAnswer % 1 === 0 ? pointsPerAnswer.toString() : pointsPerAnswer.toFixed(1);
                 
-                answerDisplayString = `Đáp án: ${correctKeys.map(k => k.toUpperCase()).join(', ')} | Điểm tối đa: ${totalPoints} điểm (${formattedPoints}đ/câu)`;
+                answerDisplayString = `Đáp án: ${correctKeys.map(k => k.toUpperCase()).join(', ')}`;
                 highlightCorrectAnswer();
             } else {
                 answerDisplayString = "Không có đáp án cho câu này.";

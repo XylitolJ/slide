@@ -477,13 +477,13 @@ body, html {
 
 .timer-circle-bg { /* Background of the new timer circle */
     fill: none;
-    stroke: rgba(255, 255, 255, 0.3);
+    stroke: rgb(255, 255, 255); /* Slightly more visible background */
     stroke-width: 6;
 }
 
 .timer-circle-progress { /* Progress part of the new timer circle */
     fill: none;
-    stroke: #fff; /* Default progress color */
+    stroke: #ffffff; /* Default progress color - bright white for maximum visibility */
     stroke-width: 6;
     stroke-linecap: round;
     stroke-dasharray: 226; /* Circumference for r=~36 (5vw could be ~70-80px, so r is ~35-40px. 2*pi*36 = 226) */
@@ -493,11 +493,11 @@ body, html {
 }
 
 .timer-circle-progress.warning {
-    stroke: #FFA500; /* Orange for warning */
+    stroke: #FF6B00; /* Dark orange for final warning */
 }
 
 .timer-circle-progress.danger {
-    stroke: #FF4444; /* Red for danger */
+    stroke: #FF2020; /* Bright red for critical danger */
 }
 
 .timer-text { /* Text inside the new timer */
@@ -505,18 +505,18 @@ body, html {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    color: white;
-    font-size: 0.8vw; /* Reduced font size */
+    color: #ffffff; /* Bright white for maximum visibility */
+    font-size: 1.8vw; /* Increased font size */
     font-weight: 700;
     transition: color 0.3s ease;
 }
 
 .timer-text.warning {
-    color: #FFA500;
+    color: #FF6B00; /* Dark orange for final warning */
 }
 
 .timer-text.danger {
-    color: #FF4444;
+    color: #FF2020; /* Bright red for critical danger */
 }
 
 /* @keyframes countdown {
@@ -727,7 +727,11 @@ body, html {
     .contest-info p { font-size: 10px !important; } /* Reduced */
     .question-number { font-size: 14px !important; padding: 0.4vh 1vw !important; } /* Reduced */
     .category-badge { font-size: 10px !important; padding: 0.4vh 0.8vw !important; } /* Reduced */
-    .timer-text { font-size: 11px !important; } /* Reduced */
+    .timer-text { 
+        font-size: 11px !important; 
+        color: #ffffff !important; /* Ensure white color is maintained in mobile */
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5) !important; /* Enhanced shadow for mobile */
+    }
     /* .question-text h2 { font-size: 22px; } */
     /* .option-text { font-size: 14px; } */
     /* .option-letter { font-size: 14px; width: 30px; height: 30px; line-height: 30px; } */
@@ -1488,7 +1492,7 @@ body, html {
 }
 
 .start-timer-content {
-    background: linear-gradient(135deg, #4f46e5, #7c3aed);
+    background: linear-gradient(135deg, #059669, #10b981);
     color: white;
     padding: 3rem 4rem;
     border-radius: 1.5rem;
@@ -1527,7 +1531,7 @@ body, html {
         box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
     }
     50% { 
-        box-shadow: 0 25px 50px -12px rgba(79, 70, 229, 0.8), 0 0 30px rgba(124, 58, 237, 0.6);
+        box-shadow: 0 25px 50px -12px rgba(5, 150, 105, 0.8), 0 0 30px rgba(16, 185, 129, 0.6);
     }
 }
 
