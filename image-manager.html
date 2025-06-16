@@ -1147,6 +1147,9 @@
             }
             
             try {
+                console.log('Starting save operation...');
+                console.log('Changed questions:', Array.from(changedQuestions));
+                
                 const changedFiles = getChangedFilesData();
                 const fileCount = Object.keys(changedFiles).length;
                 
@@ -1155,30 +1158,62 @@
                     return;
                 }
                 
-                // Check if File System Access API is supported
-                if ('showSaveFilePicker' in window) {
-                    for (const [filename, data] of Object.entries(changedFiles)) {
-                        await saveFileWithAPI(filename, data);
-                    }
-                } else {
-                    // Fallback to download
-                    for (const [filename, data] of Object.entries(changedFiles)) {
-                        downloadFile(data, filename);
-                        await new Promise(resolve => setTimeout(resolve, 100)); // Small delay between downloads
+                console.log(`Saving ${fileCount} files:`, Object.keys(changedFiles));
+                
+                // Validate all files before saving
+                for (const [filename, data] of Object.entries(changedFiles)) {
+                    try {
+                        const round = filename === 'vong1.json' ? 1 : filename === 'vong2.json' ? 2 : 3;
+                        validateJSONStructure(data, round);
+                    } catch (validationError) {
+                        console.error(`❌ Validation failed for ${filename}:`, validationError);
+                        showToast(`Lỗi validation ${filename}: ${validationError.message}`, 'error');
+                        return; // Stop on validation error
                     }
                 }
                 
-                showToast(`Đã lưu ${fileCount} file đã thay đổi`);
+                // Check if File System Access API is supported
+                if ('showSaveFilePicker' in window) {
+                    for (const [filename, data] of Object.entries(changedFiles)) {
+                        console.log(`Saving ${filename}...`);
+                        try {
+                            await saveFileWithAPI(filename, data);
+                            console.log(`✅ Successfully saved ${filename}`);
+                        } catch (fileError) {
+                            console.error(`❌ Failed to save ${filename}:`, fileError);
+                            if (fileError.name !== 'AbortError') {
+                                showToast(`Lỗi khi lưu ${filename}: ${fileError.message}`, 'error');
+                                return; // Stop on error
+                            }
+                        }
+                    }
+                } else {
+                    // Fallback to download
+                    console.log('Using download fallback...');
+                    for (const [filename, data] of Object.entries(changedFiles)) {
+                        try {
+                            downloadFile(data, filename);
+                            console.log(`📥 Downloaded ${filename}`);
+                            await new Promise(resolve => setTimeout(resolve, 100)); // Small delay between downloads
+                        } catch (fileError) {
+                            console.error(`❌ Failed to download ${filename}:`, fileError);
+                            showToast(`Lỗi khi tải xuống ${filename}: ${fileError.message}`, 'error');
+                            return;
+                        }
+                    }
+                }
+                
+                showToast(`✅ Đã lưu thành công ${fileCount} file`);
                 
                 // Clear changed tracking after successful save
                 changedQuestions.clear();
                 updateSaveButtonState();
                 
             } catch (error) {
-                console.error('Error saving files:', error);
+                console.error('Error in save operation:', error);
                 showToast('Lỗi khi lưu file: ' + error.message, 'error');
             }
-        }        // Save with File System Access API
+        }// Save with File System Access API
         async function saveWithFileSystemAPI(data, suggestedName) {
             try {
                 const fileHandle = await window.showSaveFilePicker({
@@ -1200,9 +1235,7 @@
                 }
                 return false;
             }
-        }
-
-        // Format JSON với Prettier và custom handling cho arrays ngắn
+        }        // Format JSON với Prettier và custom handling cho arrays ngắn
         function formatJSONWithPrettier(data) {
             try {
                 // Prettier config tương tự VS Code
@@ -1222,22 +1255,36 @@
                 let formatted = prettier.format(jsonString, prettierConfig);
                 
                 // Custom post-processing để compact short arrays như dap_an_dung
+                // Xử lý dap_an_dung dạng ARRAY với bất kỳ số lượng phần tử nào (a-z)
                 formatted = formatted.replace(
-                    /"dap_an_dung":\s*\[\s*\n(\s*"[a-h]",?\s*\n)+\s*\]/g,
+                    /"dap_an_dung":\s*\[\s*\n(\s*"[a-z]",?\s*\n)+\s*\]/g,
                     (match) => {
-                        const values = match.match(/"[a-h]"/g);
-                        return `"dap_an_dung": [${values.join(', ')}]`;
+                        const values = match.match(/"[a-z]"/g);
+                        if (values) {
+                            return `"dap_an_dung": [${values.join(', ')}]`;
+                        }
+                        return match;
                     }
                 );
                 
-                // Compact các arrays ngắn khác (≤ 5 elements, mỗi element ≤ 10 chars)
+                // KHÔNG thay đổi dap_an_dung dạng STRING (để giữ format gốc của vong1.json)
+                // Vì vong1.json có mix: "dap_an_dung": "a" và "dap_an_dung": ["b", "c"]
+                
+                // Compact các arrays ngắn khác (≤ 8 elements, mỗi element ≤ 15 chars)
+                // Nhưng SKIP dap_an_dung vì đã xử lý riêng ở trên
                 formatted = formatted.replace(
-                    /:\s*\[\s*\n(\s*"[^"]{1,10}",?\s*\n){1,5}\s*\]/g,
+                    /("(?!dap_an_dung)[\w_]+"):\s*\[\s*\n(\s*"[^"]{1,15}",?\s*\n){1,8}\s*\]/g,
                     (match) => {
                         const values = match.match(/"[^"]*"/g);
-                        if (values && values.length <= 5) {
-                            const key = match.split(':')[0].trim();
-                            return `${key}: [${values.join(', ')}]`;
+                        if (values && values.length > 1) {
+                            // Lấy key (tên trường)
+                            const keyMatch = match.match(/^"[\w_]+"/);
+                            if (keyMatch) {
+                                const key = keyMatch[0];
+                                // Loại bỏ key khỏi values array
+                                const arrayValues = values.slice(1);
+                                return `${key}: [${arrayValues.join(', ')}]`;
+                            }
                         }
                         return match;
                     }
@@ -1246,18 +1293,70 @@
                 return formatted;
             } catch (error) {
                 console.warn('Prettier format failed, fallback to JSON.stringify:', error);
-                return JSON.stringify(data, null, 2);
+                // Fallback với formatting tốt hơn
+                try {
+                    return JSON.stringify(data, null, 2);
+                } catch (jsonError) {
+                    console.error('JSON.stringify also failed:', jsonError);
+                    throw new Error('Unable to format JSON: ' + jsonError.message);
+                }
             }
         }        // Helper function to download file
         function downloadFile(data, filename) {
-            const formattedContent = formatJSONWithPrettier(data);
-            const blob = new Blob([formattedContent], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = filename;
-            a.click();
-            URL.revokeObjectURL(url);
+            try {
+                const formattedContent = formatJSONWithPrettier(data);
+                
+                // Validate JSON before download
+                JSON.parse(formattedContent); // This will throw if invalid
+                
+                const blob = new Blob([formattedContent], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = filename;
+                a.click();
+                URL.revokeObjectURL(url);
+                
+                console.log(`✅ Successfully downloaded ${filename}`);
+            } catch (error) {
+                console.error(`❌ Error downloading ${filename}:`, error);
+                throw new Error(`Failed to download ${filename}: ${error.message}`);
+            }
+        }
+
+        // Validate JSON structure before saving
+        function validateJSONStructure(data, round) {
+            try {
+                // Basic validation
+                if (!data || typeof data !== 'object') {
+                    throw new Error('Data is not a valid object');
+                }
+                
+                // Round-specific validation
+                if (round === 1) {
+                    if (!data.vong_1 || !data.vong_1.chinh_sach_phap_luat_va_y_te) {
+                        throw new Error('Vong1 structure is invalid');
+                    }
+                } else if (round === 2) {
+                    if (!data.vong_2) {
+                        throw new Error('Vong2 structure is invalid');
+                    }
+                } else if (round === 3) {
+                    if (!data.vong_3) {
+                        throw new Error('Vong3 structure is invalid');
+                    }
+                }
+                
+                // Test JSON serialization
+                const jsonString = JSON.stringify(data);
+                JSON.parse(jsonString); // Will throw if not valid JSON
+                
+                console.log(`✅ JSON structure validation passed for round ${round}`);
+                return true;
+            } catch (error) {
+                console.error(`❌ JSON validation failed for round ${round}:`, error);
+                throw new Error(`JSON validation failed: ${error.message}`);
+            }
         }
 
         // Save round data (kept for backward compatibility)
@@ -1283,104 +1382,128 @@
                 console.error('Error saving round:', error);
                 showToast('Lỗi khi lưu file: ' + error.message, 'error');
             }
-        }
-
-        // Reconstruct vong1 data
+        }        // Reconstruct vong1 data - xử lý đặc biệt cho structure vong1
         function reconstructVong1Data() {
-            const result = JSON.parse(JSON.stringify(vong1Data));
-            
-            // Update questions in their original positions
-            const vong1Questions = allQuestions.filter(q => q._round === 1);
-            
-            function updateNestedStructure(obj, path = []) {
-                if (Array.isArray(obj)) {
-                    obj.forEach((item, index) => {
-                        const question = vong1Questions.find(q => 
-                            JSON.stringify(q._path) === JSON.stringify(path) && 
-                            q._originalIndex === index
-                        );
-                        if (question) {
-                            // Remove metadata before saving
-                            const cleanQuestion = { ...question };
-                            delete cleanQuestion._round;
-                            delete cleanQuestion._originalIndex;
-                            delete cleanQuestion._path;
-                            Object.assign(item, cleanQuestion);
+            try {
+                const result = JSON.parse(JSON.stringify(vong1Data));
+                
+                // Update questions in their original positions
+                const vong1Questions = allQuestions.filter(q => q._round === 1);
+                
+                function updateNestedStructure(obj, path = []) {
+                    if (Array.isArray(obj)) {
+                        obj.forEach((item, index) => {
+                            const question = vong1Questions.find(q => 
+                                JSON.stringify(q._path) === JSON.stringify(path) && 
+                                q._originalIndex === index
+                            );
+                            if (question) {
+                                // Remove metadata before saving
+                                const cleanQuestion = { ...question };
+                                delete cleanQuestion._round;
+                                delete cleanQuestion._originalIndex;
+                                delete cleanQuestion._path;
+                                
+                                // Preserve vong1-specific structure
+                                // dap_an_dung có thể là string hoặc array, giữ nguyên format gốc
+                                Object.assign(item, cleanQuestion);
+                            }
+                        });
+                    } else if (obj && typeof obj === 'object') {
+                        for (const [key, value] of Object.entries(obj)) {
+                            updateNestedStructure(value, [...path, key]);
                         }
-                    });
-                } else if (obj && typeof obj === 'object') {
-                    for (const [key, value] of Object.entries(obj)) {
-                        updateNestedStructure(value, [...path, key]);
                     }
                 }
+                
+                updateNestedStructure(result);
+                console.log('✅ Vong1 data reconstructed successfully');
+                return result;
+            } catch (error) {
+                console.error('Error reconstructing vong1 data:', error);
+                throw new Error(`Failed to reconstruct vong1 data: ${error.message}`);
             }
-            
-            updateNestedStructure(result);
-            return result;
-        }
-
-        // Reconstruct vong2 data
+        }        // Reconstruct vong2 data - xử lý đặc biệt cho structure vong2
         function reconstructVong2Data() {
-            const result = JSON.parse(JSON.stringify(vong2Data));
-            
-            const vong2Questions = allQuestions.filter(q => q._round === 2);
-            
-            function updateNestedStructure(obj, path = []) {
-                if (Array.isArray(obj)) {
-                    obj.forEach((item, index) => {
-                        const question = vong2Questions.find(q => 
-                            JSON.stringify(q._path) === JSON.stringify(path) && 
-                            q._originalIndex === index
-                        );
-                        if (question) {
-                            const cleanQuestion = { ...question };
-                            delete cleanQuestion._round;
-                            delete cleanQuestion._originalIndex;
-                            delete cleanQuestion._path;
-                            Object.assign(item, cleanQuestion);
+            try {
+                const result = JSON.parse(JSON.stringify(vong2Data));
+                
+                const vong2Questions = allQuestions.filter(q => q._round === 2);
+                
+                function updateNestedStructure(obj, path = []) {
+                    if (Array.isArray(obj)) {
+                        obj.forEach((item, index) => {
+                            const question = vong2Questions.find(q => 
+                                JSON.stringify(q._path) === JSON.stringify(path) && 
+                                q._originalIndex === index
+                            );
+                            if (question) {
+                                const cleanQuestion = { ...question };
+                                delete cleanQuestion._round;
+                                delete cleanQuestion._originalIndex;
+                                delete cleanQuestion._path;
+                                
+                                // Preserve vong2-specific structure
+                                // dap_an_dung luôn là array trong vong2
+                                // phuong_an có thể có nhiều options không theo thứ tự a,b,c,d
+                                Object.assign(item, cleanQuestion);
+                            }
+                        });
+                    } else if (obj && typeof obj === 'object') {
+                        for (const [key, value] of Object.entries(obj)) {
+                            updateNestedStructure(value, [...path, key]);
                         }
-                    });
-                } else if (obj && typeof obj === 'object') {
-                    for (const [key, value] of Object.entries(obj)) {
-                        updateNestedStructure(value, [...path, key]);
                     }
                 }
+                
+                updateNestedStructure(result);
+                console.log('✅ Vong2 data reconstructed successfully');
+                return result;
+            } catch (error) {
+                console.error('Error reconstructing vong2 data:', error);
+                throw new Error(`Failed to reconstruct vong2 data: ${error.message}`);
             }
-            
-            updateNestedStructure(result);
-            return result;
-        }
-
-        // Reconstruct vong3 data
+        }        // Reconstruct vong3 data - xử lý đặc biệt cho structure vong3
         function reconstructVong3Data() {
-            const result = JSON.parse(JSON.stringify(vong3Data));
-            
-            const vong3Questions = allQuestions.filter(q => q._round === 3);
-            
-            function updateNestedStructure(obj, path = []) {
-                if (Array.isArray(obj)) {
-                    obj.forEach((item, index) => {
-                        const question = vong3Questions.find(q => 
-                            JSON.stringify(q._path) === JSON.stringify(path) && 
-                            q._originalIndex === index
-                        );
-                        if (question) {
-                            const cleanQuestion = { ...question };
-                            delete cleanQuestion._round;
-                            delete cleanQuestion._originalIndex;
-                            delete cleanQuestion._path;
-                            Object.assign(item, cleanQuestion);
+            try {
+                const result = JSON.parse(JSON.stringify(vong3Data));
+                
+                const vong3Questions = allQuestions.filter(q => q._round === 3);
+                
+                function updateNestedStructure(obj, path = []) {
+                    if (Array.isArray(obj)) {
+                        obj.forEach((item, index) => {
+                            const question = vong3Questions.find(q => 
+                                JSON.stringify(q._path) === JSON.stringify(path) && 
+                                q._originalIndex === index
+                            );
+                            if (question) {
+                                const cleanQuestion = { ...question };
+                                delete cleanQuestion._round;
+                                delete cleanQuestion._originalIndex;
+                                delete cleanQuestion._path;
+                                delete cleanQuestion._domain; // vong3 specific metadata
+                                
+                                // Preserve vong3-specific structure
+                                // Không có dap_an_dung, chỉ có cau_hoi
+                                // Structure đơn giản hơn: chỉ có thực hành và tự luận
+                                Object.assign(item, cleanQuestion);
+                            }
+                        });
+                    } else if (obj && typeof obj === 'object') {
+                        for (const [key, value] of Object.entries(obj)) {
+                            updateNestedStructure(value, [...path, key]);
                         }
-                    });
-                } else if (obj && typeof obj === 'object') {
-                    for (const [key, value] of Object.entries(obj)) {
-                        updateNestedStructure(value, [...path, key]);
                     }
                 }
+                
+                updateNestedStructure(result);
+                console.log('✅ Vong3 data reconstructed successfully');
+                return result;
+            } catch (error) {
+                console.error('Error reconstructing vong3 data:', error);
+                throw new Error(`Failed to reconstruct vong3 data: ${error.message}`);
             }
-            
-            updateNestedStructure(result);
-            return result;
         }
 
         // Create question map from JSON data
@@ -1807,69 +1930,128 @@
                     saveBtn.classList.add('opacity-50');
                 }
             }
-        }
-
-        // Function to get changed files and their data
+        }        // Function to get changed files and their data
         function getChangedFilesData() {
-            const changedFiles = {};
-            
-            // Check which rounds have changes
-            const changedRounds = new Set();
-            changedQuestions.forEach(questionId => {
-                const question = allQuestions.find(q => q.id === questionId);
-                if (question) {
-                    changedRounds.add(question._round);
-                }
-            });
-            
-            console.log('Changed rounds:', Array.from(changedRounds));
-            console.log('Changed questions:', Array.from(changedQuestions));
-            
-            // Only include files that have changes
-            changedRounds.forEach(round => {
-                if (round === 1 && originalData.vong1) {
-                    changedFiles['vong1.json'] = updateOriginalData(originalData.vong1, 1);
-                } else if (round === 2 && originalData.vong2) {
-                    changedFiles['vong2.json'] = updateOriginalData(originalData.vong2, 2);
-                } else if (round === 3 && originalData.vong3) {
-                    changedFiles['vong3.json'] = updateOriginalData(originalData.vong3, 3);
-                }
-            });
-            
-            return changedFiles;
-        }
-
-        // Function to update original data structure with changes
+            try {
+                const changedFiles = {};
+                
+                // Check which rounds have changes
+                const changedRounds = new Set();
+                changedQuestions.forEach(questionId => {
+                    const question = allQuestions.find(q => q.id === questionId);
+                    if (question && question._round) {
+                        changedRounds.add(question._round);
+                    } else {
+                        console.warn(`Question ${questionId} not found or missing _round property`);
+                    }
+                });
+                
+                console.log('Changed rounds:', Array.from(changedRounds));
+                console.log('Changed questions:', Array.from(changedQuestions));
+                
+                // Only include files that have changes
+                changedRounds.forEach(round => {
+                    try {
+                        if (round === 1 && originalData.vong1) {
+                            console.log('Processing vong1 changes...');
+                            changedFiles['vong1.json'] = updateOriginalData(originalData.vong1, 1);
+                        } else if (round === 2 && originalData.vong2) {
+                            console.log('Processing vong2 changes...');
+                            changedFiles['vong2.json'] = updateOriginalData(originalData.vong2, 2);
+                        } else if (round === 3 && originalData.vong3) {
+                            console.log('Processing vong3 changes...');
+                            changedFiles['vong3.json'] = updateOriginalData(originalData.vong3, 3);
+                        } else {
+                            console.warn(`No original data available for round ${round}`);
+                        }
+                    } catch (roundError) {
+                        console.error(`Error processing round ${round}:`, roundError);
+                        throw new Error(`Failed to process round ${round}: ${roundError.message}`);
+                    }
+                });
+                
+                console.log('Files to save:', Object.keys(changedFiles));
+                return changedFiles;
+                
+            } catch (error) {
+                console.error('Error getting changed files data:', error);
+                throw new Error(`Failed to prepare save data: ${error.message}`);
+            }
+        }        // Function to update original data structure with changes
         function updateOriginalData(originalData, round) {
-            const updatedData = JSON.parse(JSON.stringify(originalData)); // Deep clone
-            
-            // Update only changed questions in their original positions
-            function updateNestedStructure(obj, path = []) {
-                for (const key in obj) {
-                    if (Array.isArray(obj[key])) {
-                        // This is an array of questions
-                        obj[key].forEach((item, index) => {
-                            if (item && item.id && changedQuestions.has(item.id)) {
-                                const updatedQuestion = allQuestions.find(q => q.id === item.id);
-                                if (updatedQuestion) {
-                                    // Only update the image-related fields we allow editing
-                                    const fieldsToUpdate = ['image_id', 'use_image', 'position_image', 'question_image', 'bg_image', 'bg_image_overlay'];
-                                    fieldsToUpdate.forEach(field => {
-                                        if (updatedQuestion.hasOwnProperty(field)) {
-                                            obj[key][index][field] = updatedQuestion[field];
+            try {
+                const updatedData = JSON.parse(JSON.stringify(originalData)); // Deep clone
+                
+                // Update only changed questions in their original positions
+                function updateNestedStructure(obj, path = []) {
+                    if (!obj || typeof obj !== 'object') return;
+                    
+                    for (const key in obj) {
+                        if (!obj.hasOwnProperty(key)) continue;
+                        
+                        if (Array.isArray(obj[key])) {
+                            // This is an array of questions
+                            obj[key].forEach((item, index) => {
+                                if (item && item.id && changedQuestions.has(item.id)) {
+                                    const updatedQuestion = allQuestions.find(q => q.id === item.id);
+                                    if (updatedQuestion) {
+                                        console.log(`Updating question ${item.id} in ${path.join('.')} (Round ${round})`);
+                                        
+                                        // Only update the image-related fields we allow editing
+                                        const fieldsToUpdate = [
+                                            'image_id', 
+                                            'use_image', 
+                                            'position_image', 
+                                            'question_image', 
+                                            'bg_image', 
+                                            'bg_image_overlay'
+                                        ];
+                                        
+                                        fieldsToUpdate.forEach(field => {
+                                            if (updatedQuestion.hasOwnProperty(field)) {
+                                                // Đảm bảo giá trị được copy chính xác
+                                                if (updatedQuestion[field] === null) {
+                                                    obj[key][index][field] = null;
+                                                } else if (updatedQuestion[field] === undefined) {
+                                                    // Không thay đổi nếu undefined
+                                                } else {
+                                                    obj[key][index][field] = updatedQuestion[field];
+                                                }
+                                            }
+                                        });
+                                        
+                                        // Đặc biệt xử lý cho các trường đặc biệt theo từng round
+                                        if (round === 1) {
+                                            // Vong1: preserve dap_an_dung structure (string hoặc array)
+                                            // Không thay đổi dap_an_dung vì nó không phải image field
+                                        } else if (round === 2) {
+                                            // Vong2: preserve complex structure
+                                            // Không thay đổi phuong_an structure
+                                        } else if (round === 3) {
+                                            // Vong3: không có dap_an_dung, chỉ có cau_hoi
                                         }
-                                    });
+                                    }
                                 }
-                            }
-                        });
-                    } else if (typeof obj[key] === 'object' && obj[key] !== null) {
-                        updateNestedStructure(obj[key], [...path, key]);
+                            });
+                        } else if (typeof obj[key] === 'object' && obj[key] !== null) {
+                            updateNestedStructure(obj[key], [...path, key]);
+                        }
                     }
                 }
+                
+                updateNestedStructure(updatedData);
+                
+                // Validate result before returning
+                if (!updatedData || typeof updatedData !== 'object') {
+                    throw new Error('Updated data is invalid');
+                }
+                
+                return updatedData;
+                
+            } catch (error) {
+                console.error(`Error updating original data for round ${round}:`, error);
+                throw new Error(`Failed to update data structure for round ${round}: ${error.message}`);
             }
-            
-            updateNestedStructure(updatedData);
-            return updatedData;
         }
 
         // Helper function to save file with File System Access API

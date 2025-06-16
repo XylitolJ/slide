@@ -111,7 +111,7 @@
           "speech_id_options_F": "V2_KTM_HA_4_F.wav",
           "speech_id_options_G": "V2_KTM_HA_4_G.wav",
           "speech_id_answer": "V2_KTM_HA_4_ans.wav",
-          "bg_image": "images/bg/bg10.svg",
+          "bg_image": "images/bg/bg13.svg",
           "bg_image_overlay": "gradient"
         },
         {
@@ -321,7 +321,7 @@
           "speech_id_options_F": "V2_BV_HA_9_F.wav",
           "speech_id_options_G": "V2_BV_HA_9_G.wav",
           "speech_id_answer": "V2_BV_HA_9_ans.wav",
-          "bg_image": "images/bg/bg.svg",
+          "bg_image": "images/bg/bg16.svg",
           "bg_image_overlay": "gradient"
         }
       ]
@@ -415,7 +415,7 @@
           "speech_id_options_G": "V2_BXV_LT_11_G.wav",
           "speech_id_options_H": "V2_BXV_LT_11_H.wav",
           "speech_id_answer": "V2_BXV_LT_11_ans.wav",
-          "bg_image": "images/bg/bg1.svg",
+          "bg_image": "images/bg6.png",
           "bg_image_overlay": "gradient"
         },
         {
@@ -462,7 +462,7 @@
           "speech_id_options_H": "V2_BXV_HA_15_H.wav",
           "speech_id_options_I": "V2_BXV_HA_15_I.wav",
           "speech_id_answer": "V2_BXV_HA_15_ans.wav",
-          "bg_image": "images/bg/bg2.1.jpg",
+          "bg_image": "images/bg/bg12.svg",
           "bg_image_overlay": "gradient",
           "layout": "3columns"
         },
