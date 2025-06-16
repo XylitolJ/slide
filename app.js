@@ -620,8 +620,8 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        if (USE_SPEECH && (currentQuestionData.speech_id_timer || 'speech/30s.mp3')) {
-            playAudio(currentQuestionData.speech_id_timer || 'speech/30s.mp3');
+        if (USE_SPEECH && (currentQuestionData.speech_id_timer || 'speech/30s.wav')) {
+            playAudio(currentQuestionData.speech_id_timer || 'speech/30s.wav');
         }
 
         const totalDuration = parseInt(currentQuestionData.thoi_gian_tra_loi) || DEFAULT_TIME_PER_QUESTION;

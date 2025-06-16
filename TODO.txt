@@ -5,8 +5,9 @@
 - ☐ tạo lại âm thanh cho vòng 3: thêm từ Câu hỏi vào.
 #########
 
-Cho đồng hồ nổi lên khi bắt đầu tính giờ, Có âm thanh báo khi tính giờ hay hết giờ rõ ràng hơn
-Lỗi tải file âm thanh: V2_KTM_HA_10_F.wav
-Đồng hồ cần nổi bật hơn, và có tiếng ting khi bắt đầu
-Bỏ đi hiệu ứng animate câu hỏi số
+Cho đồng hồ nổi lên khi bắt đầu tính giờ
+✅ Có âm thanh báo khi tính giờ
+✅ Lỗi tải file âm thanh: V2_KTM_HA_10_F.wav
+ Đồng hồ cần nổi bật hơn
+✅ Bỏ đi hiệu ứng animate câu hỏi số
 có một ảnh kích thước khá nhỏ, báo lại với Hoàng
