@@ -613,8 +613,8 @@
         // Keyboard navigation
         document.addEventListener('keydown', (e) => {
             if (e.key === 'ArrowLeft') {
-                // Navigate to index.html
-                window.location.href = 'index.html';
+            // Navigate to index.html
+            window.location.href = 'index.html';
             } 
             // Right arrow key disabled to prevent accidental navigation to vong1.html
             // else if (e.key === 'ArrowRight') {
@@ -622,26 +622,22 @@
             //     window.location.href = 'vong1.html';
             // } 
             else if (e.key === 'Escape') {
-                // Back to rounds if viewing questions
-                const questionContainer = document.getElementById('questionContainer');
-                if (questionContainer.style.display !== 'none') {
-                    document.getElementById('backToRounds').click();
-                }
-            } else if (e.key.toLowerCase() === 'q') {
-                // Navigate to index.html (same as arrow left)
-                window.location.href = 'index.html';
+            // Back to rounds if viewing questions
+            const questionContainer = document.getElementById('questionContainer');
+            if (questionContainer.style.display !== 'none') {
+                document.getElementById('backToRounds').click();
+            }
             } else if (e.key === '1') {
-                // Navigate to vong1.html (equivalent to clicking round 1 indicator)
-                window.location.href = 'vong1.html';
+            // Navigate to vong1.html (equivalent to clicking round 1 indicator)
+            window.location.href = 'vong1.html';
             } else if (e.key === '2') {
-                // Navigate to vong2.html (equivalent to clicking round 2 indicator)
-                window.location.href = 'vong2.html';
+            // Navigate to vong2.html (equivalent to clicking round 2 indicator)
+            window.location.href = 'vong2.html';
             } else if (e.key === '3') {
-                // Navigate to vong3.html (equivalent to clicking round 3 indicator)
-                window.location.href = 'vong3.html';
+            // Navigate to vong3.html (equivalent to clicking round 3 indicator)
+            window.location.href = 'vong3.html';
             }
         });
-
         // Initialize on page load
         document.addEventListener('DOMContentLoaded', loadRounds);
     </script>    <a href="image-manager.html" id="openSettings" class="fixed bottom-4 left-4 text-amber-600 opacity-60 hover:opacity-100 z-50 hover:text-amber-800 transition-colors"><i class="fas fa-cog fa-lg"></i></a>

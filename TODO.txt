@@ -11,7 +11,7 @@
 ✅ Câu 7 vòng 2 ý D phải nằm bên Biện pháp xử lý
 ✅ Thêm tiêu đề: TỔNG CÔNG TY CÔNG NGHIỆP HOÁ CHÁT MỎ - VINACOMIN
 ✅  Bỏ 2 nội dung sau trong info vòng 3: Quy tắc giơ bảng, Phạm quy
-Tắt việc đọc đáp án cho cả 2 vòng
+✅  Tắt việc đọc đáp án cho cả 2 vòng
 info các vòng: Cho chiều ngang rộng ra
 C9 V3: thay nền
 C11 V3: thay nền
