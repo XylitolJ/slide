@@ -168,7 +168,7 @@
           "question_image": "No",
           "cau_hoi": "Anh/Chị cần làm gì khi phát hiện có đám cháy gần nơi làm việc?",
           "speech_id_question": "V3_PCCC_TL_5.wav",
-          "bg_image": "images\\cauhoi\\v3_c5.png",
+          "bg_image": "images/cauhoi/v3_c52.png",
           "bg_image_overlay": "gradient"
         },
         {
@@ -228,7 +228,7 @@
           "question_image": "No",
           "cau_hoi": "Anh/Chị hãy nêu cấu tạo, tính năng tác dụng, cách sử dụng và bảo quản bình chữa cháy xách tay sử dụng chất chữa cháy CO2?",
           "speech_id_question": "V3_PCCC_TL_9.wav",
-          "bg_image": "images\\cauhoi\\v3_c9.png",
+          "bg_image": "images/cauhoi/v3_c93.jpg",
           "bg_image_overlay": "gradient"
         },
         {
@@ -258,7 +258,7 @@
           "question_image": "No",
           "cau_hoi": "Anh/Chị trình bày các tư thế và kỹ thuật cầm lăng B chữa cháy?",
           "speech_id_question": "V3_PCCC_TL_11.wav",
-          "bg_image": "images/bg/bg1.jpg",
+          "bg_image": "images/cauhoi/v3_c111.jpg",
           "bg_image_overlay": "gradient"
         }
       ]

@@ -32,10 +32,9 @@
 </head>
 <body>
     <div id="p5-container"></div>
-    <script>
-        let rotationAngle = 0;
+    <script>        let rotationAngle = 0;
         let animationPhase = 0;
-        let maxPhase = 6;
+        let maxPhase = 7; // Increased to 7 phases for new sequence
         let phaseTimer = 0;
         let phaseDuration = 80;
         let images = [];
@@ -45,8 +44,11 @@
         let imageLoadCount = 0;
         let totalImagesToLoad = 5;        // Animation states
         let logoOpacity = 0;
-        let mainTitleOpacity = 0;
+        let mainTitleOpacity = 0; // For header text
+        let titleMainOpacity = 0; // For main title "HỘI THI AN TOÀN VỆ SINH VIÊN GIỎI"
         let companyOpacity = 0;
+        let yearOpacity = 0; // For "NĂM 2025" text
+        let orbitOpacity = 0; // For 3D orbit planets
         let dateOpacity = 0;
         let venueOpacity = 0;
         let geometryOpacity = 0;
@@ -69,62 +71,32 @@
         let decorativeShapes = [];
         
         // Pre-created mask to avoid memory leaks
-        let circleMask;
-          function preload() {
-            // Auto-discover and load all images from the folder
-            let commonImageExtensions = ['jpg', 'jpeg', 'png'];
-            let imageFolderPath = 'images/index_images/';
+        let circleMask;          function preload() {
+            // Load specific background images
+            let imageFiles = [
+                "images/bg/bg1.jpg", 
+                "images/bg/bg2.1.jpg",
+                "images/bg/bg2.jpg",
+                "images/bg/bg5.png",
+                "images/bg/bg6.png",
+                "images/bg/bg7.jpg",
+                "images/bg/bg8.jpg",
+                "images/bg/bg9.jpg"
+            ];
             
-            // Generate potential filenames to test
-            let potentialFiles = [];
+            console.log(`Loading ${imageFiles.length} background images...`);
             
-            // Try numbered files with different extensions
-            for (let i = 1; i <= 20; i++) {
-                commonImageExtensions.forEach(ext => {
-                    potentialFiles.push(`${imageFolderPath}${i}.${ext}`);
-                });
-            }
-            
-            // Try common filename patterns
-            let commonNames = ['img'];
-            for (let i = 1; i <= 10; i++) {
-                commonNames.forEach(name => {
-                    commonImageExtensions.forEach(ext => {
-                        potentialFiles.push(`${imageFolderPath}${name}${i}.${ext}`);
-                        potentialFiles.push(`${imageFolderPath}${name}_${i}.${ext}`);
-                    });
-                });
-            }
-            
-            // Try files without numbers
-            commonNames.forEach(name => {
-                commonImageExtensions.forEach(ext => {
-                    potentialFiles.push(`${imageFolderPath}${name}.${ext}`);
-                });
-            });
-            
-            let loadedCount = 0;
-            let totalAttempts = potentialFiles.length;
-            
-            console.log(`Attempting to load images from ${imageFolderPath}...`);
-            
-            potentialFiles.forEach((imgPath, index) => {
+            imageFiles.forEach((imgPath, index) => {
                 loadImage(imgPath, 
                     (img) => { 
                         images.push(img);
-                        loadedCount++;
                         console.log(`✓ Loaded: ${imgPath}`);
                     },
                     (error) => { 
-                        // Silently skip failed loads - this is expected for auto-discovery
+                        console.log(`✗ Failed to load: ${imgPath}`);
                     }
                 );
             });
-            
-            // Check loading progress after a delay
-            setTimeout(() => {
-                console.log(`Auto-discovery complete: Found ${images.length} images in ${imageFolderPath}`);
-            }, 2000);
         }
         
         function setup() {
@@ -150,10 +122,9 @@
                     rotation: 0,
                     rotSpeed: random(-0.02, 0.02)
                 });            }
-            
-            // Wait a bit for images to load
+              // Wait a bit for images to load
             setTimeout(() => {
-                console.log(`Loaded ${images.length} images`);
+                console.log(`Loaded ${images.length} background images successfully`);
                 if (images.length === 0) {
                     // Create default placeholder if no images loaded
                     let defaultImg = createGraphics(400, 300);
@@ -163,6 +134,7 @@
                     defaultImg.textSize(24);
                     defaultImg.text('No Images Found', 200, 150);
                     images.push(defaultImg);
+                    console.log('Using placeholder image');
                 }
                 
                 // Create circle mask once to avoid memory leaks
@@ -215,31 +187,44 @@
             // Phase 0: Geometric elements appear
             if (animationPhase >= 0) {
                 geometryOpacity = min(255, geometryOpacity + fadeSpeed);
-            }
-            
-            // Phase 1: Logo appears
+            }            // Phase 1: Logo appears + Header typing starts
             if (animationPhase >= 1) {
                 logoOpacity = min(255, logoOpacity + fadeSpeed);
-            }
-              // Phase 2: Main title appears with scale and rotation effects
+                mainTitleOpacity = min(255, mainTitleOpacity + fadeSpeed); // For header text
+            }              // Phase 2: Company name typing starts
             if (animationPhase >= 2) {
-                mainTitleOpacity = min(255, mainTitleOpacity + fadeSpeed * 0.3); // Much slower appearance
-                titleScale = min(1.0, titleScale + 0.015); // Much slower scale
-                titleRotation = max(0, titleRotation - 0.01); // Much slower rotation
+                companyOpacity = min(255, companyOpacity + fadeSpeed);
+            }
+            
+            // Phase 3: Main title "HỘI THI AN TOÀN VỆ SINH VIÊN GIỎI" appears
+            if (animationPhase >= 3) {
+                titleMainOpacity = min(255, titleMainOpacity + fadeSpeed * 0.4); // Slower fade
+                titleScale = min(1.0, titleScale + 0.012); // Slower scale
+                titleRotation = max(0, titleRotation - 0.008); // Slower rotation
                 titleGlowTimer++;
             } else {
-                titleScale = 0.3;
-                titleRotation = 0.2;
+                // Initialize values for smoother transition
+                titleScale = 0.5; // Start from larger scale
+                titleRotation = 0.1; // Start from smaller rotation
             }
-            
-            // Phase 3: Company name appears with shooting effect
-            if (animationPhase >= 3) {
-                companyOpacity = min(255, companyOpacity + fadeSpeed);
-                companyAnimTimer++;
-            }
-            
-            // Phase 4: Date appears with slide and bounce
+              // Phase 4: Year "NĂM 2025" appears
             if (animationPhase >= 4) {
+                yearOpacity = min(255, yearOpacity + fadeSpeed);
+                yearPulseTimer++;
+                if (yearPulseTimer < 180) { // 3 seconds at 60fps
+                    yearOffset = sin(frameCount * 0.05) * 3;
+                } else {
+                    yearOffset = 0;
+                }
+            }
+            
+            // Phase 5: 3D Orbit planets appear
+            if (animationPhase >= 5) {
+                orbitOpacity = min(255, orbitOpacity + fadeSpeed);
+            }
+            
+            // Phase 6: Date cards appear with slide and bounce
+            if (animationPhase >= 6) {
                 dateOpacity = min(255, dateOpacity + fadeSpeed);
                 cardSlideX = min(0, cardSlideX + 15);
                 cardAnimTimer++;
@@ -251,26 +236,13 @@
                 } else {
                     cardBounce = 0;
                 }
-            } else {
-                cardSlideX = -200;
+            } else {                cardSlideX = -200;
                 cardBounce = 0;
                 cardAnimTimer = 0;
             }
-            
-            // Phase 5: Venue appears with slide from right
-            if (animationPhase >= 5) {
-                venueOpacity = min(255, venueOpacity + fadeSpeed);
-            }
-            
-            // Year offset animation that gradually stops
-            if (animationPhase >= 2) {
-                yearPulseTimer++;
-                if (yearPulseTimer < 180) { // 3 seconds at 60fps
-                    yearOffset = sin(frameCount * 0.05) * 3;
-                } else {
-                    yearOffset = 0;
-                }
-            }
+              // Phase 7: Venue appears with slide from right
+            if (animationPhase >= 7) {
+                venueOpacity = min(255, venueOpacity + fadeSpeed);            }
         }
           function drawGeometricElements() {
             push();
@@ -386,7 +358,7 @@
                 pop();
             }
         }        function drawContent() {
-            // Company header - above main title
+            // Company header - above main title with typing effect
             push();
             fill(41, 84, 144, mainTitleOpacity);
             textAlign(CENTER, CENTER);
@@ -394,20 +366,52 @@
             textStyle(BOLD);
             textFont('Inter');
             
-            // First line of company header
-            text("TỔNG CÔNG TY", width/2, 80);
+            // Header typing effect
+            let headerText = "TỔNG CÔNG TY CÔNG NGHIỆP HOÁ CHẤT MỎ - VINACOMIN";
+            let headerTotalChars = headerText.length;
+            let headerVisibleChars = 0;
             
-            // Second line of company header
-            text("CÔNG NGHIỆP HOÁ CHẤT MỎ - VINACOMIN", width/2, 120);
+            // Header typing starts in phase 1 (after logo appears)
+            if (animationPhase >= 1) {
+                let headerAnimProgress = min(1, (frameCount - phaseDuration) / 120); // 2 seconds to complete
+                headerVisibleChars = floor(headerTotalChars * headerAnimProgress);
+            }
+            
+            let headerDisplayText = headerText.substring(0, headerVisibleChars);
+            text(headerDisplayText, width/2, 80);
             pop();
             
-            // Main title - prominently displayed with advanced effects
+            // Company name - right below header, starts after header is complete
             push();
-            translate(width/2, 180); // Moved down to accommodate header
+            fill(41, 84, 144, companyOpacity);
+            textAlign(CENTER, CENTER);
+            textSize(38);
+            textStyle(BOLD);
+            textFont('Roboto Condensed');
+            
+            let companyText = "CÔNG TY CÔNG NGHIỆP HÓA CHẤT MỎ THÁI NGUYÊN";
+            let totalChars = companyText.length;
+            let visibleChars = 0;
+              // Company name typing starts in phase 2
+            let headerComplete = headerVisibleChars >= headerTotalChars;
+            if (animationPhase >= 2 && headerComplete) {
+                let delayFrames = 30; // 0.5 second delay after header completes
+                let companyStartFrame = phaseDuration + 120 + delayFrames; // header duration + delay
+                let animProgress = min(1, (frameCount - companyStartFrame) / 120); // 2 seconds to complete
+                if (animProgress > 0) {
+                    visibleChars = floor(totalChars * animProgress);
+                }
+            }
+              // Draw only visible characters
+            let displayText = companyText.substring(0, visibleChars);
+            text(displayText, width/2, 150); // Moved down from 120 to 135 for better spacing
+            pop();
+              // Main title - prominently displayed with advanced effects
+            push();
+            translate(width/2, 180); // Moved down to accommodate company name below header
             scale(titleScale);
             rotate(titleRotation);
-            
-            // Glow effect for main title that fades after 2 seconds
+              // Glow effect for main title that fades after 2 seconds
             let glowIntensity = 0;
             if (titleGlowTimer < 120) { // 2 seconds at 60fps
                 glowIntensity = 1;
@@ -417,30 +421,28 @@
             
             if (glowIntensity > 0) {
                 drawingContext.shadowBlur = 20 * glowIntensity;
-                drawingContext.shadowColor = `rgba(41, 84, 144, ${mainTitleOpacity/255 * 0.5 * glowIntensity})`;
+                drawingContext.shadowColor = `rgba(41, 84, 144, ${titleMainOpacity/255 * 0.5 * glowIntensity})`;
             }
             
-            fill(41, 84, 144, mainTitleOpacity);
+            fill(41, 84, 144, titleMainOpacity); // Use titleMainOpacity instead of mainTitleOpacity
             textAlign(CENTER, CENTER);
             textSize(80);
             textStyle(BOLD);
             textFont('Oswald');
-            text("HỘI THI AN TOÀN VỆ SINH VIÊN GIỎI", 0, 50);
+            text("HỘI THI AN TOÀN VỆ SINH VIÊN GIỎI", 0, 100);
             
             // Reset shadow
             drawingContext.shadowBlur = 0;
-            pop();
-              // Year highlight with oscillating effects
+            pop();            // Hiệu ứng hệ hành tinh 3D - TÁCH RIÊNG
             push();
-            translate(width/2, 380 + yearOffset); // Vị trí đã được điều chỉnh
-              // Hiệu ứng hệ hành tinh 3D xung quanh văn bản năm
-            if (mainTitleOpacity > 100) {
+            translate(width/2, 500); // Vị trí riêng cho hiệu ứng orbit
+            if (orbitOpacity > 0) {
                 for (let i = 0; i < 12; i++) {
                     // Different orbital speeds and radii for each "planet"
                     let baseAngle = frameCount * (0.01 + i * 0.002) + i * (TWO_PI / 12);
                     
                     // Create elliptical orbits with different inclinations
-                    let orbitRadius = 60 + i * 8; // Base orbital distance
+                    let orbitRadius = 300 + i * 8; // Base orbital distance
                     let orbitEllipse = 0.7; // Elliptical factor for 3D perspective
                     
                     // Calculate 3D positions (viewed from side angle)
@@ -454,7 +456,7 @@
                     
                     // Opacity and brightness based on depth (closer = brighter)
                     let brightness = map(z, -orbitRadius, orbitRadius, 0.1, 0.5);
-                    let alpha = mainTitleOpacity * brightness;
+                    let alpha = orbitOpacity * brightness; // Use orbitOpacity instead of mainTitleOpacity
                     
                     // Color variation for different "planets"
                     let hue = (i * 30 + frameCount * 0.5) % 360;
@@ -497,6 +499,11 @@
                     }
                 }
             }
+            pop();
+
+            // Text "NĂM 2025" và gạch chân - TÁCH RIÊNG
+            push();
+            translate(width/2, 420 + yearOffset); // Vị trí riêng cho text
             
             // Main year text with pulse effect that stops after 3 seconds
             let pulseScale = 1;
@@ -504,19 +511,18 @@
                 pulseScale = 1 + sin(frameCount * 0.08) * 0.1;
             }
             scale(pulseScale);
-            
-            // Year text with subtle shadow effect
+              // Year text with subtle shadow effect
             drawingContext.shadowBlur = 1;
-            drawingContext.shadowColor = `rgba(0, 0, 0, ${mainTitleOpacity/255 * 0.3})`;
+            drawingContext.shadowColor = `rgba(0, 0, 0, ${yearOpacity/255 * 0.3})`;
             drawingContext.shadowOffsetX = 1;
             drawingContext.shadowOffsetY = 1;
             
-            fill(255, 119, 51, mainTitleOpacity);
+            fill(255, 119, 51, yearOpacity);
             textAlign(CENTER, CENTER);
             textSize(72);
             textStyle(BOLD);
             textFont('Oswald');
-            text("NĂM 2025", 0, -50);
+            text("NĂM 2025", 0, 0);
             
             // Reset shadow
             drawingContext.shadowBlur = 0;
@@ -524,7 +530,7 @@
             drawingContext.shadowOffsetY = 0;
             
             // Animated underline that stops after pulse effect
-            stroke(255, 119, 51, mainTitleOpacity);
+            stroke(255, 119, 51, yearOpacity);
             let strokeWeightVal = 4;
             let lineWidth = 120;
             
@@ -535,28 +541,6 @@
             
             strokeWeight(strokeWeightVal);
             line(-lineWidth, 35, lineWidth, 35);
-            pop();
-            
-            // Company name with shooting effect from right
-            push();
-            fill(41, 84, 144, companyOpacity);
-            textAlign(CENTER, CENTER);
-            textSize(38);
-            textStyle(BOLD);
-            textFont('Roboto Condensed');
-            
-            let companyText = "CÔNG TY CÔNG NGHIỆP HÓA CHẤT MỎ THÁI NGUYÊN";
-            let totalChars = companyText.length;
-            let visibleChars = 0;
-            
-            // Calculate how many characters should be visible based on animation timer
-            if (animationPhase >= 3) {
-                let animProgress = min(1, companyAnimTimer / 180); // 3 seconds to complete
-                visibleChars = floor(totalChars * animProgress);
-            }
-              // Draw only visible characters
-            let displayText = companyText.substring(0, visibleChars);
-            text(displayText, width/2, 460); // Adjusted position
             pop();
             
             // Information cards section with enhanced animations
@@ -650,9 +634,8 @@
             pop();
             
             // Location card (right) with slide from right
-            push();
-            let rightSlideX = animationPhase >= 5 ? min(0, (-width + frameCount * 20)) : width;
-            if (animationPhase >= 5 && rightSlideX >= 0) rightSlideX = 0;
+            push();            let rightSlideX = animationPhase >= 7 ? min(0, (-width + frameCount * 20)) : width;
+            if (animationPhase >= 7 && rightSlideX >= 0) rightSlideX = 0;
             translate(rightSlideX, 0);
             
             // Enhanced shadow
@@ -672,23 +655,19 @@
             
             // Animated location pin icon
             push();
-            translate(card2X + cardWidth/2, cardY + 60);
-            
-            // Pulsing effect that stops after 5 seconds
+            translate(card2X + cardWidth/2, cardY + 60);            // Pulsing effect that stops after 5 seconds
             let pinPulse = 1;
-            if (animationPhase >= 5) {
-                let venueAnimTimer = (frameCount - (5 * phaseDuration + phaseTimer)) * (animationPhase > 5 ? 1 : phaseTimer / phaseDuration);
+            if (animationPhase >= 7) {
+                let venueAnimTimer = (frameCount - (7 * phaseDuration + phaseTimer)) * (animationPhase > 7 ? 1 : phaseTimer / phaseDuration);
                 if (venueAnimTimer < 300) { // 5 seconds
                     let pulseIntensity = max(0, 1 - venueAnimTimer / 300);
                     pinPulse = 1 + sin(frameCount * 0.1) * 0.2 * pulseIntensity;
                 }
             }
-            scale(pinPulse);
-            
-            // Pin with glow that fades
+            scale(pinPulse);            // Pin with glow that fades
             let pinGlowIntensity = 0;
-            if (animationPhase >= 5) {
-                let venueAnimTimer = (frameCount - (5 * phaseDuration + phaseTimer)) * (animationPhase > 5 ? 1 : phaseTimer / phaseDuration);
+            if (animationPhase >= 7) {
+                let venueAnimTimer = (frameCount - (7 * phaseDuration + phaseTimer)) * (animationPhase > 7 ? 1 : phaseTimer / phaseDuration);
                 if (venueAnimTimer < 300) {
                     pinGlowIntensity = max(0, 1 - venueAnimTimer / 300);
                 }
@@ -706,13 +685,11 @@
             drawingContext.shadowBlur = 0;
             
             fill(255, venueOpacity);
-            ellipse(0, -4, 15, 15);
-            
-            // Animated pin bottom that stops
+            ellipse(0, -4, 15, 15);            // Animated pin bottom that stops
             fill(229, 91, 152, venueOpacity);
             let pinBounce = 0;
-            if (animationPhase >= 5) {
-                let venueAnimTimer = (frameCount - (5 * phaseDuration + phaseTimer)) * (animationPhase > 5 ? 1 : phaseTimer / phaseDuration);
+            if (animationPhase >= 7) {
+                let venueAnimTimer = (frameCount - (7 * phaseDuration + phaseTimer)) * (animationPhase > 7 ? 1 : phaseTimer / phaseDuration);
                 if (venueAnimTimer < 300) {
                     let bounceIntensity = max(0, 1 - venueAnimTimer / 300);
                     pinBounce = sin(frameCount * 0.12) * 3 * bounceIntensity;
