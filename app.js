@@ -25,11 +25,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const footerProgressBarEl = document.getElementById('footerProgressBar');
     const roundInfoDisplayEl = document.getElementById('roundInfoDisplay'); // New element for round info    // Popup elements
     const timesUpPopupEl = document.getElementById('timeUpOverlay'); // Updated ID for new overlay
-    const startTimerPopupEl = document.getElementById('startTimerPopup'); // Start timer popup element
-
-    // --- Configuration --- 
+    const startTimerPopupEl = document.getElementById('startTimerPopup'); // Start timer popup element    // --- Configuration --- 
     let DEBUG_MODE = 0; // 0 = normal, 1 = no timer, 2 = no timer + no audio
     const USE_SPEECH = localStorage.getItem("useSpeech") !== "false";
+    let PLAY_ANSWER_AUDIO = false; // Global variable to control answer audio playback (default: false)
     const SHOW_IMAGE_PLACEHOLDER_ON_ERROR = true; // If true, shows a placeholder if an image fails to load
     const IMAGE_PLACEHOLDER_SVG = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23cbd5e1'%3E%3Cpath d='M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z'/%3E%3C/svg%3E"; // Simple image icon
 
@@ -923,9 +922,10 @@ async function displayAnswer() {
         if (DEBUG_MODE === 2) {
             // DEBUG MODE 2: Skip audio, use delay instead
             await new Promise(r => setTimeout(r, DELAY_NO_SPEECH_ANSWER));
-        } else if (USE_SPEECH && currentQuestionData.speech_id_answer) {
+        } else if (USE_SPEECH && PLAY_ANSWER_AUDIO && currentQuestionData.speech_id_answer) {
+            // Only play answer audio if PLAY_ANSWER_AUDIO is true
             await playAudio(`speech/${currentQuestionData.speech_id_answer}`);
-        } else if (!USE_SPEECH) {
+        } else if (!USE_SPEECH || !PLAY_ANSWER_AUDIO) {
             await new Promise(r => setTimeout(r, DELAY_NO_SPEECH_ANSWER));
         }
         // Enable navigation to next question
@@ -1048,9 +1048,7 @@ async function displayAnswer() {
             console.error("Could not load questions:", error);
             progressTextEl.textContent = "Lỗi tải dữ liệu câu hỏi. Vui lòng kiểm tra file vong1.json, question_sets.json và console.";
         }
-    }
-
-    // --- Emergency Exit Function ---
+    }    // --- Emergency Exit Function ---
     function emergencyExitToPage3() {
         // Stop all audio
         if (currentAudio && currentAudio.source) {
@@ -1071,7 +1069,34 @@ async function displayAnswer() {
         
         // Navigate to page3.html
         window.location.href = 'page3.html';
-    }    // Utility to stop all ongoing timers and audio without navigating away
+    }
+    
+    function toggleAnswerAudioMode() {
+        PLAY_ANSWER_AUDIO = !PLAY_ANSWER_AUDIO;
+        console.log(`Answer audio mode: ${PLAY_ANSWER_AUDIO ? 'ENABLED' : 'DISABLED'}`);
+        
+        // Optional: Show a visual indicator
+        const indicator = document.createElement('div');
+        indicator.textContent = `Chế độ đọc đáp án: ${PLAY_ANSWER_AUDIO ? 'BẬT' : 'TẮT'}`;
+        indicator.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: ${PLAY_ANSWER_AUDIO ? '#10b981' : '#ef4444'};
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: bold;
+            z-index: 10000;
+            font-size: 16px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        `;
+        document.body.appendChild(indicator);
+        
+        setTimeout(() => {
+            indicator.remove();
+        }, 2000);
+    }// Utility to stop all ongoing timers and audio without navigating away
     function stopAllEvents() {
         console.log('%c[STOP ALL EVENTS] Starting stopAllEvents()', 'color: red; font-weight: bold;');
         
@@ -1189,10 +1214,13 @@ async function displayAnswer() {
             e.preventDefault();
             DEBUG_MODE = 2;
             console.log('DEBUG MODE 2 activated: Timer and audio disabled');
-            progressTextEl.textContent = 'Timer and audio disabled';
-        } else if (e.key.toLowerCase() === 'd' && e.ctrlKey) { // Ctrl+D to toggle debug
+            progressTextEl.textContent = 'Timer and audio disabled';        } else if (e.key.toLowerCase() === 'd' && e.ctrlKey) { // Ctrl+D to toggle debug
             e.preventDefault();
-            console.log("Debug mode toggle attempted. Use Ctrl+0 or Ctrl+9 for specific debug modes.");} else if (e.key.toLowerCase() === 'q') { // Q key for emergency exit
+            console.log("Debug mode toggle attempted. Use Ctrl+0 or Ctrl+9 for specific debug modes.");
+        } else if (e.key.toLowerCase() === 'm' && e.ctrlKey && e.altKey) { // Ctrl+Alt+M to toggle answer audio
+            e.preventDefault();
+            toggleAnswerAudioMode();
+        } else if (e.key.toLowerCase() === 'q') { // Q key for emergency exit
             e.preventDefault();
             emergencyExitToPage3();
         } else if (e.key === '1') { // Number 1 key to go to info page for round 1
