@@ -425,15 +425,15 @@
             textSize(80);
             textStyle(BOLD);
             textFont('Oswald');
-            text("HỘI THI AN TOÀN VỆ SINH VIÊN GIỎI", 0, 70);
+            text("HỘI THI AN TOÀN VỆ SINH VIÊN GIỎI", 0, 50);
             
             // Reset shadow
             drawingContext.shadowBlur = 0;
             pop();
               // Year highlight with oscillating effects
             push();
-            translate(width/2, 380 + yearOffset); // Adjusted position
-              // 3D Planetary system effect around year text
+            translate(width/2, 380 + yearOffset); // Vị trí đã được điều chỉnh
+              // Hiệu ứng hệ hành tinh 3D xung quanh văn bản năm
             if (mainTitleOpacity > 100) {
                 for (let i = 0; i < 12; i++) {
                     // Different orbital speeds and radii for each "planet"
@@ -516,7 +516,7 @@
             textSize(72);
             textStyle(BOLD);
             textFont('Oswald');
-            text("NĂM 2025", 0, 0);
+            text("NĂM 2025", 0, -50);
             
             // Reset shadow
             drawingContext.shadowBlur = 0;
