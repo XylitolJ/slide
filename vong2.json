@@ -96,8 +96,8 @@
             "g": "Vi phạm quy định an toàn trong thi công nạp mìn, sử dụng hòn đá để buộc cố định KXL của lỗ mìn."
           },
           "dap_an_dung": [
+            "a",
             "b",
-            "d",
             "e",
             "g"
           ],
@@ -475,7 +475,7 @@
           "use_image": "Yes",
           "position_image": "Right",
           "question_image": "Yes",
-          "cau_hoi": "Quan sát hình ảnh trên, là ATVSV anh (chị) thấy có gì sai sót?",
+          "cau_hoi": "Quan sát hình ảnh trên, là ATVSV anh (chị) thấy có gì sai sót? Biện pháp xử lý là gì?",
           "phuong_an": {
             "Note1": "Sai sót:",
             "a": "Thủ kho ngồi lên thùng chứa thuốc nổ; xếp quá cao so với quy định (theo QCVN 01:2019/BCT không quá 1,6m so với sàn nhà kho).",

@@ -278,7 +278,7 @@
             
             // Main concentric circles with image - enlarged
             push();
-            translate(280, height/2 + 30); // Dịch trái (350->280) và xuống (height/2-50 -> height/2+30)
+            translate(250, height/2 + 50); // Dịch trái (350->280) và xuống (height/2-50 -> height/2+30)
             
             // Outer rotating ring - increased size
             push();
@@ -331,11 +331,11 @@
             ellipse(200, 150, 120, 120);
             ellipse(1700, 200, 80, 80);
             ellipse(1600, 800, 100, 100);
-            ellipse(150, 900, 200, 200);
+            ellipse(150, 1000, 200, 200);
             
             // Yellow accent elements
             fill(255, 200, 0, geometryOpacity * 0.7);
-            ellipse(950, 500, 150, 150);
+            ellipse(950, 600, 150, 150);
             ellipse(1800, 600, 60, 60);
             
             // Dotted patterns
@@ -386,9 +386,24 @@
                 pop();
             }
         }        function drawContent() {
+            // Company header - above main title
+            push();
+            fill(41, 84, 144, mainTitleOpacity);
+            textAlign(CENTER, CENTER);
+            textSize(32);
+            textStyle(BOLD);
+            textFont('Inter');
+            
+            // First line of company header
+            text("TỔNG CÔNG TY", width/2, 80);
+            
+            // Second line of company header
+            text("CÔNG NGHIỆP HOÁ CHẤT MỎ - VINACOMIN", width/2, 120);
+            pop();
+            
             // Main title - prominently displayed with advanced effects
             push();
-            translate(width/2, 150);
+            translate(width/2, 180); // Moved down to accommodate header
             scale(titleScale);
             rotate(titleRotation);
             
@@ -410,15 +425,14 @@
             textSize(80);
             textStyle(BOLD);
             textFont('Oswald');
-            text("HỘI THI AN TOÀN VỆ SINH VIÊN GIỎI", 0, 0);
+            text("HỘI THI AN TOÀN VỆ SINH VIÊN GIỎI", 0, 70);
             
             // Reset shadow
             drawingContext.shadowBlur = 0;
             pop();
-            
-            // Year highlight with oscillating effects
+              // Year highlight with oscillating effects
             push();
-            translate(width/2, 250 + yearOffset);
+            translate(width/2, 380 + yearOffset); // Adjusted position
             
             // Particle effect background for year
             if (mainTitleOpacity > 100) {
@@ -490,10 +504,9 @@
                 let animProgress = min(1, companyAnimTimer / 180); // 3 seconds to complete
                 visibleChars = floor(totalChars * animProgress);
             }
-            
-            // Draw only visible characters
+              // Draw only visible characters
             let displayText = companyText.substring(0, visibleChars);
-            text(displayText, width/2, 330);
+            text(displayText, width/2, 460); // Adjusted position
             pop();
             
             // Information cards section with enhanced animations
