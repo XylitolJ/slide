@@ -433,18 +433,68 @@
               // Year highlight with oscillating effects
             push();
             translate(width/2, 380 + yearOffset); // Adjusted position
-            
-            // Particle effect background for year
+              // 3D Planetary system effect around year text
             if (mainTitleOpacity > 100) {
-                for (let i = 0; i < 15; i++) {
-                    let angle = frameCount * 0.02 + i * 0.4;
-                    let radius = 80 + sin(frameCount * 0.03 + i) * 20;
-                    let x = cos(angle) * radius;
-                    let y = sin(angle) * radius;
+                for (let i = 0; i < 12; i++) {
+                    // Different orbital speeds and radii for each "planet"
+                    let baseAngle = frameCount * (0.01 + i * 0.002) + i * (TWO_PI / 12);
                     
-                    fill(255, 119, 51, mainTitleOpacity * 0.3);
+                    // Create elliptical orbits with different inclinations
+                    let orbitRadius = 60 + i * 8; // Base orbital distance
+                    let orbitEllipse = 0.7; // Elliptical factor for 3D perspective
+                    
+                    // Calculate 3D positions (viewed from side angle)
+                    let x = cos(baseAngle) * orbitRadius;
+                    let z = sin(baseAngle) * orbitRadius; // Depth component
+                    let y = z * orbitEllipse * 0.3; // Flatten for side view perspective
+                    
+                    // Particle size based on depth (closer = larger)
+                    let depthFactor = map(z, -orbitRadius, orbitRadius, 0.3, 1.2);
+                    let particleSize = 4 + depthFactor * 6;
+                    
+                    // Opacity and brightness based on depth (closer = brighter)
+                    let brightness = map(z, -orbitRadius, orbitRadius, 0.1, 0.5);
+                    let alpha = mainTitleOpacity * brightness;
+                    
+                    // Color variation for different "planets"
+                    let hue = (i * 30 + frameCount * 0.5) % 360;
+                    let planetColor = [
+                        [255, 119, 51], // Orange
+                        [255, 200, 0],  // Yellow
+                        [200, 255, 100], // Light green
+                        [100, 200, 255], // Light blue
+                        [255, 150, 200]  // Pink
+                    ];
+                    let colorIndex = i % planetColor.length;
+                    let [r, g, b] = planetColor[colorIndex];
+                    
+                    fill(r, g, b, alpha);
                     noStroke();
-                    ellipse(x, y, 8, 8);
+                    
+                    // Add slight glow effect for closer particles
+                    if (depthFactor > 0.8) {
+                        drawingContext.shadowBlur = 3;
+                        drawingContext.shadowColor = `rgba(${r}, ${g}, ${b}, ${alpha/255 * 0.5})`;
+                    }
+                    
+                    ellipse(x, y, particleSize, particleSize);
+                    
+                    // Reset shadow
+                    drawingContext.shadowBlur = 0;
+                    
+                    // Add orbital trail effect for some particles
+                    if (i % 3 === 0 && depthFactor > 0.6) {
+                        stroke(r, g, b, alpha * 0.2);
+                        strokeWeight(1);
+                        noFill();
+                        
+                        // Draw partial orbital path
+                        let trailLength = PI * 0.3;
+                        let startAngle = baseAngle - trailLength;
+                        arc(0, 0, orbitRadius * 2, orbitRadius * 2 * orbitEllipse * 0.3, 
+                            startAngle, baseAngle);
+                        noStroke();
+                    }
                 }
             }
             

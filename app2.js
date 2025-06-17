@@ -434,8 +434,7 @@ document.addEventListener('DOMContentLoaded', () => {
             slideContainer.classList.remove(...allClasses); // Remove all theme classes
             slideContainer.classList.add(themeClass); // Add the new theme class
         }
-    }
-    // Function to render options in 3-column layout
+    }    // Function to render options in 3-column layout
     function renderThreeColumnOptions(questionData) {
         const threeColumnsContainer = document.getElementById('threeColumnsContainer');
         const column1Container = document.getElementById('column1Container');
@@ -453,11 +452,17 @@ document.addEventListener('DOMContentLoaded', () => {
         // Track current column (1 for errors, 2 for solutions)
         let currentColumn = 1;
         let note1Added = false;
-        let note2Added = false;
-        
-        if (questionData.phuong_an) {
-            Object.entries(questionData.phuong_an).forEach(([key, value]) => {
-                if (value) {                    if (key.toLowerCase() === 'note1') {
+        let note2Added = false;        if (questionData.phuong_an) {
+            // Don't sort, preserve the original order from JSON
+            // This ensures Note1 -> a,b,c -> Note2 -> d,e,f... order is maintained
+            const entries = Object.entries(questionData.phuong_an);
+            
+            // Track if we've encountered Note2 yet
+            let hasEncounteredNote2 = false;
+            
+            entries.forEach(([key, value]) => {
+                if (value) {
+                    if (key.toLowerCase() === 'note1') {
                         // Add Note1 header to column 1
                         const headerEl = document.createElement('div');
                         headerEl.classList.add('column-header', 'errors');
@@ -465,7 +470,6 @@ document.addEventListener('DOMContentLoaded', () => {
                         headerEl.innerHTML = `<i class="fas fa-exclamation-triangle"></i>${value}`;
                         column1Container.appendChild(headerEl);
                         note1Added = true;
-                        currentColumn = 1;
                     } else if (key.toLowerCase() === 'note2') {
                         // Add Note2 header to column 2
                         const headerEl = document.createElement('div');
@@ -474,7 +478,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         headerEl.innerHTML = `<i class="fas fa-tools"></i>${value}`;
                         column2Container.appendChild(headerEl);
                         note2Added = true;
-                        currentColumn = 2;
+                        hasEncounteredNote2 = true; // Mark that we've seen Note2
                     } else {
                         // Regular option - place in appropriate column
                         const optionKeyUpper = key.toUpperCase();
@@ -492,12 +496,11 @@ document.addEventListener('DOMContentLoaded', () => {
                             </div>
                         `;
                         
-                        // Determine which column to place option in
-                        // Options a-d go to column 1 (errors), e-g go to column 2 (solutions)
-                        const optionLetter = key.toLowerCase();
-                        if (['a', 'b', 'c', 'd'].includes(optionLetter)) {
+                        // Logic: if we haven't encountered Note2 yet, put in column 1 (errors)
+                        // if we have encountered Note2, put in column 2 (solutions)
+                        if (!hasEncounteredNote2) {
                             column1Container.appendChild(optionEl);
-                        } else if (['e', 'f', 'g', 'h', 'i', 'j'].includes(optionLetter)) {
+                        } else {
                             column2Container.appendChild(optionEl);
                         }
                     }
@@ -981,11 +984,15 @@ document.addEventListener('DOMContentLoaded', () => {
             
             // Check if this is a 3-column layout question
             const isThreeColumnLayout = currentQuestionData.layout === '3columns';
-            
-            if (isThreeColumnLayout) {
-                // Handle 3-column layout sequence: question > Note1 > a,b,c,d > Note2 > e,f,g
+              if (isThreeColumnLayout) {
+                // Handle 3-column layout sequence using the same order as JSON
                 console.log('startQuestionSequence: Using 3-column audio sequence');
-                  // Step 1: Show Note1 header and play Note1 audio if available
+                
+                // Get entries in the same order as JSON
+                const entries = Object.entries(currentQuestionData.phuong_an);
+                let hasEncounteredNote2 = false;
+                
+                // Step 1: Show Note1 header and play Note1 audio if available
                 const note1Header = document.getElementById('note1Header');
                 if (note1Header) {
                     console.log('startQuestionSequence: Showing Note1 header');
@@ -997,16 +1004,35 @@ document.addEventListener('DOMContentLoaded', () => {
                 } else {
                     await new Promise(r => setTimeout(r, DELAY_NO_SPEECH_OPTION));
                 }
-                  // Step 2: Show and speak options a-d (column 1 - errors)
-                const column1Options = ['a', 'b', 'c', 'd'];
-                for (const optionKey of column1Options) {
-                    if (currentQuestionData.phuong_an[optionKey]) {
-                        const optionEl = document.getElementById(`option${optionKey.toUpperCase()}`);
+                
+                // Step 2: Process entries in order
+                for (const [key, value] of entries) {
+                    if (key.toLowerCase() === 'note1') {
+                        // Already handled above
+                        continue;
+                    } else if (key.toLowerCase() === 'note2') {
+                        // Show Note2 header and play Note2 audio
+                        const note2Header = document.getElementById('note2Header');
+                        if (note2Header) {
+                            console.log('startQuestionSequence: Showing Note2 header');
+                            note2Header.classList.add('show');
+                        }
+                        
+                        if (USE_SPEECH && currentQuestionData.speech_id_note2) {
+                            await playAudio(`speech/${currentQuestionData.speech_id_note2}`);
+                        } else {
+                            await new Promise(r => setTimeout(r, DELAY_NO_SPEECH_OPTION));
+                        }
+                        
+                        hasEncounteredNote2 = true;
+                    } else if (value && key.match(/^[a-z]$/)) {
+                        // Regular option - process in order
+                        const optionEl = document.getElementById(`option${key.toUpperCase()}`);
                         if (optionEl) {
-                            console.log(`startQuestionSequence: Animating 3-column option ${optionKey}`);
+                            console.log(`startQuestionSequence: Animating 3-column option ${key} (${hasEncounteredNote2 ? 'column 2' : 'column 1'})`);
                             animateElement(optionEl, 'option-appear');
                             
-                            const speechFileKey = `speech_id_options_${optionKey.toUpperCase()}`;
+                            const speechFileKey = `speech_id_options_${key.toUpperCase()}`;
                             const speechFile = currentQuestionData[speechFileKey];
                             
                             if (DEBUG_MODE === 2) {
@@ -1020,43 +1046,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         }
                     }
                 }
-                  // Step 3: Show Note2 header and play Note2 audio if available
-                const note2Header = document.getElementById('note2Header');
-                if (note2Header) {
-                    console.log('startQuestionSequence: Showing Note2 header');
-                    note2Header.classList.add('show');
-                }
-                
-                if (USE_SPEECH && currentQuestionData.speech_id_note2) {
-                    await playAudio(`speech/${currentQuestionData.speech_id_note2}`);
                 } else {
-                    await new Promise(r => setTimeout(r, DELAY_NO_SPEECH_OPTION));
-                }
-                  // Step 4: Show and speak options e-g (column 2 - solutions)
-                const column2Options = ['e', 'f', 'g', 'h', 'i', 'j'];
-                for (const optionKey of column2Options) {
-                    if (currentQuestionData.phuong_an[optionKey]) {
-                        const optionEl = document.getElementById(`option${optionKey.toUpperCase()}`);
-                        if (optionEl) {
-                            console.log(`startQuestionSequence: Animating 3-column option ${optionKey}`);
-                            animateElement(optionEl, 'option-appear');
-                            
-                            const speechFileKey = `speech_id_options_${optionKey.toUpperCase()}`;
-                            const speechFile = currentQuestionData[speechFileKey];
-                            
-                            if (DEBUG_MODE === 2) {
-                                // DEBUG MODE 2: Skip audio, use delay instead
-                                await new Promise(r => setTimeout(r, DELAY_NO_SPEECH_OPTION));
-                            } else if (USE_SPEECH && speechFile) {
-                                await playAudio(`speech/${speechFile}`);
-                            } else {
-                                await new Promise(r => setTimeout(r, DELAY_NO_SPEECH_OPTION));
-                            }
-                        }
-                    }
-                }
-                
-            } else {
                 // Regular layout - original logic
                 const optionElements = optionsContainerEl.querySelectorAll('.option-card');
                 console.log(`startQuestionSequence: Found ${optionElements.length} option elements to animate.`);
