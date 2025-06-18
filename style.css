@@ -1061,8 +1061,8 @@ body, html {
 .header-footer-theme-glass-vong2 .header .contest-info h1,
 .header-footer-theme-glass-vong3 .header .contest-info h1 {
     color: white !important;
-    text-shadow: 0 0 6px rgba(0, 0, 0, 0.8), 0 0 2px rgba(0, 0, 0, 1) !important;
-    -webkit-text-stroke: 0.5px rgba(0, 0, 0, 0.3) !important;
+    text-shadow: 0 0 4px rgba(0, 0, 0, 0.8), 0 0 4px rgba(0, 0, 0, 1) !important;
+    -webkit-text-stroke: 0.5px rgba(0, 0, 0, 0.4) !important;
     font-weight: 900 !important;
 }
 
@@ -1071,8 +1071,8 @@ body, html {
 .header-footer-theme-glass-vong2 .header .contest-info p,
 .header-footer-theme-glass-vong3 .header .contest-info p {
     color: white !important;
-    text-shadow: 0 0 6px rgba(0, 0, 0, 0.8), 0 0 2px rgba(0, 0, 0, 1) !important;
-    -webkit-text-stroke: 0.5px rgba(0, 0, 0, 0.3) !important;
+    text-shadow: 0 0 4px rgba(0, 0, 0, 0.8), 0 0 4px rgba(0, 0, 0, 1) !important;
+    -webkit-text-stroke: 0.5px rgba(0, 0, 0, 0.4) !important;
     font-weight: 700 !important;
 }
 
