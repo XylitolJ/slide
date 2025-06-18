@@ -60,12 +60,40 @@ document.addEventListener('DOMContentLoaded', () => {
     let sequenceInProgress = false;
     let answerShown = false;
     let navigationInProgress = false; // Add flag to prevent audio restart during navigation
-
+    
     const OPTION_KEYS = ['a', 'b', 'c', 'd', 'e', 'g']; // Possible option keys
       // Background styles for cleanup purposes only
     const backgroundStyles = [
         'bg-default', 'bg-abstract', 'bg-wave', 'bg-svg-pattern-1', 'bg-svg-pattern-2', 'bg-svg-pattern-3'
     ];
+    let shimmerTimer; // Glass shimmer timer
+
+    // Glass Shimmer Functions
+    function startGlassShimmerTimer() {
+        if (shimmerTimer) clearTimeout(shimmerTimer);
+        
+        const randomInterval = Math.random() * (15000 - 5000) + 5000; // 5-15 giây
+        shimmerTimer = setTimeout(() => {
+            if (getThemeMode() === 'glass') {
+                triggerGlassShimmer();
+            }
+            startGlassShimmerTimer(); // Lặp lại với interval ngẫu nhiên mới
+        }, randomInterval);
+    }
+
+    function triggerGlassShimmer() {
+        const header = document.querySelector('.header');
+        const footer = document.querySelector('.footer');
+        
+        [header, footer].forEach(el => {
+            if (el) {
+                el.classList.add('glass-shimmer-active');
+                setTimeout(() => {
+                    el.classList.remove('glass-shimmer-active');
+                }, 2000);
+            }
+        });
+    }
 
     // Initialize AudioContext
     function initAudio() {
@@ -75,8 +103,8 @@ document.addEventListener('DOMContentLoaded', () => {
             } catch (e) {
                 console.error("Web Audio API is not supported in this browser.", e);
                 progressTextEl.textContent = "Lỗi: Trình duyệt không hỗ trợ âm thanh.";
-            }
-        }    }        // --- Audio Playback ---
+                }
+        }    }            // --- Audio Playback ---
     async function playAudio(filePath, onEndCallback) {
         if (!USE_SPEECH || !audioContext || !filePath || navigationInProgress || DEBUG_MODE === 2) { // Check navigation flag and DEBUG_MODE 2
             if (onEndCallback) onEndCallback();
@@ -363,12 +391,18 @@ document.addEventListener('DOMContentLoaded', () => {
         } else {
             console.log('Invalid round. Use: vong1, vong2, or vong3');
         }
-    };
+    };    // Theme management with localStorage support
+    function getThemeMode() {
+        return localStorage.getItem('slideThemeMode') || THEME_MODE;
+    }
 
     // Modified getThemeClass to use override if available
     function getThemeClassWithOverride(category) {
-        const themeMode = window.THEME_MODE_OVERRIDE || THEME_MODE;
+        const themeMode = getThemeMode();
         switch (themeMode) {
+            case 'glass':
+                return `header-footer-theme-glass header-footer-theme-glass-${currentRound}`;
+                
             case 'round':
                 return `header-footer-theme-${currentRound}`;
             
@@ -390,20 +424,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function getThemeClass(category) {
         return getThemeClassWithOverride(category);
-    }
-    function applyTheme(category) {
+    }    function applyTheme(category) {
         const themeClass = getThemeClass(category);
         // Define all possible theme classes to ensure only one is active on slideContainer
         const allClasses = [
             'header-footer-theme-default', 'header-footer-theme-cspl', 
             'header-footer-theme-pccc', 'header-footer-theme-yte', 
             'header-footer-theme-ktm', 'header-footer-theme-bq-bx-vc',
-            'header-footer-theme-vong1', 'header-footer-theme-vong2', 'header-footer-theme-vong3'
+            'header-footer-theme-vong1', 'header-footer-theme-vong2', 'header-footer-theme-vong3',
+            'header-footer-theme-glass', 'header-footer-theme-glass-vong1', 
+            'header-footer-theme-glass-vong2', 'header-footer-theme-glass-vong3'
         ];
         // Apply theme to slideContainer, CSS will handle header/footer specifics
         if (slideContainer) {
             slideContainer.classList.remove(...allClasses); // Remove all theme classes
-            slideContainer.classList.add(themeClass); // Add the new theme class
+            slideContainer.classList.add(...themeClass.split(' ')); // Add the new theme class(es)
         }
     }
     function renderSlide(questionData) {
@@ -1061,6 +1096,11 @@ async function displayAnswer() {
                 // Update round info display
                 updateRoundInfoDisplay();
                 renderSlide(allQuestions[currentQuestionIndex]);
+                
+                // Start glass shimmer timer if glass theme is enabled
+                if (getThemeMode() === 'glass') {
+                    startGlassShimmerTimer();
+                }
             } else {
                 progressTextEl.textContent = isDemoMode ? "Không tìm thấy câu hỏi demo nào." : "Không tìm thấy câu hỏi nào theo cấu hình trong question_sets.json.";
             }

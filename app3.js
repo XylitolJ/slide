@@ -44,10 +44,41 @@ document.addEventListener('DOMContentLoaded', () => {    // URL Parameter handli
     const USE_SPEECH = false; // Disable speech functionality for Round 3
     const DELAY_NO_SPEECH_ANSWER = 1000; // ms to wait after showing answer if no speech
     const DELAY_NO_SPEECH_QUESTION = 500; // ms to wait if no speech for question
-    
-    // THEME CONFIGURATION - Global variable to control header/footer theme
+      // THEME CONFIGURATION - Global variable to control header/footer theme
     // Options: 'default', 'category', 'round'
     const THEME_MODE = 'round'; // Change this to switch between theme modes
+
+    // Theme management with localStorage support
+    function getThemeMode() {
+        return localStorage.getItem('slideThemeMode') || THEME_MODE;
+    }
+
+    // Glass Shimmer Functions
+    function startGlassShimmerTimer() {
+        if (shimmerTimer) clearTimeout(shimmerTimer);
+        
+        const randomInterval = Math.random() * (15000 - 5000) + 5000; // 5-15 giây
+        shimmerTimer = setTimeout(() => {
+            if (getThemeMode() === 'glass') {
+                triggerGlassShimmer();
+            }
+            startGlassShimmerTimer(); // Lặp lại với interval ngẫu nhiên mới
+        }, randomInterval);
+    }
+
+    function triggerGlassShimmer() {
+        const header = document.querySelector('.header');
+        const footer = document.querySelector('.footer');
+        
+        [header, footer].forEach(el => {
+            if (el) {
+                el.classList.add('glass-shimmer-active');
+                setTimeout(() => {
+                    el.classList.remove('glass-shimmer-active');
+                }, 2000);
+            }
+        });
+    }
 
     // Popup elements
     const timesUpPopupEl = document.getElementById('timeUpOverlay') || { style: { display: 'none', opacity: '0' } };
@@ -61,7 +92,9 @@ document.addEventListener('DOMContentLoaded', () => {    // URL Parameter handli
     let timeLeft = 0; // Will be set per question
     const DEFAULT_TIME_PER_QUESTION = 300; // Default 5 minutes for Round 3 practical exams
     let sequenceInProgress = false;
-    let navigationInProgress = false; // Add flag to prevent audio restart during navigation// Background styles for cleanup purposes only
+    let navigationInProgress = false; // Add flag to prevent audio restart during navigation
+    let shimmerTimer; // Glass shimmer timer
+// Background styles for cleanup purposes only
     const backgroundStyles = [
         'bg-default', 'bg-abstract', 'bg-wave', 'bg-svg-pattern-1', 'bg-svg-pattern-2', 'bg-svg-pattern-3'
     ];    // --- Audio functions removed for Round 3 ---
@@ -146,12 +179,13 @@ document.addEventListener('DOMContentLoaded', () => {    // URL Parameter handli
         } else {
             console.log('Invalid round. Use: vong1, vong2, or vong3');
         }
-    };
-
-    // Modified getThemeClass to use override if available
+    };    // Modified getThemeClass to use override if available
     function getThemeClassWithOverride(category) {
-        const themeMode = window.THEME_MODE_OVERRIDE || THEME_MODE;
+        const themeMode = getThemeMode();
         switch (themeMode) {
+            case 'glass':
+                return `header-footer-theme-glass header-footer-theme-glass-${currentRound}`;
+                
             case 'round':
                 return `header-footer-theme-${currentRound}`;
             
@@ -181,12 +215,14 @@ document.addEventListener('DOMContentLoaded', () => {    // URL Parameter handli
             'header-footer-theme-pccc', 'header-footer-theme-yte', 
             'header-footer-theme-ktm', 'header-footer-theme-bq-bx-vc',
             'header-footer-theme-vong1', 'header-footer-theme-vong2', 'header-footer-theme-vong3',
+            'header-footer-theme-glass', 'header-footer-theme-glass-vong1', 
+            'header-footer-theme-glass-vong2', 'header-footer-theme-glass-vong3',
             // Remove old theme classes for backward compatibility
             'theme-default', 'theme-medical', 'theme-fire', 'theme-safety'        ];
         // Apply theme to slideContainer, CSS will handle header/footer specifics
         if (slideContainer) {
             slideContainer.classList.remove(...allClasses); // Remove all theme classes
-            slideContainer.classList.add(themeClass); // Add the new theme class
+            slideContainer.classList.add(...themeClass.split(' ')); // Add the new theme class(es)
         }
     }
 
@@ -644,10 +680,14 @@ document.addEventListener('DOMContentLoaded', () => {    // URL Parameter handli
                 } else {
                     progressTextEl.textContent = `Đã tải ${allQuestions.length} câu hỏi thực hành. Nhấn "Bắt đầu" để bắt đầu.`;
                 }
-                
-                // Update round info display
+                  // Update round info display
                 updateRoundInfoDisplay();
                 renderSlide(allQuestions[currentQuestionIndex]);
+                
+                // Start glass shimmer timer if glass theme is enabled
+                if (getThemeMode() === 'glass') {
+                    startGlassShimmerTimer();
+                }
                 
                 // Ensure the question content is visible for Round 3 practical questions
                 if (questionSectionEl) {

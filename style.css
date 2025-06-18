@@ -468,7 +468,7 @@ body, html {
 }
 
 .category-badge { /* Style for new category display */
-    background: rgba(255, 255, 255, 0.2);
+    background: linear-gradient(135deg, #F25C05, #F29F05);
     color: white;
     padding: 0.5vh 1vw; /* Reduced padding */
     border-radius: 12px; /* Slightly smaller radius */
@@ -896,23 +896,6 @@ body, html {
     background: linear-gradient(135deg, #1e40af, #1d4ed8) !important;
 }
 
-/* Round-based themes V1 */
-/* Round-based themes V1 */
-/* .header-footer-theme-vong1 .header,
-.header-footer-theme-vong1 .footer {
-    background: linear-gradient(135deg, #dc2626, #ef4444, #f87171) !important; /* Red gradient for Round 1 */
-/* }
-
-.header-footer-theme-vong2 .header,
-.header-footer-theme-vong2 .footer {
-    background: linear-gradient(135deg, #2563eb, #3b82f6, #60a5fa) !important; /* Blue gradient for Round 2 */
-/* }
-
-.header-footer-theme-vong3 .header,
-.header-footer-theme-vong3 .footer {
-    background: linear-gradient(135deg, #7c3aed, #a855f7, #c084fc) !important; /* Purple gradient for Round 3 */
-/* } */
-
 
 /* Round-based themes V2 */
 .header-footer-theme-vong1 .header,
@@ -930,115 +913,122 @@ body, html {
     background: linear-gradient(135deg, #7c3aed, #a855f7, #c084fc) !important; /* Purple gradient for Round 3 */
 }
 
-/* Custom shape for the image wrapper */
-.custom-image-shape {
-    border-top-left-radius: 80px;    /* Large radius for top-left */
-    border-bottom-left-radius: 250px; /* Different large radius for bottom-left */
-    border-top-right-radius: 0px;     /* No radius for top-right */
-    border-bottom-right-radius: 0px;  /* No radius for bottom-right */
+/* Glass Theme Base */
+.header-footer-theme-glass .header,
+.header-footer-theme-glass .footer {
+    background: rgba(255, 255, 255, 0.1) !important;
+    backdrop-filter: blur(1px) !important;
+    /* border: 0.1px solid transparent !important; */
+    position: relative;
+    overflow: hidden;
 }
 
-/* Image used as main question content */
-.question-image {
-    border: 2px solid #d1d5db; /* gray-300 */
-    border-radius: 6px;
+/* Glass Theme cho từng vòng với border-image gradient */
+.header-footer-theme-glass-vong1 .header,
+.header-footer-theme-glass-vong1 .footer {
+    border-image: linear-gradient(135deg, #059669, #10b981, #34d399) 1 !important;
 }
 
-/* --- New Background Styles --- */
-
-/* --- New Background Styles --- */
-
-/* Abstract and Wave Backgrounds */
-.bg-abstract {
-    background: 
-        url('data:image/svg+xml,<svg viewBox="0 0 1200 800" xmlns="http://www.w3.org/2000/svg"><defs><filter id="noiseFilter"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="4" stitchTiles="stitch"/><feColorMatrix type="saturate" values="0"/></filter></defs><rect width="100%" height="100%" fill="%23667eea"/><rect width="100%" height="100%" filter="url(%23noiseFilter)" opacity="0.4"/><circle cx="200" cy="150" r="80" fill="%23f093fb" opacity="0.8"/><circle cx="800" cy="200" r="120" fill="%23f5576c" opacity="0.6"/><circle cx="400" cy="400" r="100" fill="%234facfe" opacity="0.7"/><circle cx="900" cy="500" r="90" fill="%23ffecd2" opacity="0.8"/><circle cx="100" cy="600" r="70" fill="%2343e97b" opacity="0.6"/></svg>') center/cover,
-        linear-gradient(135deg, rgba(255, 202, 85, 0.9) 0%, rgba(242, 159, 5, 0.9) 50%, rgba(242, 92, 5, 0.9) 100%);
-    background-repeat: no-repeat;
-}
-        
-.bg-wave {
-    background: 
-        url('data:image/svg+xml,<svg viewBox="0 0 1200 800" xmlns="http://www.w3.org/2000/svg"><path d="M0,300 C300,200 600,400 900,300 C1050,250 1200,350 1200,350 L1200,800 L0,800 Z" fill="%23667eea" opacity="0.1"/><path d="M0,400 C300,300 600,500 900,400 C1050,350 1200,450 1200,450 L1200,800 L0,800 Z" fill="%23764ba2" opacity="0.1"/><path d="M0,500 C300,400 600,600 900,500 C1050,450 1200,550 1200,550 L1200,800 L0,800 Z" fill="%23f093fb" opacity="0.1"/></svg>') center/cover,
-        linear-gradient(135deg, rgba(255, 202, 85, 0.95) 0%, rgba(242, 159, 5, 0.95) 50%, rgba(242, 92, 5, 0.95) 100%);
-    background-repeat: no-repeat;
+.header-footer-theme-glass-vong2 .header,
+.header-footer-theme-glass-vong2 .footer {
+    border-image: linear-gradient(135deg, #d97706, #f59e0b, #fbbf24) 1 !important;
 }
 
-/* Default slide container background (can be one of the above or the original gradient) */
-.slide-container.bg-default {
-    background: linear-gradient(135deg, #FFCA55 0%, #F29F05 50%, #F25C05 100%);
+.header-footer-theme-glass-vong3 .header,
+.header-footer-theme-glass-vong3 .footer {
+    border-image: linear-gradient(135deg, #7c3aed, #a855f7, #c084fc) 1 !important;
 }
 
-/* --- Footer Answer Highlight --- */
-.answer-text-highlight {
-    background-color: #f59e0b; /* Bright amber background */
-    color: #ffffff; /* White text */
-    padding: 0.5rem 1rem; /* Padding */
-    border-radius: 8px; /* Rounded corners */
-    font-weight: 700; /* Bold text */
-    font-size: 1rem; /* Reduced font size */
-    box-shadow: 0 4px 15px rgba(245, 158, 11, 0.5); /* Glow effect */
-    text-shadow: 1px 1px 2px rgba(0,0,0,0.2); /* Subtle text shadow */
-    transition: all 0.3s ease-in-out;
-    /* Consider adding a subtle animation if desired */
-    /* animation: pulseHighlight 1.5s infinite alternate; */
+/* Enhanced text styling for glass theme - Header (Combined Approach for readability) */
+.header-footer-theme-glass .header .contest-info h1,
+.header-footer-theme-glass-vong1 .header .contest-info h1,
+.header-footer-theme-glass-vong2 .header .contest-info h1,
+.header-footer-theme-glass-vong3 .header .contest-info h1 {
+    color: white !important;
+    text-shadow: 0 0 6px rgba(0, 0, 0, 0.8), 0 0 2px rgba(0, 0, 0, 1) !important;
+    -webkit-text-stroke: 0.5px rgba(0, 0, 0, 0.3) !important;
+    font-weight: 900 !important;
 }
 
-/* Optional pulse animation for the highlight */
-/*
-@keyframes pulseHighlight {
-    0% {
-        transform: scale(1);
-        box-shadow: 0 4px 15px rgba(245, 158, 11, 0.5);
-    }
-  /* --- External SVG Backgrounds --- */
-.bg-svg-pattern-1 {
-    background-image: url('images/svg (1).svg');
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
+.header-footer-theme-glass .header .contest-info p,
+.header-footer-theme-glass-vong1 .header .contest-info p,
+.header-footer-theme-glass-vong2 .header .contest-info p,
+.header-footer-theme-glass-vong3 .header .contest-info p {
+    color: white !important;
+    text-shadow: 0 0 6px rgba(0, 0, 0, 0.8), 0 0 2px rgba(0, 0, 0, 1) !important;
+    -webkit-text-stroke: 0.5px rgba(0, 0, 0, 0.3) !important;
+    font-weight: 700 !important;
 }
 
-.bg-stripes {
-    background-image: linear-gradient(45deg, rgba(255, 255, 255, 0.1) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.1) 50%, rgba(255, 255, 255, 0.1) 75%, transparent 75%, transparent);
-    background-size: 20px 20px;
+.header-footer-theme-glass .header .question-number,
+.header-footer-theme-glass-vong1 .header .question-number,
+.header-footer-theme-glass-vong2 .header .question-number,
+.header-footer-theme-glass-vong3 .header .question-number {
+    text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.8) !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4), 
+                inset 0 1px 0 rgba(255, 255, 255, 0.3) !important;
 }
 
-.bg-svg-pattern-2 {
-    background-image: url('images/svg (2).svg');
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
+.header-footer-theme-glass .header .category-badge,
+.header-footer-theme-glass-vong1 .header .category-badge,
+.header-footer-theme-glass-vong2 .header .category-badge,
+.header-footer-theme-glass-vong3 .header .category-badge {
+    color: white !important;
+    text-shadow: 0 0 2px rgba(0, 0, 0, 0.8), 0 0 2px rgba(0, 0, 0, 1) !important;
+    /* -webkit-text-stroke: 0.5px rgba(0, 0, 0, 0.3) !important; */
+    font-weight: 700 !important;
+    font-size: 0.85vw !important; /* Tăng size một chút cho category khi theme glass */
 }
 
-.bg-svg-pattern-3 {
-    background-image: url('images/svg (3).svg');
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
+/* Enhanced text styling for glass theme - Footer (Combined Approach for readability) */
+.header-footer-theme-glass .footer h3,
+.header-footer-theme-glass-vong1 .footer h3,
+.header-footer-theme-glass-vong2 .footer h3,
+.header-footer-theme-glass-vong3 .footer h3 {
+    color: white !important;
+    text-shadow: 0 0 6px rgba(0, 0, 0, 0.8), 0 0 2px rgba(0, 0, 0, 1) !important;
+    -webkit-text-stroke: 0.5px rgba(0, 0, 0, 0.3) !important;
+    font-weight: 800 !important;
 }
 
-/* Fullscreen image modal */
-.image-modal {
-    position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.8);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 10050;
+.header-footer-theme-glass .footer p,
+.header-footer-theme-glass-vong1 .footer p,
+.header-footer-theme-glass-vong2 .footer p,
+.header-footer-theme-glass-vong3 .footer p {
+    color: white !important;
+    text-shadow: 0 0 6px rgba(0, 0, 0, 0.8), 0 0 2px rgba(0, 0, 0, 1) !important;
+    -webkit-text-stroke: 0.5px rgba(0, 0, 0, 0.3) !important;
+    font-weight: 700 !important;
 }
 
-/* Ensure question section has consistent styling */
-#questionSection {
-    background: linear-gradient(135deg, rgba(248, 250, 252, 0.95), rgba(241, 245, 249, 0.95)) !important;
-    border: 1px solid rgba(203, 213, 225, 0.6) !important;
-    backdrop-filter: blur(8px) !important;
+.header-footer-theme-glass .footer .date,
+.header-footer-theme-glass-vong1 .footer .date,
+.header-footer-theme-glass-vong2 .footer .date,
+.header-footer-theme-glass-vong3 .footer .date {
+    color: white !important;
+    text-shadow: 0 0 6px rgba(0, 0, 0, 0.8), 0 0 2px rgba(0, 0, 0, 1) !important;
+    -webkit-text-stroke: 0.5px rgba(0, 0, 0, 0.3) !important;
+    font-weight: 700 !important;
 }
 
-/* Override any conflicting background styles on option elements */
-.option-card .text-gray-800 {
-    color: #1f2937 !important; /* Ensure text is dark and readable on light background */
-    font-weight: 500 !important;
+.header-footer-theme-glass .footer .location,
+.header-footer-theme-glass-vong1 .footer .location,
+.header-footer-theme-glass-vong2 .footer .location,
+.header-footer-theme-glass-vong3 .footer .location {
+    color: white !important;
+    text-shadow: 0 0 6px rgba(0, 0, 0, 0.8), 0 0 2px rgba(0, 0, 0, 1) !important;
+    -webkit-text-stroke: 0.5px rgba(0, 0, 0, 0.3) !important;
+    font-weight: 700 !important;
+}
+
+.header-footer-theme-glass .footer #progressText,
+.header-footer-theme-glass-vong1 .footer #progressText,
+.header-footer-theme-glass-vong2 .footer #progressText,
+.header-footer-theme-glass-vong3 .footer #progressText {
+    color: white !important;
+    text-shadow: 0 0 6px rgba(0, 0, 0, 0.8), 0 0 2px rgba(0, 0, 0, 1) !important;
+    -webkit-text-stroke: 0.5px rgba(0, 0, 0, 0.3) !important;
+    font-weight: 800 !important;
 }
 /* User customizable styles */
 :root { --question-font-size: 1.5rem; --option-font-size: 1.25rem; }
@@ -1654,6 +1644,8 @@ body, html {
         box-shadow: 0 25px 50px -12px rgba(5, 150, 105, 0.8), 0 0 30px rgba(16, 185, 129, 0.6);
     }
 }
+
+
 
 @keyframes textPulse {
     0% { opacity: 0.9; }
