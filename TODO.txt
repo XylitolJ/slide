@@ -16,6 +16,7 @@
 ✅  C9 V3: thay nền
 ✅  C11 V3: thay nền
 ✅  C5 V3: thay nền
+✅  Cho đồng hồ nổi lên khi bắt đầu tính giờ, thêm option header, footer dạng glass
 
-
-Cho đồng hồ nổi lên khi bắt đầu tính giờ, thêm option header, footer dạng glass
+Khi popup hết giờ hiện lên thì chỉ cho phép nhấn phím Enter, disable phí mũi tên trái , phải
+Tăng cỡ font chữ cho đáp án
