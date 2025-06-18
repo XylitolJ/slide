@@ -13,7 +13,6 @@
 ✅  Bỏ 2 nội dung sau trong info vòng 3: Quy tắc giơ bảng, Phạm quy
 ✅  Tắt việc đọc đáp án cho cả 2 vòng
 ✅  info các vòng: Cho chiều ngang rộng ra
-
 ✅  C9 V3: thay nền
 ✅  C11 V3: thay nền
 ✅  C5 V3: thay nền

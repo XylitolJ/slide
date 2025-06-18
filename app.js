@@ -938,7 +938,7 @@ async function displayAnswer() {
             currentQuestionIndex++;
             renderSlide(allQuestions[currentQuestionIndex]);
         } else {
-            window.location.href = 'page3.html';
+            window.location.href = 'menu.html';
         }
         
         // Clear navigation flag after a short delay to allow page rendering
@@ -955,8 +955,8 @@ async function displayAnswer() {
             currentQuestionIndex--;
             renderSlide(allQuestions[currentQuestionIndex]);
         } else {
-            // If we're at the first question, navigate back to page3.html
-            window.location.href = 'page3.html';        }
+            // If we're at the first question, navigate back to menu.html
+            window.location.href = 'menu.html';        }
     }
 
     // --- Update Round Info Display ---
@@ -1067,8 +1067,8 @@ async function displayAnswer() {
         sequenceInProgress = false;
         answerShown = false;
         
-        // Navigate to page3.html
-        window.location.href = 'page3.html';
+        // Navigate to menu.html
+        window.location.href = 'menu.html';
     }
     
     function toggleAnswerAudioMode() {

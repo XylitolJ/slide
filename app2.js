@@ -1321,7 +1321,7 @@ async function displayAnswer() {
             currentQuestionIndex++;
             renderSlide(allQuestions[currentQuestionIndex]);
         } else {
-            window.location.href = 'page3.html';
+            window.location.href = 'menu.html';
         }
         
         // Clear navigation flag after a short delay to allow audio to start
@@ -1344,8 +1344,8 @@ async function displayAnswer() {
             currentQuestionIndex--;
             renderSlide(allQuestions[currentQuestionIndex]);
         } else {
-            // If we're at the first question, navigate back to page3.html
-            window.location.href = 'page3.html';        }
+            // If we're at the first question, navigate back to menu.html
+            window.location.href = 'menu.html';        }
         
         // Clear navigation flag after a short delay to allow audio to start
         setTimeout(() => {
@@ -1514,8 +1514,8 @@ async function displayAnswer() {
         // Reset all flags
         sequenceInProgress = false;
         answerShown = false;
-          // Navigate to page3.html
-        window.location.href = 'page3.html';
+          // Navigate to menu.html
+        window.location.href = 'menu.html';
     }
     
     function toggleAnswerAudioMode() {

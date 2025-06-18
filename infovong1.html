@@ -1,575 +1,844 @@
 <!DOCTYPE html>
 <html lang="vi">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Thông tin Vòng 1 - ATVSV 2025</title>
-    
+
     <!-- Auth protection -->
     <script src="auth.js"></script>
     <script>
-        if (!window.slideAuth.requireAuth()) {
-            document.addEventListener('DOMContentLoaded', function() {
-                document.body.style.display = 'none';
-            });
-        }
+      if (!window.slideAuth.requireAuth()) {
+        document.addEventListener("DOMContentLoaded", function () {
+          document.body.style.display = "none";
+        });
+      }
     </script>
-    
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+
+    <link
+      href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap"
+      rel="stylesheet"
+    />
     <script src="https://cdn.jsdelivr.net/npm/p5@1.7.0/lib/p5.min.js"></script>
     <style>
-        * {
-            font-family: 'Inter', sans-serif;
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+      * {
+        font-family: "Inter", sans-serif;
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        height: 100vh;
+        overflow: hidden;
+      }
+
+      .slide-container {
+        width: 100vw;
+        height: 100vh;
+        position: relative;
+      }
+
+      #p5-background {
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: 1;
+      }
+
+      .content-layer {
+        position: relative;
+        z-index: 10;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+      }
+      .glass-card {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(20px);
+        border-radius: 20px;
+        border: 2px solid #10b981;
+        box-shadow: 0 20px 60px rgba(16, 185, 129, 0.15);
+      }
+      .content-item {
+        display: flex;
+        align-items: flex-start;
+        margin-bottom: 0.75rem;
+        padding: 0.75rem;
+        background: rgba(255, 255, 255, 0.9);
+        border-radius: 16px;
+        border-left: 4px solid #10b981;
+        box-shadow: 0 4px 20px rgba(16, 185, 129, 0.1);
+        transition: all 0.4s ease;
+        opacity: 0;
+        transform: translateX(-50px);
+      }
+
+      .content-item:hover {
+        transform: translateX(8px) scale(1.02);
+        box-shadow: 0 8px 30px rgba(16, 185, 129, 0.2);
+      }
+
+      .scoring-item {
+        display: flex;
+        align-items: flex-start;
+        margin-bottom: 0.75rem;
+        padding: 0.75rem;
+        background: rgba(255, 255, 255, 0.9);
+        border-radius: 16px;
+        border-left: 4px solid #059669;
+        box-shadow: 0 4px 20px rgba(5, 150, 105, 0.1);
+        transition: all 0.4s ease;
+        opacity: 0;
+        transform: translateX(50px);
+      }
+
+      .scoring-item:hover {
+        transform: translateX(-8px) scale(1.02);
+        box-shadow: 0 8px 30px rgba(5, 150, 105, 0.2);
+      }
+      .icon-container {
+        width: 42px;
+        height: 42px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.25rem;
+        color: white;
+        margin-right: 0.75rem;
+        flex-shrink: 0;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .icon-container::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(
+          45deg,
+          transparent,
+          rgba(255, 255, 255, 0.3),
+          transparent
+        );
+        transform: translateX(-100%);
+        animation: shimmer 3s infinite;
+      }
+      @keyframes shimmer {
+        0% {
+          transform: translateX(-100%);
         }
-        
-        html, body {
-            height: 100vh;
-            overflow: hidden;
+        100% {
+          transform: translateX(100%);
         }
-        
-        .slide-container {
-            width: 100vw;
-            height: 100vh;
-            position: relative;
+      }
+
+      .slide-in-left {
+        animation: slideInLeft 0.8s ease-out forwards;
+      }
+
+      .slide-in-right {
+        animation: slideInRight 0.8s ease-out forwards;
+      }
+
+      .fade-in-up {
+        animation: fadeInUp 1s ease-out forwards;
+      }
+
+      .bounce-in {
+        animation: bounceIn 1.2s ease-out forwards;
+      }
+
+      @keyframes slideInLeft {
+        from {
+          opacity: 0;
+          transform: translateX(-50px);
         }
-        
-        #p5-background {
-            position: fixed;
-            top: 0;
-            left: 0;
-            z-index: 1;
+        to {
+          opacity: 1;
+          transform: translateX(0);
         }
-        
-        .content-layer {
-            position: relative;
-            z-index: 10;
-            width: 100%;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
+      }
+
+      @keyframes slideInRight {
+        from {
+          opacity: 0;
+          transform: translateX(50px);
         }
-          .glass-card {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(20px);
-            border-radius: 20px;
-            border: 2px solid #10b981;
-            box-shadow: 0 20px 60px rgba(16, 185, 129, 0.15);
-        }        .content-item {
-            display: flex;
-            align-items: flex-start;
-            margin-bottom: 0.75rem;
-            padding: 0.75rem;
-            background: rgba(255, 255, 255, 0.9);
-            border-radius: 16px;
-            border-left: 4px solid #10b981;
-            box-shadow: 0 4px 20px rgba(16, 185, 129, 0.1);
-            transition: all 0.4s ease;
-            opacity: 0;
-            transform: translateX(-50px);
+        to {
+          opacity: 1;
+          transform: translateX(0);
         }
-        
-        .content-item:hover {
-            transform: translateX(8px) scale(1.02);
-            box-shadow: 0 8px 30px rgba(16, 185, 129, 0.2);
+      }
+
+      @keyframes fadeInUp {
+        from {
+          opacity: 0;
+          transform: translateY(30px);
         }
-        
-        .scoring-item {
-            display: flex;
-            align-items: flex-start;
-            margin-bottom: 0.75rem;
-            padding: 0.75rem;
-            background: rgba(255, 255, 255, 0.9);
-            border-radius: 16px;
-            border-left: 4px solid #059669;
-            box-shadow: 0 4px 20px rgba(5, 150, 105, 0.1);
-            transition: all 0.4s ease;
-            opacity: 0;
-            transform: translateX(50px);
+        to {
+          opacity: 1;
+          transform: translateY(0);
         }
-        
-        .scoring-item:hover {
-            transform: translateX(-8px) scale(1.02);
-            box-shadow: 0 8px 30px rgba(5, 150, 105, 0.2);
-        }        .icon-container {
-            width: 42px;
-            height: 42px;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.25rem;
-            color: white;
-            margin-right: 0.75rem;
-            flex-shrink: 0;
-            position: relative;
-            overflow: hidden;
+      }
+
+      @keyframes bounceIn {
+        0% {
+          opacity: 0;
+          transform: scale(0.3);
         }
-        
-        .icon-container::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.3), transparent);
-            transform: translateX(-100%);
-            animation: shimmer 3s infinite;
+        50% {
+          opacity: 1;
+          transform: scale(1.05);
         }
-          @keyframes shimmer {
-            0% { transform: translateX(-100%); }
-            100% { transform: translateX(100%); }
+        70% {
+          transform: scale(0.9);
         }
-        
-        .slide-in-left {
-            animation: slideInLeft 0.8s ease-out forwards;
+        100% {
+          opacity: 1;
+          transform: scale(1);
         }
-        
-        .slide-in-right {
-            animation: slideInRight 0.8s ease-out forwards;
+      }
+
+      .text-gradient {
+        background: linear-gradient(135deg, #3b82f6, #10b981);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      .pulse-icon {
+        animation: pulse 2s infinite;
+      }
+
+      @keyframes pulse {
+        0%,
+        100% {
+          transform: scale(1);
         }
-        
-        .fade-in-up {
-            animation: fadeInUp 1s ease-out forwards;
+        50% {
+          transform: scale(1.1);
         }
-        
-        .bounce-in {
-            animation: bounceIn 1.2s ease-out forwards;
-        }
-        
-        @keyframes slideInLeft {
-            from { opacity: 0; transform: translateX(-50px); }
-            to { opacity: 1; transform: translateX(0); }
-        }
-        
-        @keyframes slideInRight {
-            from { opacity: 0; transform: translateX(50px); }
-            to { opacity: 1; transform: translateX(0); }
-        }
-        
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
-        @keyframes bounceIn {
-            0% { opacity: 0; transform: scale(0.3); }
-            50% { opacity: 1; transform: scale(1.05); }
-            70% { transform: scale(0.9); }
-            100% { opacity: 1; transform: scale(1); }
-        }
-        
-        .text-gradient {
-            background: linear-gradient(135deg, #3B82F6, #10B981);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-        
-        .pulse-icon {
-            animation: pulse 2s infinite;
-        }
-        
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-        }
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <div class="slide-container">
-        <!-- P5.js Background Canvas -->
-        <div id="p5-background"></div>
+      <!-- P5.js Background Canvas -->
+      <div id="p5-background"></div>
 
-        <div class="content-layer">            <!-- Header -->
-            <header class="text-center py-4 text-white relative z-20">
-                <div class="flex items-center justify-center mb-3 bounce-in">
-                    <div class="w-16 h-16 bg-white bg-opacity-30 rounded-2xl flex items-center justify-center mr-4 pulse-icon">
-                        <i class="fas fa-gavel text-3xl"></i>
-                    </div>
-                    <div>
-                        <h1 class="text-4xl font-black drop-shadow-2xl text-white bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text" style="text-shadow: 2px 2px 4px rgba(0,0,0,0.8);">VÒNG 1</h1>
-                        <p class="text-lg font-semibold opacity-95 mt-1">Thi hiểu biết kiến thức: Chính sách pháp luật, PCCC và Y tế</p>
-                    </div>
+      <div class="content-layer">
+        <!-- Header -->
+        <header class="text-center py-4 text-white relative z-20">
+          <div class="flex items-center justify-center mb-3 bounce-in">
+            <div
+              class="w-16 h-16 bg-white bg-opacity-30 rounded-2xl flex items-center justify-center mr-4 pulse-icon"
+            >
+              <i class="fas fa-gavel text-3xl"></i>
+            </div>
+            <div>
+              <h1
+                class="text-4xl font-black drop-shadow-2xl text-white bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text"
+                style="text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8)"
+              >
+                VÒNG 1
+              </h1>
+              <p class="text-lg font-semibold opacity-95 mt-1">
+                Thi hiểu biết kiến thức: Chính sách pháp luật, PCCC và Y tế
+              </p>
+            </div>
+          </div>
+        </header>
+        <!-- Main Content - 2 Columns Layout -->
+        <main class="flex-1 px-8 pb-64">
+          <div class="mx-auto h-full" style="max-width: 100rem">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 h-full">
+              <!-- Left Column - Nội dung Vòng 1 -->
+              <div class="glass-card p-6">
+                <h2
+                  class="text-2xl font-bold text-gray-800 mb-4 fade-in-up"
+                  style="animation-delay: 0.2s"
+                >
+                  <i class="fas fa-clipboard-list text-blue-600 mr-3"></i>
+                  Nội dung Vòng 1
+                </h2>
+
+                <div
+                  class="content-item slide-in-left"
+                  style="animation-delay: 0.4s"
+                >
+                  <div
+                    class="icon-container"
+                    style="
+                      background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+                    "
+                  >
+                    <i class="fas fa-book-open"></i>
+                  </div>
+                  <div>
+                    <h3 class="text-base font-bold text-gray-800 mb-1">
+                      Thi theo hình thức trắc nghiệm
+                    </h3>
+                    <p class="text-sm text-gray-700">
+                      Câu hỏi và đáp án theo bộ đề thi trắc nghiệm của Tổng công
+                      ty ban hành theo quyết định số 1945/QĐ-M1CCO ngày
+                      15/5/2025
+                    </p>
+                  </div>
                 </div>
-            </header>            <!-- Main Content - 2 Columns Layout -->
-            <main class="flex-1 px-8 pb-64">
-                <div class="mx-auto h-full" style="max-width: 100rem;">
-                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 h-full">
-                          <!-- Left Column - Nội dung Vòng 1 -->
-                        <div class="glass-card p-6">
-                            <h2 class="text-2xl font-bold text-gray-800 mb-4 fade-in-up" style="animation-delay: 0.2s;">
-                                <i class="fas fa-clipboard-list text-blue-600 mr-3"></i>
-                                Nội dung Vòng 1
-                            </h2>
-                            
-                            <div class="content-item slide-in-left" style="animation-delay: 0.4s;">
-                                <div class="icon-container" style="background: linear-gradient(135deg, #3B82F6, #1D4ED8);">
-                                    <i class="fas fa-book-open"></i>
-                                </div>                                <div>
-                                    <h3 class="text-base font-bold text-gray-800 mb-1">Thi theo hình thức trắc nghiệm</h3>
-                                    <p class="text-sm text-gray-700">Câu hỏi và đáp án theo bộ đề thi trắc nghiệm của Tổng công ty ban hành theo quyết định số 1945/QĐ-M1CCO ngày 15/5/2025</p>
-                                </div>
-                            </div>                            <div class="content-item slide-in-left" style="animation-delay: 0.6s;">
-                                <div class="icon-container" style="background: linear-gradient(135deg, #8B5CF6, #7C3AED);">
-                                    <i class="fas fa-users"></i>
-                                </div>
-                                <div>
-                                    <h3 class="text-base font-bold text-gray-800 mb-1">3 đội thi cùng trả lời 10 câu hỏi</h3>
-                                    <p class="text-sm text-gray-700">Cả đội thống nhất đáp án để trả lời và viết ra bảng giơ lên cho BKG chấm</p>
-                                </div>
-                            </div>
-
-                            <div class="content-item slide-in-left" style="animation-delay: 0.8s;">
-                                <div class="icon-container" style="background: linear-gradient(135deg, #06B6D4, #0891B2);">
-                                    <i class="fas fa-tv"></i>
-                                </div>
-                                <div>
-                                    <h3 class="text-base font-bold text-gray-800 mb-1">Ban TC chiếu câu hỏi lên màn hình</h3>
-                                    <p class="text-sm text-gray-700">Câu hỏi và các lựa chọn đáp án được hiển thị rõ ràng trên màn hình lớn</p>
-                                </div>
-                            </div>
-
-                            <div class="content-item slide-in-left" style="animation-delay: 1.0s;">
-                                <div class="icon-container" style="background: linear-gradient(135deg, #F59E0B, #D97706);">
-                                    <i class="fas fa-clock"></i>
-                                </div>
-                                <div>
-                                    <h3 class="text-base font-bold text-gray-800 mb-1">30 giây để viết đáp án</h3>
-                                    <p class="text-sm text-gray-700">Các đội có thời gian 30 giây để viết đáp án vào bảng (a/b/c/d...)</p>
-                                </div>
-                            </div>
-
-                            <div class="content-item slide-in-left" style="animation-delay: 1.2s;">
-                                <div class="icon-container" style="background: linear-gradient(135deg, #EF4444, #DC2626);">
-                                    <i class="fas fa-hand-paper"></i>
-                                </div>
-                                <div>
-                                    <h3 class="text-base font-bold text-gray-800 mb-1">MC yêu cầu giơ bảng đáp án</h3>
-                                    <p class="text-sm text-gray-700">Các đội giơ bảng đáp án để Ban giám khảo chấm điểm</p>
-                                </div>
-                            </div>
-
-                            <div class="content-item slide-in-left" style="animation-delay: 1.4s;">
-                                <div class="icon-container" style="background: linear-gradient(135deg, #10B981, #059669);">
-                                    <i class="fas fa-check-circle"></i>
-                                </div>
-                                <div>
-                                    <h3 class="text-base font-bold text-gray-800 mb-1">Chấm và công bố điểm ngay</h3>
-                                    <p class="text-sm text-gray-700">Ban Giám khảo chấm xong và công bố điểm ngay, Thư ký ghi vào bảng tổng hợp điểm</p>
-                                </div>
-                            </div>
-
-                            <div class="content-item slide-in-left" style="animation-delay: 1.6s;">
-                                <div class="icon-container" style="background: linear-gradient(135deg, #EC4899, #DB2777);">
-                                    <i class="fas fa-arrow-right"></i>
-                                </div>
-                                <div>
-                                    <h3 class="text-base font-bold text-gray-800 mb-1">Thi lần lượt từ câu 1 đến câu 10</h3>
-                                    <p class="text-sm text-gray-700">Hoàn thành xong chuyển sang vòng thi thứ 2</p>
-                                </div>
-                            </div>
-                        </div>                        <!-- Right Column - Cách tính điểm -->
-                        <div class="glass-card p-6">
-                            <h2 class="text-2xl font-bold text-gray-800 mb-4 fade-in-up" style="animation-delay: 0.3s;">
-                                <i class="fas fa-calculator text-green-600 mr-3"></i>
-                                Cách tính điểm Vòng 1
-                            </h2>
-                              <div class="scoring-item slide-in-right" style="animation-delay: 0.5s;">
-                                <div class="icon-container" style="background: linear-gradient(135deg, #10B981, #059669);">
-                                    <i class="fas fa-trophy"></i>
-                                </div>
-                                <div>
-                                    <h3 class="text-base font-bold text-gray-800 mb-1">Gồm 10 câu hỏi</h3>
-                                    <p class="text-sm text-gray-700">Thi hiểu biết kiến thức về chính sách pháp luật, PCCC và Y tế</p>
-                                </div>
-                            </div>
-
-                            <div class="scoring-item slide-in-right" style="animation-delay: 0.7s;">
-                                <div class="icon-container" style="background: linear-gradient(135deg, #22C55E, #16A34A);">
-                                    <i class="fas fa-check-double"></i>
-                                </div>
-                                <div>
-                                    <h3 class="text-base font-bold text-gray-800 mb-1">Câu trả lời đúng: 10 điểm</h3>
-                                    <p class="text-sm text-gray-700">Câu trả lời đúng theo đáp án của câu hỏi thì đạt thang điểm 10</p>
-                                </div>
-                            </div>
-
-                            <div class="scoring-item slide-in-right" style="animation-delay: 0.9s;">
-                                <div class="icon-container" style="background: linear-gradient(135deg, #EF4444, #DC2626);">
-                                    <i class="fas fa-times-circle"></i>
-                                </div>
-                                <div>
-                                    <h3 class="text-base font-bold text-gray-800 mb-1">Câu trả lời sai: 0 điểm</h3>
-                                    <p class="text-sm text-gray-700">Câu trả lời thiếu, sai theo đáp án của câu hỏi thì không được tính điểm</p>
-                                </div>
-                            </div>
-
-                            <div class="scoring-item slide-in-right" style="animation-delay: 1.1s;">
-                                <div class="icon-container" style="background: linear-gradient(135deg, #8B5CF6, #7C3AED);">
-                                    <i class="fas fa-star"></i>
-                                </div>
-                                <div>
-                                    <h3 class="text-base font-bold text-gray-800 mb-1">Điểm tối đa: 100 điểm</h3>
-                                    <p class="text-sm text-gray-700">Tổng điểm tối đa có thể đạt được là 100 điểm (10 câu x 10 điểm)</p>
-                                </div>
-                            </div>
-
-                            <div class="scoring-item slide-in-right" style="animation-delay: 1.3s;">
-                                <div class="icon-container" style="background: linear-gradient(135deg, #06B6D4, #0891B2);">
-                                    <i class="fas fa-balance-scale"></i>
-                                </div>
-                                <div>
-                                    <h3 class="text-base font-bold text-gray-800 mb-1">Không bị trừ điểm</h3>
-                                    <p class="text-sm text-gray-700">Không có hình phạt trừ điểm khi trả lời sai hoặc không trả lời</p>
-                                </div>
-                            </div>
-
-                            <div class="scoring-item slide-in-right" style="animation-delay: 1.5s;">
-                                <div class="icon-container" style="background: linear-gradient(135deg, #F59E0B, #D97706);">
-                                    <i class="fas fa-chart-line"></i>
-                                </div>
-                                <div>
-                                    <h3 class="text-base font-bold text-gray-800 mb-1">Điểm được cộng dồn</h3>
-                                    <p class="text-sm text-gray-700">Điểm vòng 1 sẽ được cộng vào tổng điểm cuối cùng của đội</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                <div
+                  class="content-item slide-in-left"
+                  style="animation-delay: 0.6s"
+                >
+                  <div
+                    class="icon-container"
+                    style="
+                      background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+                    "
+                  >
+                    <i class="fas fa-users"></i>
+                  </div>
+                  <div>
+                    <h3 class="text-base font-bold text-gray-800 mb-1">
+                      3 đội thi cùng trả lời 10 câu hỏi
+                    </h3>
+                    <p class="text-sm text-gray-700">
+                      Cả đội thống nhất đáp án để trả lời và viết ra bảng giơ
+                      lên cho BKG chấm
+                    </p>
+                  </div>
                 </div>
-            </main>
-        </div>
-    </div>    <script>
-        // P5.js Sketch for Dynamic Background
-        let particles = [];
-        let shapes = [];
-        let waves = [];
-        let time = 0;
 
-        function setup() {
-            let canvas = createCanvas(windowWidth, windowHeight);
-            canvas.parent('p5-background');
-            
-            // Initialize particles
-            for (let i = 0; i < 80; i++) {
-                particles.push(new Particle());
-            }
-            
-            // Initialize geometric shapes
-            for (let i = 0; i < 20; i++) {
-                shapes.push(new GeometricShape());
-            }
-            
-            // Initialize waves
-            for (let i = 0; i < 3; i++) {
-                waves.push(new Wave(i));
-            }
+                <div
+                  class="content-item slide-in-left"
+                  style="animation-delay: 0.8s"
+                >
+                  <div
+                    class="icon-container"
+                    style="
+                      background: linear-gradient(135deg, #06b6d4, #0891b2);
+                    "
+                  >
+                    <i class="fas fa-tv"></i>
+                  </div>
+                  <div>
+                    <h3 class="text-base font-bold text-gray-800 mb-1">
+                      Ban TC chiếu câu hỏi lên màn hình
+                    </h3>
+                    <p class="text-sm text-gray-700">
+                      Câu hỏi và các lựa chọn đáp án được hiển thị rõ ràng trên
+                      màn hình lớn
+                    </p>
+                  </div>
+                </div>
+
+                <div
+                  class="content-item slide-in-left"
+                  style="animation-delay: 1s"
+                >
+                  <div
+                    class="icon-container"
+                    style="
+                      background: linear-gradient(135deg, #f59e0b, #d97706);
+                    "
+                  >
+                    <i class="fas fa-clock"></i>
+                  </div>
+                  <div>
+                    <h3 class="text-base font-bold text-gray-800 mb-1">
+                      30 giây để viết đáp án
+                    </h3>
+                    <p class="text-sm text-gray-700">
+                      Các đội có thời gian 30 giây để viết đáp án vào bảng
+                      (a/b/c/d...)
+                    </p>
+                  </div>
+                </div>
+
+                <div
+                  class="content-item slide-in-left"
+                  style="animation-delay: 1.2s"
+                >
+                  <div
+                    class="icon-container"
+                    style="
+                      background: linear-gradient(135deg, #ef4444, #dc2626);
+                    "
+                  >
+                    <i class="fas fa-hand-paper"></i>
+                  </div>
+                  <div>
+                    <h3 class="text-base font-bold text-gray-800 mb-1">
+                      MC yêu cầu giơ bảng đáp án
+                    </h3>
+                    <p class="text-sm text-gray-700">
+                      Các đội giơ bảng đáp án để Ban giám khảo chấm điểm
+                    </p>
+                  </div>
+                </div>
+
+                <div
+                  class="content-item slide-in-left"
+                  style="animation-delay: 1.4s"
+                >
+                  <div
+                    class="icon-container"
+                    style="
+                      background: linear-gradient(135deg, #10b981, #059669);
+                    "
+                  >
+                    <i class="fas fa-check-circle"></i>
+                  </div>
+                  <div>
+                    <h3 class="text-base font-bold text-gray-800 mb-1">
+                      Chấm và công bố điểm ngay
+                    </h3>
+                    <p class="text-sm text-gray-700">
+                      Ban Giám khảo chấm xong và công bố điểm ngay, Thư ký ghi
+                      vào bảng tổng hợp điểm
+                    </p>
+                  </div>
+                </div>
+
+                <div
+                  class="content-item slide-in-left"
+                  style="animation-delay: 1.6s"
+                >
+                  <div
+                    class="icon-container"
+                    style="
+                      background: linear-gradient(135deg, #ec4899, #db2777);
+                    "
+                  >
+                    <i class="fas fa-arrow-right"></i>
+                  </div>
+                  <div>
+                    <h3 class="text-base font-bold text-gray-800 mb-1">
+                      Thi lần lượt từ câu 1 đến câu 10
+                    </h3>
+                    <p class="text-sm text-gray-700">
+                      Hoàn thành xong chuyển sang vòng thi thứ 2
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <!-- Right Column - Cách tính điểm -->
+              <div class="glass-card p-6">
+                <h2
+                  class="text-2xl font-bold text-gray-800 mb-4 fade-in-up"
+                  style="animation-delay: 0.3s"
+                >
+                  <i class="fas fa-calculator text-green-600 mr-3"></i>
+                  Cách tính điểm Vòng 1
+                </h2>
+                <div
+                  class="scoring-item slide-in-right"
+                  style="animation-delay: 0.5s"
+                >
+                  <div
+                    class="icon-container"
+                    style="
+                      background: linear-gradient(135deg, #10b981, #059669);
+                    "
+                  >
+                    <i class="fas fa-trophy"></i>
+                  </div>
+                  <div>
+                    <h3 class="text-base font-bold text-gray-800 mb-1">
+                      Gồm 10 câu hỏi
+                    </h3>
+                    <p class="text-sm text-gray-700">
+                      Thi hiểu biết kiến thức về chính sách pháp luật, PCCC và Y
+                      tế
+                    </p>
+                  </div>
+                </div>
+
+                <div
+                  class="scoring-item slide-in-right"
+                  style="animation-delay: 0.7s"
+                >
+                  <div
+                    class="icon-container"
+                    style="
+                      background: linear-gradient(135deg, #22c55e, #16a34a);
+                    "
+                  >
+                    <i class="fas fa-check-double"></i>
+                  </div>
+                  <div>
+                    <h3 class="text-base font-bold text-gray-800 mb-1">
+                      Câu trả lời đúng: 10 điểm
+                    </h3>
+                    <p class="text-sm text-gray-700">
+                      Câu trả lời đúng theo đáp án của câu hỏi thì đạt thang
+                      điểm 10
+                    </p>
+                  </div>
+                </div>
+
+                <div
+                  class="scoring-item slide-in-right"
+                  style="animation-delay: 0.9s"
+                >
+                  <div
+                    class="icon-container"
+                    style="
+                      background: linear-gradient(135deg, #ef4444, #dc2626);
+                    "
+                  >
+                    <i class="fas fa-times-circle"></i>
+                  </div>
+                  <div>
+                    <h3 class="text-base font-bold text-gray-800 mb-1">
+                      Câu trả lời sai: 0 điểm
+                    </h3>
+                    <p class="text-sm text-gray-700">
+                      Câu trả lời thiếu, sai theo đáp án của câu hỏi thì không
+                      được tính điểm
+                    </p>
+                  </div>
+                </div>
+
+                <div
+                  class="scoring-item slide-in-right"
+                  style="animation-delay: 1.1s"
+                >
+                  <div
+                    class="icon-container"
+                    style="
+                      background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+                    "
+                  >
+                    <i class="fas fa-star"></i>
+                  </div>
+                  <div>
+                    <h3 class="text-base font-bold text-gray-800 mb-1">
+                      Điểm tối đa: 100 điểm
+                    </h3>
+                    <p class="text-sm text-gray-700">
+                      Tổng điểm tối đa có thể đạt được là 100 điểm (10 câu x 10
+                      điểm)
+                    </p>
+                  </div>
+                </div>
+
+                <div
+                  class="scoring-item slide-in-right"
+                  style="animation-delay: 1.3s"
+                >
+                  <div
+                    class="icon-container"
+                    style="
+                      background: linear-gradient(135deg, #06b6d4, #0891b2);
+                    "
+                  >
+                    <i class="fas fa-balance-scale"></i>
+                  </div>
+                  <div>
+                    <h3 class="text-base font-bold text-gray-800 mb-1">
+                      Không bị trừ điểm
+                    </h3>
+                    <p class="text-sm text-gray-700">
+                      Không có hình phạt trừ điểm khi trả lời sai hoặc không trả
+                      lời
+                    </p>
+                  </div>
+                </div>
+
+                <div
+                  class="scoring-item slide-in-right"
+                  style="animation-delay: 1.5s"
+                >
+                  <div
+                    class="icon-container"
+                    style="
+                      background: linear-gradient(135deg, #f59e0b, #d97706);
+                    "
+                  >
+                    <i class="fas fa-chart-line"></i>
+                  </div>
+                  <div>
+                    <h3 class="text-base font-bold text-gray-800 mb-1">
+                      Điểm được cộng dồn
+                    </h3>
+                    <p class="text-sm text-gray-700">
+                      Điểm vòng 1 sẽ được cộng vào tổng điểm cuối cùng của đội
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+    <script>
+      // P5.js Sketch for Dynamic Background
+      let particles = [];
+      let shapes = [];
+      let waves = [];
+      let time = 0;
+
+      function setup() {
+        let canvas = createCanvas(windowWidth, windowHeight);
+        canvas.parent("p5-background");
+
+        // Initialize particles
+        for (let i = 0; i < 80; i++) {
+          particles.push(new Particle());
         }
 
-        function draw() {
-            // Dynamic gradient background
-            for (let y = 0; y < height; y++) {
-                let inter = map(y, 0, height, 0, 1);
-                let c = lerpColor(
-                    color(59, 130, 246, 100), 
-                    color(16, 185, 129, 150), 
-                    inter + sin(time * 0.01 + y * 0.01) * 0.2
-                );
-                stroke(c);
-                line(0, y, width, y);
-            }
-            
-            time++;
-            
-            // Draw waves
-            waves.forEach(wave => {
-                wave.update();
-                wave.display();
-            });
-            
-            // Draw and update particles
-            particles.forEach(particle => {
-                particle.update();
-                particle.display();
-            });
-            
-            // Draw and update geometric shapes
-            shapes.forEach(shape => {
-                shape.update();
-                shape.display();
-            });
+        // Initialize geometric shapes
+        for (let i = 0; i < 20; i++) {
+          shapes.push(new GeometricShape());
         }
 
-        class Particle {
-            constructor() {
-                this.x = random(width);
-                this.y = random(height);
-                this.size = random(3, 12);
-                this.speedX = random(-0.5, 0.5);
-                this.speedY = random(-0.8, -0.2);
-                this.alpha = random(50, 150);
-                this.color = random(['#3B82F6', '#10B981', '#8B5CF6', '#F59E0B', '#EF4444']);
-                this.rotation = 0;
-                this.rotationSpeed = random(-0.02, 0.02);
-            }
-            
-            update() {
-                this.x += this.speedX + sin(time * 0.01 + this.y * 0.01) * 0.5;
-                this.y += this.speedY;
-                this.rotation += this.rotationSpeed;
-                
-                // Reset position when off screen
-                if (this.y < -50) {
-                    this.y = height + 50;
-                    this.x = random(width);
-                }
-                if (this.x < -50 || this.x > width + 50) {
-                    this.x = random(width);
-                }
-                
-                // Breathing effect
-                this.alpha = 100 + sin(time * 0.05 + this.x * 0.01) * 50;
-            }
-            
-            display() {
-                push();
-                translate(this.x, this.y);
-                rotate(this.rotation);
-                fill(this.color + hex(int(this.alpha), 2));
-                noStroke();
-                circle(0, 0, this.size);
-                pop();
-            }
-        }        class GeometricShape {
-            constructor() {
-                this.x = random(-100, width + 100); // Start từ bên trái hoặc trong màn hình
-                this.y = random(height);
-                this.size = random(20, 60);
-                this.speedX = random(1.5, 3.0); // Tăng tốc độ ngang, chỉ di chuyển từ trái qua phải
-                this.speedY = random(-0.4, 0.4); // Tăng nhẹ tốc độ dọc
-                this.rotation = 0;
-                this.rotationSpeed = random(-0.04, 0.04); // Tăng tốc độ quay
-                this.type = random(['circle', 'square', 'triangle']);
-                this.filled = random() > 0.5;
-                this.color = random(['#3B82F6', '#10B981', '#8B5CF6', '#F59E0B', '#EF4444', '#EC4899']);
-                this.alpha = random(30, 80);
-                this.pulseSpeed = random(0.02, 0.05);
-            }
-            
-            update() {
-                this.x += this.speedX;
-                this.y += this.speedY;
-                this.rotation += this.rotationSpeed;
-                
-                // Loop lại khi đi ra khỏi màn hình bên phải
-                if (this.x > width + 100) {
-                    this.x = -100;
-                    this.y = random(height); // Random vị trí Y mới
-                }
-                
-                // Giữ trong bounds theo chiều dọc với bounce nhẹ
-                if (this.y < 0 || this.y > height) {
-                    this.speedY *= -1;
-                }
-                this.y = constrain(this.y, 0, height);
-                
-                // Pulsing effect
-                this.currentSize = this.size + sin(time * this.pulseSpeed) * 10;
-            }
-            
-            display() {
-                push();
-                translate(this.x, this.y);
-                rotate(this.rotation);
-                
-                if (this.filled) {
-                    fill(this.color + hex(int(this.alpha), 2));
-                    noStroke();
-                } else {
-                    noFill();
-                    stroke(this.color + hex(int(this.alpha + 50), 2));
-                    strokeWeight(2);
-                }
-                
-                switch (this.type) {
-                    case 'circle':
-                        circle(0, 0, this.currentSize);
-                        break;
-                    case 'square':
-                        rectMode(CENTER);
-                        rect(0, 0, this.currentSize, this.currentSize);
-                        break;
-                    case 'triangle':
-                        let h = this.currentSize * 0.866;
-                        triangle(0, -h/2, -this.currentSize/2, h/2, this.currentSize/2, h/2);
-                        break;
-                }
-                pop();
-            }
+        // Initialize waves
+        for (let i = 0; i < 3; i++) {
+          waves.push(new Wave(i));
+        }
+      }
+
+      function draw() {
+        // Dynamic gradient background
+        for (let y = 0; y < height; y++) {
+          let inter = map(y, 0, height, 0, 1);
+          let c = lerpColor(
+            color(59, 130, 246, 100),
+            color(16, 185, 129, 150),
+            inter + sin(time * 0.01 + y * 0.01) * 0.2
+          );
+          stroke(c);
+          line(0, y, width, y);
         }
 
-        class Wave {
-            constructor(index) {
-                this.yOffset = height * 0.2 + index * height * 0.3;
-                this.amplitude = random(20, 50);
-                this.frequency = random(0.005, 0.02);
-                this.speed = random(0.01, 0.03);
-                this.color = random(['#3B82F6', '#10B981', '#8B5CF6']);
-                this.alpha = random(20, 40);
-            }
-            
-            update() {
-                // Waves naturally update through time
-            }
-            
-            display() {
-                noFill();
-                stroke(this.color + hex(int(this.alpha), 2));
-                strokeWeight(3);
-                
-                beginShape();
-                for (let x = 0; x <= width; x += 5) {
-                    let y = this.yOffset + sin(x * this.frequency + time * this.speed) * this.amplitude;
-                    vertex(x, y);
-                }
-                endShape();
-            }
-        }
+        time++;
 
-        function windowResized() {
-            resizeCanvas(windowWidth, windowHeight);
-        }
-
-        // Navigation and animations
-        document.addEventListener('DOMContentLoaded', function() {
-            // Trigger animations in sequence
-            setTimeout(() => {
-                document.querySelectorAll('.content-item, .scoring-item').forEach((item, index) => {
-                    setTimeout(() => {
-                        item.style.opacity = '1';
-                        item.style.transform = 'translateX(0)';
-                    }, index * 200);
-                });
-            }, 500);
+        // Draw waves
+        waves.forEach((wave) => {
+          wave.update();
+          wave.display();
         });
 
-        // Keyboard navigation
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'ArrowLeft' || e.key.toLowerCase() === 'q') {
-                // Navigate back to main page
-                window.location.href = 'page3.html';
-            } else if (e.key === 'ArrowRight') {
-                // Navigate to vong1.html (start slideshow)
-                window.location.href = 'vong1.html';
-            } else if (e.key === 'Escape') {                // Navigate back to main page
-                window.location.href = 'index.html';
-            }
+        // Draw and update particles
+        particles.forEach((particle) => {
+          particle.update();
+          particle.display();
         });
+
+        // Draw and update geometric shapes
+        shapes.forEach((shape) => {
+          shape.update();
+          shape.display();
+        });
+      }
+
+      class Particle {
+        constructor() {
+          this.x = random(width);
+          this.y = random(height);
+          this.size = random(3, 12);
+          this.speedX = random(-0.5, 0.5);
+          this.speedY = random(-0.8, -0.2);
+          this.alpha = random(50, 150);
+          this.color = random([
+            "#3B82F6",
+            "#10B981",
+            "#8B5CF6",
+            "#F59E0B",
+            "#EF4444",
+          ]);
+          this.rotation = 0;
+          this.rotationSpeed = random(-0.02, 0.02);
+        }
+
+        update() {
+          this.x += this.speedX + sin(time * 0.01 + this.y * 0.01) * 0.5;
+          this.y += this.speedY;
+          this.rotation += this.rotationSpeed;
+
+          // Reset position when off screen
+          if (this.y < -50) {
+            this.y = height + 50;
+            this.x = random(width);
+          }
+          if (this.x < -50 || this.x > width + 50) {
+            this.x = random(width);
+          }
+
+          // Breathing effect
+          this.alpha = 100 + sin(time * 0.05 + this.x * 0.01) * 50;
+        }
+
+        display() {
+          push();
+          translate(this.x, this.y);
+          rotate(this.rotation);
+          fill(this.color + hex(int(this.alpha), 2));
+          noStroke();
+          circle(0, 0, this.size);
+          pop();
+        }
+      }
+      class GeometricShape {
+        constructor() {
+          this.x = random(-100, width + 100); // Start từ bên trái hoặc trong màn hình
+          this.y = random(height);
+          this.size = random(20, 60);
+          this.speedX = random(1.5, 3.0); // Tăng tốc độ ngang, chỉ di chuyển từ trái qua phải
+          this.speedY = random(-0.4, 0.4); // Tăng nhẹ tốc độ dọc
+          this.rotation = 0;
+          this.rotationSpeed = random(-0.04, 0.04); // Tăng tốc độ quay
+          this.type = random(["circle", "square", "triangle"]);
+          this.filled = random() > 0.5;
+          this.color = random([
+            "#3B82F6",
+            "#10B981",
+            "#8B5CF6",
+            "#F59E0B",
+            "#EF4444",
+            "#EC4899",
+          ]);
+          this.alpha = random(30, 80);
+          this.pulseSpeed = random(0.02, 0.05);
+        }
+
+        update() {
+          this.x += this.speedX;
+          this.y += this.speedY;
+          this.rotation += this.rotationSpeed;
+
+          // Loop lại khi đi ra khỏi màn hình bên phải
+          if (this.x > width + 100) {
+            this.x = -100;
+            this.y = random(height); // Random vị trí Y mới
+          }
+
+          // Giữ trong bounds theo chiều dọc với bounce nhẹ
+          if (this.y < 0 || this.y > height) {
+            this.speedY *= -1;
+          }
+          this.y = constrain(this.y, 0, height);
+
+          // Pulsing effect
+          this.currentSize = this.size + sin(time * this.pulseSpeed) * 10;
+        }
+
+        display() {
+          push();
+          translate(this.x, this.y);
+          rotate(this.rotation);
+
+          if (this.filled) {
+            fill(this.color + hex(int(this.alpha), 2));
+            noStroke();
+          } else {
+            noFill();
+            stroke(this.color + hex(int(this.alpha + 50), 2));
+            strokeWeight(2);
+          }
+
+          switch (this.type) {
+            case "circle":
+              circle(0, 0, this.currentSize);
+              break;
+            case "square":
+              rectMode(CENTER);
+              rect(0, 0, this.currentSize, this.currentSize);
+              break;
+            case "triangle":
+              let h = this.currentSize * 0.866;
+              triangle(
+                0,
+                -h / 2,
+                -this.currentSize / 2,
+                h / 2,
+                this.currentSize / 2,
+                h / 2
+              );
+              break;
+          }
+          pop();
+        }
+      }
+
+      class Wave {
+        constructor(index) {
+          this.yOffset = height * 0.2 + index * height * 0.3;
+          this.amplitude = random(20, 50);
+          this.frequency = random(0.005, 0.02);
+          this.speed = random(0.01, 0.03);
+          this.color = random(["#3B82F6", "#10B981", "#8B5CF6"]);
+          this.alpha = random(20, 40);
+        }
+
+        update() {
+          // Waves naturally update through time
+        }
+
+        display() {
+          noFill();
+          stroke(this.color + hex(int(this.alpha), 2));
+          strokeWeight(3);
+
+          beginShape();
+          for (let x = 0; x <= width; x += 5) {
+            let y =
+              this.yOffset +
+              sin(x * this.frequency + time * this.speed) * this.amplitude;
+            vertex(x, y);
+          }
+          endShape();
+        }
+      }
+
+      function windowResized() {
+        resizeCanvas(windowWidth, windowHeight);
+      }
+
+      // Navigation and animations
+      document.addEventListener("DOMContentLoaded", function () {
+        // Trigger animations in sequence
+        setTimeout(() => {
+          document
+            .querySelectorAll(".content-item, .scoring-item")
+            .forEach((item, index) => {
+              setTimeout(() => {
+                item.style.opacity = "1";
+                item.style.transform = "translateX(0)";
+              }, index * 200);
+            });
+        }, 500);
+      });
+
+      // Keyboard navigation
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "ArrowLeft" || e.key.toLowerCase() === "q") {
+          // Navigate back to main page
+          window.location.href = "menu.html";
+        } else if (e.key === "ArrowRight") {
+          // Navigate to vong1.html (start slideshow)
+          window.location.href = "vong1.html";
+        } else if (e.key === "Escape") {
+          // Navigate back to main page
+          window.location.href = "index.html";
+        }
+      });
     </script>
-</body>
+  </body>
 </html>

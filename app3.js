@@ -77,9 +77,9 @@ document.addEventListener('DOMContentLoaded', () => {    // URL Parameter handli
         // Reset all flags
         sequenceInProgress = false;
         
-        // Navigate to page3.html
-        console.log('Navigating to page3.html');
-        window.location.href = 'page3.html';
+        // Navigate to menu.html
+        console.log('Navigating to menu.html');
+        window.location.href = 'menu.html';
     }// Utility to stop all ongoing timers without audio (Round 3 doesn't use audio)
     function stopAllEvents() {
         console.log('%c[STOP ALL EVENTS] Starting stopAllEvents() in app3.js', 'color: red; font-weight: bold;');
