@@ -1472,24 +1472,32 @@ async function displayAnswer() {
             } catch (rulesError) {
                 console.warn("Could not load contest rules:", rulesError);
             }
+              // Extract all questions from chosen data source
+            // Check if demo mode is enabled
+            const isDemoMode = localStorage.getItem('demoMode') === 'true';
             
-            // Extract all questions from vong2.json structure first
-            const vong2Data = data.vong_2;
+            // Choose data source based on demo mode
+            const sourceData = isDemoMode ? data.demo : data.vong_2;
+            
             let allAvailableQuestions = [];
             
-            for (const categoryKey in vong2Data) {
-                const category = vong2Data[categoryKey];
+            for (const categoryKey in sourceData) {
+                const category = sourceData[categoryKey];
                 for (const typeKey in category) {
                     if (Array.isArray(category[typeKey])) {
                         allAvailableQuestions = allAvailableQuestions.concat(category[typeKey]);
                     }
-                }            }            // Get selected set from URL parameters  
+                }
+            }// Get selected set from URL parameters  
             console.log('Selected parameters:', selectedParams);
-            
-            // Filter questions based on question_sets.json configuration
+              // Filter questions based on question_sets.json configuration or demo mode
             allQuestions = [];
             
-            if (selectedParams && selectedParams.set) {
+            if (isDemoMode) {
+                // For demo mode, use all available demo questions
+                allQuestions = allAvailableQuestions;
+                console.log(`Demo mode: Loaded ${allQuestions.length} demo questions for vong2`);
+            } else if (selectedParams && selectedParams.set) {
                 // Load specific set from question_sets.json (new structure: vong2[set])
                 const questionIds = questionSetsData.vong2?.[selectedParams.set];                if (questionIds && Array.isArray(questionIds)) {
                     console.log(`Loading questions for set "${selectedParams.set}":`, questionIds);
@@ -1507,7 +1515,7 @@ async function displayAnswer() {
                     console.error(`Set "${selectedParams.set}" not found in question_sets.json for vong2`);
                     // Fallback to all questions if set not found
                     allQuestions = allAvailableQuestions;
-                }            } else {
+                }} else {
                 // No specific set selected, load questions from question_sets.json set "1" as default
                 console.log('No specific set selected, loading default set "1" from question_sets.json');
                 const defaultQuestionIds = questionSetsData.vong2?.["1"];
@@ -1524,15 +1532,16 @@ async function displayAnswer() {
                     console.warn('Default set "1" not found in question_sets.json, loading all questions');
                     allQuestions = allAvailableQuestions;
                 }
-            }
-
-            if (allQuestions.length > 0) {
-                console.log(`Loaded ${allQuestions.length} questions for vong2 based on question_sets.json configuration`);
+            }            if (allQuestions.length > 0) {
+                const modeText = isDemoMode ? 'demo' : 'normal';
+                console.log(`${modeText} mode: Loaded ${allQuestions.length} questions for vong2 based on ${isDemoMode ? 'demo data' : 'question_sets.json configuration'}`);
                 // Update round info display
                 updateRoundInfoDisplay();
                 renderSlide(allQuestions[currentQuestionIndex]);
             } else {
-                progressTextEl.textContent = "Không tìm thấy câu hỏi phù hợp theo cấu hình trong question_sets.json.";
+                progressTextEl.textContent = isDemoMode ? 
+                    "Không tìm thấy câu hỏi demo nào." : 
+                    "Không tìm thấy câu hỏi phù hợp theo cấu hình trong question_sets.json.";
             }
         } catch (error) {
             console.error("Could not load questions:", error);

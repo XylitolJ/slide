@@ -968,7 +968,7 @@ async function displayAnswer() {
             window.location.href = 'menu.html';        }
     }
 
-    // --- Update Round Info Display ---
+    //  Update Round Info Display
     function updateRoundInfoDisplay() {
         if (roundInfoDisplayEl && contestRoundsData.length > 0) {
             // Find Round 1 information
@@ -986,9 +986,12 @@ async function displayAnswer() {
                 `;
             }
         }
-    }    // --- Load Data ---
+    }    // Load Data
     async function loadQuestions() {
         try {
+            // Check if demo mode is enabled
+            const isDemoMode = localStorage.getItem('demoMode') === 'true';
+            
             // Load question sets configuration first
             const questionSetsResponse = await fetch('question_sets.json');
             if (!questionSetsResponse.ok) {
@@ -1018,12 +1021,14 @@ async function displayAnswer() {
                 console.warn("Could not load contest rules:", rulesError);
             }
             
-            // Extract all questions from vong1.json structure first
-            const vong1Data = data.vong_1;
+            // Choose data source based on demo mode
+            const sourceData = isDemoMode ? data.demo : data.vong_1;
+            
+            // Extract all questions from chosen data source
             let allAvailableQuestions = [];
             
-            for (const categoryKey in vong1Data) {
-                const category = vong1Data[categoryKey];
+            for (const categoryKey in sourceData) {
+                const category = sourceData[categoryKey];
                 for (const typeKey in category) {
                     if (Array.isArray(category[typeKey])) {
                         allAvailableQuestions = allAvailableQuestions.concat(category[typeKey]);
@@ -1031,33 +1036,40 @@ async function displayAnswer() {
                 }
             }
 
-            // Get question IDs for vong1 from question_sets.json
-            const vong1QuestionIds = questionSetsData.vong1?.["1"] || [];
-            
-            // Filter questions based on IDs defined in question_sets.json
-            allQuestions = [];
-            vong1QuestionIds.forEach(questionId => {
-                const question = allAvailableQuestions.find(q => q.id === questionId);
-                if (question) {
-                    allQuestions.push(question);
-                } else {
-                    console.warn(`Question with ID "${questionId}" not found in vong1.json`);
-                }
-            });
+            if (isDemoMode) {
+                // For demo mode, use all available demo questions
+                allQuestions = allAvailableQuestions;
+                console.log(`Demo mode: Loaded ${allQuestions.length} demo questions for vong1`);
+            } else {
+                // For normal mode, use question_sets.json configuration
+                const vong1QuestionIds = questionSetsData.vong1?.["1"] || [];
+                
+                // Filter questions based on IDs defined in question_sets.json
+                allQuestions = [];
+                vong1QuestionIds.forEach(questionId => {
+                    const question = allAvailableQuestions.find(q => q.id === questionId);
+                    if (question) {
+                        allQuestions.push(question);
+                    } else {
+                        console.warn(`Question with ID "${questionId}" not found in vong1.json`);
+                    }
+                });
+                console.log(`Normal mode: Loaded ${allQuestions.length} questions for vong1 based on question_sets.json configuration`);
+            }
 
             if (allQuestions.length > 0) {
-                console.log(`Loaded ${allQuestions.length} questions for vong1 based on question_sets.json configuration`);
                 // Update round info display
                 updateRoundInfoDisplay();
                 renderSlide(allQuestions[currentQuestionIndex]);
             } else {
-                progressTextEl.textContent = "Không tìm thấy câu hỏi nào theo cấu hình trong question_sets.json.";
+                progressTextEl.textContent = isDemoMode ? "Không tìm thấy câu hỏi demo nào." : "Không tìm thấy câu hỏi nào theo cấu hình trong question_sets.json.";
             }
         } catch (error) {
             console.error("Could not load questions:", error);
-            progressTextEl.textContent = "Lỗi tải dữ liệu câu hỏi. Vui lòng kiểm tra file vong1.json, question_sets.json và console.";
-        }
-    }    // --- Emergency Exit Function ---
+            progressTextEl.textContent = "Lỗi tải dữ liệu câu hỏi. Vui lòng kiểm tra file vong1.json, question_sets.json và console.";        }
+    }
+
+    // --- Emergency Exit Function ---
     function emergencyExitToPage3() {
         // Stop all audio
         if (currentAudio && currentAudio.source) {
@@ -1101,11 +1113,12 @@ async function displayAnswer() {
             box-shadow: 0 4px 12px rgba(0,0,0,0.3);
         `;
         document.body.appendChild(indicator);
-        
-        setTimeout(() => {
+          setTimeout(() => {
             indicator.remove();
         }, 2000);
-    }// Utility to stop all ongoing timers and audio without navigating away
+    }
+
+    // Utility to stop all ongoing timers and audio without navigating away
     function stopAllEvents() {
         console.log('%c[STOP ALL EVENTS] Starting stopAllEvents()', 'color: red; font-weight: bold;');
         
@@ -1189,11 +1202,11 @@ async function displayAnswer() {
         
         console.log('%c[STOP ALL EVENTS] stopAllEvents() completed', 'color: green; font-weight: bold;');
     }
-
-
     // --- Event Listeners ---
     startSequenceBtn.addEventListener('click', startQuestionSequence);
-    showAnswerBtn.addEventListener('click', displayAnswer);    document.addEventListener('keydown', (e) => {
+    showAnswerBtn.addEventListener('click', displayAnswer);
+
+    document.addEventListener('keydown', (e) => {
         console.log('Key pressed in app.js:', e.key); // Debug log
         if (e.key === 'ArrowRight') {
             e.preventDefault();

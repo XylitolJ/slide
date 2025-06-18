@@ -35,6 +35,7 @@
   </head>
   <body>
     <div id="p5-container"></div>
+
     <script>
       let rotationAngle = 0;
       let animationPhase = 0;
@@ -795,9 +796,7 @@
 
       function windowResized() {
         resizeCanvas(windowWidth, windowHeight);
-      }
-
-      // Keyboard navigation
+      } // Keyboard navigation
       document.addEventListener("keydown", (e) => {
         if (e.key === "ArrowRight") {
           window.location.href = "menu.html";

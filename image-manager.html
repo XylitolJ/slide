@@ -203,20 +203,22 @@
         <div class="container mx-auto px-4 py-4"><div class="flex items-center justify-between">
                 <div>
                     <h1 class="text-2xl font-bold text-gray-800">
-                        <i class="fas fa-images mr-2"></i>
                         Quản lý Hình ảnh Câu hỏi
                     </h1>
-                    <p class="text-sm text-gray-600 mt-1"</p>>
+                    <p class="text-sm text-gray-600 mt-1">
                         Chỉnh sửa hình ảnh câu hỏi, sau đó click "Save All" để lưu các file đã thay đổi.
-                        <span class="text-orange-600 font-medium">Chỉ hoạt động trên local</span>
+                        <span class="text-red-700 font-bold">Chức năng này chỉ hoạt động trên local vì cần lưu đè các file data .json</span>
                     </p>
-                </div>                <div class="flex gap-4"</div>>
+                </div>
+                <div class="flex gap-4"</div>
                     <button onclick="refreshImagesLibrary()" class="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-lg flex items-center gap-2">
                         <i class="fas fa-sync-alt"></i>
                         <span>Refresh Images</span>
-                    </button>                    <button onclick="saveAllFiles()" class="save-all-btn bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-lg opacity-50" disabled>
+                    </button>
+                    <button onclick="saveAllFiles()" class="save-all-btn bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-lg opacity-50" disabled>
                         <i class="fas fa-save mr-2"></i>Save All
-                    </button>                    <button onclick="manualRefreshImages()" class="bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded-lg">
+                    </button>
+                    <button onclick="manualRefreshImages()" class="bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded-lg">
                         <i class="fas fa-refresh mr-2"></i>Reload Images
                     </button>
                 </div>

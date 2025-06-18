@@ -512,5 +512,49 @@
         }
       ]
     }
+  },
+  "demo": {
+    "ly_thuyet_khai_thac_mo": {
+      "trac_nghiem_hinh_anh": [
+        {
+          "id": "DEMO2",
+          "category": "Lý thuyết khai thác mỏ",
+          "subcategory": "Tình huống An toàn Nổ mìn",
+          "type_question": "Trắc nghiệm Hình ảnh",
+          "image_id": "images/cauhoi/V2_KTM_HA_4.jpeg",
+          "use_image": "Yes",
+          "position_image": "Right",
+          "question_image": "Yes",
+          "cau_hoi": "Quan sát hình ảnh trên, là ATVSV anh (chị) thấy có gì sai sót?",
+          "phuong_an": {
+            "a": "Thi công nạp mìn ngay dưới chân tầng có nguy cơ sạt lở cao mất an toàn mà không có biển cảnh báo và không tổ chức cảnh giới đề phòng đá rơi.",
+            "b": "Mang BHLĐ không đúng quy định, không đội mũ,…",
+            "c": "Đặt biển cảnh báo, cắm cờ chưa đúng nơi quy định, vỏ bao thuốc nổ vứt bừa bãi khắp mặt bãi mìn.",
+            "d": "Lỗ mìn không được chuẩn bị đủ bua cát, thuốc nổ vứt bừa bãi xung quanh miệng lỗ khoan, dụng cụ thi công vứt bừa bãi",
+            "e": "Biển cảnh báo đặt chưa đúng nơi quy định, vỏ bao thuốc nổ vứt bừa bãi khắp mặt bãi mìn.",
+            "f": "Thuốc nổ vứt bừa bãi, an toàn vệ sinh viên không kịp thời nhắc nhở việc sắp xếp, dọn dẹp bãi mìn.",
+            "g": "Vi phạm quy định an toàn trong thi công nạp mìn, sử dụng hòn đá để buộc cố định KXL của lỗ mìn."
+          },
+          "dap_an_dung": [
+            "a",
+            "b",
+            "e",
+            "g"
+          ],
+          "speech_id_question_num": "V2_KTM_HA_4_num.wav",
+          "speech_id_question": "V2_KTM_HA_4.wav",
+          "speech_id_options_A": "V2_KTM_HA_4_A.wav",
+          "speech_id_options_B": "V2_KTM_HA_4_B.wav",
+          "speech_id_options_C": "V2_KTM_HA_4_C.wav",
+          "speech_id_options_D": "V2_KTM_HA_4_D.wav",
+          "speech_id_options_E": "V2_KTM_HA_4_E.wav",
+          "speech_id_options_F": "V2_KTM_HA_4_F.wav",
+          "speech_id_options_G": "V2_KTM_HA_4_G.wav",
+          "speech_id_answer": "V2_KTM_HA_4_ans.wav",
+          "bg_image": "images/bg/bg13.svg",
+          "bg_image_overlay": "gradient"
+        }
+      ]
+    }
   }
 }
