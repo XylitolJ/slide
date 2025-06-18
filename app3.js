@@ -88,11 +88,12 @@ document.addEventListener('DOMContentLoaded', () => {    // URL Parameter handli
     let contestRoundsData = []; // To store data from quy_che_thi.cac_vong_thi
     let currentRound = 'vong3'; // Default round for vong3.html
     let currentQuestionIndex = 0;
-    let currentQuestionData = null;let timerInterval;
+    let currentQuestionData = null;    let timerInterval;
     let timeLeft = 0; // Will be set per question
     const DEFAULT_TIME_PER_QUESTION = 300; // Default 5 minutes for Round 3 practical exams
     let sequenceInProgress = false;
     let navigationInProgress = false; // Add flag to prevent audio restart during navigation
+    let timeUpPopupVisible = false; // Track when time's up popup is visible
     let shimmerTimer; // Glass shimmer timer
 // Background styles for cleanup purposes only
     const backgroundStyles = [
@@ -123,11 +124,11 @@ document.addEventListener('DOMContentLoaded', () => {    // URL Parameter handli
             clearInterval(timerInterval);
             timerInterval = null;
         }
-        
-        if (timesUpPopupEl) {
+          if (timesUpPopupEl) {
             timesUpPopupEl.style.display = 'none';
             timesUpPopupEl.style.opacity = '0';
             timesUpPopupEl.style.animation = 'none';
+            timeUpPopupVisible = false; // Reset flag when stopping all events
         }
         sequenceInProgress = false;
         navigationInProgress = false; // Reset navigation flag
@@ -254,12 +255,12 @@ document.addEventListener('DOMContentLoaded', () => {    // URL Parameter handli
                 slideContainer.dataset.bgOverlay = 'none';
             }
         }// Reset UI state
-        progressTextEl.textContent = '';
-        startSequenceBtn.disabled = false;
+        progressTextEl.textContent = '';        startSequenceBtn.disabled = false;
         startSequenceBtn.classList.remove('opacity-50', 'cursor-not-allowed', 'speaking-indicator');
         
         timesUpPopupEl.style.display = 'none';
-        timesUpPopupEl.style.opacity = '0';        // Update header
+        timesUpPopupEl.style.opacity = '0';
+        timeUpPopupVisible = false; // Reset flag when rendering new slide// Update header
         const categoryInfo = questionCategoryMapping[questionData.id];
         if (questionNumberEl) {
             if (categoryInfo) {
@@ -398,16 +399,16 @@ document.addEventListener('DOMContentLoaded', () => {    // URL Parameter handli
                 if (floatingTimerEl) {
                     floatingTimerEl.classList.remove('timer-active', 'timer-warning', 'timer-danger');
                 }
-                
-                if (DEBUG_MODE === 0) {
+                  if (DEBUG_MODE === 0) {
                     // Show time's up overlay
                     timesUpPopupEl.style.display = 'block';
                     timesUpPopupEl.style.opacity = '1';
+                    timeUpPopupVisible = true; // Set flag that time's up popup is visible
                     
                     // Play timer audio for 5-minute practical exams
                     if (USE_SPEECH) {
                         playAudio('speech/300s.mp3'); // 5-minute timer audio
-                    }                } else {
+                    }} else {
                     console.log("DEBUG MODE: Timer reached 0");
                 }
             }
@@ -705,6 +706,14 @@ document.addEventListener('DOMContentLoaded', () => {    // URL Parameter handli
     
     startSequenceBtn.addEventListener('click', startQuestionSequence);    document.addEventListener('keydown', (e) => {
         console.log('Key pressed in app3.js:', e.key); // Debug log
+        
+        // Disable arrow key navigation when time's up popup is visible
+        if (timeUpPopupVisible && (e.key === 'ArrowRight' || e.key === 'ArrowLeft')) {
+            e.preventDefault();
+            console.log(`Navigation disabled: ${e.key} blocked while time's up popup is visible`);
+            return;
+        }
+        
         if (e.key === 'ArrowRight') {
             e.preventDefault();
             console.log('Arrow Right pressed - navigating to thuchanh.html');
@@ -714,11 +723,18 @@ document.addEventListener('DOMContentLoaded', () => {    // URL Parameter handli
             e.preventDefault();
             console.log('Arrow Left pressed - navigating to thuchanh.html');
             stopAllEvents();
-            window.location.href = 'thuchanh.html';
-        } else if (e.key === ' ' || e.key === 'Spacebar') {
+            window.location.href = 'thuchanh.html';        } else if (e.key === ' ' || e.key === 'Spacebar') {
             e.preventDefault();
             if (!startSequenceBtn.disabled) {
                 startQuestionSequence();
+            }
+        } else if (e.key === 'Enter') {
+            e.preventDefault();
+            // If time's up popup is visible, go back to thuchanh.html
+            if (timeUpPopupVisible) {
+                console.log('Enter pressed during time up - navigating to thuchanh.html');
+                stopAllEvents();
+                window.location.href = 'thuchanh.html';
             }
         } else if (e.key === '0' && e.ctrlKey) { // Ctrl+0 for DEBUG mode 1
             e.preventDefault();

@@ -58,10 +58,10 @@ document.addEventListener('DOMContentLoaded', () => {    // DOM Elements
     const DEFAULT_TIME_PER_QUESTION = 60; // Default seconds for Round 2, can be overridden by JSON
     let audioContext;
     let currentAudio = null;
-    let currentQuestionNumberAudio = null; // Track question number audio separately
-    let sequenceInProgress = false;
+    let currentQuestionNumberAudio = null; // Track question number audio separately    let sequenceInProgress = false;
     let answerShown = false;
     let navigationInProgress = false; // Add flag to prevent audio restart during navigation
+    let timeUpPopupVisible = false; // Track when time's up popup is visible
     let shimmerTimer; // Glass shimmer timer
     const OPTION_KEYS = ['a', 'b', 'c', 'd', 'e', 'g']; // Possible option keys
     let selectedIds = [];
@@ -288,11 +288,12 @@ document.addEventListener('DOMContentLoaded', () => {    // DOM Elements
             clearInterval(timerInterval);
             timerInterval = null;
         }
-        
-        if (timesUpPopupEl) {
+          if (timesUpPopupEl) {
             timesUpPopupEl.style.display = 'none';
             timesUpPopupEl.style.opacity = '0';
-            timesUpPopupEl.style.animation = 'none';        }
+            timesUpPopupEl.style.animation = 'none';
+            timeUpPopupVisible = false; // Reset flag when stopping all events
+        }
         sequenceInProgress = false;
         answerShown = false;
         navigationInProgress = false; // Reset navigation flag        // Clean up ResizeObserver and timers if they exist
@@ -615,12 +616,12 @@ document.addEventListener('DOMContentLoaded', () => {    // DOM Elements
         
         progressTextEl.textContent = '';
         progressTextEl.classList.remove('answer-text-highlight'); // Remove highlight
-        showAnswerBtn.style.display = 'none';
-        startSequenceBtn.disabled = false;
+        showAnswerBtn.style.display = 'none';        startSequenceBtn.disabled = false;
         startSequenceBtn.classList.remove('opacity-50', 'cursor-not-allowed', 'speaking-indicator');
         
         timesUpPopupEl.style.display = 'none';
-        timesUpPopupEl.style.opacity = '0';        // Update header
+        timesUpPopupEl.style.opacity = '0';
+        timeUpPopupVisible = false; // Reset flag when rendering new slide// Update header
         if (questionNumberEl) questionNumberEl.textContent = currentQuestionIndex + 1;
         if (questionCategoryEl) questionCategoryEl.textContent = questionData.category || 'Không có danh mục';
           // Trigger header and footer animations
@@ -979,8 +980,7 @@ function applyBackgroundOverlay() {
                 if (floatingTimerEl) {
                     floatingTimerEl.classList.remove('timer-active', 'timer-warning', 'timer-danger');
                 }
-                
-                if (!DEBUG_MODE && timesUpPopupEl) {
+                  if (!DEBUG_MODE && timesUpPopupEl) {
                     timesUpPopupEl.style.display = 'flex'; 
                     // Trigger animation for timesUpPopupEl
                     timesUpPopupEl.style.opacity = '0';
@@ -988,6 +988,9 @@ function applyBackgroundOverlay() {
                     timesUpPopupEl.style.animation = 'fadeInOverlay 0.5s ease-out forwards, slideInTimeUp 0.6s ease-out forwards';
                     const timeUpContent = timesUpPopupEl.querySelector('.time-up-content');
                     if(timeUpContent) timeUpContent.style.animation = 'pulseTimeUpSmooth 2s ease-in-out infinite 0.6s';
+
+                    // Set flag that time's up popup is visible and disable navigation
+                    timeUpPopupVisible = true;
                 }
                 progressTextEl.textContent = 'Hết giờ! Các đội giơ đáp án.';
                 if (currentQuestionData.type_question !== "Thực hành") {
@@ -1338,12 +1341,12 @@ function applyBackgroundOverlay() {
 async function displayAnswer() {
         if (answerShown || !currentQuestionData) return;
         answerShown = true;        if (timerInterval) clearInterval(timerInterval);
-        
-        // Immediately hide time-up overlay without delay or animation
+          // Immediately hide time-up overlay without delay or animation
         if (DEBUG_MODE === 0 && timesUpPopupEl) {
             timesUpPopupEl.style.display = 'none';
             timesUpPopupEl.style.opacity = '0';
             timesUpPopupEl.style.animation = 'none'; // Stop any ongoing animations
+            timeUpPopupVisible = false; // Reset flag when displaying answer
         }
 
         showAnswerBtn.disabled = true;
@@ -1688,10 +1691,16 @@ async function displayAnswer() {
             imageModalEl.classList.add('hidden');
             modalImageEl.src = '';
         });
-    }
-
-    document.addEventListener('keydown', (e) => {
+    }    document.addEventListener('keydown', (e) => {
         console.log('Key pressed in app2.js:', e.key); // Debug log
+        
+        // Disable arrow key navigation when time's up popup is visible
+        if (timeUpPopupVisible && (e.key === 'ArrowRight' || e.key === 'ArrowLeft')) {
+            e.preventDefault();
+            console.log(`Navigation disabled: ${e.key} blocked while time's up popup is visible`);
+            return;
+        }
+        
         if (e.key === 'ArrowRight') {
             e.preventDefault();
             console.log('Arrow Right pressed - calling nextQuestion()');
@@ -1701,7 +1710,7 @@ async function displayAnswer() {
             e.preventDefault();
             console.log('Arrow Left pressed - calling previousQuestion()');
             stopAllEvents();
-            previousQuestion();        } else if (e.key === ' ' || e.key === 'Spacebar') {
+            previousQuestion();} else if (e.key === ' ' || e.key === 'Spacebar') {
             e.preventDefault(); 
             if (!startSequenceBtn.disabled) {
                 startQuestionSequence();
