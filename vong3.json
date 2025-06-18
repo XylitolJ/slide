@@ -183,7 +183,7 @@
           "question_image": "No",
           "cau_hoi": "Để bảo đảm an toàn PCCC tại nhà ở hộ gia đình, anh chị nên làm gì?",
           "speech_id_question": "V3_PCCC_TL_6.wav",
-          "bg_image": "images\\cauhoi\\v3_c6.png",
+          "bg_image": "images/cauhoi/v3_c6_2.png",
           "bg_image_overlay": "gradient"
         },
         {
