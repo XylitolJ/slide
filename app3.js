@@ -29,6 +29,7 @@ document.addEventListener('DOMContentLoaded', () => {    // URL Parameter handli
     const questionCategoryEl = document.getElementById('newQuestionCategory');
     const timerCircleEl = document.getElementById('timerProgress');
     const timerTextEl = document.getElementById('timer');
+    const floatingTimerEl = document.getElementById('floatingTimer'); // Floating timer element
     const headerProgressBarEl = document.getElementById('headerProgressBar');
     // Main content elements
     const questionSectionEl = document.getElementById('questionSection'); 
@@ -290,38 +291,77 @@ document.addEventListener('DOMContentLoaded', () => {    // URL Parameter handli
         }
 
         console.log('--- renderSlide END ---');
-    }
-
-    // --- Timer Logic ---
+    }    // --- Timer Logic ---
     function startTimer() {
         if (timerInterval) clearInterval(timerInterval);
         
-        const totalTime = timeLeft;
+        // Add active state to floating timer
+        if (floatingTimerEl) {
+            floatingTimerEl.classList.add('timer-active');
+            floatingTimerEl.classList.remove('timer-warning', 'timer-danger');
+        }
+          const totalTime = timeLeft;
         const circumference = 2 * Math.PI * 45; // r=45% from CSS
-          timerInterval = setInterval(() => {
-            timeLeft--;
+        
+        // High-frequency timer for smooth updates (100ms)
+        let lastSecond = timeLeft;
+        timerInterval = setInterval(() => {
+            timeLeft -= 0.1; // Decrease by 0.1 second each 100ms
             
-            if (timerTextEl) {
-                // Display minutes:seconds format for long timers
-                if (timeLeft >= 60) {
-                    const minutes = Math.floor(timeLeft / 60);
-                    const seconds = timeLeft % 60;
-                    timerTextEl.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+            // Update floating timer states based on time remaining
+            if (floatingTimerEl) {
+                floatingTimerEl.classList.remove('timer-active', 'timer-warning', 'timer-danger');
+                
+                if (timeLeft <= 30) { // Last 30 seconds for Round 3
+                    floatingTimerEl.classList.add('timer-danger');
+                } else if (timeLeft <= 60) { // Last minute
+                    floatingTimerEl.classList.add('timer-warning');
                 } else {
-                    timerTextEl.textContent = timeLeft;
+                    floatingTimerEl.classList.add('timer-active');
+                }
+            }
+              if (timerTextEl) {
+                // Update text only when second changes for Round 3
+                if (Math.floor(timeLeft) !== Math.floor(lastSecond)) {
+                    const displayTime = Math.ceil(timeLeft);
+                    if (displayTime >= 60) {
+                        const minutes = Math.floor(displayTime / 60);
+                        const seconds = displayTime % 60;
+                        timerTextEl.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+                    } else {
+                        timerTextEl.textContent = displayTime;
+                    }
+                    lastSecond = timeLeft;
                 }
             }
             
             // Update progress circle
             if (timerCircleEl) {
-                const progress = (totalTime - timeLeft) / totalTime;
-                const offset = circumference * progress;
-                timerCircleEl.style.strokeDashoffset = offset;
-            }
-
-            // Update header progress bar
-            updateHeaderProgress();if (timeLeft <= 0) {
+                const progressRatio = Math.max(0, timeLeft / totalTime);
+                const dashOffset = circumference * (1 - progressRatio); // As time decreases, dashOffset increases
+                timerCircleEl.style.strokeDashoffset = dashOffset.toString();
+                
+                // Calculate continuous color for Round 3
+                const currentColor = getTimerColor(progressRatio);
+                timerCircleEl.style.stroke = currentColor;
+                if (timerTextEl) timerTextEl.style.color = currentColor;
+            }            // Update header progress bar
+            updateHeaderProgress();
+            
+            if (timeLeft <= 0) {
                 clearInterval(timerInterval);
+                
+                // Make timer completely transparent at 0
+                if (timerCircleEl) {
+                    timerCircleEl.style.strokeDashoffset = circumference.toString();
+                    timerCircleEl.style.stroke = 'transparent';
+                }
+                if (timerTextEl) timerTextEl.textContent = '0';
+                
+                // Remove all floating timer states when time is up
+                if (floatingTimerEl) {
+                    floatingTimerEl.classList.remove('timer-active', 'timer-warning', 'timer-danger');
+                }
                 
                 if (DEBUG_MODE === 0) {
                     // Show time's up overlay
@@ -331,12 +371,41 @@ document.addEventListener('DOMContentLoaded', () => {    // URL Parameter handli
                     // Play timer audio for 5-minute practical exams
                     if (USE_SPEECH) {
                         playAudio('speech/300s.mp3'); // 5-minute timer audio
-                    }
-                } else {
+                    }                } else {
                     console.log("DEBUG MODE: Timer reached 0");
                 }
-            }        }, 1000);
-    }    // Function to apply background overlay when question sequence starts
+            }
+        }, 100); // Update every 100ms for smooth animation
+    }
+    
+    // Function to calculate continuous timer color based on progress ratio
+    function getTimerColor(progressRatio) {
+        // progressRatio: 1 = full time, 0 = no time left
+        // Color transition: Green → Yellow → Orange → Red
+        
+        if (progressRatio >= 0.66) {
+            // Green to Yellow (100% to 66%)
+            const localRatio = (progressRatio - 0.66) / 0.34;
+            const red = Math.round(255 * (1 - localRatio));
+            const green = 255;
+            const blue = 255 * localRatio;
+            return `rgb(${red}, ${green}, ${blue})`;
+        } else if (progressRatio >= 0.33) {
+            // Yellow to Orange (66% to 33%)
+            const localRatio = (progressRatio - 0.33) / 0.33;
+            const red = 255;
+            const green = Math.round(255 * (0.5 + 0.5 * localRatio));
+            const blue = 0;
+            return `rgb(${red}, ${green}, ${blue})`;
+        } else {
+            // Orange to Red (33% to 0%)
+            const localRatio = progressRatio / 0.33;
+            const red = 255;
+            const green = Math.round(165 * localRatio); // Orange has green=165
+            const blue = 0;
+            return `rgb(${red}, ${green}, ${blue})`;
+        }
+    }// Function to apply background overlay when question sequence starts
     function applyBackgroundOverlay() {
         if (!slideContainer) return;
         

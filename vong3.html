@@ -4,17 +4,17 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Vòng 3: Thực hành - Hội thi ATVSV giỏi 2025</title>
-    
+
     <!-- Auth protection -->
     <script src="auth.js"></script>
     <script>
-        if (!window.slideAuth.requireAuth()) {
-            document.addEventListener('DOMContentLoaded', function() {
-                document.body.style.display = 'none';
-            });
-        }
+      if (!window.slideAuth.requireAuth()) {
+        document.addEventListener("DOMContentLoaded", function () {
+          document.body.style.display = "none";
+        });
+      }
     </script>
-    
+
     <link
       href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
       rel="stylesheet"
@@ -54,7 +54,6 @@
             <h1>Hội thi ATVSV giỏi 2025</h1>
             <p>Công ty Công nghiệp Hóa chất mỏ Thái Nguyên</p>
           </div>
-
           <div class="question-header">
             <div class="question-number">
               <i class="fas fa-cogs mr-2"></i>
@@ -64,25 +63,9 @@
               <i class="fas fa-hands-helping mr-2"></i>
               <span id="newQuestionCategory"></span>
             </div>
-            <div class="timer-circle">
-              <svg class="timer-svg">
-                <circle
-                  class="timer-circle-bg"
-                  cx="50%"
-                  cy="50%"
-                  r="45%"
-                ></circle>
-                <circle
-                  class="timer-circle-progress"
-                  id="timerProgress"
-                  cx="50%"
-                  cy="50%"
-                  r="45%"
-                ></circle>
-              </svg>
-                <div class="timer-text" id="timer" style="font-size: 1.2vw;">300</div>
-            </div>
           </div>
+          <div></div>
+          <!-- Empty div for header layout balance -->
         </header>
 
         <!-- Main Content Area (Question Display Only) -->
@@ -152,7 +135,26 @@
 
           <div class="progress-bar" id="footerProgressBar"></div>
         </footer>
-      </div>      <!-- Start Timer Popup -->
+      </div>
+
+      <!-- Floating Timer -->
+      <div class="floating-timer" id="floatingTimer">
+        <div class="timer-circle">
+          <svg class="timer-svg" viewBox="0 0 100 100">
+            <circle class="timer-circle-bg" cx="50%" cy="50%" r="45%"></circle>
+            <circle
+              class="timer-circle-progress"
+              id="timerProgress"
+              cx="50%"
+              cy="50%"
+              r="45%"
+            ></circle>
+          </svg>
+          <div class="timer-text" id="timer" style="font-size: 1.2vw">300</div>
+        </div>
+      </div>
+
+      <!-- Start Timer Popup -->
       <div id="startTimerPopup" class="start-timer-popup" style="display: none">
         <div class="start-timer-content">
           <i class="fas fa-play icon"></i>

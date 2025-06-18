@@ -421,6 +421,22 @@ body, html {
     animation: headerSlideDown 1s ease-out;
 }
 
+/* New structure for centered question-header */
+.header > div:first-child {
+    flex: 1; /* Contest info takes up left space */
+}
+
+.header > div:nth-child(2) {
+    flex: 0 0 auto; /* Question header stays in center */
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.header > div:last-child {
+    flex: 1; /* Empty space on right for balance */
+}
+
 .contest-info h1 {
     color: white;
     font-size: 1.4vw; /* Reduced font size */
@@ -469,15 +485,100 @@ body, html {
     min-height: 40px; /* Reduced minimum size */
 }
 
+/* Floating Timer Styles */
+.floating-timer {
+    position: fixed;
+    top: 1vh; /* Moved closer to top */
+    right: 1.5vw; /* Moved closer to right edge */
+    z-index: 1000; /* Very high z-index to float above everything */
+    transition: all 0.3s ease;
+}
+
+.floating-timer .timer-circle {
+    width: 6vw; /* Increased size */
+    height: 6vw; /* Increased size */
+    min-width: 80px; /* Increased minimum size */
+    min-height: 80px; /* Increased minimum size */
+    transition: all 0.3s ease;
+    filter: drop-shadow(0 4px 20px rgba(0, 0, 0, 0.3));
+    background: rgba(0, 0, 0, 0.4); /* Semi-transparent solid background */
+    border-radius: 50%; /* Make it circular */
+    backdrop-filter: blur(8px); /* Add blur for glass effect */
+}
+
+/* Active state when timer is running */
+.floating-timer.timer-active {
+    animation: timerFloatPulse 2s infinite ease-in-out;
+}
+
+.floating-timer.timer-active .timer-circle {
+    transform: scale(1.1);
+    filter: drop-shadow(0 0 30px rgba(255, 255, 255, 0.8)) 
+            drop-shadow(0 0 60px rgba(255, 255, 255, 0.4));
+}
+
+/* Warning state (last 10 seconds) */
+.floating-timer.timer-warning {
+    animation: timerWarningPulse 1s infinite ease-in-out;
+}
+
+.floating-timer.timer-warning .timer-circle {
+    transform: scale(1.2);
+    filter: drop-shadow(0 0 40px rgba(255, 107, 0, 0.9)) 
+            drop-shadow(0 0 80px rgba(255, 107, 0, 0.5));
+}
+
+/* Danger state (last 5 seconds) */
+.floating-timer.timer-danger {
+    animation: timerDangerPulse 0.5s infinite ease-in-out;
+}
+
+.floating-timer.timer-danger .timer-circle {
+    transform: scale(1.3);
+    filter: drop-shadow(0 0 50px rgba(255, 32, 32, 1)) 
+            drop-shadow(0 0 100px rgba(255, 32, 32, 0.7));
+}
+
+/* Floating timer animations */
+@keyframes timerFloatPulse {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-5px); }
+}
+
+@keyframes timerWarningPulse {
+    0%, 100% { 
+        transform: translateY(0px) scale(1); 
+        filter: drop-shadow(0 0 40px rgba(255, 107, 0, 0.9)) 
+                drop-shadow(0 0 80px rgba(255, 107, 0, 0.5));
+    }
+    50% { 
+        transform: translateY(-8px) scale(1.05); 
+        filter: drop-shadow(0 0 50px rgba(255, 107, 0, 1)) 
+                drop-shadow(0 0 100px rgba(255, 107, 0, 0.7));
+    }
+}
+
+@keyframes timerDangerPulse {
+    0%, 100% { 
+        transform: translateY(0px) scale(1); 
+        filter: drop-shadow(0 0 50px rgba(255, 32, 32, 1)) 
+                drop-shadow(0 0 100px rgba(255, 32, 32, 0.7));
+    }
+    50% { 
+        transform: translateY(-10px) scale(1.1); 
+        filter: drop-shadow(0 0 60px rgba(255, 32, 32, 1)) 
+                drop-shadow(0 0 120px rgba(255, 32, 32, 0.8));
+    }
+}
+
 .timer-svg {
-    transform: rotate(-90deg);
     width: 100%;
     height: 100%;
 }
 
 .timer-circle-bg { /* Background of the new timer circle */
     fill: none;
-    stroke: rgb(255, 255, 255); /* Slightly more visible background */
+    stroke: rgba(255, 255, 255, 0.2); /* More subtle background */
     stroke-width: 6;
 }
 
@@ -486,10 +587,16 @@ body, html {
     stroke: #ffffff; /* Default progress color - bright white for maximum visibility */
     stroke-width: 6;
     stroke-linecap: round;
-    stroke-dasharray: 226; /* Circumference for r=~36 (5vw could be ~70-80px, so r is ~35-40px. 2*pi*36 = 226) */
-    stroke-dashoffset: 226; /* Start empty, JS will animate to 0 */
-    /* animation: countdown 30s linear; Removed, JS will handle */
-    transition: stroke-dashoffset 1s linear, stroke 0.3s ease; /* Smooth transitions */
+    stroke-dasharray: 283 283; /* Full circumference visible, full circumference gap */
+    stroke-dashoffset: 0; /* Start full for countdown timer */
+    transition: stroke-dashoffset 0.1s linear, stroke 0.1s ease; /* Fast transitions for 100ms updates */
+    transform: rotate(-90deg) scaleX(-1); /* Start from top and reverse direction for counter-clockwise */
+    transform-origin: center; /* Ensure rotation happens around center */
+}
+
+/* Enhanced progress animations for floating timer */
+.floating-timer .timer-circle-progress {
+    transition: stroke-dashoffset 0.05s linear, stroke 0.1s ease; /* Even faster for floating timer */
 }
 
 .timer-circle-progress.warning {
@@ -509,6 +616,13 @@ body, html {
     font-size: 1.8vw; /* Increased font size */
     font-weight: 700;
     transition: color 0.3s ease;
+}
+
+/* Floating timer text size adjustment */
+.floating-timer .timer-text {
+    font-size: 2.8vw; /* Increased font for larger floating timer */
+    text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    font-weight: 800; /* Bolder font */
 }
 
 .timer-text.warning {
@@ -739,13 +853,19 @@ body, html {
     .footer-left p { font-size: 9px !important; } /* Reduced */
     .footer-right .date { font-size: 11px !important; } /* Reduced */
     .footer-right .location { font-size: 9px !important; } /* Reduced */
-    .floating-icon { font-size: 14px !important; } /* Reduced */
-    .time-up-content { font-size: 28px !important; } /* Reduced */
-    .time-up-content .subtitle { font-size: 14px !important; } /* Reduced */
-
-    .footer-controls button { /* Ensure button overrides apply in media query too */
-        padding: 0.3rem 0.6rem !important;
-        font-size: 0.7rem !important;
+      /* Floating timer responsive adjustments */
+    .floating-timer {
+        top: 1vh;
+        right: 1vw;
+    }
+    
+    .floating-timer .timer-circle {
+        width: 70px !important;
+        height: 70px !important;
+    }
+    
+    .floating-timer .timer-text {
+        font-size: 18px !important;
     }
 }
 

@@ -1,7 +1,6 @@
 // npx http-server -o
 // JavaScript file for vong2 slide presentation
-document.addEventListener('DOMContentLoaded', () => {
-    // DOM Elements
+document.addEventListener('DOMContentLoaded', () => {    // DOM Elements
     const slideContainer = document.getElementById('slideContainer');
     // Header elements
     const headerEl = document.querySelector('.header'); 
@@ -9,6 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const questionCategoryEl = document.getElementById('newQuestionCategory'); // Updated ID
     const timerCircleEl = document.getElementById('timerProgress'); // Updated ID
     const timerTextEl = document.getElementById('timer'); // Updated ID
+    const floatingTimerEl = document.getElementById('floatingTimer'); // Floating timer element
     // Main content elements
     const questionSectionEl = document.getElementById('questionSection'); 
     const questionTextContentEl = document.getElementById('questionTextContent');
@@ -790,7 +790,8 @@ document.addEventListener('DOMContentLoaded', () => {
         if (questionData.type_question === "Thực hành") {
              timeLeft = parseInt(questionData.thoi_gian_chuan_bi) * 60 || 300;
         }
-        timerTextEl.textContent = timeLeft;        timerCircleEl.style.strokeDashoffset = '226'; // Reset to full circumference for new timer
+        timerTextEl.textContent = timeLeft;
+        timerCircleEl.style.strokeDashoffset = '0'; // Reset to full circle for countdown timer
         timerCircleEl.classList.remove('warning', 'danger'); // Reset colors
         timerTextEl.classList.remove('warning', 'danger');   // Reset colors
         timerCircleEl.style.stroke = '#fff'; // Default stroke color from Test1.html CSS
@@ -811,15 +812,15 @@ document.addEventListener('DOMContentLoaded', () => {
             
             questionOptionsSection._isAdjusting = false;
             
-            // Schedule a single layout check after content is fully rendered
-            questionOptionsSection._layoutCheckTimer = setTimeout(() => {
-                adjustLayoutForOverflow();
-            }, 1000); // Wait for animations to complete
-        }
+        // Schedule a single layout check after content is fully rendered
+        questionOptionsSection._layoutCheckTimer = setTimeout(() => {
+            adjustLayoutForOverflow();
+        }, 1000); // Wait for animations to complete
     }
+}
 
 // Function to apply background overlay when question sequence starts
-    function applyBackgroundOverlay() {
+function applyBackgroundOverlay() {
         if (!slideContainer) return;
         
         const bgOverlay = slideContainer.dataset.bgOverlay;
@@ -851,9 +852,18 @@ document.addEventListener('DOMContentLoaded', () => {
             }, 100);
         }
     }
+
     // --- Timer Logic ---
     function startTimer() {
-        if (timerInterval) clearInterval(timerInterval);        if (DEBUG_MODE > 0) {
+        if (timerInterval) clearInterval(timerInterval);
+        
+        // Add active state to floating timer
+        if (floatingTimerEl) {
+            floatingTimerEl.classList.add('timer-active');
+            floatingTimerEl.classList.remove('timer-warning', 'timer-danger');
+        }
+
+        if (DEBUG_MODE > 0) {
             progressTextEl.textContent = `DEBUG MODE ${DEBUG_MODE}: Timer disabled.`;
             timeLeft = 0;
             timerTextEl.textContent = "DEBUG";
@@ -867,60 +877,74 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (USE_SPEECH && (currentQuestionData.speech_id_timer || 'speech/60s.mp3')) {
             playAudio(currentQuestionData.speech_id_timer || 'speech/60s.mp3');
-        }
-
-        const totalDuration = parseInt(currentQuestionData.thoi_gian_tra_loi) || DEFAULT_TIME_PER_QUESTION;
-        // timerCircleEl.style.transition = `stroke-dashoffset ${totalDuration}s linear, stroke 0.3s ease`; // CSS handles transition
-        
-        // Animate stroke-dashoffset from current (likely 226) to 0 over totalDuration
-        // This requires a bit more finesse if we want a smooth start after a potential delay
-        // For simplicity, we assume CSS transition handles the animation once strokeDashoffset is set.
-        // To trigger animation:
-        void timerCircleEl.offsetWidth; // Force reflow
+        }        const totalDuration = parseInt(currentQuestionData.thoi_gian_tra_loi) || DEFAULT_TIME_PER_QUESTION;
+          // Reset circle to full for countdown
         timerCircleEl.style.strokeDashoffset = '0';
+        void timerCircleEl.offsetWidth; // Force reflow
 
-
+        // High-frequency timer for smooth updates (100ms)
+        let lastSecond = timeLeft;
         timerInterval = setInterval(() => {
-            timeLeft--;
-            timerTextEl.textContent = timeLeft;
-            // const progressRatio = timeLeft / totalDuration; // Not directly setting dashoffset here anymore
+            timeLeft -= 0.1; // Decrease by 0.1 second each 100ms
+            
+            // Update text only when second changes
+            if (Math.floor(timeLeft) !== Math.floor(lastSecond)) {
+                timerTextEl.textContent = Math.ceil(timeLeft); // Round up for display
+                lastSecond = timeLeft;
+            }
+              // Calculate progress for countdown timer (0 = full, 283 = empty)
+            const progressRatio = Math.max(0, timeLeft / totalDuration); // Ensure non-negative
+            const dashOffset = 283 * (1 - progressRatio); // As time decreases, dashOffset increases
+            timerCircleEl.style.strokeDashoffset = dashOffset.toString();
 
-            // Update circle color based on Test1.html CSS classes
-            timerCircleEl.style.stroke = '#fff'; // Default stroke color from Test1.html CSS
-            timerTextEl.style.color = '#fff'; // Default text color
+            // Calculate continuous color based on progress ratio
+            const currentColor = getTimerColor(progressRatio);
+            timerCircleEl.style.stroke = currentColor;
+            timerTextEl.style.color = currentColor;
 
-            const headerProgressBarEl = document.getElementById('headerProgressBar');
-            const progressPercentage = (timeLeft / totalDuration) * 100;
+            // Update floating timer states based on time remaining
+            if (floatingTimerEl) {
+                floatingTimerEl.classList.remove('timer-active', 'timer-warning', 'timer-danger');
+                
+                if (timeLeft <= 5) {
+                    floatingTimerEl.classList.add('timer-danger');
+                } else if (timeLeft <= 10) {
+                    floatingTimerEl.classList.add('timer-warning');
+                } else {
+                    floatingTimerEl.classList.add('timer-active');
+                }
+            }            const headerProgressBarEl = document.getElementById('headerProgressBar');
+            const progressPercentage = Math.max(0, (timeLeft / totalDuration) * 100);
 
-            if (timeLeft <= Math.floor(totalDuration * 0.33)) {
-                timerCircleEl.style.stroke = '#FF4444'; // Red for danger
-                timerTextEl.style.color = '#FF4444';
-                if (headerProgressBarEl) headerProgressBarEl.style.background = '#FF4444';
-            } else if (timeLeft <= Math.floor(totalDuration * 0.66)) {
-                timerCircleEl.style.stroke = '#FFA500'; // Orange for warning
-                timerTextEl.style.color = '#FFA500';
-                 if (headerProgressBarEl) headerProgressBarEl.style.background = '#FFA500';
-            } else {
-                timerCircleEl.style.stroke = '#ffffff';
-                timerTextEl.style.color = '#ffffff';
-                 if (headerProgressBarEl) headerProgressBarEl.style.background = '#ffffff';
+            // Update floating timer states based on time remaining
+            if (floatingTimerEl) {
+                floatingTimerEl.classList.remove('timer-active', 'timer-warning', 'timer-danger');
+                
+                if (timeLeft <= 5) {
+                    floatingTimerEl.classList.add('timer-danger');
+                } else if (timeLeft <= 10) {
+                    floatingTimerEl.classList.add('timer-warning');
+                } else {
+                    floatingTimerEl.classList.add('timer-active');
+                }
             }
 
-            if (headerProgressBarEl) headerProgressBarEl.style.width = `${progressPercentage}%`;
-
-            if (timeLeft <= Math.floor(totalDuration * 0.33)) { 
-                timerCircleEl.classList.add('danger');
-                timerTextEl.classList.add('danger');
-            } else if (timeLeft <= Math.floor(totalDuration * 0.66)) { 
-                timerCircleEl.classList.add('warning');
-                timerTextEl.classList.add('warning');
+            if (headerProgressBarEl) {
+                headerProgressBarEl.style.width = `${progressPercentage}%`;
+                headerProgressBarEl.style.background = currentColor;
             }
-            // Default color is handled by CSS if no warning/danger class
 
             if (timeLeft <= 0) {
                 clearInterval(timerInterval);
                 timerTextEl.textContent = '0';
-                timerCircleEl.style.strokeDashoffset = '0'; // Ensure it's full
+                timerCircleEl.style.strokeDashoffset = '283'; // Empty circle when time is up
+                timerCircleEl.style.stroke = 'transparent'; // No stroke at 0
+                
+                // Remove all floating timer states when time is up
+                if (floatingTimerEl) {
+                    floatingTimerEl.classList.remove('timer-active', 'timer-warning', 'timer-danger');
+                }
+                
                 if (!DEBUG_MODE && timesUpPopupEl) {
                     timesUpPopupEl.style.display = 'flex'; 
                     // Trigger animation for timesUpPopupEl
@@ -929,7 +953,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     timesUpPopupEl.style.animation = 'fadeInOverlay 0.5s ease-out forwards, slideInTimeUp 0.6s ease-out forwards';
                     const timeUpContent = timesUpPopupEl.querySelector('.time-up-content');
                     if(timeUpContent) timeUpContent.style.animation = 'pulseTimeUpSmooth 2s ease-in-out infinite 0.6s';
-
                 }
                 progressTextEl.textContent = 'Hết giờ! Các đội giơ đáp án.';
                 if (currentQuestionData.type_question !== "Thực hành") {
@@ -939,10 +962,40 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
                 if (USE_SPEECH && currentQuestionData.speech_id_timeup) {
                     playAudio(currentQuestionData.speech_id_timeup);
-                }
-            }
-        }, 1000);
-    }    // --- Main Sequence Logic ---
+                }            }
+        }, 100); // Update every 100ms for smooth animation
+    }
+    
+    // Function to calculate continuous timer color based on progress ratio
+    function getTimerColor(progressRatio) {
+        // progressRatio: 1 = full time, 0 = no time left
+        // Color transition: Green → Yellow → Orange → Red
+        
+        if (progressRatio >= 0.66) {
+            // Green to Yellow (100% to 66%)
+            const localRatio = (progressRatio - 0.66) / 0.34;
+            const red = Math.round(255 * (1 - localRatio));
+            const green = 255;
+            const blue = 255 * localRatio;
+            return `rgb(${red}, ${green}, ${blue})`;
+        } else if (progressRatio >= 0.33) {
+            // Yellow to Orange (66% to 33%)
+            const localRatio = (progressRatio - 0.33) / 0.33;
+            const red = 255;
+            const green = Math.round(255 * (0.5 + 0.5 * localRatio));
+            const blue = 0;
+            return `rgb(${red}, ${green}, ${blue})`;
+        } else {
+            // Orange to Red (33% to 0%)
+            const localRatio = progressRatio / 0.33;
+            const red = 255;
+            const green = Math.round(165 * localRatio); // Orange has green=165
+            const blue = 0;
+            return `rgb(${red}, ${green}, ${blue})`;
+        }
+    }
+    
+    // --- Main Sequence Logic ---
     async function startQuestionSequence() {
         console.log('--- startQuestionSequence START ---');
         if (sequenceInProgress || answerShown) {

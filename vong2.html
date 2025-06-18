@@ -1,162 +1,239 @@
 <!DOCTYPE html>
 <html lang="vi">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Vòng 2 - Trình chiếu Câu hỏi Hội thi</title>
-    
+
     <!-- Auth protection -->
     <script src="auth.js"></script>
     <script>
-        if (!window.slideAuth.requireAuth()) {
-            document.addEventListener('DOMContentLoaded', function() {
-                document.body.style.display = 'none';
-            });
-        }
+      if (!window.slideAuth.requireAuth()) {
+        document.addEventListener("DOMContentLoaded", function () {
+          document.body.style.display = "none";
+        });
+      }
     </script>
-    
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
-</head>
-<body>
-<div class="header-progress-bar" id="headerProgressBar"></div>
-    <div id="slideContainer" class="slide-container relative overflow-hidden flex flex-col">
-        <!-- Floating particles background -->
-        <div class="floating-particles">
-            <div class="particle"></div>
-            <div class="particle"></div>
-            <div class="particle"></div>
-            <div class="particle"></div>
-            <div class="particle"></div>
-            <div class="particle"></div>
-            <div class="particle"></div>
-            <div class="particle"></div>
-        </div>
 
-        <div class="content-layer">
-            <!-- Header -->
-            <header class="header">
-                <div class="contest-info">
-                    <h1>Hội thi ATVSV giỏi 2025</h1>
-                    <p>Công ty Công nghiệp Hóa chất mỏ Thái Nguyên</p>
-                </div>
-                
-                <div class="question-header">
-                    <div class="question-number">
-                        <i class="fas fa-question-circle mr-2"></i>
-                        Câu <span id="newQuestionNumber"></span>
-                    </div>
-                    <div class="category-badge">
-                        <i class="fas fa-cog mr-2"></i>
-                        <span id="newQuestionCategory"></span>
-                    </div>
-                    <div class="timer-circle">
-                        <svg class="timer-svg">
-                            <circle class="timer-circle-bg" cx="50%" cy="50%" r="45%"></circle>
-                            <circle class="timer-circle-progress" id="timerProgress" cx="50%" cy="50%" r="45%"></circle>
-                        </svg>
-                        <div class="timer-text" id="timer">60</div>
-                    </div>
-                </div>
-            </header>
+    <link
+      href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="header-progress-bar" id="headerProgressBar"></div>
+    <div
+      id="slideContainer"
+      class="slide-container relative overflow-hidden flex flex-col"
+    >
+      <!-- Floating particles background -->
+      <div class="floating-particles">
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+      </div>
+
+      <div class="content-layer">
+        <!-- Header -->
+        <header class="header">
+          <div class="contest-info">
+            <h1>Hội thi ATVSV giỏi 2025</h1>
+            <p>Công ty Công nghiệp Hóa chất mỏ Thái Nguyên</p>
+          </div>
+          <div class="question-header">
+            <div class="question-number">
+              <i class="fas fa-question-circle mr-2"></i>
+              Câu <span id="newQuestionNumber"></span>
+            </div>
+            <div class="category-badge">
+              <i class="fas fa-cog mr-2"></i>
+              <span id="newQuestionCategory"></span>
+            </div>
+          </div>
+          <div></div>
+          <!-- Empty div for header layout balance -->
+        </header>
 
         <!-- Main Content Area -->
         <div class="px-8 py-4 flex-grow flex overflow-hidden">
-            <!-- Left Column: Question and Options -->
-            <div id="questionOptionsArea" class="w-3/5 pr-6 flex flex-col overflow-y-auto">            <div id="questionSection" class="rounded-xl p-6 mb-6" style="background: linear-gradient(135deg, rgba(248, 250, 252, 0.95), rgba(241, 245, 249, 0.95)); border: 1px solid rgba(203, 213, 225, 0.6); backdrop-filter: blur(8px);">
-                <div class="flex items-start space-x-4">
-                <div id="questionIconContainer" class="bg-blue-600 text-white rounded-full p-3 pulse-icon">
-                    <i class="fas fa-question text-2xl"></i>
+          <!-- Left Column: Question and Options -->
+          <div
+            id="questionOptionsArea"
+            class="w-3/5 pr-6 flex flex-col overflow-y-auto"
+          >
+            <div
+              id="questionSection"
+              class="rounded-xl p-6 mb-6"
+              style="
+                background: linear-gradient(
+                  135deg,
+                  rgba(248, 250, 252, 0.95),
+                  rgba(241, 245, 249, 0.95)
+                );
+                border: 1px solid rgba(203, 213, 225, 0.6);
+                backdrop-filter: blur(8px);
+              "
+            >
+              <div class="flex items-start space-x-4">
+                <div
+                  id="questionIconContainer"
+                  class="bg-blue-600 text-white rounded-full p-3 pulse-icon"
+                >
+                  <i class="fas fa-question text-2xl"></i>
                 </div>
                 <div class="flex-1">
-                    <h2 id="questionTextContent" class="text-2xl font-bold text-gray-800 mb-2">
+                  <h2
+                    id="questionTextContent"
+                    class="text-2xl font-bold text-gray-800 mb-2"
+                  >
                     <!-- Question text will be injected here -->
-                    </h2>
+                  </h2>
                 </div>
-                </div>
-            </div>            <!-- Options -->
-            <div id="optionsContainer" class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-                <!-- Options will be injected here -->
+              </div>
             </div>
-            
-            <!-- 3 Columns Layout for special questions -->
-            <div id="threeColumnsContainer" class="hidden grid grid-cols-2 gap-6 mb-6">
-                <div id="column1Container" class="space-y-4">
-                    <!-- Column 1: Sai sót -->
-                </div>
-                <div id="column2Container" class="space-y-4">
-                    <!-- Column 2: Biện pháp xử lý -->
-                </div>
-            </div>
+            <!-- Options -->
+            <div
+              id="optionsContainer"
+              class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6"
+            >
+              <!-- Options will be injected here -->
             </div>
 
-            <!-- Right Column: Image -->
-            <div id="imageArea" class="w-2/5 flex items-stretch justify-start relative">
-            <div id="imageWrapper" class="absolute inset-y-0 right-0 w-[calc(100%+3rem)] custom-image-shape overflow-hidden shadow-xl">
-                <img id="slideImage" src="" class="block w-full h-full object-cover cursor-pointer">
+            <!-- 3 Columns Layout for special questions -->
+            <div
+              id="threeColumnsContainer"
+              class="hidden grid grid-cols-2 gap-6 mb-6"
+            >
+              <div id="column1Container" class="space-y-4">
+                <!-- Column 1: Sai sót -->
+              </div>
+              <div id="column2Container" class="space-y-4">
+                <!-- Column 2: Biện pháp xử lý -->
+              </div>
             </div>
+          </div>
+
+          <!-- Right Column: Image -->
+          <div
+            id="imageArea"
+            class="w-2/5 flex items-stretch justify-start relative"
+          >
+            <div
+              id="imageWrapper"
+              class="absolute inset-y-0 right-0 w-[calc(100%+3rem)] custom-image-shape overflow-hidden shadow-xl"
+            >
+              <img
+                id="slideImage"
+                src=""
+                class="block w-full h-full object-cover cursor-pointer"
+              />
             </div>
+          </div>
         </div>
 
         <!-- Footer -->
         <footer class="footer">
-            <div class="footer-left">
-                <div id="roundInfoDisplay">
-                    <!-- Round information will be injected here by JS -->
-                </div>
+          <div class="footer-left">
+            <div id="roundInfoDisplay">
+              <!-- Round information will be injected here by JS -->
             </div>
-            
-            <div class="footer-controls flex items-center space-x-3">
-                <div id="progressText" class="text-white font-semibold text-xl mx-4">
-                    <!-- Progress/status text will be updated by JS -->
-                </div>
-                <button id="startSequenceBtn" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-3 rounded-lg font-semibold transition-all text-xl">
-                    <i class="fas fa-play"></i> Bắt đầu
-                </button>
-                <button id="showAnswerBtn" class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-semibold transition-all" style="display: none;">
-                    <i class="fas fa-lightbulb mr-2"></i>Đáp án
-                </button>
-            </div>
+          </div>
 
-            <div class="footer-right">
-                <div class="date">
-                    <i class="fas fa-calendar-alt mr-2"></i>
-                    25/06/2025
-                </div>
-                <div class="location">
-                    <i class="fas fa-map-marker-alt mr-2"></i>
-                    Hội trường tầng 5 - Văn phòng Công ty
-                </div>
+          <div class="footer-controls flex items-center space-x-3">
+            <div
+              id="progressText"
+              class="text-white font-semibold text-xl mx-4"
+            >
+              <!-- Progress/status text will be updated by JS -->
             </div>
-            
-            <div class="progress-bar" id="footerProgressBar"></div>
+            <button
+              id="startSequenceBtn"
+              class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-3 rounded-lg font-semibold transition-all text-xl"
+            >
+              <i class="fas fa-play"></i> Bắt đầu
+            </button>
+            <button
+              id="showAnswerBtn"
+              class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-semibold transition-all"
+              style="display: none"
+            >
+              <i class="fas fa-lightbulb mr-2"></i>Đáp án
+            </button>
+          </div>
+
+          <div class="footer-right">
+            <div class="date">
+              <i class="fas fa-calendar-alt mr-2"></i>
+              25/06/2025
+            </div>
+            <div class="location">
+              <i class="fas fa-map-marker-alt mr-2"></i>
+              Hội trường tầng 5 - Văn phòng Công ty
+            </div>
+          </div>
+
+          <div class="progress-bar" id="footerProgressBar"></div>
         </footer>
-        </div>        <!-- Start Timer Popup -->
-        <div id="startTimerPopup" class="start-timer-popup" style="display: none;">
-            <div class="start-timer-content">
-                <i class="fas fa-play icon"></i>
-                <h2>Bắt đầu!</h2>
-            </div>
-        </div>
+      </div>
 
-        <!-- Time's Up Overlay -->
-        <div id="timeUpOverlay" class="time-up-overlay" style="display: none;">
-            <div class="time-up-content">
-                <i class="fas fa-clock mr-3"></i>HẾT GIỜ!
-                <div class="subtitle">
-                    Các đội vui lòng giơ bảng đáp án
-                </div>
-            </div>
+      <!-- Floating Timer -->
+      <div class="floating-timer" id="floatingTimer">
+        <div class="timer-circle">
+          <svg class="timer-svg" viewBox="0 0 100 100">
+            <circle class="timer-circle-bg" cx="50%" cy="50%" r="45%"></circle>
+            <circle
+              class="timer-circle-progress"
+              id="timerProgress"
+              cx="50%"
+              cy="50%"
+              r="45%"
+            ></circle>
+          </svg>
+          <div class="timer-text" id="timer">60</div>
         </div>
+      </div>
 
-        <!-- Image Modal for full-screen view -->
-        <div id="imageModal" class="image-modal hidden">
-            <img id="modalImage" src="" alt="Preview" class="max-w-full max-h-full">
+      <!-- Start Timer Popup -->
+      <div id="startTimerPopup" class="start-timer-popup" style="display: none">
+        <div class="start-timer-content">
+          <i class="fas fa-play icon"></i>
+          <h2>Bắt đầu!</h2>
         </div>
+      </div>
+
+      <!-- Time's Up Overlay -->
+      <div id="timeUpOverlay" class="time-up-overlay" style="display: none">
+        <div class="time-up-content">
+          <i class="fas fa-clock mr-3"></i>HẾT GIỜ!
+          <div class="subtitle">Các đội vui lòng giơ bảng đáp án</div>
+        </div>
+      </div>
+
+      <!-- Image Modal for full-screen view -->
+      <div id="imageModal" class="image-modal hidden">
+        <img
+          id="modalImage"
+          src=""
+          alt="Preview"
+          class="max-w-full max-h-full"
+        />
+      </div>
     </div>
 
     <script src="app2.js"></script>
-</body>
+  </body>
 </html>
