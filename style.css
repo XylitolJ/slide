@@ -966,30 +966,93 @@ body, html {
 /* Glass Theme Base */
 .header-footer-theme-glass .header,
 .header-footer-theme-glass .footer {
-    background: rgba(0, 255, 170, 0.288) !important;
-    backdrop-filter: blur(2px) !important;
-    border: 0.1px solid transparent !important;
+    background: rgba(255, 255, 255, 0.15) !important;
+    backdrop-filter: blur(2px) saturate(180%) !important;
+    border: 0.5px solid rgba(255, 255, 255, 0.2) !important;
     position: relative;
     overflow: hidden;
 }
 
-/* Glass Theme cho từng vòng với background và border-image gradient */
+.header-footer-theme-glass .header::before,
+.header-footer-theme-glass .footer::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 255, 255, 0.4),
+        transparent
+    );
+    animation: glassShimmer 6s infinite ease-in-out;
+    z-index: 1;
+    pointer-events: none;
+}
+
+/* Glass Theme cho từng vòng với hiệu ứng lung linh */
 .header-footer-theme-glass-vong1 .header,
 .header-footer-theme-glass-vong1 .footer {
-    background: rgba(5, 150, 105, 0.2) !important;
-    border-image: linear-gradient(135deg, #059669, #10b981, #34d399) 1 !important;
+    background: rgba(5, 150, 105, 0.15) !important;
+    backdrop-filter: blur(2px) saturate(110%) !important;
+    border: 0.5px solid rgba(16, 185, 129, 0.3) !important;
+}
+
+.header-footer-theme-glass-vong1 .header::before,
+.header-footer-theme-glass-vong1 .footer::before {
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(16, 185, 129, 0.5),
+        rgba(52, 211, 153, 0.3),
+        transparent
+    );
+    animation: glassShimmer 6s infinite ease-in-out;
 }
 
 .header-footer-theme-glass-vong2 .header,
 .header-footer-theme-glass-vong2 .footer {
-    background: rgba(217, 119, 6, 0.2) !important;
-    border-image: linear-gradient(135deg, #d97706, #f59e0b, #fbbf24) 1 !important;
+    background: rgba(217, 119, 6, 0.15) !important;
+    backdrop-filter: blur(2px) saturate(110%) !important;
+    border: 0.5px solid rgba(245, 158, 11, 0.3) !important;
+}
+
+.header-footer-theme-glass-vong2 .header::before,
+.header-footer-theme-glass-vong2 .footer::before {
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(245, 158, 11, 0.5),
+        rgba(251, 191, 36, 0.3),
+        transparent
+    );
+    animation: glassShimmer 6s infinite ease-in-out;
 }
 
 .header-footer-theme-glass-vong3 .header,
 .header-footer-theme-glass-vong3 .footer {
-    background: rgba(124, 58, 237, 0.2) !important;
-    border-image: linear-gradient(135deg, #7c3aed, #a855f7, #c084fc) 1 !important;
+    background: rgba(124, 58, 237, 0.15) !important;
+    backdrop-filter: blur(2px) saturate(110%) !important;
+    border: 0.5px solid rgba(168, 85, 247, 0.3) !important;
+}
+
+.header-footer-theme-glass-vong3 .header::before,
+.header-footer-theme-glass-vong3 .footer::before {
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(168, 85, 247, 0.5),
+        rgba(192, 132, 252, 0.3),
+        transparent
+    );
+    animation: glassShimmer 6s infinite ease-in-out;
+}
+
+@keyframes glassShimmer {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(200%); }
 }
 
 /* Enhanced text styling for glass theme - Header (Combined Approach for readability) */
