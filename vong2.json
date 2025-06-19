@@ -515,9 +515,9 @@
   },
   "demo": {
     "ly_thuyet_khai_thac_mo": {
-      "trac_nghiem_hinh_anh": [
-        {
+      "trac_nghiem_hinh_anh": [        {
           "id": "DEMO2",
+          "demo_question_number": 3,
           "category": "Lý thuyết Bốc xếp, Bảo quản, Vận chuyển VLNCN",
           "subcategory": "Quy định An toàn Kho",
           "type_question": "Trắc nghiệm Hình ảnh",

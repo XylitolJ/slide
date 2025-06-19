@@ -618,11 +618,20 @@ document.addEventListener('DOMContentLoaded', () => {    // DOM Elements
         progressTextEl.classList.remove('answer-text-highlight'); // Remove highlight
         showAnswerBtn.style.display = 'none';        startSequenceBtn.disabled = false;
         startSequenceBtn.classList.remove('opacity-50', 'cursor-not-allowed', 'speaking-indicator');
-        
         timesUpPopupEl.style.display = 'none';
         timesUpPopupEl.style.opacity = '0';
-        timeUpPopupVisible = false; // Reset flag when rendering new slide// Update header
-        if (questionNumberEl) questionNumberEl.textContent = currentQuestionIndex + 1;
+        timeUpPopupVisible = false; // Reset flag when rendering new slide
+
+        // Update header
+        if (questionNumberEl) {
+            // Check if in demo mode and question has custom demo_question_number
+            const isDemoMode = localStorage.getItem('demoMode') === 'true';
+            if (isDemoMode && questionData.demo_question_number) {
+                questionNumberEl.textContent = questionData.demo_question_number;
+            } else {
+                questionNumberEl.textContent = currentQuestionIndex + 1;
+            }
+        }
         if (questionCategoryEl) questionCategoryEl.textContent = questionData.category || 'Không có danh mục';
           // Trigger header and footer animations
         triggerHeaderFooterAnimation();
@@ -1164,8 +1173,8 @@ function applyBackgroundOverlay() {
                     } else {
                         await new Promise(r => setTimeout(r, DELAY_NO_SPEECH_OPTION));
                     }
-                    
-                    animationDelayBase += 0.15; // Stagger next option by 150ms
+
+                    animationDelayBase += 0.001; // Stagger next option by 1ms
                 }
             }
               } else if (currentQuestionData.type_question === "Thực hành") {

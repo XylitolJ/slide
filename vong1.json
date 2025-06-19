@@ -287,10 +287,10 @@
   },
   "demo": {
     "chinh_sach_phap_luat_va_y_te": {
-      "trac_nghiem": [
-        {
-          "cau_hoi_so": 1,
+      "trac_nghiem": [        {
+          "cau_hoi_so": 2,
           "id": "DEMO1",
+          "demo_question_number": 2,
           "category": "Phòng cháy chữa cháy",
           "subcategory": "Lĩnh vực PCCC",
           "type_question": "Trắc nghiệm",
