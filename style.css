@@ -141,6 +141,14 @@ body, html {
     background: linear-gradient(135deg, #8b5cf6, #7c3aed) !important; 
     box-shadow: 0 2px 8px rgba(139, 92, 246, 0.4) !important;
 } /* Purple - darker */
+.option-char-k { 
+    background: linear-gradient(135deg, #0f766e, #0d9488) !important; 
+    box-shadow: 0 2px 8px rgba(15, 118, 110, 0.4) !important;
+} /* Teal - darker */
+.option-char-l { 
+    background: linear-gradient(135deg, #a21caf, #86198f) !important; 
+    box-shadow: 0 2px 8px rgba(162, 28, 175, 0.4) !important;
+} /* Fuchsia - darker */
 
 /* Styles for the option character (A, B, C, D) to ensure it's always a circle */
 .option-char {
