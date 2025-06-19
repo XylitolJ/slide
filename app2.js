@@ -523,13 +523,14 @@ document.addEventListener('DOMContentLoaded', () => {    // DOM Elements
                         optionEl.id = `option${optionKeyUpper}`;
                         optionEl.dataset.optionKey = key;
                         optionEl.classList.add('option-card', 'rounded-lg', 'p-4', 'border-l-4', 'border-gray-400');
-                        optionEl.style.opacity = '0';
-
-                        const optionCharClass = `option-char-${key.toLowerCase()}`;
+                        optionEl.style.opacity = '0';                        const optionCharClass = `option-char-${key.toLowerCase()}`;
                         optionEl.innerHTML = `
-                            <div class="flex items-center space-x-3">
-                                <div class="option-char ${optionCharClass} text-white rounded-full w-8 h-8 flex items-center justify-center font-bold">${optionKeyUpper}</div>
-                                <span class="text-gray-800 font-medium">${value}</span>
+                            <div class="flex items-center justify-between w-full">
+                                <div class="flex items-center space-x-3">
+                                    <div class="option-char ${optionCharClass} text-white rounded-full w-8 h-8 flex items-center justify-center font-bold">${optionKeyUpper}</div>
+                                    <span class="text-gray-800 font-medium">${value}</span>
+                                </div>
+                                <div class="score-container"></div>
                             </div>
                         `;
                         
@@ -815,12 +816,14 @@ document.addEventListener('DOMContentLoaded', () => {    // DOM Elements
                             optionEl.classList.add('option-card', 'rounded-lg', 'p-4', 'border-l-4', 'border-gray-400');
                             optionEl.style.opacity = '0';
 
-                            const optionCharClass = `option-char-${key.toLowerCase()}`;
-                            // Ensure correct inner structure for flex layout and char styling
+                            const optionCharClass = `option-char-${key.toLowerCase()}`;                            // Ensure correct inner structure for flex layout and char styling
                             optionEl.innerHTML = `
-                                <div class="flex items-center space-x-3">
-                                    <div class="option-char ${optionCharClass} text-white rounded-full w-8 h-8 flex items-center justify-center font-bold">${optionKeyUpper}</div>
-                                    <span class="text-gray-800 font-medium">${value}</span>
+                                <div class="flex items-center justify-between w-full">
+                                    <div class="flex items-center space-x-3">
+                                        <div class="option-char ${optionCharClass} text-white rounded-full w-8 h-8 flex items-center justify-center font-bold">${optionKeyUpper}</div>
+                                        <span class="text-gray-800 font-medium">${value}</span>
+                                    </div>
+                                    <div class="score-container"></div>
                                 </div>
                             `;
                             optionsContainerEl.appendChild(optionEl);
@@ -1326,11 +1329,10 @@ function applyBackgroundOverlay() {
                 // Add score badge to the option
                 const scoreBadge = document.createElement('div');
                 scoreBadge.classList.add('score-badge', 'ml-2', 'px-2', 'py-1', 'bg-amber-500', 'text-white', 'rounded-full', 'text-sm', 'font-bold', 'inline-flex', 'items-center');
-                scoreBadge.innerHTML = `<i class="fas fa-star mr-1"></i>+${pointsPerAnswer}đ`;
-                  // Find the option content and append the score badge
-                const optionContent = correctOptionEl.querySelector('.flex.items-center.space-x-3');
-                if (optionContent) {
-                    optionContent.appendChild(scoreBadge);
+                scoreBadge.innerHTML = `<i class="fas fa-star mr-1"></i>+${pointsPerAnswer}đ`;                  // Find the score container and append the score badge
+                const scoreContainer = correctOptionEl.querySelector('.score-container');
+                if (scoreContainer) {
+                    scoreContainer.appendChild(scoreBadge);
                 }
                 
                 // Ensure the option is visible and smoothly animated

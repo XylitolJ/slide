@@ -660,12 +660,14 @@ document.addEventListener('DOMContentLoaded', () => {
                     optionEl.classList.add('option-card', 'bg-white', 'bg-opacity-90', 'rounded-lg', 'p-4', 'border-l-4', 'border-gray-400');
                     optionEl.style.opacity = '0'; 
 
-                    const optionCharClass = `option-char-${key.toLowerCase()}`;
-                    // Ensure correct inner structure for flex layout and char styling
+                    const optionCharClass = `option-char-${key.toLowerCase()}`;                    // Ensure correct inner structure for flex layout and char styling
                     optionEl.innerHTML = `
-                        <div class="flex items-center space-x-3">
-                            <div class="option-char ${optionCharClass} text-white rounded-full w-8 h-8 flex items-center justify-center font-bold">${optionKeyUpper}</div>
-                            <span class="text-gray-800 font-medium">${value}</span>
+                        <div class="flex items-center justify-between w-full">
+                            <div class="flex items-center space-x-3">
+                                <div class="option-char ${optionCharClass} text-white rounded-full w-8 h-8 flex items-center justify-center font-bold">${optionKeyUpper}</div>
+                                <span class="text-gray-800 font-medium">${value}</span>
+                            </div>
+                            <div class="score-container"></div>
                         </div>
                     `;
                     optionsContainerEl.appendChild(optionEl);
@@ -901,11 +903,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Format points to show decimal only if needed
                 const formattedPoints = pointsPerAnswer % 1 === 0 ? pointsPerAnswer.toString() : pointsPerAnswer.toFixed(1);
                 scoreBadge.innerHTML = `<i class="fas fa-star mr-1"></i>+${formattedPoints}đ`;
-                
-                // Find the option content and append the score badge
-                const optionContent = correctOptionEl.querySelector('.flex.items-center.space-x-3');
-                if (optionContent) {
-                    optionContent.appendChild(scoreBadge);
+                  // Find the score container and append the score badge
+                const scoreContainer = correctOptionEl.querySelector('.score-container');
+                if (scoreContainer) {
+                    scoreContainer.appendChild(scoreBadge);
                 }
                 
                 // Ensure the option is visible and smoothly animated

@@ -1183,6 +1183,15 @@ body, html {
     letter-spacing: 0.025em;
 }
 
+/* Score container to hold score badges aligned to the right */
+.score-container {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    min-width: 80px; /* Reserve space for score badges */
+    flex-shrink: 0; /* Prevent shrinking */
+}
+
 /* Score badge styling - Updated with orange/gold theme to contrast with green background */
 .score-badge {
     background: linear-gradient(135deg, #f59e0b, #d97706) !important;
@@ -1196,14 +1205,8 @@ body, html {
     gap: 0.25rem !important;
     box-shadow: 0 2px 6px rgba(245, 158, 11, 0.4) !important;
     animation: scoreAppear 0.5s ease-out forwards !important;
-    margin-left: 0.5rem !important;
+    margin-left: 0 !important; /* Remove left margin since it's now in its own container */
     border: 2px solid #fbbf24 !important;
-}
-
-.score-badge i {
-    color: #fef3c7 !important;
-    font-size: 0.75rem !important;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2) !important;
 }
 
 @keyframes scoreAppear {
