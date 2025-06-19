@@ -373,9 +373,9 @@ document.addEventListener('DOMContentLoaded', () => {    // DOM Elements
         if (hasVerticalScroll && !imageAreaEl.classList.contains('hidden') && currentWidth !== '4/5') {
             // Adjust to give more space to questions/options
             questionOptionsSection.classList.remove('w-3/5', 'w-2/5');
-            questionOptionsSection.classList.add('w-4/5');
+            questionOptionsSection.classList.add('w-3/6');
             imageAreaEl.classList.remove('w-2/5', 'w-3/5');
-            imageAreaEl.classList.add('w-1/5');
+            imageAreaEl.classList.add('w-3/6');
             console.log('Layout adjusted: Questions area expanded due to overflow');
         } else if (!hasVerticalScroll && !imageAreaEl.classList.contains('hidden') && currentWidth === '4/5') {
             // Restore original layout when no overflow
